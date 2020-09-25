@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{0957
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AFA27B1D-9AD5-4592-8F01-3820735869DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korzh.EasyData.Core", "src\Korzh.EasyData.Core\Korzh.EasyData.Core.csproj", "{13C5510F-6B6E-44EC-B6E8-3A7259022E8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyData.Core", "src\EasyData.Core\EasyData.Core.csproj", "{13C5510F-6B6E-44EC-B6E8-3A7259022E8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
