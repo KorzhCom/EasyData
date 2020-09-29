@@ -33,22 +33,6 @@ namespace EasyData
 
     public class MetaData
     {
-        #region MetaData classes
-
-        /// <summary>
-        /// Exception class for data model errors
-        /// </summary>
-        public class Error : Exception
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Error"/> class.
-            /// </summary>
-            /// <param name="message">Message.</param>
-            public Error(string message) : base(message) { }
-        }
-
-        #endregion
-
         /// <summary>
         /// Read-only constant that represent the latest format version of data model definition JSON files
         /// </summary>
@@ -218,13 +202,13 @@ namespace EasyData
         /// <summary>
         /// Main entity of the model
         /// </summary>
-        protected Entity entityRoot = null;
+        protected MetaEntity entityRoot = null;
 
 
         /// <summary>
         /// The root entity of data model entities.
         /// </summary>
-        public virtual Entity EntityRoot
+        public virtual MetaEntity EntityRoot
         {
             get { return entityRoot; }
         }
@@ -234,9 +218,9 @@ namespace EasyData
         /// This method can be overriden in descendant classes to retrun the object of appropriate class (e.g. DbEntity).
         /// </summary>
         /// <returns>Entity object.</returns>
-        public virtual Entity CreateRootEntity()
+        public virtual MetaEntity CreateRootEntity()
         {
-            return new RootEntity(this);
+            return new RootMetaEntity(this);
         }
 
 
@@ -246,18 +230,18 @@ namespace EasyData
         /// <param name="parentEntity">The parent entity.</param>
         /// <param name="isVirtual">if set to <c>true</c> the new attribute will be a virtual one.</param>
         /// <returns>EntityAttr.</returns>
-        public virtual EntityAttr CreateEntityAttr(Entity parentEntity = null, bool isVirtual = false)
+        public virtual MetaEntityAttr CreateEntityAttr(MetaEntity parentEntity = null, bool isVirtual = false)
         {
-            return new EntityAttr(parentEntity, isVirtual);
+            return new MetaEntityAttr(parentEntity, isVirtual);
         }
 
         /// <summary>
         /// Creates the entity.
         /// </summary>
         /// <returns></returns>
-        public virtual Entity CreateEntity(Entity parentEntity = null)
+        public virtual MetaEntity CreateEntity(MetaEntity parentEntity = null)
         {
-            return new Entity(parentEntity ?? EntityRoot);
+            return new MetaEntity(parentEntity ?? EntityRoot);
         }
 
         protected internal void TryRunWithMainSyncContext(Action action)
@@ -284,10 +268,10 @@ namespace EasyData
         /// This function is called by <see cref="SortEntities" /> method
         /// </summary>
         /// <param name="entity">The entity.</param>
-        protected virtual void SortEntityContent(Entity entity)
+        protected virtual void SortEntityContent(MetaEntity entity)
         {
             entity.SubEntities.SortByName();
-            foreach (Entity ent in entity.SubEntities)
+            foreach (MetaEntity ent in entity.SubEntities)
             {
                 SortEntityContent(ent);
             }
@@ -295,27 +279,7 @@ namespace EasyData
             entity.Attributes.SortByCaption();
         }
 
-        /// <summary>
-        /// Generates NULL (ghost) attribute with ID passed in parameter
-        /// </summary>
-        /// <param name="id">The ID of the ghost attribute</param>
-        /// <returns>A special attribute which is used when we can't find a real entity attribute in the model</returns>
-        internal EntityAttr CreateGhostAttribute(string id)
-        {
-            EntityAttr attr = CreateEntityAttr();
-            attr._isGhost = true;
-            attr.ID = id;
-            attr.Entity = nullEntity;
-            //attr.Caption = Texts.Get("UnrecognizedAttribute");
-            attr.UseInConditions = false;
-            attr.UseInResult = false;
-            attr.UseInSorting = false;
-            nullEntity.Attributes.Add(attr);
-
-            return attr;
-        }
-
-        Entity nullEntity = null;
+        MetaEntity nullEntity = null;
 
         /// <summary>
         /// Gets a value indicating whether this model is empty (doesn't contain any entity or attribute) or not.
@@ -336,56 +300,15 @@ namespace EasyData
             return ++_maxEntAttrID;
         }
 
-
-        /// <summary>
-        /// Returns the first attribute in the Root entity with UseInConditions set to true.
-        /// This attribute is shown by default for new condition.
-        /// </summary>
-        /// <returns>An Attribute object.</returns>
-        public virtual EntityAttr GetDefaultUICAttribute()
-        {
-            return GetUICAttributeFromEntity(EntityRoot);
-        }
-
-        private EntityAttr GetUICAttributeFromEntity(Entity entity)
-        {
-            if (entity.UseInConditions)
-            {
-                foreach (EntityAttr entityAttr in entity.Attributes)
-                    if (entityAttr.UseInConditions) return entityAttr;
-
-                foreach (Entity subEntity in entity.SubEntities)
-                {
-                    EntityAttr result = GetUICAttributeFromEntity(subEntity);
-                    if (result != null) return result;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the first attribute in the Root entity with UseInResult set to true.
-        /// This attribute is shown by default for new column.
-        /// </summary>
-        /// <returns>An Attribute object.</returns>
-        public virtual EntityAttr GetDefaultUIRAttribute()
-        {
-            return GetDefaultUIRAttribute(false);
-        }
-
         /// <summary>
         /// Gets the attribute by its ID.
         /// </summary>
         /// <param name="attrID">The attribute ID.</param>
         /// <param name="useNullAttr">if set to <c>true</c> NullAttribute will be returned if we can not find the attribute with specified ID.</param>
         /// <returns></returns>
-        public EntityAttr GetAttributeByID(string attrID, bool useNullAttr)
+        public virtual MetaEntityAttr GetAttributeByID(string attrID, bool useNullAttr)
         {
-            EntityAttr result = EntityRoot.FindAttribute(EntityAttrProp.ID, attrID);
-            if (result == null && useNullAttr)
-            {
-                result = CreateGhostAttribute(attrID);
-            }
+            MetaEntityAttr result = EntityRoot.FindAttribute(EntityAttrProp.ID, attrID);
             return result;
         }
 
@@ -395,9 +318,9 @@ namespace EasyData
         /// </summary>
         /// <param name="attrDef">A string that represents attribute (either ID, expression or caption).</param>
         /// <returns></returns>
-        public EntityAttr FindEntityAttr(string attrDef)
+        public MetaEntityAttr FindEntityAttr(string attrDef)
         {
-            EntityAttr attr = EntityRoot.FindAttribute(EntityAttrProp.ID, attrDef);
+            MetaEntityAttr attr = EntityRoot.FindAttribute(EntityAttrProp.ID, attrDef);
             if (attr == null)
                 attr = EntityRoot.FindAttribute(EntityAttrProp.Expression, attrDef);
             if (attr == null)
@@ -411,9 +334,9 @@ namespace EasyData
         /// </summary>
         /// <param name="entityName">Name of the entity we are srearching for</param>
         /// <returns>
-        /// An <see cref="Entity"/> object with specified name or null if it can't be found.
+        /// An <see cref="MetaEntity"/> object with specified name or null if it can't be found.
         /// </returns>
-        public Entity FindEntity(string entityName)
+        public MetaEntity FindEntity(string entityName)
         {
             return EntityRoot.FindSubEntity(entityName);
         }
@@ -424,7 +347,7 @@ namespace EasyData
         /// <param name="entity">The parent entity.</param>
         /// <param name="entityName">The name of the new entity.</param>
         /// <returns>Entity.</returns>
-        public Entity AddEntity(Entity entity, string entityName)
+        public MetaEntity AddEntity(MetaEntity entity, string entityName)
         {
             if (entity == null)
             {
@@ -446,7 +369,7 @@ namespace EasyData
         /// <param name="dataType">The type of the data.</param>
         /// <param name="size">The size (if necessary).</param>
         /// <returns>EntityAttr.</returns>
-        public EntityAttr AddEntityAttr(Entity entity, string expression, string caption = null, DataType dataType = DataType.String, int size = 100)
+        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, int size = 100)
         {
             return AddEntityAttr(entity, expression, caption, dataType, false, size);
         }
@@ -461,7 +384,7 @@ namespace EasyData
         /// <param name="isVirtual">The type of the data.</param>
         /// <param name="size">The size (if necessary).</param>
         /// <returns>EntityAttr.</returns>
-        public EntityAttr AddEntityAttr(Entity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
+        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -482,29 +405,6 @@ namespace EasyData
             entity.Attributes.Add(attr);
 
             return attr;
-        }
-
-        /// <summary>
-        /// Returns the first attribute in the Root entity with UseInResult set to true and UseInSorting set to true if needUseInSorting is true.
-        /// This attribute is shown by default for new column.
-        /// </summary>
-        /// <returns>An Attribute object.</returns>
-        public EntityAttr GetDefaultUIRAttribute(bool needUseInSorting)
-        {
-            return GetUIRAttributeFromEntity(EntityRoot, needUseInSorting);
-        }
-
-        private EntityAttr GetUIRAttributeFromEntity(Entity entity, bool needUseInSorting = false)
-        {
-            foreach (EntityAttr entityAttr in entity.Attributes)
-                if (entityAttr.UseInResult && (!needUseInSorting || entityAttr.UseInSorting)) return entityAttr;
-
-            foreach (Entity subEntity in entity.SubEntities)
-            {
-                EntityAttr result = GetUIRAttributeFromEntity(subEntity, needUseInSorting);
-                if (result != null) return result;
-            }
-            return null;
         }
 
         #endregion //Entities and attributes
@@ -882,7 +782,7 @@ namespace EasyData
         {
             if ((rwOptions & MetaDataReadWriterOptions.Entities) > 0) {
                 await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
-                await EntityRoot.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+                await EntityRoot.WriteToJsonAsync(writer).ConfigureAwait(false);
             }
         }
 

@@ -25,7 +25,7 @@ namespace EasyData
         Caption,
 
         /// <summary>
-        /// Some expression (should be defined in descendants). Same as ID for <see cref="Entity"/> class.
+        /// Some expression (should be defined in descendants). Same as ID for <see cref="MetaEntity"/> class.
         /// </summary>
         Expression
     }
@@ -42,7 +42,7 @@ namespace EasyData
     /// For example: "name of the company" or "payment method" 
     /// but not the "payment method internal id" which is stored in database.
     /// </remarks>
-    public class EntityAttr : IComparable<EntityAttr>
+    public class MetaEntityAttr : IComparable<MetaEntityAttr>
     {
         /// <summary>
         /// Gets or sets the ID.
@@ -88,7 +88,7 @@ namespace EasyData
         protected string expr = "";
 
         internal string _lookupAttrId = null;
-        private EntityAttr _lookupAttr = null;
+        private MetaEntityAttr _lookupAttr = null;
 
         /// <summary>
         /// Gets ot sets a value indicating wether Attribute is primary a key
@@ -98,7 +98,7 @@ namespace EasyData
         /// <summary>
         /// Gets the lookup attribute.
         /// </summary>
-        public EntityAttr LookupAttr
+        public MetaEntityAttr LookupAttr
         {
             get {
                 if (_lookupAttr == null)
@@ -127,7 +127,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual DataModel Model
+        public virtual MetaData Model
         {
             get { return Entity?.Model; }
         }
@@ -143,16 +143,18 @@ namespace EasyData
         /// </exception>
         protected void CheckModel()
         {
-            if (Entity == null)
-            {
-                throw new DataModel.Error("Entity is not specified for attribute: " + this.ID);
+            if (Entity == null) {
+                throw new MetaDataException("Entity is not specified for attribute: " + this.ID);
             }
 
-            if (Model == null)
-            {
-                Entity ent = Entity;
-                while (ent.Parent != null) ent = ent.Parent;
-                throw new DataModel.Error(string.Format("Model is not specified for entity: {0}, root: {1}", ent.Name, ent.IsRoot.ToString()));
+            if (Model == null) {
+                MetaEntity ent = Entity;
+
+                while (ent.Parent != null) {
+                    ent = ent.Parent;
+                }
+
+                throw new MetaDataException(string.Format("Model is not specified for entity: {0}, root: {1}", ent.Name, ent.IsRoot.ToString()));
             }
         }
 
@@ -161,7 +163,7 @@ namespace EasyData
         /// Gets or sets the entity.
         /// </summary>
         /// <value>The entity.</value>
-        public Entity Entity { get; internal set; }
+        public MetaEntity Entity { get; internal set; }
 
 
         /// <summary>
@@ -181,8 +183,7 @@ namespace EasyData
         {
             get { return _isAggregate; }
             set {
-                if (IsVirtual)
-                {
+                if (IsVirtual) {
                     _isAggregate = value;
                 }
             }
@@ -198,48 +199,11 @@ namespace EasyData
         {
             get { return _hasSubQuery; }
             set {
-                if (IsVirtual)
-                {
+                if (IsVirtual) {
                     _hasSubQuery = value;
                 }
             }
         }
-
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the attribute can be used in query conditions.
-        /// </summary>
-        /// <value>
-        /// 	<see langword="true"/> if attribute can be used in query conditions; otherwise, <see langword="false"/>.
-        /// </value>
-        public bool UseInConditions { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the attribute can be used in result columns (SELECT clause).
-        /// </summary>
-        /// <value>
-        /// 	<see langword="true"/> if attribute can be used in result columns; otherwise, <see langword="false"/>.
-        /// </value>
-        public bool UseInResult { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the attribute can be used in sorting.
-        /// </summary>
-        /// <value><c>true</c> if attribute can be used in sorting; otherwise, <c>false</c>.</value>
-        public bool UseInSorting { get; set; } = true;
-
-
-        /// <summary>
-        /// Hides this entity attribute. 
-        /// It means that this function just sets all UseInResult, UseInConditions and UseInSorting properties to <c>false</c>.
-        /// </summary>
-        public void Hide()
-        {
-            UseInResult = false;
-            UseInConditions = false;
-            UseInSorting = false;
-        }
-
 
         /// <summary>
         /// Gets or sets the entityAttr attribute caption.
@@ -267,7 +231,7 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="Attribute"/> class.
         /// </summary>
-        public EntityAttr() : this(null, false)
+        public MetaEntityAttr() : this(null, false)
         {
         }
 
@@ -276,7 +240,7 @@ namespace EasyData
         /// </summary>
         /// <param name="parentEntity">The parent entity.</param>
         /// <param name="isVirtual">if set to <c>true</c> the created attribute will be virtual (calculated).</param>
-        public EntityAttr(Entity parentEntity, bool isVirtual = false)
+        public MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false)
         {
             Entity = parentEntity;
             IsVirtual = isVirtual;
@@ -304,11 +268,9 @@ namespace EasyData
         {
             get { return expr; }
             set {
-                if (expr != value)
-                {
+                if (expr != value) {
                     expr = value;
-                    if (IsVirtual)
-                    {
+                    if (IsVirtual) {
                         ProcessVirtualExpr();
                     }
                 }
@@ -320,7 +282,7 @@ namespace EasyData
         /// </summary>
         protected virtual void ProcessVirtualExpr()
         {
-            ExtractParams();
+
         }
 
         /// <summary>
@@ -372,24 +334,6 @@ namespace EasyData
             get { return _isGhost; }
         }
 
-
-        /// <summary>
-        /// Determines whether this attribute has parameters in its expression.
-        /// </summary>
-        /// <returns><c>true</c> if this attribute has parameters; otherwise, <c>false</c>.</returns>
-        public virtual bool HasParams()
-        {
-            return Params.Count > 0;
-        }
-
-        /// <summary>
-        /// Parse attribute's expression and extract all parameters (like @Param1) used there.
-        /// </summary>
-        protected virtual void ExtractParams()
-        {
-            Params.ExtractFromExpr(this.Expr);
-        }
-
         /// <summary>
         /// Compares attribute's expression with the one passed in the parameter.
         /// </summary>
@@ -404,7 +348,7 @@ namespace EasyData
         /// Copies all attribute's properties from another entity attribute
         /// </summary>
         /// <param name="attr">An EntityAttr object to copy from.</param>
-        public virtual void CopyFrom(EntityAttr attr)
+        public virtual void CopyFrom(MetaEntityAttr attr)
         {
             Caption = attr.Caption;
             CustomFunc = attr.CustomFunc;
@@ -415,9 +359,6 @@ namespace EasyData
             IsVirtual = attr.IsVirtual;
             _lookupAttrId = attr._lookupAttrId;
             Size = attr.Size;
-            UseInConditions = attr.UseInConditions;
-            UseInResult = attr.UseInResult;
-            UseInSorting = attr.UseInSorting;
             UserData = attr.UserData;
         }
 
@@ -429,29 +370,21 @@ namespace EasyData
         /// <param name="attr">The entity attribute.</param>
         /// <returns>An integer that indicates whether the current instance precedes, 
         /// follows, or occurs in the same position in the sort order as the other object</returns>
-        int IComparable<EntityAttr>.CompareTo(EntityAttr attr)
+        int IComparable<MetaEntityAttr>.CompareTo(MetaEntityAttr attr)
         {
-            return this.Caption.CompareToCI(attr.Caption);
+            return string.Compare(Caption, attr.Caption, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        /// <summary>
-        /// Adds all query parameters used in this attribute to the list passed via paramList.
-        /// </summary>
-        /// <param name="paramList">The list where to add the attribute's parameters to.</param>
-        public virtual void AddParamsTo(QueryParamList paramList)
-        {
-        }
 
         /// <summary>
         /// Writes attribute's content to JSON (asynchronous way).
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="rwOptions">The model's read/write options.</param>
         /// <returns>Task.</returns>
-        internal async Task WriteToJsonAsync(JsonWriter writer, MetaDataReadWriterOptions rwOptions)
+        protected internal async Task WriteToJsonAsync(JsonWriter writer)
         {
             await writer.WriteStartObjectAsync().ConfigureAwait(false);
-            await WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await WritePropertiesToJsonAsync(writer).ConfigureAwait(false);
             await writer.WriteEndObjectAsync().ConfigureAwait(false);
         }
 
@@ -461,7 +394,7 @@ namespace EasyData
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Some read/write options</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, MetaDataReadWriterOptions rwOptions)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer)
         {
             await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
             await writer.WriteValueAsync(ID).ConfigureAwait(false);
@@ -472,14 +405,12 @@ namespace EasyData
             await writer.WritePropertyNameAsync("dtype").ConfigureAwait(false);
             await writer.WriteValueAsync(DataType.ToInt()).ConfigureAwait(false);
 
-            if (IsVirtual)
-            {
+            if (IsVirtual) {
                 await writer.WritePropertyNameAsync("virtual").ConfigureAwait(false);
                 await writer.WriteValueAsync(IsVirtual).ConfigureAwait(false);
             }
 
-            if (HasSubQuery)
-            {
+            if (HasSubQuery) {
                 await writer.WritePropertyNameAsync("subq").ConfigureAwait(false);
                 await writer.WriteValueAsync(HasSubQuery).ConfigureAwait(false);
             }
@@ -487,75 +418,25 @@ namespace EasyData
             await writer.WritePropertyNameAsync("size").ConfigureAwait(false);
             await writer.WriteValueAsync(Size).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("uir").ConfigureAwait(false);
-            await writer.WriteValueAsync(UseInResult).ConfigureAwait(false);
-
-            await writer.WritePropertyNameAsync("uic").ConfigureAwait(false);
-            await writer.WriteValueAsync(UseInConditions).ConfigureAwait(false);
-
-            await writer.WritePropertyNameAsync("uis").ConfigureAwait(false);
-            await writer.WriteValueAsync(UseInSorting).ConfigureAwait(false);
-
             await writer.WritePropertyNameAsync("ipk").ConfigureAwait(false);
             await writer.WriteValueAsync(IsPrimaryKey).ConfigureAwait(false);
 
-            if (this.LookupAttr != null)
-            {
+            if (this.LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
             }
 
-            if (_defaultOperator != null)
-            {
-                await writer.WritePropertyNameAsync("dfop").ConfigureAwait(false);
-                await writer.WriteValueAsync(_defaultOperator.ID).ConfigureAwait(false);
-            }
-
-            //we save only as custom operator group currently
-            await writer.WritePropertyNameAsync("opg").ConfigureAwait(false);
-            await writer.WriteValueAsync(OperatorGroupKind.Custom).ConfigureAwait(false);
-
             await writer.WritePropertyNameAsync("ops").ConfigureAwait(false);
 
             //saving the list of operators' IDs
-            await writer.WriteStartArrayAsync().ConfigureAwait(false);
-            foreach (var op in this.Operations)
-            {
-                await writer.WriteValueAsync(op.ID).ConfigureAwait(false);
-            }
-            await writer.WriteEndArrayAsync().ConfigureAwait(false);
-
-            if (this.Params.Count > 0)
-            {
-                await writer.WritePropertyNameAsync("prms").ConfigureAwait(false);
-                await Params.WriteToJsonAsync(writer).ConfigureAwait(false);
-            }
-
-            if (this.DefaultEditor != null)
-            {
-                await writer.WritePropertyNameAsync("edtr").ConfigureAwait(false);
-                await writer.WriteValueAsync(DefaultEditor.Id).ConfigureAwait(false);
-            }
-
-            if (!string.IsNullOrEmpty(this.Description))
-            {
+            if (!string.IsNullOrEmpty(this.Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
 
-            if (UserData != null)
-            {
+            if (UserData != null) {
                 await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
                 await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
-            }
-
-            if ((rwOptions & MetaDataReadWriterOptions.DbInfo) > 0)
-            {
-                await writer.WritePropertyNameAsync("expr").ConfigureAwait(false);
-                await writer.WriteValueAsync(Expr).ConfigureAwait(false);
-
-                await writer.WritePropertyNameAsync("cfunc").ConfigureAwait(false);
-                await writer.WriteValueAsync(CustomFunc).ConfigureAwait(false);
             }
         }
 
@@ -568,17 +449,14 @@ namespace EasyData
         /// </exception>
         public async Task ReadFromJsonAsync(JsonReader reader)
         {
-            if (reader.TokenType != JsonToken.StartObject)
-            {
+            if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
             while ((await reader.ReadAsync().ConfigureAwait(false))
-                && reader.TokenType != JsonToken.EndObject)
-            {
+                && reader.TokenType != JsonToken.EndObject) {
 
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
+                if (reader.TokenType != JsonToken.PropertyName) {
                     throw new BadJsonFormatException(reader.Path);
                 }
 
@@ -616,47 +494,14 @@ namespace EasyData
                 case "size":
                     Size = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
                     break;
-                case "uir":
-                    UseInResult = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
-                    break;
-                case "uic":
-                    UseInConditions = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
-                    break;
-                case "uis":
-                    UseInSorting = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
-                    break;
                 case "ipk":
                     IsPrimaryKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "lattr":
                     _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
-                case "dfop":
-                    _defaultOperator = Model.Operators.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
-                    break;
                 case "opg":
                     await reader.SkipAsync().ConfigureAwait(false);
-                    break;
-                case "ops":
-                    await reader.ReadAsync().ConfigureAwait(false); //reading array start
-
-                    while ((await reader.ReadAsync().ConfigureAwait(false))
-                        && reader.TokenType != JsonToken.EndArray)
-                    {
-                        var opid = reader.Value.ToString();
-                        var op = Model.Operators.FindByID(opid);
-                        if (op != null)
-                        {
-                            Operations.Add(op);
-                        }
-                    }
-                    break;
-                case "prms":
-                    await reader.ReadAsync().ConfigureAwait(false); //reading array start
-                    await Params.ReadFromJsonAsync(reader).ConfigureAwait(false);
-                    break;
-                case "edtr":
-                    DefaultEditor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
                     break;
                 case "desc":
                     Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
@@ -680,14 +525,14 @@ namespace EasyData
     /// <summary>
     /// Represents list of entity attributes
     /// </summary>
-    public class EntityAttrList : Collection<EntityAttr>
+    public class EntityAttrList : Collection<MetaEntityAttr>
     {
         /// <summary>
         /// Orders list of attributes by their captions.
         /// </summary>
         public void SortByCaption()
         {
-            List<EntityAttr> items = (List<EntityAttr>)Items;
+            List<MetaEntityAttr> items = (List<MetaEntityAttr>)Items;
 
             items.Sort();
         }
@@ -697,7 +542,7 @@ namespace EasyData
         /// </summary>
         public void Reorder()
         {
-            List<EntityAttr> items = (List<EntityAttr>)Items;
+            List<MetaEntityAttr> items = (List<MetaEntityAttr>)Items;
 
             items.Sort((item1, item2) => item1.Index - item2.Index);
         }
@@ -708,13 +553,13 @@ namespace EasyData
     /// </summary>
     public class EntityAttrStore : EntityAttrList
     {
-        private Entity _entity = null;
+        private MetaEntity _entity = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EntityAttrStore"/> class.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        public EntityAttrStore(Entity entity)
+        public EntityAttrStore(MetaEntity entity)
             : base()
         {
             this._entity = entity;
@@ -722,7 +567,7 @@ namespace EasyData
 
         /// <summary>Gets the DataModel object this entity attribute belongs to</summary>
         /// <value>The model.</value>
-        public DataModel Model
+        public MetaData Model
         {
             get { return _entity != null ? _entity.Model : null; }
         }
@@ -737,7 +582,7 @@ namespace EasyData
         /// -or-
         /// <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
         /// </exception>
-        protected override void InsertItem(int index, EntityAttr item)
+        protected override void InsertItem(int index, MetaEntityAttr item)
         {
             base.InsertItem(index, item);
             OnEntityAttrInsertion(item, index);
@@ -748,21 +593,19 @@ namespace EasyData
         /// </summary>
         /// <param name="entityAttr">The attribute.</param>
         /// <param name="index">The index.</param>
-        protected virtual void OnEntityAttrInsertion(EntityAttr entityAttr, int index)
+        protected virtual void OnEntityAttrInsertion(MetaEntityAttr entityAttr, int index)
         {
             entityAttr.Entity = _entity;
-            if (_entity.Model != null)
-            {
+            if (_entity.Model != null) {
                 entityAttr.OnModelAssignment();
             }
         }
 
-        protected internal async Task WriteToJsonAsync(JsonWriter writer, MetaDataReadWriterOptions rwOptions)
+        protected internal async Task WriteToJsonAsync(JsonWriter writer)
         {
             await writer.WriteStartArrayAsync().ConfigureAwait(false);
-            foreach (var attr in this)
-            {
-                await attr.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            foreach (var attr in this) {
+                await attr.WriteToJsonAsync(writer).ConfigureAwait(false);
             }
             await writer.WriteEndArrayAsync().ConfigureAwait(false);
         }
@@ -770,14 +613,12 @@ namespace EasyData
 
         protected internal async Task ReadFromJsonAsync(JsonReader reader)
         {
-            if (reader.TokenType != JsonToken.StartArray)
-            {
+            if (reader.TokenType != JsonToken.StartArray) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
             while ((await reader.ReadAsync().ConfigureAwait(false))
-                && reader.TokenType != JsonToken.EndArray)
-            {
+                && reader.TokenType != JsonToken.EndArray) {
 
                 var attr = Model.CreateEntityAttr(this._entity);
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
