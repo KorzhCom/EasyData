@@ -9,26 +9,17 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
-    /// <summary>
-    /// Represents different options used during data model loading or saving 
-    /// </summary>
-    [Flags]
-    public enum MetaDataReadWriterOptions
+    public static class MetaDataReadWriteOptions
     {
-        /// <summary>The entities and their attributes will be saved/loaded</summary>
-        Entities = 8,
+        public static readonly BitOptions Defaults = Entities | Description | CustomInfo;
 
-        /// <summary>The datas's description will be saved/loaded</summary>
-        Description = 32,
+        public const ulong Entities = 8;
 
-        ///<summary>Whether we need to save or load the data's custom info </summary>
-        CustomInfo = 512,
+        public const ulong Description = 32;
 
-        /// <summary>If this option is set - then the previous model will not be cleared before the loading of the new one</summary>
-        KeepCurrent = 4096,
+        public const ulong CustomInfo = 512;
 
-        /// <summary>All meta data parts will be loaded/saved </summary>
-        All = 4095
+        public const ulong KeepCurrent = 4096;
     }
 
     public class MetaData
@@ -425,15 +416,17 @@ namespace EasyData
 
         }
 
+        protected readonly BitOptions DefaultRWOptions = MetaDataReadWriteOptions.Defaults;
+
         #region JSON Serialization
 
         /// <summary>
         /// Saves the data model to a file in JSON format.
         /// </summary>
         /// <param name="filePath">The path to the result file</param>
-        public virtual void SaveToJsonFile(string filePath)
+        public void SaveToJsonFile(string filePath)
         {
-            SaveToJsonFile(filePath, MetaDataReadWriterOptions.All);
+            SaveToJsonFile(filePath, DefaultRWOptions);
         }
 
 
@@ -443,7 +436,7 @@ namespace EasyData
         /// <param name="filePath">The path to the result file</param>
         /// <param name="options">Different read/write options</param>
         /// <returns></returns>
-        public void SaveToJsonFile(string filePath, MetaDataReadWriterOptions options)
+        public void SaveToJsonFile(string filePath, BitOptions options)
         {
             SaveToJsonFileAsync(filePath, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -456,7 +449,7 @@ namespace EasyData
         /// <returns></returns>
         public async Task SaveToJsonFileAsync(string filePath)
         {
-            await SaveToJsonFileAsync(filePath, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await SaveToJsonFileAsync(filePath, DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -465,7 +458,7 @@ namespace EasyData
         /// <param name="filePath">The path to the result file</param>
         /// <param name="options">Different read/write options</param>
         /// <returns>Task</returns>
-        public async Task SaveToJsonFileAsync(string filePath, MetaDataReadWriterOptions options)
+        public async Task SaveToJsonFileAsync(string filePath, BitOptions options)
         {
             using (var streamWriter = new StreamWriter(filePath))
             {
@@ -481,9 +474,9 @@ namespace EasyData
         /// Saves the data model to a stream in JSON format.
         /// </summary>
         /// <param name="stream">The stream to save the model to</param>
-        public virtual void SaveToJsonStream(Stream stream)
+        public void SaveToJsonStream(Stream stream)
         {
-            SaveToJsonStream(stream, MetaDataReadWriterOptions.All);
+            SaveToJsonStream(stream, DefaultRWOptions);
         }
 
         /// <summary>
@@ -492,7 +485,7 @@ namespace EasyData
         /// <param name="stream">The stream to save the model to</param>
         /// <param name="options">Different read/write options</param>
         /// <returns></returns>
-        public void SaveToJsonStream(Stream stream, MetaDataReadWriterOptions options)
+        public void SaveToJsonStream(Stream stream, BitOptions options)
         {
             SaveToJsonStreamAsync(stream, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -505,7 +498,7 @@ namespace EasyData
         /// <returns></returns>
         public async Task SaveToJsonStreamAsync(Stream stream)
         {
-            await SaveToJsonStreamAsync(stream, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await SaveToJsonStreamAsync(stream, DefaultRWOptions).ConfigureAwait(false);
         }
 
 
@@ -515,7 +508,7 @@ namespace EasyData
         /// <param name="stream">The stream to save the model to</param>
         /// <param name="options">Different read/write options</param>
         /// <returns></returns>
-        public async Task SaveToJsonStreamAsync(Stream stream, MetaDataReadWriterOptions options = MetaDataReadWriterOptions.All)
+        public async Task SaveToJsonStreamAsync(Stream stream, BitOptions options)
         {
             using (var streamWriter = new StreamWriter(stream)) {
                 using (JsonWriter jsonWriter = new JsonTextWriter(streamWriter)) {
@@ -528,9 +521,9 @@ namespace EasyData
         /// Saves the model to a string in JSON format.
         /// </summary>
         /// <returns></returns>
-        public virtual string SaveToJsonString()
+        public string SaveToJsonString()
         {
-            return SaveToJsonString(MetaDataReadWriterOptions.All);
+            return SaveToJsonString(DefaultRWOptions);
         }
 
         /// <summary>
@@ -538,7 +531,7 @@ namespace EasyData
         /// </summary>
         /// <param name="options">Different read/write options.</param>
         /// <returns>System.String</returns>
-        public string SaveToJsonString(MetaDataReadWriterOptions options = MetaDataReadWriterOptions.All)
+        public string SaveToJsonString(BitOptions options)
         {
             return SaveToJsonStringAsync(options).ConfigureAwait(false)
                     .GetAwaiter().GetResult();
@@ -548,9 +541,9 @@ namespace EasyData
         /// Saves the model to a string in JSON format (asynchronous way).
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<string> SaveToJsonStringAsync()
+        public async Task<string> SaveToJsonStringAsync()
         {
-            return await SaveToJsonStringAsync(MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            return await SaveToJsonStringAsync(DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -558,7 +551,7 @@ namespace EasyData
         /// </summary>
         /// <param name="options">Different read/write options.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> SaveToJsonStringAsync(MetaDataReadWriterOptions options)
+        public async Task<string> SaveToJsonStringAsync(BitOptions options)
         {
             var result = new StringBuilder(1000);
             using (var textWriter = new StringWriter(result)) {
@@ -573,9 +566,9 @@ namespace EasyData
         /// Loads data model from JSON stream.
         /// </summary>
         /// <param name="stream">A Stream object which contains data model definition.</param>
-        public virtual void LoadFromJsonStream(Stream stream)
+        public void LoadFromJsonStream(Stream stream)
         {
-            LoadFromJsonStream(stream, MetaDataReadWriterOptions.All);
+            LoadFromJsonStream(stream, DefaultRWOptions);
         }
 
         /// <summary>
@@ -583,7 +576,7 @@ namespace EasyData
         /// </summary>
         /// <param name="stream">A Stream object which contains data model definition.</param>
         /// <param name="options">Different read/write options. See <see cref="MetaDataReadWriterOptions"/> for details.</param>
-        public void LoadFromJsonStream(Stream stream, MetaDataReadWriterOptions options)
+        public void LoadFromJsonStream(Stream stream, BitOptions options)
         {
             LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -594,9 +587,9 @@ namespace EasyData
         /// </summary>
         /// <param name="stream">>A Stream object which contains data model definition.</param>
         /// <returns></returns>
-        public virtual async Task LoadFromJsonStreamAsync(Stream stream)
+        public async Task LoadFromJsonStreamAsync(Stream stream)
         {
-            await LoadFromJsonStreamAsync(stream, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await LoadFromJsonStreamAsync(stream, DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -605,7 +598,7 @@ namespace EasyData
         /// <param name="stream">A Stream object which contains data model definition.</param>
         /// <param name="options">Different read/write options. See <see cref="MetaDataReadWriterOptions"/> for details.</param>
         /// <return>Task</return>
-        public async Task LoadFromJsonStreamAsync(Stream stream, MetaDataReadWriterOptions options)
+        public async Task LoadFromJsonStreamAsync(Stream stream, BitOptions options)
         {
             using (var streamReader = new StreamReader(stream)) {
                 using (var jsonReader = new JsonTextReader(streamReader)) {
@@ -618,9 +611,9 @@ namespace EasyData
         ///  Saves the model to a JSON file.
         /// </summary>
         /// <param name="filePath"></param>
-        public virtual void LoadFromJsonFile(string filePath)
+        public void LoadFromJsonFile(string filePath)
         {
-            LoadFromJsonFile(filePath, MetaDataReadWriterOptions.All);
+            LoadFromJsonFile(filePath, DefaultRWOptions);
         }
 
         /// <summary>
@@ -629,7 +622,7 @@ namespace EasyData
         /// <param name="filePath"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public void LoadFromJsonFile(string filePath, MetaDataReadWriterOptions options)
+        public void LoadFromJsonFile(string filePath, BitOptions options)
         {
             LoadFromJsonFileAsync(filePath, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -637,7 +630,7 @@ namespace EasyData
 
         public async Task LoadFromJsonFileAsync(string filePath)
         {
-            await LoadFromJsonFileAsync(filePath, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await LoadFromJsonFileAsync(filePath, DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -646,7 +639,7 @@ namespace EasyData
         /// <param name="filePath"></param>
         /// <param name="options"></param>
         /// <returns>Task.</returns>
-        public async Task LoadFromJsonFileAsync(string filePath, MetaDataReadWriterOptions options)
+        public async Task LoadFromJsonFileAsync(string filePath, BitOptions options)
         {
             FilePath = filePath;
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
@@ -658,9 +651,9 @@ namespace EasyData
         /// Loads the model from a string in JSON format.
         /// </summary>
         /// <param name="json">A string in JSON format.</param>
-        public virtual void LoadFromJsonString(string json)
+        public void LoadFromJsonString(string json)
         {
-            LoadFromJsonString(json, MetaDataReadWriterOptions.All);
+            LoadFromJsonString(json, DefaultRWOptions);
         }
 
         /// <summary>
@@ -668,7 +661,7 @@ namespace EasyData
         /// </summary>
         /// <param name="json">A string in JSON format.</param>
         /// <param name="options">Different read/write options.</param>
-        public void LoadFromJsonString(string json, MetaDataReadWriterOptions options)
+        public void LoadFromJsonString(string json, BitOptions options)
         {
             LoadFromJsonStringAsync(json, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -679,9 +672,9 @@ namespace EasyData
         /// </summary>
         /// <param name="json">>A string in JSON format.</param>
         /// <returns></returns>
-        public virtual async Task LoadFromJsonStringAsync(string json)
+        public async Task LoadFromJsonStringAsync(string json)
         {
-            await LoadFromJsonStringAsync(json, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await LoadFromJsonStringAsync(json, DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -690,7 +683,7 @@ namespace EasyData
         /// <param name="json">A string in JSON format.</param>
         /// <param name="options">Different read/write options.</param>
         /// <returns>Task.</returns>
-        public async Task LoadFromJsonStringAsync(string json, MetaDataReadWriterOptions options)
+        public async Task LoadFromJsonStringAsync(string json, BitOptions options)
         {
             using (var textReader = new StringReader(json)) {
                 using (var jsonReader = new JsonTextReader(textReader)) {
@@ -703,9 +696,9 @@ namespace EasyData
         /// Writes the content of the data model to JSON using JsonWriter.
         /// </summary>
         /// <param name="writer">>An instance of JsonWriter class.</param>
-        public virtual void WriteToJson(JsonWriter writer)
+        public void WriteToJson(JsonWriter writer)
         {
-            WriteToJson(writer, MetaDataReadWriterOptions.All);
+            WriteToJson(writer, DefaultRWOptions);
         }
 
         /// <summary>
@@ -713,7 +706,7 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">An instance of JsonWriter class.</param>
         /// <param name="options">Read-write options</param>
-        public void WriteToJson(JsonWriter writer, MetaDataReadWriterOptions options)
+        public void WriteToJson(JsonWriter writer, BitOptions options)
         {
             WriteToJsonAsync(writer, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -726,7 +719,7 @@ namespace EasyData
         /// <returns>Task.</returns>
         public async Task WriteToJsonAsync(JsonWriter writer)
         {
-            await WriteToJsonAsync(writer, MetaDataReadWriterOptions.All).ConfigureAwait(false);
+            await WriteToJsonAsync(writer, DefaultRWOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -735,7 +728,7 @@ namespace EasyData
         /// <param name="writer">An instance of JsonWriter class.</param>
         /// <param name="options">Read-write options</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, MetaDataReadWriterOptions options)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WriteStartObjectAsync().ConfigureAwait(false); //root DataModel object
             await WriteModelPropsToJsonAsync(writer, options).ConfigureAwait(false);
@@ -743,7 +736,7 @@ namespace EasyData
             await writer.WriteEndObjectAsync().ConfigureAwait(false); //close DataModel
         }
 
-        private async Task WriteModelPropsToJsonAsync(JsonWriter writer, MetaDataReadWriterOptions options)
+        private async Task WriteModelPropsToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WritePropertyNameAsync("fver").ConfigureAwait(false);
             await writer.WriteValueAsync(FormatVersionJson).ConfigureAwait(false);
@@ -759,16 +752,15 @@ namespace EasyData
             await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
             await writer.WriteValueAsync(Name).ConfigureAwait(false);
 
-            if ((options & MetaDataReadWriterOptions.Description) > 0) {
+            if (options.HasOptions(MetaDataReadWriteOptions.Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
 
-
-            if ((options & MetaDataReadWriterOptions.CustomInfo) > 0) {
+            if (options.HasOptions(MetaDataReadWriteOptions.CustomInfo)) {
                 await writer.WritePropertyNameAsync("cstinf").ConfigureAwait(false);
                 await writer.WriteValueAsync(CustomInfo.ToString()).ConfigureAwait(false);
-            }
+            }          
         }
 
         /// <summary>
@@ -777,10 +769,9 @@ namespace EasyData
         /// <param name="writer">The writer.</param>
         /// <param name="rwOptions">The read/write options.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WriteContentToJsonAsync(JsonWriter writer,
-                                            MetaDataReadWriterOptions rwOptions)
+        protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions)
         {
-            if ((rwOptions & MetaDataReadWriterOptions.Entities) > 0) {
+            if (rwOptions.HasOptions(MetaDataReadWriteOptions.Entities)) {
                 await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
                 await EntityRoot.WriteToJsonAsync(writer).ConfigureAwait(false);
             }
@@ -792,7 +783,7 @@ namespace EasyData
         /// <param name="reader">The reader</param>
         /// <param name="options">Some read/write options.</param>
         /// <exception cref="BadJsonFormatException"></exception>
-        public void ReadFromJson(JsonReader reader, MetaDataReadWriterOptions options)
+        public void ReadFromJson(JsonReader reader, BitOptions options)
         {
             ReadFromJsonAsync(reader, options).ConfigureAwait(false)
                 .GetAwaiter().GetResult();
@@ -805,7 +796,7 @@ namespace EasyData
         /// <param name="options">Some read/write options.</param>
         /// <returns>Task.</returns>
         /// <exception cref="BadJsonFormatException"></exception>
-        public async Task ReadFromJsonAsync(JsonReader reader, MetaDataReadWriterOptions options)
+        public async Task ReadFromJsonAsync(JsonReader reader, BitOptions options)
         {
             if (!await reader.ReadAsync().ConfigureAwait(false)
                 || reader.TokenType != JsonToken.StartObject)
@@ -813,10 +804,10 @@ namespace EasyData
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            if ((options & MetaDataReadWriterOptions.KeepCurrent) == 0) {
-                this.Clear();
+            if (!options.HasOptions(MetaDataReadWriteOptions.KeepCurrent)) {
+                Clear();
             }
-
+           
             while (await reader.ReadAsync()) {
                 if (reader.TokenType == JsonToken.PropertyName) {
                     string propName = reader.Value.ToString();
