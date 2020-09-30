@@ -37,7 +37,7 @@ namespace EasyData
             return this;
         }
 
-        public bool HasOptions(BitOptions op)
+        public bool Contains(BitOptions op)
         {
             return (ulong)(this & op) > 0;
         }

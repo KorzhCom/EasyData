@@ -9,10 +9,19 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
+    /// <summary>
+    /// Represents different options used during meta data loading or saving 
+    /// </summary>
     public static class MetaDataReadWriteOptions
     {
+        /// <summary>
+        /// Default options
+        /// </summary>
         public static readonly BitOptions Defaults = Entities | Description | CustomInfo;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public const ulong Entities = 8;
 
         public const ulong Description = 32;
@@ -53,7 +62,7 @@ namespace EasyData
         {
             ID = Guid.NewGuid().ToString();
 
-            entityRoot = CreateRootEntity();
+            EntityRoot = CreateRootEntity();
 
             //null entity
             nullEntity = this.CreateRootEntity();
@@ -62,55 +71,25 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Description of the model
-        /// </summary>
-        protected string description;
-        /// <summary>
         /// Gets or sets the description.
         /// </summary>
         /// <value>The description.</value>
-        public string Description
-        {
-            get { return description; }
-            set { description = value; }
-        }
+        public string Description { get; set; }
 
-
-        /// <summary>
-        /// User-defined name of the model
-        /// </summary>
-        protected string _modelName;
         /// <summary>
         /// Gets or sets the user-defined name of the model.
         /// </summary>
         /// <value>The name of the model.</value>
-        public string Name
-        {
-            get { return _modelName; }
-            set { _modelName = value; }
-        }
+        public string Name { get; set; }
 
 
         internal SynchronizationContext MainSyncContext { get; set; } = SynchronizationContext.Current;
 
         /// <summary>
-        /// File path for default query
-        /// </summary>
-        protected string defQueryFilePath = "";
-        /// <summary>
-        /// Gets or sets the file path for default (blank) query used with this data model.
-        /// </summary>
-        /// <value>The def query file path.</value>
-        public string DefQueryFilePath
-        {
-            get { return defQueryFilePath; }
-            set { defQueryFilePath = value; }
-        }
-
-        /// <summary>
         /// User-defined additional information about the model
         /// </summary>
         protected string customInfo = "";
+
         /// <summary>
         /// Gets or sets the custom information associated with data model.
         /// </summary>
@@ -191,18 +170,9 @@ namespace EasyData
         #region Entities and attributes
 
         /// <summary>
-        /// Main entity of the model
-        /// </summary>
-        protected MetaEntity entityRoot = null;
-
-
-        /// <summary>
         /// The root entity of data model entities.
         /// </summary>
-        public virtual MetaEntity EntityRoot
-        {
-            get { return entityRoot; }
-        }
+        public virtual MetaEntity EntityRoot { get; protected set; }
 
         /// <summary>
         /// Creates the root entity.
@@ -340,9 +310,8 @@ namespace EasyData
         /// <returns>Entity.</returns>
         public MetaEntity AddEntity(MetaEntity entity, string entityName)
         {
-            if (entity == null)
-            {
-                entity = this.EntityRoot;
+            if (entity == null) {
+                entity = EntityRoot;
             }
 
             var ent = CreateEntity(entity);
@@ -416,7 +385,7 @@ namespace EasyData
 
         }
 
-        protected readonly BitOptions DefaultRWOptions = MetaDataReadWriteOptions.Defaults;
+        protected BitOptions DefaultRWOptions = MetaDataReadWriteOptions.Defaults;
 
         #region JSON Serialization
 
@@ -460,10 +429,8 @@ namespace EasyData
         /// <returns>Task</returns>
         public async Task SaveToJsonFileAsync(string filePath, BitOptions options)
         {
-            using (var streamWriter = new StreamWriter(filePath))
-            {
-                using (var jsonWriter = new JsonTextWriter(streamWriter))
-                {
+            using (var streamWriter = new StreamWriter(filePath)) {
+                using (var jsonWriter = new JsonTextWriter(streamWriter)) {
                     jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
                     await WriteToJsonAsync(jsonWriter, options).ConfigureAwait(false);
                 }
@@ -752,12 +719,12 @@ namespace EasyData
             await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
             await writer.WriteValueAsync(Name).ConfigureAwait(false);
 
-            if (options.HasOptions(MetaDataReadWriteOptions.Description)) {
+            if (options.Contains(MetaDataReadWriteOptions.Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
 
-            if (options.HasOptions(MetaDataReadWriteOptions.CustomInfo)) {
+            if (options.Contains(MetaDataReadWriteOptions.CustomInfo)) {
                 await writer.WritePropertyNameAsync("cstinf").ConfigureAwait(false);
                 await writer.WriteValueAsync(CustomInfo.ToString()).ConfigureAwait(false);
             }          
@@ -771,7 +738,7 @@ namespace EasyData
         /// <returns>Task.</returns>
         protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions)
         {
-            if (rwOptions.HasOptions(MetaDataReadWriteOptions.Entities)) {
+            if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
                 await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
                 await EntityRoot.WriteToJsonAsync(writer).ConfigureAwait(false);
             }
@@ -804,7 +771,7 @@ namespace EasyData
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            if (!options.HasOptions(MetaDataReadWriteOptions.KeepCurrent)) {
+            if (!options.Contains(MetaDataReadWriteOptions.KeepCurrent)) {
                 Clear();
             }
            
@@ -846,13 +813,10 @@ namespace EasyData
                     ID = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "name":
-                    _modelName = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Name = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "desc":
                     Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
-                    break;
-                case "dqfp":
-                    defQueryFilePath = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "cstinf":
                     CustomInfo = await reader.ReadAsStringAsync().ConfigureAwait(false);

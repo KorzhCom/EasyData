@@ -189,22 +189,6 @@ namespace EasyData
             }
         }
 
-        private bool _hasSubQuery = false;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this attribute includes a sub-query in its expression.
-        /// </summary>
-        /// <value><c>true</c> if this attribute includes a sub-query in its expression; otherwise, <c>false</c>.</value>
-        public bool HasSubQuery
-        {
-            get { return _hasSubQuery; }
-            set {
-                if (IsVirtual) {
-                    _hasSubQuery = value;
-                }
-            }
-        }
-
         /// <summary>
         /// Gets or sets the entityAttr attribute caption.
         /// </summary>
@@ -308,15 +292,6 @@ namespace EasyData
             return Entity.GetFullName(".") + ':' + this.Expr;
         }
 
-
-        /// <summary>
-        /// Gets or sets the custom function.
-        /// </summary>
-        /// <value>
-        /// The custom function.
-        /// </value>
-        public string CustomFunc { get; set; }
-
         /// <summary>
         /// Gets or sets the user data object assosiated with attribute.
         /// </summary>
@@ -351,7 +326,6 @@ namespace EasyData
         public virtual void CopyFrom(MetaEntityAttr attr)
         {
             Caption = attr.Caption;
-            CustomFunc = attr.CustomFunc;
             DataType = attr.DataType;
             Description = attr.Description;
             Expr = attr.Expr;
@@ -408,11 +382,6 @@ namespace EasyData
             if (IsVirtual) {
                 await writer.WritePropertyNameAsync("virtual").ConfigureAwait(false);
                 await writer.WriteValueAsync(IsVirtual).ConfigureAwait(false);
-            }
-
-            if (HasSubQuery) {
-                await writer.WritePropertyNameAsync("subq").ConfigureAwait(false);
-                await writer.WriteValueAsync(HasSubQuery).ConfigureAwait(false);
             }
 
             await writer.WritePropertyNameAsync("size").ConfigureAwait(false);
@@ -488,9 +457,6 @@ namespace EasyData
                 case "virtual":
                     IsVirtual = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
-                case "subq":
-                    HasSubQuery = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
-                    break;
                 case "size":
                     Size = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
                     break;
@@ -511,9 +477,6 @@ namespace EasyData
                     break;
                 case "expr":
                     Expr = await reader.ReadAsStringAsync().ConfigureAwait(false);
-                    break;
-                case "cfunc":
-                    CustomFunc = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 default:
                     await reader.SkipAsync().ConfigureAwait(false);

@@ -28,12 +28,12 @@ namespace EasyData.Core.Test
         }
 
         [Fact]
-        public void HasOptionsTest()
+        public void Contains()
         {
             var options = (BitOptions)(MetaDataReadWriteOptions.Entities | MetaDataReadWriteOptions.Description);
 
-            options.HasOptions(MetaDataReadWriteOptions.Description).Should().BeTrue();
-            options.HasOptions(MetaDataReadWriteOptions.CustomInfo).Should().BeFalse();
+            options.Contains(MetaDataReadWriteOptions.Description).Should().BeTrue();
+            options.Contains(MetaDataReadWriteOptions.CustomInfo).Should().BeFalse();
         }
     }
 }
