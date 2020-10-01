@@ -17,11 +17,11 @@ namespace EasyData
         /// <summary>
         /// Default options
         /// </summary>
-        public static readonly BitOptions Defaults = Entities | Description | CustomInfo;
+        public static readonly BitOptions Defaults = Entities 
+            | Description 
+            | CustomInfo 
+            | KeepCurrent;
 
-        /// <summary>
-        /// 
-        /// </summary>
         public const ulong Entities = 8;
 
         public const ulong Description = 32;
@@ -83,7 +83,7 @@ namespace EasyData
         public string Name { get; set; }
 
 
-        internal SynchronizationContext MainSyncContext { get; set; } = SynchronizationContext.Current;
+        protected internal SynchronizationContext MainSyncContext { get; internal set; } = SynchronizationContext.Current;
 
         /// <summary>
         /// User-defined additional information about the model
@@ -137,9 +137,8 @@ namespace EasyData
         public MetaData Clone()
         {
             var model = Activator.CreateInstance(this.GetType()) as MetaData;
-            using (MemoryStream buffer = new MemoryStream(2000000))
-            {
-                this.SaveToJsonStream(buffer);
+            using (MemoryStream buffer = new MemoryStream(2000000)) {
+                SaveToJsonStream(buffer);
                 buffer.Position = 0;
                 model.LoadFromJsonStream(buffer);
             }
@@ -703,7 +702,13 @@ namespace EasyData
             await writer.WriteEndObjectAsync().ConfigureAwait(false); //close DataModel
         }
 
-        private async Task WriteModelPropsToJsonAsync(JsonWriter writer, BitOptions options)
+        /// <summary>
+        ///  Writes properties of the model to JSON (asynchronous way).
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        protected virtual async Task WriteModelPropsToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WritePropertyNameAsync("fver").ConfigureAwait(false);
             await writer.WriteValueAsync(FormatVersionJson).ConfigureAwait(false);
@@ -739,8 +744,11 @@ namespace EasyData
         protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions)
         {
             if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
+                await writer.WritePropertyNameAsync("maxAttrId").ConfigureAwait(false);
+                await writer.WriteValueAsync(_maxEntAttrID).ConfigureAwait(false);
+
                 await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
-                await EntityRoot.WriteToJsonAsync(writer).ConfigureAwait(false);
+                await EntityRoot.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
             }
         }
 

@@ -355,10 +355,11 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <returns>Task.</returns>
-        protected internal async Task WriteToJsonAsync(JsonWriter writer)
+        /// <param name="options">Some read/write options</param>
+        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WriteStartObjectAsync().ConfigureAwait(false);
-            await WritePropertiesToJsonAsync(writer).ConfigureAwait(false);
+            await WritePropertiesToJsonAsync(writer, options).ConfigureAwait(false);
             await writer.WriteEndObjectAsync().ConfigureAwait(false);
         }
 
@@ -366,9 +367,9 @@ namespace EasyData
         /// Writes attribute properties to JSON (asynchronous way).
         /// </summary>
         /// <param name="writer">The writer</param>
-        /// <param name="rwOptions">Some read/write options</param>
+        /// <param name="options">Some read/write options</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
             await writer.WriteValueAsync(ID).ConfigureAwait(false);
@@ -564,11 +565,11 @@ namespace EasyData
             }
         }
 
-        protected internal async Task WriteToJsonAsync(JsonWriter writer)
+        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WriteStartArrayAsync().ConfigureAwait(false);
             foreach (var attr in this) {
-                await attr.WriteToJsonAsync(writer).ConfigureAwait(false);
+                await attr.WriteToJsonAsync(writer, options).ConfigureAwait(false);
             }
             await writer.WriteEndArrayAsync().ConfigureAwait(false);
         }
@@ -585,7 +586,7 @@ namespace EasyData
 
                 var attr = Model.CreateEntityAttr(this._entity);
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
-                this.Add(attr);
+                Add(attr);
             }
         }
 

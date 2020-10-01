@@ -183,9 +183,9 @@ namespace EasyData
             switch (what)
             {
                 case EntityAttrProp.Caption:
-                    foreach (MetaEntityAttr entityAttr in Attributes)
-                    {
-                        if (entityAttr.Caption == val) return entityAttr;
+                    foreach (MetaEntityAttr entityAttr in Attributes) {
+                        if (entityAttr.Caption == val) 
+                            return entityAttr;
                     }
                     break;
                 case EntityAttrProp.Expression:
@@ -310,18 +310,19 @@ namespace EasyData
         /// Writes the content of the entity to JSON (asynchronious way)
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="options">Some read/write options.</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WriteStartObjectAsync().ConfigureAwait(false);
             await WritePropertiesToJsonAsync(writer).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("attrs").ConfigureAwait(false);
-            await Attributes.WriteToJsonAsync(writer).ConfigureAwait(false);
+            await Attributes.WriteToJsonAsync(writer, options).ConfigureAwait(false);
 
             if (SubEntities.Count > 0) {
                 await writer.WritePropertyNameAsync("ents").ConfigureAwait(false);
-                await SubEntities.WriteToJsonAsync(writer).ConfigureAwait(false);
+                await SubEntities.WriteToJsonAsync(writer, options).ConfigureAwait(false);
             }
 
             await writer.WriteEndObjectAsync().ConfigureAwait(false);
@@ -453,7 +454,7 @@ namespace EasyData
     /// <summary>
     /// Represents list of entities
     /// </summary>
-    public class EntityList : Collection<MetaEntity>
+    public class EntityList<T> : Collection<T> where T: MetaEntity
     {
 
         /// <summary>
@@ -481,7 +482,7 @@ namespace EasyData
     /// <summary>
     /// Represents storage of entities
     /// </summary>
-    public class EntityStore : EntityList
+    public class EntityStore<T> : EntityList<T> where T: MetaEntity
     {
         private MetaEntity _parentEntity = null;
 
@@ -514,7 +515,7 @@ namespace EasyData
         /// -or-
         /// <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
         /// </exception>
-        protected override void InsertItem(int index, MetaEntity item)
+        protected override void InsertItem(int index, T item)
         {
             if (item == this._parentEntity)
                 throw new ArgumentException("Can't add an entity to itself");
@@ -539,11 +540,11 @@ namespace EasyData
         /// <param name="writer">An instance of JsonWriter class.</param>
         /// <param name="rwOptions">Different read/write options.</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions)
         {
             await writer.WriteStartArrayAsync().ConfigureAwait(false);
             foreach (var ent in this) {
-                await ent.WriteToJsonAsync(writer).ConfigureAwait(false);
+                await ent.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
             }
             await writer.WriteEndArrayAsync().ConfigureAwait(false);
         }
@@ -562,7 +563,7 @@ namespace EasyData
             {
                 var ent = Model.CreateEntity(this._parentEntity);
                 await ent.ReadFromJsonAsync(reader).ConfigureAwait(false);
-                Add(ent);
+                Add((T)ent);
             }
         }
     }
