@@ -9,50 +9,29 @@ using Newtonsoft.Json;
 
 namespace EasyData
 {
-    /// <summary>
-    /// Represents attribute property used in FindAttribute methods
-    /// </summary>
-    public enum EntityAttrProp
+
+    public class AttributeData
     {
         /// <summary>
-        /// Attribute ID
+        /// Gets or sets the entity attribute identifier
         /// </summary>
-        ID,
+        public string Id { get; set; }
 
         /// <summary>
-        /// Attribute caption
+        /// Gets or sets the entity attripute caption
         /// </summary>
-        Caption,
+        public string Caption { get; set; }
 
         /// <summary>
-        /// Some expression (should be defined in descendants). Same as ID for <see cref="MetaEntity"/> class.
+        /// Gets or sets the entity attripute expression
         /// </summary>
-        Expression
-    }
+        public string Expr { get; set; }
 
-
-    /// <summary>
-    /// Represents one entity attribute of data model.
-    /// </summary>
-    /// <remarks>
-    /// Usually Attribute object represents some field in database table 
-    /// but it also can represent more complicated attributes.
-    /// For the user who works with query builder entity attribute - 
-    /// is something that he(she) understand well and can operate with.
-    /// For example: "name of the company" or "payment method" 
-    /// but not the "payment method internal id" which is stored in database.
-    /// </remarks>
-    public class MetaEntityAttr : IComparable<MetaEntityAttr>
-    {
         /// <summary>
-        /// Gets or sets the ID.
+        /// Gets ot sets a value indicating wether Attribute is primary a key
         /// </summary>
-        /// <value>ID string.</value>
-        /// <remarks>
-        /// ID represents internal entityAttr attribute id which is not shown to user 
-        /// but is used for storing data model in external files.
-        /// </remarks>
-        public string ID { get; set; }
+        public bool IsPrimaryKey { get; set; } = false;
+
 
         /// <summary>Gets or sets a value indicating whether this attribute is nullable.</summary>
         /// <value>
@@ -78,6 +57,112 @@ namespace EasyData
         public string ColumnName { get; set; }
 
         /// <summary>
+        /// Gets or sets the description of entity attribute.
+        /// </summary>
+        /// <value>The description of entity attribute.</value>
+        public string Description { get; set; } = "";
+
+
+        /// <summary>
+        /// Indicates if this attribute is a virtual (calculate) one.
+        /// </summary>
+        public bool IsVirtual { get; internal set; } = false;
+
+
+    }
+
+    public class AttributeNode<TEntityData, TAttributeData>: IComparable<AttributeNode<TEntityData, TAttributeData>>
+        where TEntityData: EntityData
+        where TAttributeData : AttributeData
+    {
+
+        public TAttributeData Data { get; set; }
+
+        public string ID
+        {
+            get => Data?.Id;
+            set => Data.Id = value;
+        }
+
+        public string Caption
+        {
+            get => Data?.Caption;
+            set => Data.Caption = value;
+        }
+
+        public string Description
+        {
+            get => Data?.Description;
+            set => Data.Description = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the attribute expression.
+        /// </summary>
+        /// <value>Text that represents attribute expression. 
+        /// Can be simply field name for EntAttrKind.Data attributes or 
+        /// more complicated SQL expression composed of several fields, operators and functions.</value>
+        public string Expr
+        {
+            get  =>  Data.Expr; 
+            set {
+                if (Data.Expr != value) {
+                    Data.Expr = value;
+                    if (IsVirtual) {
+                        ProcessVirtualExpr();
+                    }
+                }
+            }
+        }
+
+        public bool IsNullable
+        {
+            get => Data.IsNullable;
+            set => Data.IsNullable = value;
+        }
+
+        public string PropertyName
+        {
+            get => Data?.PropName;
+            set => Data.PropName = value;
+        }
+
+        public PropertyInfo PropertyInfo
+        {
+            get => Data?.PropInfo;
+            set => Data.PropInfo = value;
+        }
+
+        public string ColumnName
+        {
+            get => Data?.ColumnName;
+            set => Data.ColumnName = value;
+        }
+
+        public bool IsPrimaryKey
+        {
+            get => Data.IsPrimaryKey;
+            set => Data.IsPrimaryKey = value;
+        }
+
+        public bool IsVirtual
+        {
+            get => Data.IsVirtual;
+            set => Data.IsVirtual = value;
+        }
+
+        /// <summary>
+        /// Compares attribute's expression with the one passed in the parameter.
+        /// </summary>
+        /// <param name="expr">The expression definition to compare with</param>
+        /// <returns><c>true</c> if our attribute's expression is equal to the one passed in the parameter, <c>false</c> otherwise.</returns>
+        public virtual bool CompareWithExpr(string expr)
+        {
+            return string.Compare(Expr, expr, StringComparison.InvariantCultureIgnoreCase) == 0;
+        }
+
+
+        /// <summary>
         /// Gets or sets the index of EntityAttr
         /// </summary>
         public int Index { get; set; } = int.MaxValue;
@@ -88,17 +173,12 @@ namespace EasyData
         protected string expr = "";
 
         internal string _lookupAttrId = null;
-        private MetaEntityAttr _lookupAttr = null;
-
-        /// <summary>
-        /// Gets ot sets a value indicating wether Attribute is primary a key
-        /// </summary>
-        public bool IsPrimaryKey { get; set; } = false;
+        private AttributeNode<TEntityData, TAttributeData> _lookupAttr = null;
 
         /// <summary>
         /// Gets the lookup attribute.
         /// </summary>
-        public MetaEntityAttr LookupAttr
+        public AttributeNode<TEntityData, TAttributeData> LookupAttr
         {
             get {
                 if (_lookupAttr == null)
@@ -127,7 +207,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual MetaData Model
+        public MetaData<TEntityData, TAttributeData> Model
         {
             get { return Entity?.Model; }
         }
@@ -148,7 +228,7 @@ namespace EasyData
             }
 
             if (Model == null) {
-                MetaEntity ent = Entity;
+                var ent = Entity;
 
                 while (ent.Parent != null) {
                     ent = ent.Parent;
@@ -163,13 +243,13 @@ namespace EasyData
         /// Gets or sets the entity.
         /// </summary>
         /// <value>The entity.</value>
-        public MetaEntity Entity { get; internal set; }
+        public EntityNode<TEntityData, TAttributeData> Entity { get; internal set; }
 
 
         /// <summary>
         /// Called when model is assigned.
         /// </summary>
-        public virtual void OnModelAssignment() {}
+        public virtual void OnModelAssignment() { }
 
         private bool _isAggregate = false;
 
@@ -183,48 +263,26 @@ namespace EasyData
         {
             get { return _isAggregate; }
             set {
-                if (IsVirtual) {
+                if (IsVirtual)
+                {
                     _isAggregate = value;
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets the entityAttr attribute caption.
-        /// </summary>
-        /// <value>Caption text</value>
-        /// <remarks> Caption is the public representation of entityAttr.
-        /// It must have clear and understandable name. 
-        /// Example: "Company name" is a good caption 
-        /// but "CName" - is bad.
-        /// </remarks>
-        public string Caption { get; set; }
-
-        /// <summary>
-        /// Gets or sets the description of entity attribute.
-        /// </summary>
-        /// <value>The description of entity attribute.</value>
-        public string Description { get; set; } = "";
-
-
-        /// <summary>
-        /// Indicates if this attribute is a virtual (calculate) one.
-        /// </summary>
-        public bool IsVirtual { get; internal set; } = false;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Attribute"/> class.
         /// </summary>
-        public MetaEntityAttr() : this(null, false)
+        public AttributeNode() : this(null, false)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Korzh.EasyQuery.EntityAttr" /> class.
+        /// Initializes a new instance of the <see cref="T:AttributeNode" /> class.
         /// </summary>
         /// <param name="parentEntity">The parent entity.</param>
         /// <param name="isVirtual">if set to <c>true</c> the created attribute will be virtual (calculated).</param>
-        public MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false)
+        public AttributeNode(EntityNode<TEntityData, TAttributeData> parentEntity, bool isVirtual = false)
         {
             Entity = parentEntity;
             IsVirtual = isVirtual;
@@ -243,25 +301,6 @@ namespace EasyData
         public int Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the attribute expression.
-        /// </summary>
-        /// <value>Text that represents attribute expression. 
-        /// Can be simply field name for EntAttrKind.Data attributes or 
-        /// more complicated SQL expression composed of several fields, operators and functions.</value>
-        public string Expr
-        {
-            get { return expr; }
-            set {
-                if (expr != value) {
-                    expr = value;
-                    if (IsVirtual) {
-                        ProcessVirtualExpr();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Scans attribute's expression for new parameters, tables, etc
         /// </summary>
         protected virtual void ProcessVirtualExpr()
@@ -278,7 +317,7 @@ namespace EasyData
         public string FullExpr
         {
             get {
-                return IsVirtual ? this.Expr : GetDataAttrFullExpr();
+                return IsVirtual ? Expr : GetDataAttrFullExpr();
             }
         }
 
@@ -289,7 +328,7 @@ namespace EasyData
         /// <returns></returns>
         protected virtual string GetDataAttrFullExpr()
         {
-            return Entity.GetFullName(".") + ':' + this.Expr;
+            return Entity.GetFullName(".") + ':' + Expr;
         }
 
         /// <summary>
@@ -304,26 +343,14 @@ namespace EasyData
         /// Gets a value indicating whether this is a "ghost attribute" - an attribute which was not found in the model.
         /// </summary>
         /// <value><c>true</c> if this instance is a "ghost attribute"; otherwise, <c>false</c>.</value>
-        public bool IsGhost
-        {
-            get { return _isGhost; }
-        }
+        public bool IsGhost => _isGhost;
 
-        /// <summary>
-        /// Compares attribute's expression with the one passed in the parameter.
-        /// </summary>
-        /// <param name="expr">The expression definition to compare with</param>
-        /// <returns><c>true</c> if our attribute's expression is equal to the one passed in the parameter, <c>false</c> otherwise.</returns>
-        public virtual bool CompareWithExpr(string expr)
-        {
-            return string.Compare(Expr, expr, StringComparison.InvariantCultureIgnoreCase) == 0;
-        }
-
+   
         /// <summary>
         /// Copies all attribute's properties from another entity attribute
         /// </summary>
         /// <param name="attr">An EntityAttr object to copy from.</param>
-        public virtual void CopyFrom(MetaEntityAttr attr)
+        public virtual void CopyFrom(AttributeNode<TEntityData, TAttributeData> attr)
         {
             Caption = attr.Caption;
             DataType = attr.DataType;
@@ -341,12 +368,12 @@ namespace EasyData
         /// and returns an integer that indicates whether the current instance precedes, 
         /// follows, or occurs in the same position in the sort order as the other object.
         /// </summary>
-        /// <param name="attr">The entity attribute.</param>
+        /// <param name="other">The entity attribute.</param>
         /// <returns>An integer that indicates whether the current instance precedes, 
         /// follows, or occurs in the same position in the sort order as the other object</returns>
-        int IComparable<MetaEntityAttr>.CompareTo(MetaEntityAttr attr)
+        int IComparable<AttributeNode<TEntityData, TAttributeData>>.CompareTo(AttributeNode<TEntityData, TAttributeData> other)
         {
-            return string.Compare(Caption, attr.Caption, StringComparison.InvariantCultureIgnoreCase);
+            return string.Compare(Caption, other.Caption, StringComparison.InvariantCultureIgnoreCase);
         }
 
 
@@ -391,7 +418,7 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ipk").ConfigureAwait(false);
             await writer.WriteValueAsync(IsPrimaryKey).ConfigureAwait(false);
 
-            if (this.LookupAttr != null) {
+            if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
             }
@@ -399,12 +426,14 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ops").ConfigureAwait(false);
 
             //saving the list of operators' IDs
-            if (!string.IsNullOrEmpty(this.Description)) {
+            if (!string.IsNullOrEmpty(this.Description))
+            {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
 
-            if (UserData != null) {
+            if (UserData != null)
+            {
                 await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
                 await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
             }
@@ -419,14 +448,17 @@ namespace EasyData
         /// </exception>
         public async Task ReadFromJsonAsync(JsonReader reader)
         {
-            if (reader.TokenType != JsonToken.StartObject) {
+            if (reader.TokenType != JsonToken.StartObject)
+            {
                 throw new BadJsonFormatException(reader.Path);
             }
 
             while ((await reader.ReadAsync().ConfigureAwait(false))
-                && reader.TokenType != JsonToken.EndObject) {
+                && reader.TokenType != JsonToken.EndObject)
+            {
 
-                if (reader.TokenType != JsonToken.PropertyName) {
+                if (reader.TokenType != JsonToken.PropertyName)
+                {
                     throw new BadJsonFormatException(reader.Path);
                 }
 
@@ -485,19 +517,22 @@ namespace EasyData
             }
         }
     }
+
+   
     
     /// <summary>
     /// Represents list of entity attributes
     /// </summary>
-    public class EntityAttrList : Collection<MetaEntityAttr>
+    public class AttributeNodeList<TEntityData, TAttributeData> : Collection<AttributeNode<TEntityData, TAttributeData>>
+        where TEntityData: EntityData
+        where TAttributeData: AttributeData
     {
         /// <summary>
         /// Orders list of attributes by their captions.
         /// </summary>
         public void SortByCaption()
         {
-            List<MetaEntityAttr> items = (List<MetaEntityAttr>)Items;
-
+            var items = (List<AttributeNode<TEntityData, TAttributeData>>)Items;
             items.Sort();
         }
 
@@ -506,8 +541,7 @@ namespace EasyData
         /// </summary>
         public void Reorder()
         {
-            List<MetaEntityAttr> items = (List<MetaEntityAttr>)Items;
-
+            var items = (List<AttributeNode<TEntityData, TAttributeData>>)Items;
             items.Sort((item1, item2) => item1.Index - item2.Index);
         }
     }
@@ -515,26 +549,25 @@ namespace EasyData
     /// <summary>
     /// Represents entity attributes storage associated with a particular entity.
     /// </summary>
-    public class EntityAttrStore : EntityAttrList
+    public class AttributeNodeStore<TEntityData, TAttributeData> : AttributeNodeList<TEntityData, TAttributeData>
+        where TEntityData : EntityData
+        where TAttributeData : AttributeData
     {
-        private MetaEntity _entity = null;
+        private EntityNode<TEntityData, TAttributeData> _entity = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EntityAttrStore"/> class.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        public EntityAttrStore(MetaEntity entity)
+        public AttributeNodeStore(EntityNode<TEntityData, TAttributeData> entity)
             : base()
         {
-            this._entity = entity;
+            _entity = entity;
         }
 
         /// <summary>Gets the DataModel object this entity attribute belongs to</summary>
         /// <value>The model.</value>
-        public MetaData Model
-        {
-            get { return _entity != null ? _entity.Model : null; }
-        }
+        public MetaData<TEntityData, TAttributeData> Model => _entity != null ? _entity.Model : null;
 
         /// <summary>
         /// Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"/> at the specified index.
@@ -546,7 +579,7 @@ namespace EasyData
         /// -or-
         /// <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
         /// </exception>
-        protected override void InsertItem(int index, MetaEntityAttr item)
+        protected override void InsertItem(int index, AttributeNode<TEntityData, TAttributeData> item)
         {
             base.InsertItem(index, item);
             OnEntityAttrInsertion(item, index);
@@ -557,11 +590,11 @@ namespace EasyData
         /// </summary>
         /// <param name="entityAttr">The attribute.</param>
         /// <param name="index">The index.</param>
-        protected virtual void OnEntityAttrInsertion(MetaEntityAttr entityAttr, int index)
+        protected virtual void OnEntityAttrInsertion(AttributeNode<TEntityData, TAttributeData> attr, int index)
         {
-            entityAttr.Entity = _entity;
+            attr.Entity = _entity;
             if (_entity.Model != null) {
-                entityAttr.OnModelAssignment();
+                attr.OnModelAssignment();
             }
         }
 
@@ -584,7 +617,7 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
-                var attr = Model.CreateEntityAttr(this._entity);
+                var attr = new AttributeNode<TEntityData, TAttributeData>(_entity);
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
                 Add(attr);
             }

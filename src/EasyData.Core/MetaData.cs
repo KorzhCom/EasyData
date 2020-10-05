@@ -31,13 +31,14 @@ namespace EasyData
         public const ulong KeepCurrent = 4096;
     }
 
-    public class MetaData
+    public class MetaData<TEntityData, TAttributeData>
+        where TEntityData: EntityData
+        where TAttributeData: AttributeData
     {
         /// <summary>
         /// Read-only constant that represent the latest format version of data model definition JSON files
         /// </summary>
         static public readonly int LastJsonFormatVersion = 3;
-
 
         /// <summary>
         /// Gets or sets the ID of the model.
@@ -61,13 +62,6 @@ namespace EasyData
         public MetaData()
         {
             ID = Guid.NewGuid().ToString();
-
-            EntityRoot = CreateRootEntity();
-
-            //null entity
-            nullEntity = this.CreateRootEntity();
-            nullEntity.Name = "";
-
         }
 
         /// <summary>
@@ -134,9 +128,9 @@ namespace EasyData
         /// Clones the model object
         /// </summary>
         /// <returns>A duplicate of original DataModel object</returns>
-        public MetaData Clone()
+        public MetaData<TEntityData, TAttributeData> Clone()
         {
-            var model = Activator.CreateInstance(this.GetType()) as MetaData;
+            var model = (MetaData< TEntityData, TAttributeData>)Activator.CreateInstance(GetType());
             using (MemoryStream buffer = new MemoryStream(2000000)) {
                 SaveToJsonStream(buffer);
                 buffer.Position = 0;
@@ -171,38 +165,7 @@ namespace EasyData
         /// <summary>
         /// The root entity of data model entities.
         /// </summary>
-        public virtual MetaEntity EntityRoot { get; protected set; }
-
-        /// <summary>
-        /// Creates the root entity.
-        /// This method can be overriden in descendant classes to retrun the object of appropriate class (e.g. DbEntity).
-        /// </summary>
-        /// <returns>Entity object.</returns>
-        public virtual MetaEntity CreateRootEntity()
-        {
-            return new RootMetaEntity(this);
-        }
-
-
-        /// <summary>
-        /// Creates the entity attribute. Used for creating entity attributes while building the model
-        /// </summary>
-        /// <param name="parentEntity">The parent entity.</param>
-        /// <param name="isVirtual">if set to <c>true</c> the new attribute will be a virtual one.</param>
-        /// <returns>EntityAttr.</returns>
-        public virtual MetaEntityAttr CreateEntityAttr(MetaEntity parentEntity = null, bool isVirtual = false)
-        {
-            return new MetaEntityAttr(parentEntity, isVirtual);
-        }
-
-        /// <summary>
-        /// Creates the entity.
-        /// </summary>
-        /// <returns></returns>
-        public virtual MetaEntity CreateEntity(MetaEntity parentEntity = null)
-        {
-            return new MetaEntity(parentEntity ?? EntityRoot);
-        }
+        public readonly EntityNode<TEntityData, TAttributeData> EntityRoot = new EntityNode<TEntityData, TAttributeData>();
 
         protected internal void TryRunWithMainSyncContext(Action action)
         {
@@ -228,18 +191,17 @@ namespace EasyData
         /// This function is called by <see cref="SortEntities" /> method
         /// </summary>
         /// <param name="entity">The entity.</param>
-        protected virtual void SortEntityContent(MetaEntity entity)
+        protected virtual void SortEntityContent(EntityNode<TEntityData, TAttributeData> entity)
         {
             entity.SubEntities.SortByName();
-            foreach (MetaEntity ent in entity.SubEntities)
-            {
+            foreach (var ent in entity.SubEntities) {
                 SortEntityContent(ent);
             }
 
             entity.Attributes.SortByCaption();
         }
 
-        MetaEntity nullEntity = null;
+        EntityNode<TEntityData, TAttributeData> nullEntity = null;
 
         /// <summary>
         /// Gets a value indicating whether this model is empty (doesn't contain any entity or attribute) or not.
@@ -266,9 +228,11 @@ namespace EasyData
         /// <param name="attrID">The attribute ID.</param>
         /// <param name="useNullAttr">if set to <c>true</c> NullAttribute will be returned if we can not find the attribute with specified ID.</param>
         /// <returns></returns>
-        public virtual MetaEntityAttr GetAttributeByID(string attrID, bool useNullAttr)
+        public virtual AttributeNode<TEntityData, TAttributeData> GetAttributeByID(string attrID, bool useNullAttr)
         {
-            MetaEntityAttr result = EntityRoot.FindAttribute(EntityAttrProp.ID, attrID);
+            var result = EntityRoot.FindAttributeById(attrID);
+
+            // useNullAttr ???
             return result;
         }
 
@@ -278,13 +242,13 @@ namespace EasyData
         /// </summary>
         /// <param name="attrDef">A string that represents attribute (either ID, expression or caption).</param>
         /// <returns></returns>
-        public MetaEntityAttr FindEntityAttr(string attrDef)
+        public AttributeNode<TEntityData, TAttributeData> FindEntityAttr(string attrDef)
         {
-            MetaEntityAttr attr = EntityRoot.FindAttribute(EntityAttrProp.ID, attrDef);
+            var attr = EntityRoot.FindAttributeById(attrDef);
             if (attr == null)
-                attr = EntityRoot.FindAttribute(EntityAttrProp.Expression, attrDef);
+                attr = EntityRoot.FindAttributeByExpression(attrDef);
             if (attr == null)
-                attr = EntityRoot.FindAttribute(EntityAttrProp.Caption, attrDef);
+                attr = EntityRoot.FindAttributeByCaption(attrDef);
 
             return attr;
         }
@@ -296,7 +260,7 @@ namespace EasyData
         /// <returns>
         /// An <see cref="MetaEntity"/> object with specified name or null if it can't be found.
         /// </returns>
-        public MetaEntity FindEntity(string entityName)
+        public EntityNode<TEntityData, TAttributeData> FindEntity(string entityName)
         {
             return EntityRoot.FindSubEntity(entityName);
         }
@@ -307,13 +271,13 @@ namespace EasyData
         /// <param name="entity">The parent entity.</param>
         /// <param name="entityName">The name of the new entity.</param>
         /// <returns>Entity.</returns>
-        public MetaEntity AddEntity(MetaEntity entity, string entityName)
+        public EntityNode<TEntityData, TAttributeData> AddEntity(EntityNode<TEntityData, TAttributeData> entity, string entityName)
         {
             if (entity == null) {
                 entity = EntityRoot;
             }
 
-            var ent = CreateEntity(entity);
+            var ent = new EntityNode<TEntityData, TAttributeData>(entity);
             ent.Name = entityName;
             entity.SubEntities.Add(ent);
             return ent;
@@ -328,7 +292,11 @@ namespace EasyData
         /// <param name="dataType">The type of the data.</param>
         /// <param name="size">The size (if necessary).</param>
         /// <returns>EntityAttr.</returns>
-        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, int size = 100)
+        public AttributeNode<TEntityData, TAttributeData> AddEntityAttr(
+            EntityNode<TEntityData, TAttributeData> entity, 
+            string expression, 
+            string caption = null, 
+            DataType dataType = DataType.String, int size = 100)
         {
             return AddEntityAttr(entity, expression, caption, dataType, false, size);
         }
@@ -343,16 +311,20 @@ namespace EasyData
         /// <param name="isVirtual">The type of the data.</param>
         /// <param name="size">The size (if necessary).</param>
         /// <returns>EntityAttr.</returns>
-        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
+        public AttributeNode<TEntityData, TAttributeData> AddEntityAttr(
+            EntityNode<TEntityData, TAttributeData> entity, 
+            string expression, 
+            string caption = null, 
+            DataType dataType = DataType.String, 
+            bool isVirtual = false, int size = 100)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            var attr = CreateEntityAttr(entity, isVirtual);
+            var attr = new AttributeNode<TEntityData, TAttributeData>(entity, isVirtual);
 
             attr.Expr = expression;
-            if (string.IsNullOrEmpty(caption))
-            {
+            if (string.IsNullOrEmpty(caption)) {
                 caption = expression.GetSecondPart('.');
             }
             attr.Caption = caption;

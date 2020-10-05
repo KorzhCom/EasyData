@@ -9,27 +9,9 @@ using Newtonsoft.Json;
 
 namespace EasyData
 {
-    /// <summary>
-    /// Represents one entity
-    /// </summary>
-    public class MetaEntity : IComparable<MetaEntity>
+
+    public class EntityData 
     {
-
-        /// <summary>Initializes a new instance of the <see cref="T:Korzh.EasyQuery.Entity"/> class.</summary>
-        /// <param name="parent">The parent entity.</param>
-        protected internal MetaEntity(MetaEntity parent)
-        {
-            Parent = parent;
-            Attributes = new EntityAttrStore(this);
-            SubEntities = new EntityStore(this);
-        }
-
-        /// <summary>
-        /// Gets the parent entity.
-        /// </summary>
-        /// <value>The parent entity.</value>
-        public virtual MetaEntity Parent { get; internal set; }
-
         /// <summary>
         /// Gets or sets the entity identifier
         /// </summary>
@@ -41,6 +23,11 @@ namespace EasyData
         /// <value>Entity name</value>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>The description.</value>
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the entity.
@@ -61,6 +48,91 @@ namespace EasyData
         /// <value>The complex type path.</value>
         public string TypeName { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the user data object associated with entity.
+        /// </summary>
+        /// <value></value>
+        public object UserData { get; set; }
+
+    }
+
+
+    public class EntityNode<TEntityData, TAttributeData>: IComparable<EntityNode<TEntityData, TAttributeData>>
+        where TEntityData: EntityData
+        where TAttributeData: AttributeData
+    {
+
+        public readonly MetaData<TEntityData, TAttributeData> Model;
+
+        public readonly EntityNodeStore<TEntityData, TAttributeData> SubEntities;
+
+        public readonly AttributeNodeStore<TEntityData, TAttributeData> Attributes;
+
+        public EntityNode<TEntityData, TAttributeData> Parent { get; internal set; }
+
+        public bool IsRoot => Parent == null;
+
+        protected EntityNode()
+        {
+            SubEntities = new EntityNodeStore<TEntityData, TAttributeData>(this);
+            Attributes = new AttributeNodeStore<TEntityData, TAttributeData>(this);
+        }
+
+        internal EntityNode(MetaData<TEntityData, TAttributeData> model): this()
+        {
+            Model = model;
+        }
+
+        public EntityNode(EntityNode<TEntityData, TAttributeData> parent = null): this()
+        {
+            Parent = parent;
+        }
+
+        public TEntityData Data { get; set; }
+
+        public string Id 
+        {
+            get => Data?.Id;
+            set => Data.Id = value;
+        }
+
+        public string Name
+        {
+            get => Data?.Name;
+            set => Data.Name = value;
+        }
+
+        public string Description
+        {
+            get => Data?.Description;
+            set => Data.Description = value;
+        }
+
+        public object UserData
+        {
+            get => Data?.UserData;
+            set => Data.UserData = value;
+        }
+
+        public Type ObjType
+        {
+            get => Data?.ObjType;
+            set => Data.ObjType = value;
+        }
+
+        public string TypeName
+        {
+            get => Data?.TypeName;
+            set => Data.TypeName = value;
+        }
+
+        public string DbSetName
+        {
+            get => Data?.DbSetName;
+            set => Data.DbSetName = value;
+        }
+
         /// <summary>
         /// Gets or sets the index of Entity
         /// </summary>
@@ -75,10 +147,12 @@ namespace EasyData
         public bool IsEmpty
         {
             get {
-                if (Attributes.Count != 0) return false;
-                foreach (MetaEntity subEntity in SubEntities)
-                {
-                    if (!subEntity.IsEmpty) return false;
+                if (Attributes.Count != 0) 
+                    return false;
+
+                foreach (var subEntity in SubEntities) {
+                    if (!subEntity.IsEmpty) 
+                        return false;
                 }
                 return true;
             }
@@ -86,129 +160,14 @@ namespace EasyData
 
 
         /// <summary>
-        /// Gets a value indicating whether this entity is a root entity.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is root; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsRoot
-        {
-            get { return Parent == null; }
-        }
-
-
-        /// <summary>
-        /// List of sub entities that belong to this entity.
-        /// </summary>
-        public EntityStore SubEntities { get; private set; }
-
-        /// <summary>
-        /// List of Attributes that belong to this entity.
-        /// </summary>
-        public EntityAttrStore Attributes { get; private set; }
-
-
-        /// <summary>
-        /// Gets the model.
-        /// </summary>
-        /// <value>The model.</value>
-        public virtual MetaData Model {
-            get { return Parent?.Model; }
-        }
-
-        /// <summary>
         /// Called when the entity is inserted into model.
         /// </summary>
         internal protected virtual void OnModelAssignment()
         {
-            foreach (MetaEntity ent in SubEntities)
+            foreach (var ent in SubEntities)
                 ent.OnModelAssignment();
-            foreach (MetaEntityAttr attr in Attributes)
+            foreach (var attr in Attributes)
                 attr.OnModelAssignment();
-        }
-
-
-        /// <summary>
-        /// Gets the full name.
-        /// </summary>
-        /// <value>The full name.</value>
-        public string GetFullName(string separator)
-        {
-            string parentName = Parent?.GetFullName(separator);
-            string result = string.IsNullOrEmpty(parentName) ? Name : parentName + separator + Name;
-
-            return result;
-        }
-
-
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>The description.</value>
-        public string Description { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the user data object associated with entity.
-        /// </summary>
-        /// <value></value>
-        public object UserData { get; set; }
-
-        /// <summary>
-        /// Gets the first attribute in all attributes and sub-entities of the current entity.
-        /// </summary>
-        /// <returns>An Attribute object.</returns>
-        public MetaEntityAttr GetFirstLeaf()
-        {
-            if (Attributes.Count > 0) return Attributes[0];
-            MetaEntityAttr result;
-            foreach (MetaEntity subEntity in SubEntities)
-            {
-                result = subEntity.GetFirstLeaf();
-                if (result != null) return result;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Finds the attribute by its ID.
-        /// </summary>
-        /// <param name="what">Attribute property (ID, Caption or SqlName) that we use to compare with searched value.</param>
-        /// <param name="val">Value of entityAttr property used for searching </param>
-        /// <returns>
-        /// An Attribute object with specified ID or null if such object cannot be found.
-        /// </returns>
-        public virtual MetaEntityAttr FindAttribute(EntityAttrProp what, string val)
-        {
-            switch (what)
-            {
-                case EntityAttrProp.Caption:
-                    foreach (MetaEntityAttr entityAttr in Attributes) {
-                        if (entityAttr.Caption == val) 
-                            return entityAttr;
-                    }
-                    break;
-                case EntityAttrProp.Expression:
-                    foreach (MetaEntityAttr entityAttr in Attributes)
-                    {
-                        if (entityAttr.CompareWithExpr(val)) return entityAttr;
-                    }
-                    break;
-                default:
-                    foreach (MetaEntityAttr entityAttr in Attributes)
-                    {
-                        if (entityAttr.ID == val) return entityAttr;
-                    }
-                    break;
-            }
-
-            MetaEntityAttr result = null;
-            foreach (MetaEntity subEntity in SubEntities)
-            {
-                result = subEntity.FindAttribute(what, val);
-                if (result != null) return result;
-            }
-            return null;
         }
 
         /// <summary>
@@ -218,12 +177,11 @@ namespace EasyData
         /// <returns>
         /// An Entity object with specified name or null if it cannot be found.
         /// </returns>
-        public virtual MetaEntity FindSubEntity(string entityName)
+        public EntityNode<TEntityData, TAttributeData> FindSubEntity(string entityName)
         {
-            MetaEntity result = null;
-            foreach (MetaEntity subEntity in SubEntities)
-            {
-                if (string.Equals(subEntity.Name, entityName, 
+            EntityNode<TEntityData, TAttributeData> result = null;
+            foreach (var subEntity in SubEntities) {
+                if (string.Equals(subEntity.Name, entityName,
                     StringComparison.InvariantCultureIgnoreCase)) {
                     result = subEntity;
                     break;
@@ -237,20 +195,106 @@ namespace EasyData
         }
 
         /// <summary>
+        /// Gets the full name.
+        /// </summary>
+        /// <value>The full name.</value>
+        public string GetFullName(string separator)
+        {
+            string parentName = Parent?.GetFullName(separator);
+            string result = string.IsNullOrEmpty(parentName) ? Name : parentName + separator + Name;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the first attribute in all attributes and sub-entities of the current entity.
+        /// </summary>
+        /// <returns>An Attribute object.</returns>
+        public AttributeNode<TEntityData, TAttributeData> GetFirstLeaf()
+        {
+            if (Attributes.Count > 0)
+                return Attributes[0];
+
+            foreach (var subEntity in SubEntities) {
+                var result = subEntity.GetFirstLeaf();
+                if (result != null) 
+                    return result;
+            }
+
+            return null;
+        }
+
+       public AttributeNode<TEntityData, TAttributeData> FindAttributeById(string id) 
+       {
+            return FindAttribute(attr => attr.ID == id);
+       }
+
+        public AttributeNode<TEntityData, TAttributeData> FindAttributeByCaption(string caption)
+        {
+            return FindAttribute(attr => attr.Caption == caption);
+        }
+
+        public AttributeNode<TEntityData, TAttributeData> FindAttributeByExpression(string expr)
+        {
+            return FindAttribute(attr => attr.CompareWithExpr(expr));
+        }
+
+        public AttributeNode<TEntityData, TAttributeData> FindAttribute(Func<AttributeNode<TEntityData, TAttributeData>, bool> predicate)
+        {
+            var result = Attributes.FirstOrDefault(predicate);
+            if (result == null) {
+                foreach (var subEntity in SubEntities) {
+                    result = subEntity.FindAttribute(predicate);
+                    if (result != null)
+                        break;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Scans all child entities and attributes (including this one one) calls entityHandler and attrHanlder delegates (correspondingly) for each of them
+        /// </summary>
+        /// <param name="entityHandler">The delegate which will be called for each entity.</param>
+        /// <param name="attrHandler">The delegate which will be called for each attribute</param>
+        /// <param name="processRoot">Indicates whether we need to call delegates for this entity as well.</param>
+        public void Scan(Action<EntityNode<TEntityData, TAttributeData>> entityHandler, 
+            Action<AttributeNode<TEntityData, TAttributeData>> attrHandler, bool processRoot = true)
+        {
+            //do whatever you need with this entity
+            if (processRoot && entityHandler != null) {
+                entityHandler(this);
+            }
+
+            //run through all sub-entities
+            foreach (var ent in this.SubEntities) {
+                ent.Scan(entityHandler, attrHandler, true);
+            }
+
+            if (processRoot && attrHandler != null) {
+
+                //run through all attributes of this entity
+                foreach (var attr in this.Attributes) {
+                    attrHandler(attr);
+                }
+            }
+        }
+
+        /// <summary>
         /// Deletes the sub-entities specified by name(s) passed in method's parameter(s).
         /// </summary>
         /// <param name="namesToDelete">The names of the entities to delete.</param>
         /// <returns>The amount of deleted entities</returns>
-        public virtual int DeleteSubEntities(params string[] namesToDelete)
+        public int DeleteSubEntities(params string[] namesToDelete)
         {
             int count = 0;
-
             for (int i = SubEntities.Count - 1; i >= 0; i--) {
                 if (namesToDelete.Contains(SubEntities[i].Name)) {
                     SubEntities.RemoveAt(i);
                     count++;
                 }
             }
+
             return count;
         }
 
@@ -259,7 +303,7 @@ namespace EasyData
         /// </summary>
         /// <param name="entityToDeleteFilter">The "filter" function that returns <c>true</c> if the entity should be removed</param>
         /// <returns>The amount of deleted entities</returns>
-        public virtual int DeleteSubEntities(Func<MetaEntity, bool> entityToDeleteFilter)
+        public int DeleteSubEntities(Func<EntityNode<TEntityData, TAttributeData>, bool> entityToDeleteFilter)
         {
             int count = 0;
 
@@ -272,36 +316,9 @@ namespace EasyData
             return count;
         }
 
-
-        /// <summary>
-        /// Scans all child entities and attributes (including this one one) calls entityHandler and attrHanlder delegates (correspondingly) for each of them
-        /// </summary>
-        /// <param name="entityHandler">The delegate which will be called for each entity.</param>
-        /// <param name="attrHandler">The delegate which will be called for each attribute</param>
-        /// <param name="processRoot">Indicates whether we need to call delegates for this entity as well.</param>
-        public void Scan(Action<MetaEntity> entityHandler, Action<MetaEntityAttr> attrHandler, bool processRoot = true)
+        public int CompareTo(EntityNode<TEntityData, TAttributeData> other)
         {
-            //do whatever you need with this entity
-            if (processRoot && entityHandler != null) {
-                entityHandler(this);
-            }
-
-            //run through all sub-entities
-            foreach (MetaEntity ent in this.SubEntities) {
-                ent.Scan(entityHandler, attrHandler, true);
-            }
-
-            if (processRoot && attrHandler != null) {
-                //run through all attributes of this entity
-                foreach (MetaEntityAttr attr in this.Attributes) {
-                    attrHandler(attr);
-                }
-            }
-        }
-
-        int IComparable<MetaEntity>.CompareTo(MetaEntity ent)
-        {
-            return string.Compare(Name, ent.Name, true);
+            return string.Compare(Name, other.Name, true);
         }
 
         #region Saving/loading to/from JSON
@@ -335,7 +352,7 @@ namespace EasyData
         /// <returns>Task.</returns>
         protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer)
         {
-            if (!string.IsNullOrEmpty(this.Id)) {
+            if (!string.IsNullOrEmpty(Id)) {
                 await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
                 await writer.WriteValueAsync(Id).ConfigureAwait(false);
             }
@@ -345,7 +362,7 @@ namespace EasyData
                 await writer.WriteValueAsync(Name).ConfigureAwait(false);
             }
 
-            if (!string.IsNullOrEmpty(Description))  {
+            if (string.IsNullOrEmpty(Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
@@ -370,7 +387,8 @@ namespace EasyData
             SubEntities.Clear();
 
             while ((await reader.ReadAsync().ConfigureAwait(false))
-                && reader.TokenType != JsonToken.EndObject) {
+                && reader.TokenType != JsonToken.EndObject)
+            {
 
                 if (reader.TokenType != JsonToken.PropertyName) {
                     throw new BadJsonFormatException(reader.Path);
@@ -423,38 +441,11 @@ namespace EasyData
     }
 
     /// <summary>
-    /// Represents root entity in the model
-    /// </summary>
-    public class RootMetaEntity : MetaEntity
-    {
-
-        private MetaData model = null;
-
-        /// <summary>
-        /// Gets the model.
-        /// </summary>
-        /// <value>The model.</value>
-        public override MetaData Model
-        {
-            get {
-                return model;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:RootEntity"/> class.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        public RootMetaEntity(MetaData model) : base(null)
-        {
-            this.model = model;
-        }
-    }
-
-    /// <summary>
     /// Represents list of entities
     /// </summary>
-    public class EntityList<T> : Collection<T> where T: MetaEntity
+    public class EntityNodeList<TEntityData, TAttributeData> : Collection<EntityNode<TEntityData, TAttributeData>> 
+        where TEntityData: EntityData
+        where TAttributeData: AttributeData
     {
 
         /// <summary>
@@ -462,8 +453,7 @@ namespace EasyData
         /// </summary>
         public void SortByName()
         {
-            List<MetaEntity> items = (List<MetaEntity>)Items;
-
+            var items = (List<EntityNode<TEntityData, TAttributeData>>)Items;
             items.Sort();
         }
 
@@ -472,8 +462,7 @@ namespace EasyData
         /// </summary>
         public void Reorder()
         {
-            List<MetaEntity> items = (List<MetaEntity>)Items;
-
+            var items = (List<EntityNode<TEntityData, TAttributeData>>)Items;
             items.Sort((item1, item2) => item1.Index - item2.Index);
         }
 
@@ -482,28 +471,24 @@ namespace EasyData
     /// <summary>
     /// Represents storage of entities
     /// </summary>
-    public class EntityStore<T> : EntityList<T> where T: MetaEntity
+    public class EntityNodeStore<TEntityData, TEntityAttrData> : EntityNodeList<TEntityData, TEntityAttrData>
+        where TEntityData: EntityData
+        where TEntityAttrData: AttributeData
     {
-        private MetaEntity _parentEntity = null;
+        private EntityNode<TEntityData, TEntityAttrData> _parentEntity = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EntityStore"/> class.
         /// </summary>
         /// <param name="parentEntity">The parent entity.</param>
-        public EntityStore(MetaEntity parentEntity)
+        public EntityNodeStore(EntityNode<TEntityData, TEntityAttrData> parentEntity)
         {
-            this._parentEntity = parentEntity;
+            _parentEntity = parentEntity;
         }
 
         /// <summary>Gets the model.</summary>
         /// <value>The model.</value>
-        protected MetaData Model
-        {
-            get {
-                return _parentEntity.Model;
-            }
-        }
-
+        protected MetaData<TEntityData, TEntityAttrData> Model => _parentEntity?.Model;
 
         /// <summary>
         /// Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"/> at the specified index.
@@ -515,10 +500,11 @@ namespace EasyData
         /// -or-
         /// <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
         /// </exception>
-        protected override void InsertItem(int index, T item)
+        protected override void InsertItem(int index, EntityNode<TEntityData, TEntityAttrData> item)
         {
             if (item == this._parentEntity)
                 throw new ArgumentException("Can't add an entity to itself");
+
             base.InsertItem(index, item);
             OnEntityInsertion(item, index);
         }
@@ -528,10 +514,11 @@ namespace EasyData
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="index">The index.</param>
-        protected virtual void OnEntityInsertion(MetaEntity entity, int index)
+        protected virtual void OnEntityInsertion(EntityNode<TEntityData, TEntityAttrData> entity, int index)
         {
             entity.Parent = _parentEntity;
-            if (_parentEntity.Model != null) entity.OnModelAssignment();
+            if (_parentEntity.Model != null) 
+                entity.OnModelAssignment();
         }
 
         /// <summary>
@@ -561,9 +548,9 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray)
             {
-                var ent = Model.CreateEntity(this._parentEntity);
+                var ent = new EntityNode<TEntityData, TEntityAttrData>(_parentEntity);
                 await ent.ReadFromJsonAsync(reader).ConfigureAwait(false);
-                Add((T)ent);
+                Add(ent);
             }
         }
     }
