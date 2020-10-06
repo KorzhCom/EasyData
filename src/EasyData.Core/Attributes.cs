@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -31,7 +30,6 @@ namespace EasyData
         /// Gets ot sets a value indicating wether Attribute is primary a key
         /// </summary>
         public bool IsPrimaryKey { get; set; } = false;
-
 
         /// <summary>Gets or sets a value indicating whether this attribute is nullable.</summary>
         /// <value>
@@ -68,7 +66,92 @@ namespace EasyData
         /// </summary>
         public bool IsVirtual { get; internal set; } = false;
 
+        private bool _isAggregate = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this attribute represents some aggregate column.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this attribute represents some aggregate column; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsAggregate
+        {
+            get { return _isAggregate; }
+            set {
+                if (IsVirtual) {
+                    _isAggregate = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the type of data represented by attribute.
+        /// </summary>
+        /// <value>DataType value.</value>
+        public DataType DataType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of data represented by attribute.
+        /// </summary>
+        /// <value></value>
+        public int Size { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user data object assosiated with attribute.
+        /// </summary>
+        /// <value></value>
+        public object UserData { get; set; }
+
+        /// <summary>
+        /// Writes attribute properties to JSON (asynchronous way).
+        /// </summary>
+        /// <param name="writer">The writer</param>
+        /// <param name="options">Some read/write options</param>
+        /// <returns>Task.</returns>
+        public virtual Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options) 
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Reads one attribute's property from JSON (asynchronous way).
+        /// </summary>
+        /// <param name="reader">A JsonReader.</param>
+        /// <param name="propName">Name of the property.</param>
+        /// <returns>Task.</returns>
+        public virtual async Task ReadPropertyFromJsonAsync(JsonReader reader, string propName)
+        {
+            if (propName == "lattr") {
+                _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+            }
+            else {
+                await reader.SkipAsync().ConfigureAwait(false);
+            }
+        }
+
+        internal protected virtual void OnModelAssignment(MetaData<EntityData, AttributeData> model) { }
+
+        /// <summary>
+        /// Scans attribute's expression for new parameters, tables, etc
+        /// </summary>
+        internal protected virtual void ProcessVirtualExpr(){}
+
+        /// <summary>
+        /// Copies all attribute's properties from another entity attribute
+        /// </summary>
+        /// <param name="attr">An EntityAttr object to copy from.</param>
+        public virtual void CopyFrom(AttributeData attr)
+        {
+            Caption = attr.Caption;
+            DataType = attr.DataType;
+            Description = attr.Description;
+            Expr = attr.Expr;
+            Id = attr.Id;
+            IsVirtual = attr.IsVirtual;
+            _lookupAttrId = attr._lookupAttrId;
+            Size = attr.Size;
+            UserData = attr.UserData;
+        }
+
+        internal string _lookupAttrId = null;
     }
 
     public class AttributeNode<TEntityData, TAttributeData>: IComparable<AttributeNode<TEntityData, TAttributeData>>
@@ -80,19 +163,19 @@ namespace EasyData
 
         public string ID
         {
-            get => Data?.Id;
+            get => Data.Id;
             set => Data.Id = value;
         }
 
         public string Caption
         {
-            get => Data?.Caption;
+            get => Data.Caption;
             set => Data.Caption = value;
         }
 
         public string Description
         {
-            get => Data?.Description;
+            get => Data.Description;
             set => Data.Description = value;
         }
 
@@ -104,7 +187,7 @@ namespace EasyData
         /// more complicated SQL expression composed of several fields, operators and functions.</value>
         public string Expr
         {
-            get  =>  Data.Expr; 
+            get => Data.Expr; 
             set {
                 if (Data.Expr != value) {
                     Data.Expr = value;
@@ -123,19 +206,19 @@ namespace EasyData
 
         public string PropertyName
         {
-            get => Data?.PropName;
+            get => Data.PropName;
             set => Data.PropName = value;
         }
 
         public PropertyInfo PropertyInfo
         {
-            get => Data?.PropInfo;
+            get => Data.PropInfo;
             set => Data.PropInfo = value;
         }
 
         public string ColumnName
         {
-            get => Data?.ColumnName;
+            get => Data.ColumnName;
             set => Data.ColumnName = value;
         }
 
@@ -149,6 +232,30 @@ namespace EasyData
         {
             get => Data.IsVirtual;
             set => Data.IsVirtual = value;
+        }
+
+        public bool IsAggregate
+        {
+            get => Data.IsAggregate;
+            set => Data.IsAggregate = value;
+        }
+
+        public DataType DataType 
+        {
+            get => Data.DataType;
+            set => Data.DataType = value; 
+        }
+
+        public int Size
+        {
+            get => Data.Size;
+            set => Data.Size = value;
+        }
+
+        public object UserData
+        {
+            get => Data.UserData;
+            set => Data.UserData = value;
         }
 
         /// <summary>
@@ -172,7 +279,7 @@ namespace EasyData
         /// </summary>
         protected string expr = "";
 
-        internal string _lookupAttrId = null;
+
         private AttributeNode<TEntityData, TAttributeData> _lookupAttr = null;
 
         /// <summary>
@@ -181,10 +288,11 @@ namespace EasyData
         public AttributeNode<TEntityData, TAttributeData> LookupAttr
         {
             get {
-                if (_lookupAttr == null)
-                {
+                if (_lookupAttr == null) {
                     CheckModel();
-                    _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) ? null : Model.GetAttributeByID(_lookupAttrId, false);
+                    _lookupAttr = string.IsNullOrEmpty(Data._lookupAttrId)
+                        ? null 
+                        : Model.GetAttributeByID(Data._lookupAttrId, false);
 
                 }
 
@@ -193,13 +301,13 @@ namespace EasyData
 
             set {
                 _lookupAttr = value;
-                if (value != null)
-                {
-                    _lookupAttrId = value.ID;
-                    _lookupAttr._lookupAttrId = this.ID;
+                if (value != null) {
+                    Data._lookupAttrId = value.ID;
+                    _lookupAttr.Data._lookupAttrId = ID;
                 }
-                else
-                    _lookupAttrId = null;
+                else {
+                    Data._lookupAttrId = null;
+                }
             }
         }
 
@@ -207,12 +315,8 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public MetaData<TEntityData, TAttributeData> Model
-        {
-            get { return Entity?.Model; }
-        }
-
-
+        public MetaData<TEntityData, TAttributeData> Model => Entity?.Model;
+     
         /// <summary>
         /// Checks the Model property and raises an exception if it's null.
         /// </summary>
@@ -249,27 +353,10 @@ namespace EasyData
         /// <summary>
         /// Called when model is assigned.
         /// </summary>
-        public virtual void OnModelAssignment() { }
+        internal protected virtual void OnModelAssignment() 
+            => Data.OnModelAssignment(Model as MetaData<EntityData, AttributeData>);
 
-        private bool _isAggregate = false;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this attribute represents some aggregate column.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this attribute represents some aggregate column; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAggregate
-        {
-            get { return _isAggregate; }
-            set {
-                if (IsVirtual)
-                {
-                    _isAggregate = value;
-                }
-            }
-        }
-
+    
         /// <summary>
         /// Initializes a new instance of the <see cref="Attribute"/> class.
         /// </summary>
@@ -288,25 +375,11 @@ namespace EasyData
             IsVirtual = isVirtual;
         }
 
-        /// <summary>
-        /// Gets or sets the type of data represented by attribute.
-        /// </summary>
-        /// <value>DataType value.</value>
-        public DataType DataType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the size of data represented by attribute.
-        /// </summary>
-        /// <value></value>
-        public int Size { get; set; }
 
         /// <summary>
         /// Scans attribute's expression for new parameters, tables, etc
         /// </summary>
-        protected virtual void ProcessVirtualExpr()
-        {
-
-        }
+        protected void ProcessVirtualExpr() => Data.ProcessVirtualExpr();
 
         /// <summary>
         /// Gets the full expression of entity attribute.
@@ -314,12 +387,7 @@ namespace EasyData
         /// <value>
         /// The full expression.
         /// </value>
-        public string FullExpr
-        {
-            get {
-                return IsVirtual ? Expr : GetDataAttrFullExpr();
-            }
-        }
+        public string FullExpr => IsVirtual ? Expr : GetDataAttrFullExpr();
 
 
         /// <summary>
@@ -331,11 +399,7 @@ namespace EasyData
             return Entity.GetFullName(".") + ':' + Expr;
         }
 
-        /// <summary>
-        /// Gets or sets the user data object assosiated with attribute.
-        /// </summary>
-        /// <value></value>
-        public object UserData { get; set; }
+
 
         internal bool _isGhost = false;
 
@@ -352,15 +416,7 @@ namespace EasyData
         /// <param name="attr">An EntityAttr object to copy from.</param>
         public virtual void CopyFrom(AttributeNode<TEntityData, TAttributeData> attr)
         {
-            Caption = attr.Caption;
-            DataType = attr.DataType;
-            Description = attr.Description;
-            Expr = attr.Expr;
-            ID = attr.ID;
-            IsVirtual = attr.IsVirtual;
-            _lookupAttrId = attr._lookupAttrId;
-            Size = attr.Size;
-            UserData = attr.UserData;
+            Data.CopyFrom(attr.Data);
         }
 
         /// <summary>
@@ -426,17 +482,17 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ops").ConfigureAwait(false);
 
             //saving the list of operators' IDs
-            if (!string.IsNullOrEmpty(this.Description))
-            {
+            if (!string.IsNullOrEmpty(this.Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
 
-            if (UserData != null)
-            {
+            if (UserData != null) {
                 await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
                 await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
             }
+
+            await Data.WritePropertiesToJsonAsync(writer, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -496,12 +552,6 @@ namespace EasyData
                 case "ipk":
                     IsPrimaryKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
-                case "lattr":
-                    _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
-                    break;
-                case "opg":
-                    await reader.SkipAsync().ConfigureAwait(false);
-                    break;
                 case "desc":
                     Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
@@ -512,7 +562,7 @@ namespace EasyData
                     Expr = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await Data.ReadPropertyFromJsonAsync(reader, propName).ConfigureAwait(false);
                     break;
             }
         }

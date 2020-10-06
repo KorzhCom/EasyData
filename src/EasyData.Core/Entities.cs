@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -35,7 +34,6 @@ namespace EasyData
         /// <value>The type of the entity.</value>
         public Type ObjType { get; set; }
 
-
         /// <summary>
         /// Gets or sets the name of the DbSet associated with entity
         /// </summary>
@@ -48,12 +46,31 @@ namespace EasyData
         /// <value>The complex type path.</value>
         public string TypeName { get; set; }
 
-
         /// <summary>
         /// Gets or sets the user data object associated with entity.
         /// </summary>
         /// <value></value>
         public object UserData { get; set; }
+
+        /// <summary>
+        /// Writes entity's properties to JSON (asynchronous way).
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <returns>Task.</returns>
+        public virtual Task WritePropertiesToJsonAsync(JsonWriter writer)
+            => Task.CompletedTask;
+
+        /// <summary>
+        /// Reads one entity property from JSON (asynchronous way) or skips unused.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="propName">Name of the property.</param>
+        /// <returns>Task.</returns>
+        public virtual async Task ReadOnePropertyFromJsonAsync(JsonReader reader, string propName)
+            => await reader.SkipAsync().ConfigureAwait(false);
+
+        internal protected void OnModelAssignment()
+        {}
 
     }
 
@@ -89,47 +106,47 @@ namespace EasyData
             Parent = parent;
         }
 
-        public TEntityData Data { get; set; } = new TEntityData();
+        public TEntityData Data { get; private set; } = new TEntityData();
 
         public string Id 
         {
-            get => Data?.Id;
+            get => Data.Id;
             set => Data.Id = value;
         }
 
         public string Name
         {
-            get => Data?.Name;
+            get => Data.Name;
             set => Data.Name = value;
         }
 
         public string Description
         {
-            get => Data?.Description;
+            get => Data.Description;
             set => Data.Description = value;
         }
 
         public object UserData
         {
-            get => Data?.UserData;
+            get => Data.UserData;
             set => Data.UserData = value;
         }
 
         public Type ObjType
         {
-            get => Data?.ObjType;
+            get => Data.ObjType;
             set => Data.ObjType = value;
         }
 
         public string TypeName
         {
-            get => Data?.TypeName;
+            get => Data.TypeName;
             set => Data.TypeName = value;
         }
 
         public string DbSetName
         {
-            get => Data?.DbSetName;
+            get => Data.DbSetName;
             set => Data.DbSetName = value;
         }
 
@@ -164,6 +181,7 @@ namespace EasyData
         /// </summary>
         internal protected virtual void OnModelAssignment()
         {
+            Data.OnModelAssignment();
             foreach (var ent in SubEntities)
                 ent.OnModelAssignment();
             foreach (var attr in Attributes)
@@ -371,6 +389,8 @@ namespace EasyData
                 await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
                 await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
             }
+
+            await Data.WritePropertiesToJsonAsync(writer).ConfigureAwait(false);
         }
 
         /// <summary>Reads the entity content from JSON (asynchronous way).</summary>
@@ -432,7 +452,7 @@ namespace EasyData
                     UserData = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await Data.ReadOnePropertyFromJsonAsync(reader, propName).ConfigureAwait(false);
                     break;
             }
         }

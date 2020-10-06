@@ -79,20 +79,12 @@ namespace EasyData
 
         protected internal SynchronizationContext MainSyncContext { get; internal set; } = SynchronizationContext.Current;
 
-        /// <summary>
-        /// User-defined additional information about the model
-        /// </summary>
-        protected string customInfo = "";
 
         /// <summary>
         /// Gets or sets the custom information associated with data model.
         /// </summary>
         /// <value>The custom info.</value>
-        public string CustomInfo
-        {
-            get { return customInfo; }
-            set { customInfo = value; }
-        }
+        public string CustomInfo { get; set; }
 
         /// <summary>
         /// Gets the model file path. It is automatically assigned when you use LoadFromFile method.
