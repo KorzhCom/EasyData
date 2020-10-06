@@ -32,8 +32,8 @@ namespace EasyData
     }
 
     public class MetaData<TEntityData, TAttributeData>
-        where TEntityData: EntityData
-        where TAttributeData: AttributeData
+        where TEntityData: EntityData, new()
+        where TAttributeData: AttributeData, new()
     {
         /// <summary>
         /// Read-only constant that represent the latest format version of data model definition JSON files

@@ -59,8 +59,8 @@ namespace EasyData
 
 
     public class EntityNode<TEntityData, TAttributeData>: IComparable<EntityNode<TEntityData, TAttributeData>>
-        where TEntityData: EntityData
-        where TAttributeData: AttributeData
+        where TEntityData: EntityData, new()
+        where TAttributeData: AttributeData, new()
     {
 
         public readonly MetaData<TEntityData, TAttributeData> Model;
@@ -89,7 +89,7 @@ namespace EasyData
             Parent = parent;
         }
 
-        public TEntityData Data { get; set; }
+        public TEntityData Data { get; set; } = new TEntityData();
 
         public string Id 
         {
@@ -444,8 +444,8 @@ namespace EasyData
     /// Represents list of entities
     /// </summary>
     public class EntityNodeList<TEntityData, TAttributeData> : Collection<EntityNode<TEntityData, TAttributeData>> 
-        where TEntityData: EntityData
-        where TAttributeData: AttributeData
+        where TEntityData: EntityData, new()
+        where TAttributeData: AttributeData, new()
     {
 
         /// <summary>
@@ -472,8 +472,8 @@ namespace EasyData
     /// Represents storage of entities
     /// </summary>
     public class EntityNodeStore<TEntityData, TEntityAttrData> : EntityNodeList<TEntityData, TEntityAttrData>
-        where TEntityData: EntityData
-        where TEntityAttrData: AttributeData
+        where TEntityData: EntityData, new()
+        where TEntityAttrData: AttributeData, new()
     {
         private EntityNode<TEntityData, TEntityAttrData> _parentEntity = null;
 

@@ -72,11 +72,11 @@ namespace EasyData
     }
 
     public class AttributeNode<TEntityData, TAttributeData>: IComparable<AttributeNode<TEntityData, TAttributeData>>
-        where TEntityData: EntityData
-        where TAttributeData : AttributeData
+        where TEntityData: EntityData, new()
+        where TAttributeData : AttributeData, new()
     {
 
-        public TAttributeData Data { get; set; }
+        public TAttributeData Data { get; set; } = new TAttributeData();
 
         public string ID
         {
@@ -524,8 +524,8 @@ namespace EasyData
     /// Represents list of entity attributes
     /// </summary>
     public class AttributeNodeList<TEntityData, TAttributeData> : Collection<AttributeNode<TEntityData, TAttributeData>>
-        where TEntityData: EntityData
-        where TAttributeData: AttributeData
+        where TEntityData: EntityData, new()
+        where TAttributeData: AttributeData, new()
     {
         /// <summary>
         /// Orders list of attributes by their captions.
@@ -550,8 +550,8 @@ namespace EasyData
     /// Represents entity attributes storage associated with a particular entity.
     /// </summary>
     public class AttributeNodeStore<TEntityData, TAttributeData> : AttributeNodeList<TEntityData, TAttributeData>
-        where TEntityData : EntityData
-        where TAttributeData : AttributeData
+        where TEntityData : EntityData, new()
+        where TAttributeData : AttributeData, new()
     {
         private EntityNode<TEntityData, TAttributeData> _entity = null;
 
