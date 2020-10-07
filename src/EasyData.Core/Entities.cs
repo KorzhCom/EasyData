@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -20,8 +19,19 @@ namespace EasyData
         protected internal MetaEntity(MetaEntity parent)
         {
             Parent = parent;
-            Attributes = new EntityAttrStore(this);
-            SubEntities = new EntityStore(this);
+            Attributes = new MetaEntityAttrStore(this);
+            SubEntities = new MetaEntityStore(this);
+        }
+
+        protected MetaData _model { get; set; }
+
+        /// <summary>Initializes a new instance of the <see cref="T:Korzh.EasyQuery.Entity"/> class.</summary>
+        /// <param name="parent">The parent entity.</param>
+        protected internal MetaEntity(MetaData model)
+        {
+            _model = model;
+            Attributes = new MetaEntityAttrStore(this);
+            SubEntities = new MetaEntityStore(this);
         }
 
         /// <summary>
@@ -100,21 +110,19 @@ namespace EasyData
         /// <summary>
         /// List of sub entities that belong to this entity.
         /// </summary>
-        public EntityStore SubEntities { get; private set; }
+        public virtual MetaEntityStore SubEntities { get; protected set; }
 
         /// <summary>
         /// List of Attributes that belong to this entity.
         /// </summary>
-        public EntityAttrStore Attributes { get; private set; }
+        public virtual MetaEntityAttrStore Attributes { get; protected set; }
 
 
         /// <summary>
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual MetaData Model {
-            get { return Parent?.Model; }
-        }
+        public virtual MetaData Model => _model ?? Parent?.Model;
 
         /// <summary>
         /// Called when the entity is inserted into model.
@@ -170,45 +178,32 @@ namespace EasyData
             return null;
         }
 
-        /// <summary>
-        /// Finds the attribute by its ID.
-        /// </summary>
-        /// <param name="what">Attribute property (ID, Caption or SqlName) that we use to compare with searched value.</param>
-        /// <param name="val">Value of entityAttr property used for searching </param>
-        /// <returns>
-        /// An Attribute object with specified ID or null if such object cannot be found.
-        /// </returns>
-        public MetaEntityAttr FindAttribute(EntityAttrProp what, string val)
+        public MetaEntityAttr FindAttributeById(string id)
         {
-            switch (what)
-            {
-                case EntityAttrProp.Caption:
-                    foreach (MetaEntityAttr entityAttr in Attributes) {
-                        if (entityAttr.Caption == val) 
-                            return entityAttr;
-                    }
-                    break;
-                case EntityAttrProp.Expression:
-                    foreach (MetaEntityAttr entityAttr in Attributes)
-                    {
-                        if (entityAttr.CompareWithExpr(val)) return entityAttr;
-                    }
-                    break;
-                default:
-                    foreach (MetaEntityAttr entityAttr in Attributes)
-                    {
-                        if (entityAttr.ID == val) return entityAttr;
-                    }
-                    break;
-            }
+            return FindAttribute(attr => attr.ID == id);
+        }
 
-            MetaEntityAttr result = null;
-            foreach (MetaEntity subEntity in SubEntities)
-            {
-                result = subEntity.FindAttribute(what, val);
-                if (result != null) return result;
+        public MetaEntityAttr FindAttributeByCaption(string caption)
+        {
+            return FindAttribute(attr => attr.Caption == caption);
+        }
+
+        public MetaEntityAttr FindAttributeByExpression(string expr)
+        {
+            return FindAttribute(attr => attr.CompareWithExpr(expr));
+        }
+
+        public MetaEntityAttr FindAttribute(Func<MetaEntityAttr, bool> predicate)
+        {
+            var result = Attributes.FirstOrDefault(predicate);
+            if (result == null) {
+                foreach (var subEntity in SubEntities) {
+                    result = subEntity.FindAttribute(predicate);
+                    if (result != null)
+                        break;
+                }
             }
-            return null;
+            return result;
         }
 
         /// <summary>
@@ -221,8 +216,7 @@ namespace EasyData
         public MetaEntity FindSubEntity(string entityName)
         {
             MetaEntity result = null;
-            foreach (MetaEntity subEntity in SubEntities)
-            {
+            foreach (MetaEntity subEntity in SubEntities) {
                 if (string.Equals(subEntity.Name, entityName, 
                     StringComparison.InvariantCultureIgnoreCase)) {
                     result = subEntity;
@@ -233,6 +227,7 @@ namespace EasyData
                 if (result != null)
                     break;
             }
+
             return result;
         }
 
@@ -335,7 +330,7 @@ namespace EasyData
         /// <returns>Task.</returns>
         protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer)
         {
-            if (!string.IsNullOrEmpty(this.Id)) {
+            if (!string.IsNullOrEmpty(Id)) {
                 await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
                 await writer.WriteValueAsync(Id).ConfigureAwait(false);
             }
@@ -423,39 +418,10 @@ namespace EasyData
     }
 
     /// <summary>
-    /// Represents root entity in the model
-    /// </summary>
-    public class RootMetaEntity : MetaEntity
-    {
-        private MetaData model = null;
-
-        /// <summary>
-        /// Gets the model.
-        /// </summary>
-        /// <value>The model.</value>
-        public override MetaData Model
-        {
-            get {
-                return model;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:RootEntity"/> class.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        public RootMetaEntity(MetaData model) : base(null)
-        {
-            this.model = model;
-        }
-    }
-
-    /// <summary>
     /// Represents list of entities
     /// </summary>
-    public class EntityList : Collection<MetaEntity>
-    {
-
+    public class MetaEntityList : Collection<MetaEntity>
+    { 
         /// <summary>
         /// Sorts all items in this list by their names.
         /// </summary>
@@ -477,10 +443,11 @@ namespace EasyData
         }
     }
 
+
     /// <summary>
     /// Represents storage of entities
     /// </summary>
-    public class EntityStore : EntityList 
+    public class MetaEntityStore: MetaEntityList
     {
         private MetaEntity _parentEntity = null;
 
@@ -488,20 +455,14 @@ namespace EasyData
         /// Initializes a new instance of the <see cref="T:EntityStore"/> class.
         /// </summary>
         /// <param name="parentEntity">The parent entity.</param>
-        public EntityStore(MetaEntity parentEntity)
+        public MetaEntityStore(MetaEntity parentEntity)
         {
-            this._parentEntity = parentEntity;
+            _parentEntity = parentEntity;
         }
 
         /// <summary>Gets the model.</summary>
         /// <value>The model.</value>
-        protected MetaData Model
-        {
-            get {
-                return _parentEntity.Model;
-            }
-        }
-
+        protected MetaData Model => _parentEntity.Model;
 
         /// <summary>
         /// Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"/> at the specified index.
@@ -529,7 +490,8 @@ namespace EasyData
         protected virtual void OnEntityInsertion(MetaEntity entity, int index)
         {
             entity.Parent = _parentEntity;
-            if (_parentEntity.Model != null) entity.OnModelAssignment();
+            if (_parentEntity.Model != null) 
+                entity.OnModelAssignment();
         }
 
         /// <summary>
@@ -550,7 +512,7 @@ namespace EasyData
         /// <summary>Reads the list of entities from JSON (asynchronous way).</summary>
         /// <param name="reader">The reader.</param>
         /// <returns>Task.</returns>
-        internal async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader)
         {
             if (reader.TokenType != JsonToken.StartArray) {
                 throw new BadJsonFormatException(reader.Path);
@@ -559,7 +521,7 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray)
             {
-                var ent = Model.CreateEntity(this._parentEntity);
+                var ent = Model.CreateEntity(_parentEntity);
                 await ent.ReadFromJsonAsync(reader).ConfigureAwait(false);
                 Add(ent);
             }

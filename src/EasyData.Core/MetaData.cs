@@ -65,7 +65,7 @@ namespace EasyData
             EntityRoot = CreateRootEntity();
 
             //null entity
-            nullEntity = this.CreateRootEntity();
+            nullEntity = CreateRootEntity();
             nullEntity.Name = "";
 
         }
@@ -180,7 +180,7 @@ namespace EasyData
         /// <returns>Entity object.</returns>
         public virtual MetaEntity CreateRootEntity()
         {
-            return new RootMetaEntity(this);
+            return new MetaEntity(this);
         }
 
 
@@ -267,7 +267,7 @@ namespace EasyData
         /// <returns></returns>
         public virtual MetaEntityAttr GetAttributeByID(string attrID, bool useNullAttr)
         {
-            MetaEntityAttr result = EntityRoot.FindAttribute(EntityAttrProp.ID, attrID);
+            var result = EntityRoot.FindAttributeById(attrID);
             return result;
         }
 
@@ -279,11 +279,11 @@ namespace EasyData
         /// <returns></returns>
         public MetaEntityAttr FindEntityAttr(string attrDef)
         {
-            MetaEntityAttr attr = EntityRoot.FindAttribute(EntityAttrProp.ID, attrDef);
+            var attr = EntityRoot.FindAttributeById(attrDef);
             if (attr == null)
-                attr = EntityRoot.FindAttribute(EntityAttrProp.Expression, attrDef);
+                attr = EntityRoot.FindAttributeByExpression(attrDef);
             if (attr == null)
-                attr = EntityRoot.FindAttribute(EntityAttrProp.Caption, attrDef);
+                attr = EntityRoot.FindAttributeByCaption(attrDef);
 
             return attr;
         }
@@ -342,7 +342,7 @@ namespace EasyData
         /// <param name="isVirtual">The type of the data.</param>
         /// <param name="size">The size (if necessary).</param>
         /// <returns>EntityAttr.</returns>
-        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
+        public virtual MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -350,16 +350,14 @@ namespace EasyData
             var attr = CreateEntityAttr(entity, isVirtual);
 
             attr.Expr = expression;
-            if (string.IsNullOrEmpty(caption))
-            {
+            if (string.IsNullOrEmpty(caption)) {
                 caption = expression.GetSecondPart('.');
             }
             attr.Caption = caption;
 
             attr.DataType = dataType;
             attr.Size = size;
-            // attr.FillOperatorsWithDefaults(this);
-            //this.AssignEntityAttrID(attr);
+
             entity.Attributes.Add(attr);
 
             return attr;
