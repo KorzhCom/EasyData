@@ -454,7 +454,7 @@ namespace EasyData
     /// <summary>
     /// Represents list of entities
     /// </summary>
-    public class EntityList<T> : Collection<T> where T: MetaEntity
+    public class EntityList : Collection<MetaEntity>
     {
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace EasyData
     /// <summary>
     /// Represents storage of entities
     /// </summary>
-    public class EntityStore<T> : EntityList<T> where T: MetaEntity
+    public class EntityStore : EntityList 
     {
         private MetaEntity _parentEntity = null;
 
@@ -515,7 +515,7 @@ namespace EasyData
         /// -or-
         /// <paramref name="index"/> is greater than <see cref="P:System.Collections.ObjectModel.Collection`1.Count"/>.
         /// </exception>
-        protected override void InsertItem(int index, T item)
+        protected override void InsertItem(int index, MetaEntity item)
         {
             if (item == this._parentEntity)
                 throw new ArgumentException("Can't add an entity to itself");
@@ -563,7 +563,7 @@ namespace EasyData
             {
                 var ent = Model.CreateEntity(this._parentEntity);
                 await ent.ReadFromJsonAsync(reader).ConfigureAwait(false);
-                Add((T)ent);
+                Add(ent);
             }
         }
     }
