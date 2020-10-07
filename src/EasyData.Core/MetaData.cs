@@ -231,8 +231,7 @@ namespace EasyData
         protected virtual void SortEntityContent(MetaEntity entity)
         {
             entity.SubEntities.SortByName();
-            foreach (MetaEntity ent in entity.SubEntities)
-            {
+            foreach (var ent in entity.SubEntities) {
                 SortEntityContent(ent);
             }
 

@@ -178,7 +178,7 @@ namespace EasyData
         /// <returns>
         /// An Attribute object with specified ID or null if such object cannot be found.
         /// </returns>
-        public virtual MetaEntityAttr FindAttribute(EntityAttrProp what, string val)
+        public MetaEntityAttr FindAttribute(EntityAttrProp what, string val)
         {
             switch (what)
             {
@@ -218,7 +218,7 @@ namespace EasyData
         /// <returns>
         /// An Entity object with specified name or null if it cannot be found.
         /// </returns>
-        public virtual MetaEntity FindSubEntity(string entityName)
+        public MetaEntity FindSubEntity(string entityName)
         {
             MetaEntity result = null;
             foreach (MetaEntity subEntity in SubEntities)
@@ -241,7 +241,7 @@ namespace EasyData
         /// </summary>
         /// <param name="namesToDelete">The names of the entities to delete.</param>
         /// <returns>The amount of deleted entities</returns>
-        public virtual int DeleteSubEntities(params string[] namesToDelete)
+        public int DeleteSubEntities(params string[] namesToDelete)
         {
             int count = 0;
 
@@ -427,7 +427,6 @@ namespace EasyData
     /// </summary>
     public class RootMetaEntity : MetaEntity
     {
-
         private MetaData model = null;
 
         /// <summary>
@@ -472,11 +471,10 @@ namespace EasyData
         /// </summary>
         public void Reorder()
         {
-            List<MetaEntity> items = (List<MetaEntity>)Items;
+            var items = (List<MetaEntity>)Items;
 
             items.Sort((item1, item2) => item1.Index - item2.Index);
         }
-
     }
 
     /// <summary>
