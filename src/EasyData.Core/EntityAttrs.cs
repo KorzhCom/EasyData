@@ -273,17 +273,6 @@ namespace EasyData
         /// <value></value>
         public object UserData { get; set; }
 
-        internal bool _isGhost = false;
-
-        /// <summary>
-        /// Gets a value indicating whether this is a "ghost attribute" - an attribute which was not found in the model.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a "ghost attribute"; otherwise, <c>false</c>.</value>
-        public bool IsGhost
-        {
-            get { return _isGhost; }
-        }
-
         /// <summary>
         /// Compares attribute's expression with the one passed in the parameter.
         /// </summary>
