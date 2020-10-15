@@ -35,20 +35,15 @@ namespace EasyData.EntityFrameworkCore
                .Where(entityType => ApplyFilters(entityType));
         }
 
-        /// <summary>
-        /// Loads model
-        /// </summary>
-        /// <param name="context"></param>
-        public void LoadFromDbContext(DbContext context)
+        public virtual void LoadFromDbContext(DbContext context)
         {
             var entityTypes = GetEntityTypes(context.Model);
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
 
                 var navigations = entityType.GetNavigations();
-                foreach (var navigation in navigations)
-                {
-                    ProcessNavigationProperty(context.Model, navigation);
+                foreach (var navigation in navigations) {
+                    ProcessNavigationProperty(entity, context.Model, navigation);
                 }
 
                 entity.Attributes.Reorder();
@@ -77,20 +72,26 @@ namespace EasyData.EntityFrameworkCore
 
                 var entityAttr = CreateEntityAttribute(entityType, property);
                 if (entityAttr != null) {
-                    entity.Attributes.Add(entityAttr);
-
+                 
                     if (entityAttr.Index == int.MaxValue) {
                         entityAttr.Index = attrCounter;
                     }
 
                     attrCounter++;
+
+                    ProcessEntityAttr(entityAttr, entity, property);
                 }
             }
 
             return entity;
         }
 
-        protected virtual MetaEntityAttr ProcessNavigationProperty(IModel contextModel, INavigation navigation)
+        protected virtual void ProcessEntityAttr(MetaEntityAttr entityAttr, MetaEntity entity, IProperty property)
+        {
+            entity.Attributes.Add(entityAttr);
+        }
+
+        protected virtual MetaEntityAttr ProcessNavigationProperty(MetaEntity entity, IModel contextModel, INavigation navigation)
         {
             return null;
         }

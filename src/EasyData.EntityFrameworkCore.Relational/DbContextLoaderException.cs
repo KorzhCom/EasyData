@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EasyData.EntityFrameworkCore.Relational
+namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
     /// Represents exception class for <see cref="DbContextLoader"/>

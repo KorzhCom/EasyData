@@ -4,7 +4,7 @@ using System.Text;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace EasyData.EntityFrameworkCore.Relational
+namespace EasyData.EntityFrameworkCore
 {
     public static class MetaDataEfCoreExtensions
     {
