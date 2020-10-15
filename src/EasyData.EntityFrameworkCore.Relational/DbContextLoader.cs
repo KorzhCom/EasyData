@@ -41,11 +41,6 @@ namespace EasyData.EntityFrameworkCore
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
 
-                var navigations = entityType.GetNavigations();
-                foreach (var navigation in navigations) {
-                    ProcessNavigationProperty(entity, context.Model, navigation);
-                }
-
                 entity.Attributes.Reorder();
                 entity.SubEntities.Reorder();
 
@@ -83,6 +78,12 @@ namespace EasyData.EntityFrameworkCore
                 }
             }
 
+            var navigations = entityType.GetNavigations();
+            foreach (var navigation in navigations) {
+                ProcessNavigationProperty(entity, entityType, contextModel, navigation, ref attrCounter);
+            }
+
+
             return entity;
         }
 
@@ -91,10 +92,8 @@ namespace EasyData.EntityFrameworkCore
             entity.Attributes.Add(entityAttr);
         }
 
-        protected virtual MetaEntityAttr ProcessNavigationProperty(MetaEntity entity, IModel contextModel, INavigation navigation)
-        {
-            return null;
-        }
+        protected virtual void ProcessNavigationProperty(MetaEntity entity, IEntityType entityType, IModel contextModel, INavigation navigation, ref int attrCounter)
+        {}
 
         protected virtual MetaEntityAttr CreateEntityAttribute(IEntityType entityType, IProperty property)
         {
