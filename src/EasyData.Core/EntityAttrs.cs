@@ -10,28 +10,6 @@ using Newtonsoft.Json;
 namespace EasyData
 {
     /// <summary>
-    /// Represents attribute property used in FindAttribute methods
-    /// </summary>
-    public enum EntityAttrProp
-    {
-        /// <summary>
-        /// Attribute ID
-        /// </summary>
-        ID,
-
-        /// <summary>
-        /// Attribute caption
-        /// </summary>
-        Caption,
-
-        /// <summary>
-        /// Some expression (should be defined in descendants). Same as ID for <see cref="MetaEntity"/> class.
-        /// </summary>
-        Expression
-    }
-
-
-    /// <summary>
     /// Represents one entity attribute of data model.
     /// </summary>
     /// <remarks>
@@ -127,10 +105,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual MetaData Model
-        {
-            get { return Entity?.Model; }
-        }
+        public virtual MetaData Model => Entity?.Model;
 
 
         /// <summary>
@@ -163,7 +138,7 @@ namespace EasyData
         /// Gets or sets the entity.
         /// </summary>
         /// <value>The entity.</value>
-        public MetaEntity Entity { get; internal set; }
+        public virtual MetaEntity Entity { get; internal set; }
 
 
         /// <summary>
@@ -298,17 +273,6 @@ namespace EasyData
         /// <value></value>
         public object UserData { get; set; }
 
-        internal bool _isGhost = false;
-
-        /// <summary>
-        /// Gets a value indicating whether this is a "ghost attribute" - an attribute which was not found in the model.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a "ghost attribute"; otherwise, <c>false</c>.</value>
-        public bool IsGhost
-        {
-            get { return _isGhost; }
-        }
-
         /// <summary>
         /// Compares attribute's expression with the one passed in the parameter.
         /// </summary>
@@ -396,10 +360,8 @@ namespace EasyData
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
             }
 
-            await writer.WritePropertyNameAsync("ops").ConfigureAwait(false);
-
             //saving the list of operators' IDs
-            if (!string.IsNullOrEmpty(this.Description)) {
+            if (!string.IsNullOrEmpty(Description)) {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
             }
@@ -476,20 +438,17 @@ namespace EasyData
                 case "udata":
                     UserData = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
-                case "expr":
-                    Expr = await reader.ReadAsStringAsync().ConfigureAwait(false);
-                    break;
                 default:
                     await reader.SkipAsync().ConfigureAwait(false);
                     break;
             }
         }
     }
-    
+
     /// <summary>
     /// Represents list of entity attributes
     /// </summary>
-    public class EntityAttrList : Collection<MetaEntityAttr>
+    public class MetaEntityAttrList : Collection<MetaEntityAttr>
     {
         /// <summary>
         /// Orders list of attributes by their captions.
@@ -497,7 +456,6 @@ namespace EasyData
         public void SortByCaption()
         {
             List<MetaEntityAttr> items = (List<MetaEntityAttr>)Items;
-
             items.Sort();
         }
 
@@ -512,10 +470,11 @@ namespace EasyData
         }
     }
 
+ 
     /// <summary>
     /// Represents entity attributes storage associated with a particular entity.
     /// </summary>
-    public class EntityAttrStore : EntityAttrList
+    public class MetaEntityAttrStore: MetaEntityAttrList
     {
         private MetaEntity _entity = null;
 
@@ -523,10 +482,10 @@ namespace EasyData
         /// Initializes a new instance of the <see cref="T:EntityAttrStore"/> class.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        public EntityAttrStore(MetaEntity entity)
+        public MetaEntityAttrStore(MetaEntity entity)
             : base()
         {
-            this._entity = entity;
+            _entity = entity;
         }
 
         /// <summary>Gets the DataModel object this entity attribute belongs to</summary>
@@ -565,7 +524,7 @@ namespace EasyData
             }
         }
 
-        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WriteStartArrayAsync().ConfigureAwait(false);
             foreach (var attr in this) {
@@ -575,7 +534,7 @@ namespace EasyData
         }
 
 
-        protected internal async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader)
         {
             if (reader.TokenType != JsonToken.StartArray) {
                 throw new BadJsonFormatException(reader.Path);
@@ -584,7 +543,7 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
-                var attr = Model.CreateEntityAttr(this._entity);
+                var attr = Model.CreateEntityAttr(_entity);
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
                 Add(attr);
             }
