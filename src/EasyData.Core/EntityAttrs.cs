@@ -73,6 +73,21 @@ namespace EasyData
         /// </summary>
         public bool IsPrimaryKey { get; set; } = false;
 
+        private ValueEditor _defaultEditor = null;
+        /// <summary>
+        /// Gets or sets the default value editor.
+        /// </summary>
+        /// <value>The default value editor. null value represent AUTO value editor.</value>
+        public ValueEditor DefaultEditor
+        {
+            get { return _defaultEditor; }
+            set {
+                _defaultEditor = value;
+                if (_defaultEditor != null && Model != null)
+                    _defaultEditor.CheckInModel(Model);
+            }
+        }
+
         /// <summary>
         /// Gets the lookup attribute.
         /// </summary>
@@ -94,11 +109,39 @@ namespace EasyData
                 if (value != null)
                 {
                     _lookupAttrId = value.ID;
-                    _lookupAttr._lookupAttrId = this.ID;
+                    _lookupAttr._lookupAttrId = ID;
                 }
                 else
                     _lookupAttrId = null;
             }
+        }
+
+        public virtual ValueEditor GetValueEditor(DataType? type = null)
+        {
+            ValueEditor result = DefaultEditor;
+
+            type = type ?? DataType;
+            if (result == null) {
+                switch (type.Value) {
+                    case DataType.Date:
+                    case DataType.Time:
+                    case DataType.DateTime:
+                        result = new DateTimeValueEditor();
+                        break;
+                    case DataType.Bool:
+                        result = new CustomListValueEditor("BooleanValues", "MENU");
+                        break;
+                    default:
+                        result = new TextValueEditor();
+                        break;
+                }
+            }
+
+            if (result != null && result is DateTimeValueEditor) {
+                ((DateTimeValueEditor)result).SubType = type.Value;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -296,6 +339,7 @@ namespace EasyData
             ID = attr.ID;
             IsVirtual = attr.IsVirtual;
             _lookupAttrId = attr._lookupAttrId;
+            _defaultEditor = attr.DefaultEditor;
             Size = attr.Size;
             UserData = attr.UserData;
         }

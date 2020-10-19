@@ -19,8 +19,11 @@ namespace EasyData
         /// </summary>
         public static readonly BitOptions Defaults = Entities 
             | Description 
+            | Editors
             | CustomInfo 
             | KeepCurrent;
+
+        public const ulong Editors = 4;
 
         public const ulong Entities = 8;
 
@@ -64,11 +67,27 @@ namespace EasyData
 
             EntityRoot = CreateRootEntity();
 
+            Editors = new ValueEditorStore(this);
+
             //null entity
             nullEntity = CreateRootEntity();
             nullEntity.Name = "";
 
         }
+
+        /// <summary>
+        /// Initializes the <see cref="MetaData"/> class.
+        /// Registers the main value editors types.
+        /// </summary>
+        static MetaData()
+        {
+            ValueEditor.RegisterCreator(new BasicValueEditorsCreator());
+        }
+
+        /// <summary>
+        /// List of data model operators.
+        /// </summary>
+        public ValueEditorList Editors { get; private set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -86,19 +105,10 @@ namespace EasyData
         protected internal SynchronizationContext MainSyncContext { get; internal set; } = SynchronizationContext.Current;
 
         /// <summary>
-        /// User-defined additional information about the model
-        /// </summary>
-        protected string customInfo = "";
-
-        /// <summary>
         /// Gets or sets the custom information associated with data model.
         /// </summary>
         /// <value>The custom info.</value>
-        public string CustomInfo
-        {
-            get { return customInfo; }
-            set { customInfo = value; }
-        }
+        public string CustomInfo { get; set; } = "";
 
         /// <summary>
         /// Gets the model file path. It is automatically assigned when you use LoadFromFile method.
@@ -740,6 +750,13 @@ namespace EasyData
         /// <returns>Task.</returns>
         protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions)
         {
+
+            // Editors must be saved before operators
+            if (rwOptions.Contains(MetaDataReadWriteOptions.Editors)) {
+                await writer.WritePropertyNameAsync("editors").ConfigureAwait(false);
+                await Editors.WriteToJsonAsync(writer, rwOptions, true).ConfigureAwait(false);
+            }
+
             if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
                 await writer.WritePropertyNameAsync("maxAttrId").ConfigureAwait(false);
                 await writer.WriteValueAsync(_maxEntAttrID).ConfigureAwait(false);
@@ -828,6 +845,10 @@ namespace EasyData
                     break;
                 case "maxAttrId":
                     _maxEntAttrID = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    break;
+                case "editors":
+                    await reader.ReadAsync().ConfigureAwait(false); //reading StartArray token
+                    await Editors.ReadFromJsonAsync(reader).ConfigureAwait(false);
                     break;
                 default:
                     await reader.SkipAsync().ConfigureAwait(false);

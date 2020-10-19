@@ -1,0 +1,120 @@
+﻿using System;
+using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+
+namespace EasyData
+{
+    /// <summary>
+    /// Represents custom (user defined) value editor.
+    /// </summary>
+    public class CustomValueEditor : ValueEditor
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomValueEditor"/> class.
+        /// </summary>
+        public CustomValueEditor() : this("")
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomValueEditor"/> class.
+        /// </summary>
+        /// <param name="tag">The custom tag of this value editor.</param>
+        public CustomValueEditor(string tag) : base()
+        {
+            _tag = tag;
+        }
+
+        internal string _tag = "";
+
+        /// <summary>
+        /// Gets the name of the value editor type.
+        /// </summary>
+        /// <value>The name of the value editor type.</value>
+        public override string Tag => _tag;
+        
+        /// <summary>
+        /// Gets the full name of the value editor class type.
+        /// </summary>
+        /// <value></value>
+        new public static string STypeCaption => "Custom editor";
+
+        /// <summary>
+        /// Gets the XML definition of value editor.
+        /// </summary>
+        /// <value>The XML definition of value editor.</value>
+        /// <remarks>
+        /// This defenition can be used for creation necessary row element
+        /// which represents current value editor in XListBox control.
+        /// </remarks>
+        public override string XmlDefinition =>
+            "<Label editorType=\"" + Tag + "\" value=\"" + DefaultValue + "\" action=\"ValueRequest\" data=\"" + Data + "\" />";
+
+        /// <summary>
+        /// Gets or sets the default value.
+        /// </summary>
+        /// <value>The default value</value>
+        public override string DefaultValue
+        {
+            get { return ""; }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the default text.
+        /// </summary>
+        /// <value>The default text.</value>
+        public override string DefaultText
+        {
+            get { return ""; }
+            set { }
+        }
+
+        /// <summary>
+        /// Reads one editor's property from JSON (asynchronous way).
+        /// </summary>
+        /// <param name="reader">The reader</param>
+        /// <param name="propName">The name of the property which is read</param>
+        /// <returns>Task</returns>
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        {
+            switch (propName)
+            {
+                case "data":
+                    Data = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "type":
+                    _tag = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                default:
+                    await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Writes the content of the "CUSTOM" value editor to JSON (asynchronous way).
+        /// </summary>
+        /// <param name="writer">The writer</param>
+        /// <param name="rwOptions">Read/write options.</param>
+        /// <returns>Task</returns>
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        {
+            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("data").ConfigureAwait(false);
+            await writer.WriteValueAsync(Data).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("type").ConfigureAwait(false);
+            await writer.WriteValueAsync(_tag).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets or sets the data assigned with the editor.
+        /// </summary>
+        /// <value>Any data assigned with the editor.</value>
+        public string Data { get; set; }
+
+    }
+}

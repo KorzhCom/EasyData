@@ -37,6 +37,8 @@ namespace EasyData.EntityFrameworkCore
 
         public virtual void LoadFromDbContext(DbContext context)
         {
+            TableEntity.Clear();
+
             var entityTypes = GetEntityTypes(context.Model);
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
@@ -56,8 +58,11 @@ namespace EasyData.EntityFrameworkCore
         {
             var entityName = entityType.Name.Split('.').Last();
             var entity = Model.CreateEntity();
+            var tableName = entityType.GetTableName();
             entity.Id = DataUtils.ComposeKey(null, entityName);
             entity.Name = entityName;
+
+            TableEntity.Add(tableName, entity);
 
             var properties = entityType.GetProperties().ToList();
             int attrCounter = 0;
