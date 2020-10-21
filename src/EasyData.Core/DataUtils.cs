@@ -1,0 +1,261 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
+namespace EasyData
+{
+    public class DataUtils
+    {
+
+        public static string PrettifyName(string name)
+        {
+
+            name = name.Replace('_', ' ');
+            name = ReplaceChar(name, char.ToUpper(name[0]), 0);
+
+            var result = new StringBuilder();
+
+            bool prevCharIsUpper = true;
+            foreach (var ch in name) {
+
+                if (ch == ' ') {
+                    result.Append(' ');
+                    prevCharIsUpper = true;
+                    continue;
+                }
+
+                if (char.IsUpper(ch)) {
+                    if (!prevCharIsUpper)
+                        result.Append(' ');
+                    prevCharIsUpper = true;
+                }
+                else {
+                    prevCharIsUpper = false;
+                }
+
+                result.Append(ch);
+            }
+
+            return result.ToString();
+        }
+
+        ///<summary>
+        /// Written to replace char in string 
+        ///</summary>
+        private static string ReplaceChar(string curString, char symb, int index)
+        {
+
+            var newString = curString.ToCharArray();
+
+            if (index > -1 && index < newString.Length)
+                newString[index] = symb;
+
+            return new string(newString);
+        }
+
+
+        ///<summary>
+        /// Change plural to single
+        ///</summary>
+        public static string MakeSingle(string name)
+        {
+            if (name[name.Length - 1] == 's') {
+                //Rule for ending -y 
+                if (name.Substring(name.Length - 3) == "ies"){
+                    name = name.Remove(name.Length - 3);
+                    name += 'y';
+                }
+                else if (name.Substring(name.Length - 2) == "es") {
+                    //Rule for endings -s, -ss, -sh, -ch, -x
+                    if (name[name.Length - 3] == 'x' || name[name.Length - 3] == 's' ||
+                    (name[name.Length - 3] == 'h' && (name[name.Length - 4] == 's' || name[name.Length - 4] == 'c'))) {
+                        name = name.Remove(name.Length - 2);
+                    } //Rule for ending -o
+                    else if (name[name.Length - 3] == 'o') {
+                        name = name.Remove(name.Length - 2);
+                        //Rule for ending -f, -fe
+                    }
+                    else if (name[name.Length - 3] == 'v') {
+                        name = name.Remove(name.Length - 3);
+                        name += 'f';
+                    }
+                    else {
+                        name = name.Remove(name.Length - 1);
+                    }
+
+                }
+                else {
+                    name = name.Remove(name.Length - 1);
+                }
+
+            }
+            else {
+                // write here code for child - childrem, man - men etc.
+            }
+
+            return name;
+        }
+
+        public static string ComposeKey(string parent, string child)
+        {
+            if (string.IsNullOrEmpty(parent) && string.IsNullOrEmpty(child))
+                throw new ArgumentNullException("parent & child");
+            if (string.IsNullOrEmpty(child))
+                return parent;
+            if (string.IsNullOrEmpty(parent))
+                return child;
+            return string.Format("{0}.{1}", parent, child);
+        }
+
+        /// <summary>
+        /// Gets the type of the data type by system type.
+        /// </summary>
+        /// <param name="systemType">Type of the system type.</param>
+        /// <returns></returns>
+        public static DataType GetDataTypeBySystemType(Type systemType)
+        {
+            if (systemType == typeof(bool) || systemType == typeof(bool?))
+                return DataType.Bool;
+            else if (systemType == typeof(Guid))
+                return DataType.Guid;
+            else if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))
+                return DataType.Byte;
+            else if (systemType == typeof(DateTime) || systemType == typeof(DateTime?)
+                     || systemType == typeof(DateTimeOffset) || systemType == typeof(DateTimeOffset?))
+                return DataType.DateTime;
+            else if (systemType == typeof(TimeSpan) || systemType == typeof(TimeSpan?))
+                return DataType.Time;
+            else if (systemType == typeof(decimal) || systemType == typeof(decimal?))
+                return DataType.Currency;
+            else if (systemType == typeof(double) || systemType == typeof(Single) || systemType == typeof(float) || systemType == typeof(double?) || systemType == typeof(Single?) || systemType == typeof(float?))
+                return DataType.Float;
+            else if (systemType == typeof(short) || systemType == typeof(ushort) || systemType == typeof(short?) || systemType == typeof(ushort?))
+                return DataType.Word;
+            else if (systemType == typeof(int) || systemType == typeof(uint) || systemType == typeof(int?) || systemType == typeof(uint?))
+                return DataType.Int32;
+            else if (systemType == typeof(long) || systemType == typeof(ulong) || systemType == typeof(long?) || systemType == typeof(ulong?))
+                return DataType.Int64;
+            else if (systemType == typeof(string))
+                return DataType.String;
+            else
+                return DataType.Unknown;
+        }
+
+
+        /// <summary>
+        /// Convert string representation in internal format to DateTime value.
+        /// </summary>
+        /// <param name="val">The val.</param>
+        /// <param name="dataType">Type of the data. Can be Date, DateTime or Time.</param>
+        /// <returns></returns>
+        public static DateTime InternalFormatToDateTime(string val, DataType dataType)
+        {
+            if (string.IsNullOrEmpty(val))
+                return DateTime.Now;
+            string format = GetDateTimeInternalFormat(dataType);
+            DateTime result;
+            if (!DateTime.TryParseExact(val, format, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces, out result))
+            {
+                format = GetDateTimeInternalFormat(DataType.Date);
+                if (!DateTime.TryParseExact(val, format, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces, out result))
+                {
+                    format = GetDateTimeInternalFormat(DataType.DateTime, true);
+                    if (!DateTime.TryParseExact(val, format, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces, out result))
+                        throw new ArgumentException("Wrong date/time format: " + val);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts DateTime value to its string representation in internal format (yyyy-MM-dd).
+        /// </summary>
+        /// <param name="dt">A DateTime value.</param>
+        /// <param name="dataType">Type of the data. Can be Date, DateTime or Time.</param>
+        /// <returns></returns>
+		public static string DateTimeToInternalFormat(DateTime dt, DataType dataType)
+        {
+            string format = GetDateTimeInternalFormat(dataType);
+            return dt.ToString(format);
+        }
+
+        /// <summary>
+        /// Gets the format used for internal textual representation of date/time values.
+        /// EasyQuery uses "yyyy-MM-dd" format.
+        /// </summary>
+        /// <param name="dataType">Type of the data. Can be Date, DateTime or Time.</param>
+        /// <param name="shortTime">if set to <c>true</c> then we need short version of time part.</param>
+        /// <returns>System.String.</returns>
+        /// <value></value>
+        public static string GetDateTimeInternalFormat(DataType dataType, bool shortTime = false)
+        {
+            switch (dataType)
+            {
+                case DataType.Date: return internalDateFormat;
+                case DataType.Time: return internalTimeFormat;
+                default:
+                    if (shortTime)
+                        return internalDateFormat + " " + internalShortTimeFormat;
+                    else
+                        return internalDateFormat + " " + internalTimeFormat; ;
+            }
+        }
+
+        private static IFormatProvider _internalFormatProvider = null;
+
+        /// <summary>
+        /// Gets the internal format provider.
+        /// This provider defines the format used to store date/time and numeric values internally and it saved queries
+        /// </summary>
+        /// <value>The internal format provider.</value>
+        public static IFormatProvider GetInternalFormatProvider()
+        {
+            if (_internalFormatProvider == null)
+            {
+                var ci = new CultureInfo("en-US");
+                ci.DateTimeFormat.LongDatePattern = internalDateFormat;
+                ci.DateTimeFormat.LongTimePattern = internalTimeFormat;
+                _internalFormatProvider = ci;
+            }
+            return _internalFormatProvider;
+        }
+
+        private static string internalDateFormat = "yyyy'-'MM'-'dd";
+        private static string internalTimeFormat = "HH':'mm':'ss";
+        private static string internalShortTimeFormat = "HH':'mm";
+
+        /// <summary>
+        /// Gets the internal date format (yyyy-MM-dd).
+        /// </summary>
+        /// <value>The internal date format.</value>
+		public static string InternalDateFormat => internalDateFormat;
+
+        /// <summary>
+        /// Gets the internal time format (HH:mm:ss).
+        /// </summary>
+        /// <value>The internal time format.</value>
+		public static string InternalTimeFormat => internalTimeFormat;
+      
+
+        /// <summary>
+        /// Converts DateTime value to its string representation in current system format.
+        /// </summary>
+        /// <param name="dt">A DateTime value.</param>
+        /// <param name="dataType">Type of the data. Can be Date, DateTime or Time.</param>
+        /// <returns></returns>
+		public static string DateTimeToUserFormat(DateTime dt, DataType dataType)
+        {
+            string format;
+            switch (dataType)
+            {
+                case DataType.Date: format = "d"; break;
+                case DataType.Time: format = "T"; break;
+                default: format = "G"; break;
+            }
+            return dt.ToString(format, System.Globalization.DateTimeFormatInfo.CurrentInfo);
+        }
+
+    }
+}
