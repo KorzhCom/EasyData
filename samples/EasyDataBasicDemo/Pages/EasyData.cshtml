@@ -1,0 +1,34 @@
+﻿@page "/easydata/{url?}"
+@model EasyDataBasicDemo.Pages.EasyDataModel
+@{
+    ViewData["Title"] = "EasyData";
+}
+
+@section Styles {
+    <style>
+        #EntityList li:hover {
+            cursor: pointer;
+            background-color: aliceblue;
+        }
+
+        #EntityList li.active:hover {
+            background-color: mediumblue;
+        }
+    </style>
+}
+
+<h1>EasyData</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div id="EntityList"></div>
+    </div>
+    <div class="col-md-8">
+        <div id="Grid"></div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/js/easydata.js" type="text/javascript"></script>
+}
