@@ -32,6 +32,8 @@ namespace EasyData
         public const ulong CustomInfo = 512;
 
         public const ulong KeepCurrent = 4096;
+
+        public static BitOptions ClientSideContent => Defaults.Without(KeepCurrent);
     }
 
     public class MetaData
@@ -203,6 +205,16 @@ namespace EasyData
         public virtual MetaEntityAttr CreateEntityAttr(MetaEntity parentEntity = null, bool isVirtual = false)
         {
             return new MetaEntityAttr(parentEntity, isVirtual);
+        }
+
+        /// <summary>
+        /// Creates the entity attribute. Used for creating entity attributes while building the model
+        /// </summary>
+        /// <param name="parentEntity">The parent entity.</param>
+        /// <returns></returns>
+        public virtual MetaEntityAttr CreateLookupEntityAttr(MetaEntity parentEntity)
+        {
+            return new MetaEntityAttr(parentEntity, EntityAttrKind.Lookup);
         }
 
         /// <summary>

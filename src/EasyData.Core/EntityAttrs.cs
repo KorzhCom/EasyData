@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,15 @@ using Newtonsoft.Json;
 
 namespace EasyData
 {
+
+    public enum EntityAttrKind
+    { 
+        Data,
+        Virtual,
+        Lookup
+    }
+
+
     /// <summary>
     /// Represents one entity attribute of data model.
     /// </summary>
@@ -69,9 +79,14 @@ namespace EasyData
         private MetaEntityAttr _lookupAttr = null;
 
         /// <summary>
-        /// Gets ot sets a value indicating wether Attribute is primary a key
+        /// Gets ot sets a value indicating wether Attribute is a primary key
         /// </summary>
         public bool IsPrimaryKey { get; set; } = false;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is a foreign key
+        /// </summary>
+        public bool IsForeignKey { get; set; } = false;
 
         private ValueEditor _defaultEditor = null;
         /// <summary>
@@ -150,6 +165,8 @@ namespace EasyData
         /// <value>The model.</value>
         public virtual MetaData Model => Entity?.Model;
 
+        public EntityAttrKind Kind { get; internal set; }
+
 
         /// <summary>
         /// Checks the Model property and raises an exception if it's null.
@@ -189,24 +206,6 @@ namespace EasyData
         /// </summary>
         public virtual void OnModelAssignment() {}
 
-        private bool _isAggregate = false;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this attribute represents some aggregate column.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this attribute represents some aggregate column; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAggregate
-        {
-            get { return _isAggregate; }
-            set {
-                if (IsVirtual) {
-                    _isAggregate = value;
-                }
-            }
-        }
-
         /// <summary>
         /// Gets or sets the entityAttr attribute caption.
         /// </summary>
@@ -228,7 +227,7 @@ namespace EasyData
         /// <summary>
         /// Indicates if this attribute is a virtual (calculate) one.
         /// </summary>
-        public bool IsVirtual { get; internal set; } = false;
+        public bool IsVirtual => Kind == EntityAttrKind.Virtual;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Attribute"/> class.
@@ -238,14 +237,25 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Korzh.EasyQuery.EntityAttr" /> class.
+        /// Initializes a new instance of the <see cref="T:EasyData.MetaEntityAttr" /> class.
         /// </summary>
         /// <param name="parentEntity">The parent entity.</param>
         /// <param name="isVirtual">if set to <c>true</c> the created attribute will be virtual (calculated).</param>
-        public MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false)
+        public MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false): this(parentEntity, 
+            isVirtual ? EntityAttrKind.Virtual : EntityAttrKind.Data)
+        {
+   
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyData.MetaEntityAttr" /> class.
+        /// </summary>
+        /// <param name="parentEntity"></param>
+        /// <param name="kind"></param>
+        public MetaEntityAttr(MetaEntity parentEntity, EntityAttrKind kind)
         {
             Entity = parentEntity;
-            IsVirtual = isVirtual;
+            Kind = kind;
         }
 
         /// <summary>
@@ -337,11 +347,14 @@ namespace EasyData
             Description = attr.Description;
             Expr = attr.Expr;
             ID = attr.ID;
-            IsVirtual = attr.IsVirtual;
+            Kind = attr.Kind;
             _lookupAttrId = attr._lookupAttrId;
             _defaultEditor = attr.DefaultEditor;
             Size = attr.Size;
             UserData = attr.UserData;
+            IsNullable = attr.IsNullable;
+            IsPrimaryKey = attr.IsPrimaryKey;
+
         }
 
         /// <summary>
@@ -388,10 +401,8 @@ namespace EasyData
             await writer.WritePropertyNameAsync("dtype").ConfigureAwait(false);
             await writer.WriteValueAsync(DataType.ToInt()).ConfigureAwait(false);
 
-            if (IsVirtual) {
-                await writer.WritePropertyNameAsync("virtual").ConfigureAwait(false);
-                await writer.WriteValueAsync(IsVirtual).ConfigureAwait(false);
-            }
+            await writer.WritePropertyNameAsync("kind").ConfigureAwait(false);
+            await writer.WriteValueAsync(Kind.ToString()).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("size").ConfigureAwait(false);
             await writer.WriteValueAsync(Size).ConfigureAwait(false);
@@ -399,9 +410,17 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ipk").ConfigureAwait(false);
             await writer.WriteValueAsync(IsPrimaryKey).ConfigureAwait(false);
 
-            if (this.LookupAttr != null) {
+            await writer.WritePropertyNameAsync("ifk").ConfigureAwait(false);
+            await writer.WriteValueAsync(IsForeignKey).ConfigureAwait(false);
+
+            if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
+            }
+
+            if (DefaultEditor != null) {
+                await writer.WritePropertyNameAsync("edtr").ConfigureAwait(false);
+                await writer.WriteValueAsync(DefaultEditor.Id).ConfigureAwait(false);
             }
 
             //saving the list of operators' IDs
@@ -461,14 +480,24 @@ namespace EasyData
                     DataType = (await reader.ReadAsInt32Async().ConfigureAwait(false))
                         .Value.IntToDataType();
                     break;
+                case "edtr":
+                    DefaultEditor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    break;
+                case "kind":
+                    Kind = (EntityAttrKind)Enum.Parse(typeof(EntityAttrKind), await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    break;
                 case "virtual":
-                    IsVirtual = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    if ((await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value)
+                        Kind = EntityAttrKind.Virtual;
                     break;
                 case "size":
                     Size = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
                     break;
                 case "ipk":
                     IsPrimaryKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "ifk":
+                    IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "lattr":
                     _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);

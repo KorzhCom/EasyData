@@ -88,7 +88,6 @@ namespace EasyData.EntityFrameworkCore
                 ProcessNavigationProperty(entity, entityType, contextModel, navigation, ref attrCounter);
             }
 
-
             return entity;
         }
 
@@ -113,6 +112,7 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
+            entityAttr.IsForeignKey = property.IsForeignKey();
 
             var propInfo = property.PropertyInfo;
             if (propInfo != null) {
