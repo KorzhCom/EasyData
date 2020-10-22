@@ -4225,7 +4225,7 @@ var Widget = /** @class */ (function () {
 /*!****************************************************************************!*\
   !*** c:/projects/easyquery/easyquery.js/packs/core/dist/lib/public_api.js ***!
   \****************************************************************************/
-/*! exports provided: i18n, equtils, DataDisplayFormatter, eqconsts, EqServiceProvider, Tree, EasyQueryDataLoader, GoogleDataConverter, DataKind, LinkType, CondTag, ConditionPart, ExprTag, EditorTag, WidgetGroup, AggrFunction, DataModel, Entity, EntityAttr, Operator, Operand, ValueEditor, EqAction, EqModelLoader, BrowserQueryStorage, EqContext, Widget, EqActionResult, SortDirection, Column, Condition, Expression, InvalidQueryError, Query, QueryChangePart, QueryChangeAction, EqServerExporter, EqServerModelLoader, EqServerQueryExecutor, EqServerQuerySynchronizer, EqServerValueListResolver, EqQueryFileLoader, HttpMethod, HttpRequest, HttpActionResult, HttpResponseError, HttpClient, FormatParser, versionInfo */
+/*! exports provided: equtils, DataDisplayFormatter, eqconsts, EqServiceProvider, Tree, EasyQueryDataLoader, GoogleDataConverter, DataKind, LinkType, CondTag, ConditionPart, ExprTag, EditorTag, WidgetGroup, AggrFunction, DataModel, Entity, EntityAttr, Operator, Operand, ValueEditor, EqAction, EqModelLoader, BrowserQueryStorage, EqContext, Widget, EqActionResult, SortDirection, Column, Condition, Expression, InvalidQueryError, Query, QueryChangePart, QueryChangeAction, EqServerExporter, EqServerModelLoader, EqServerQueryExecutor, EqServerQuerySynchronizer, EqServerValueListResolver, EqQueryFileLoader, HttpMethod, HttpRequest, HttpActionResult, HttpResponseError, HttpClient, FormatParser, versionInfo, i18n */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27662,8 +27662,13 @@ var EasyDataView = /** @class */ (function () {
         this.http = new core_2.HttpClient();
         this.basePath = this.getBasePath();
         this.model = new core_2.DataModel();
-        this.resultTable = new core_1.EasyDataTable();
-        this.http.get(this.endpoint + "/models/EasyData")
+        this.resultTable = new core_1.EasyDataTable({
+            loader: {
+                loadChunk: this.loadChunk.bind(this)
+            }
+        });
+        var modelId = 'EasyData';
+        this.http.get(this.endpoint + "/models/" + modelId)
             .then(function (result) {
             if (result.model) {
                 _this.model.loadFromData(result.model);
@@ -27675,6 +27680,34 @@ var EasyDataView = /** @class */ (function () {
             }
         });
     }
+    EasyDataView.prototype.loadChunk = function (params) {
+        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + this.activeEntity.id;
+        return this.http.get(url, { queryParams: params })
+            .then(function (result) {
+            var dataTable = new core_1.EasyDataTable({
+                chunkSize: 1000
+            });
+            var resultSet = result.resultSet;
+            for (var _i = 0, _a = resultSet.cols; _i < _a.length; _i++) {
+                var col = _a[_i];
+                dataTable.columns.add(col);
+            }
+            for (var _b = 0, _c = resultSet.rows; _b < _c.length; _b++) {
+                var row = _c[_b];
+                dataTable.addRow(row);
+            }
+            var totalRecords = 0;
+            if (result.meta && result.meta.totalRecords) {
+                totalRecords = result.meta.totalRecords;
+            }
+            return {
+                table: dataTable,
+                total: totalRecords,
+                hasNext: !params.needTotal
+                    || params.offset + params.limit < totalRecords
+            };
+        });
+    };
     EasyDataView.prototype.getActiveEntity = function () {
         var decodedUrl = decodeURIComponent(window.location.href);
         var splitIndex = decodedUrl.lastIndexOf('/');
@@ -27718,34 +27751,28 @@ var EasyDataView = /** @class */ (function () {
     };
     EasyDataView.prototype.renderGrid = function () {
         var _this = this;
-        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + this.activeEntity.id;
-        this.http.get(url)
-            .then(function (result) {
-            if (result.resultSet) {
-                _this.resultTable.clear();
-                var resultSet = result.resultSet;
-                for (var _i = 0, _a = resultSet.cols; _i < _a.length; _i++) {
-                    var col = _a[_i];
-                    _this.resultTable.columns.add(col);
-                }
-                _this.resultTable.setTotal(resultSet.rows.length);
-                for (var _b = 0, _c = resultSet.rows; _b < _c.length; _b++) {
-                    var row = _c[_b];
-                    _this.resultTable.addRow(row);
-                }
+        this.loadChunk({ offset: 0, limit: 1000, needTotal: true })
+            .then(function (data) {
+            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                var col = _a[_i];
+                _this.resultTable.columns.add(col);
+            }
+            _this.resultTable.setTotal(data.total);
+            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                var row = _c[_b];
+                _this.resultTable.addRow(row);
             }
             var gridSlot = document.getElementById('Grid');
             _this.grid = new ui_1.EasyGrid({
                 slot: gridSlot,
                 dataTable: _this.resultTable,
                 paging: {
-                    enabled: false,
+                    enabled: true,
                 },
                 addColumns: true,
                 onAddColumnClick: _this.addClickHandler.bind(_this),
                 onGetCellRenderer: _this.manageCellRenderer.bind(_this)
             });
-            _this.grid.refresh();
         });
     };
     EasyDataView.prototype.manageCellRenderer = function (column, defaultRenderer) {

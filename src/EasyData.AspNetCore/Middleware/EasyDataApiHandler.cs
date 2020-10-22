@@ -77,14 +77,41 @@ namespace EasyData.AspNetCore
 
         public virtual async Task HandleGetEntitiesAsync(string modelId, string entityContainer)
         {
-            var result = await Manager.GetEntitiesAsync(modelId, entityContainer);
+            int? offset = null;
+            int? fetch = null;
+            bool needTotal = false;
+            var queryParams = HttpContext.Request.Query;
+            if (queryParams.TryGetValue("offset", out var value)) {
+                offset = int.Parse(value);
+            }
+            if (queryParams.TryGetValue("limit", out value)) {
+                fetch = int.Parse(value);
+            }
+            if (queryParams.TryGetValue("needTotal", out value)) {
+                needTotal = bool.Parse(value);
+            }
+
+            long? total = null;
+            if (needTotal) {
+                total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer);
+            }
+            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
-                await WriteGetEntitiesResponseAsync(jsonWriter, result);
+                await WriteGetEntitiesResponseAsync(jsonWriter, result, total);
             });
         }
 
-        protected virtual async Task WriteGetEntitiesResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result)
+        protected virtual async Task WriteGetEntitiesResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total)
         {
+            if (total.HasValue) {
+                await jsonWriter.WritePropertyNameAsync("meta");
+                await jsonWriter.WriteStartObjectAsync();
+                {
+                    await jsonWriter.WritePropertyNameAsync("totalRecords");
+                    await jsonWriter.WriteValueAsync(total.Value);
+                }
+                await jsonWriter.WriteEndObjectAsync();
+            }
             await jsonWriter.WritePropertyNameAsync("resultSet");
             var jObj = JObject.FromObject(result);
             await jObj.WriteToAsync(jsonWriter);

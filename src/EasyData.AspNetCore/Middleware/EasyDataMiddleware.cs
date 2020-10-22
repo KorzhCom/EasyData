@@ -4,10 +4,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 using EasyData.Services;
 
@@ -132,18 +128,6 @@ namespace EasyData.AspNetCore
             }
 
             await _next(context);
-        }
-
-        protected static async Task WriteJsonResponseAsync(HttpContext context, JObject jObject)
-        {
-            context.Response.ContentType = "application/json; charset=utf-8";
-            using (var responseWriter = new HttpResponseStreamWriter(context.Response.Body, _utf8NoBom)) 
-            using (JsonWriter jsonWriter = new JsonTextWriter(responseWriter))
-            {
-                await jObject.WriteToAsync(jsonWriter);
-                await jsonWriter.FlushAsync();
-            }
-            
         }
     }
 }

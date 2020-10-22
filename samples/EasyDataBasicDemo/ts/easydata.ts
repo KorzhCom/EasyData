@@ -1,10 +1,12 @@
-﻿import { DataRow, DataType, utils as dataUtils, EasyDataTable } from '@easydata/core';
+﻿import { DataRow, DataType, utils as dataUtils, 
+    EasyDataTable, DataLoader, DataChunk, DataChunkDescriptor
+} from '@easydata/core';
 import {
     EasyGrid, DefaultDialogService, browserUtils,
     domel, DomElementBuilder, GridColumn, GridCellRenderer, DialogService
 } from '@easydata/ui';
 
-import { EqContext, DataModel, Entity, EntityAttr, ValueEditor, EditorTag, HttpClient } from '@easyquery/core';
+import { DataModel, Entity, EntityAttr, ValueEditor, EditorTag, HttpClient } from '@easyquery/core';
 import { DefaultDateTimePicker } from '@easyquery/ui';
 
 class EasyDataView {
@@ -30,9 +32,14 @@ class EasyDataView {
         this.basePath = this.getBasePath();
 
         this.model = new DataModel();
-        this.resultTable = new EasyDataTable();
+        this.resultTable = new EasyDataTable({
+            loader: {
+                loadChunk: this.loadChunk.bind(this)
+            }
+        });
 
-        this.http.get(`${this.endpoint}/models/EasyData`)
+        const modelId = 'EasyData';
+        this.http.get(`${this.endpoint}/models/${modelId}`)
             .then(result => {
                 if (result.model) {
                     this.model.loadFromData(result.model);
@@ -43,6 +50,39 @@ class EasyDataView {
                 if (this.activeEntity) {
                     this.renderGrid();
                 }
+            });
+    }
+
+    private loadChunk(params?: DataChunkDescriptor): Promise<DataChunk> {
+        const url = `${this.endpoint}/models/${this.model.getId()}/crud/${this.activeEntity.id}`
+        return this.http.get(url, { queryParams: params as any})
+            .then((result) => {
+
+                const dataTable = new EasyDataTable({
+                    chunkSize: 1000
+                });
+
+                const resultSet = result.resultSet;
+                for(const col of resultSet.cols) {
+                    dataTable.columns.add(col);
+                }
+
+                for(const row of resultSet.rows) {
+                    dataTable.addRow(row);
+                }
+        
+                let totalRecords = 0;
+                if (result.meta && result.meta.totalRecords) {
+                    totalRecords = result.meta.totalRecords;    
+                }
+
+                return {
+                    table: dataTable,
+                    total: totalRecords,
+                    hasNext: !params.needTotal 
+                        || params.offset + params.limit < totalRecords
+                }
+        
             });
     }
 
@@ -87,39 +127,31 @@ class EasyDataView {
     }
 
     private renderGrid() {
-       
-        const url = `${this.endpoint}/models/${this.model.getId()}/crud/${this.activeEntity.id}`;
+        this.loadChunk({ offset: 0, limit: 1000, needTotal: true})
+            .then(data => {
 
-        this.http.get(url)
-            .then(result => {
-
-                if (result.resultSet) {
-                    this.resultTable.clear();
-                    const resultSet = result.resultSet;
-                    for (const col of resultSet.cols) {
-                        this.resultTable.columns.add(col);
-                    }
-
-                    this.resultTable.setTotal(resultSet.rows.length);
-                    for (const row of resultSet.rows) {
-                        this.resultTable.addRow(row);
-                    }
-
+                for(const col of data.table.columns.getItems()) {
+                    this.resultTable.columns.add(col);
                 }
-            
+
+                this.resultTable.setTotal(data.total);
+
+                for(const row of data.table.getCachedRows()) {
+                    this.resultTable.addRow(row);
+                }
+
                 const gridSlot = document.getElementById('Grid');
                 this.grid = new EasyGrid({
                     slot: gridSlot,
                     dataTable: this.resultTable,
                     paging: {
-                        enabled: false,
+                        enabled: true,
                     },
                     addColumns: true,
                     onAddColumnClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this)
                 });
-
-                this.grid.refresh();
+                
             });
     }
 
@@ -216,7 +248,6 @@ class EasyDataView {
             
                                 obj[property] = value;
                             }
-          
            
                             const url = `/api/easydata/models/${this.model.getId()}` +
                                         `/crud/${this.activeEntity.id}/${keys.join(':')}`;

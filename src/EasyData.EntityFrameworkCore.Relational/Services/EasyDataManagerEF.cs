@@ -33,10 +33,10 @@ namespace EasyData.Services
             return Task.FromResult(model);
         }
 
-        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer)
+        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, int? offset = null, int? fetch = null)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType);
+            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, offset, fetch);
 
             var result = new EasyDataResultSet();
 
@@ -56,9 +56,17 @@ namespace EasyData.Services
 
         }
 
-        public override Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr)
+        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer)
         {
-            throw new NotImplementedException();
+            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            return await CountAllEntitiesAsync(DbContext, entityType.ClrType);
+        }
+
+        public override async Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr)
+        {
+            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var keys = GetKeys(entityType, keyStr);
+            return await FindEntityAsync(DbContext, entityType.ClrType, keys);
         }
 
         public override async Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props)
@@ -121,7 +129,6 @@ namespace EasyData.Services
             return entityType;
         }
 
-
         private void MapProperties(object entity, JObject props)
         {
             foreach (var entProp in props) {
@@ -166,17 +173,30 @@ namespace EasyData.Services
             return (object)((dynamic)task).Result;
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType)
+        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, int? offset = null, int? fetch = null)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
                        .Single(m => m.Name == "ListAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext });
+                       .Invoke(this, new object[] { dbContext, offset,fetch });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
+        }
+
+        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType)
+        {
+            var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
+            var task = (Task)methods
+                       .Single(m => m.Name == "CountAllEntitiesAsync"
+                            && m.IsGenericMethodDefinition)
+                       .MakeGenericMethod(entityType)
+                       .Invoke(this, new object[] { dbContext });
+
+            await task.ConfigureAwait(false);
+            return (long)((dynamic)task).Result;
         }
 
         private async Task<T> FindEntityAsync<T>(DbContext dbContext, List<object> keys) where T : class
@@ -184,9 +204,21 @@ namespace EasyData.Services
             return await dbContext.Set<T>().FindAsync(keys.ToArray());
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext) where T : class
+        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, int? offset, int? fetch) where T : class
         {
-            return await dbContext.Set<T>().Cast<object>().ToListAsync();
+            var query = dbContext.Set<T>().Cast<object>();
+            if (offset.HasValue) {
+                query = query.Skip(offset.Value);
+            }
+            if (fetch.HasValue) {
+                query = query.Take(fetch.Value);
+            }
+            return await query.ToListAsync();
+        }
+
+        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext) where T : class
+        {
+            return await dbContext.Set<T>().LongCountAsync();
         }
     }
 }
