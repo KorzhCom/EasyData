@@ -30,15 +30,11 @@ var EasyDataView = /** @class */ (function () {
             }
         });
     }
-    EasyDataView.prototype.loadChunk = function (params) {
-        var _this = this;
-        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + this.activeEntity.id;
+    EasyDataView.prototype.loadChunk = function (params, entityId) {
+        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + (entityId || this.activeEntity.id);
         return this.http.get(url, { queryParams: params })
             .then(function (result) {
             var dataTable = new core_1.EasyDataTable({
-                loader: {
-                    loadChunk: _this.loadChunk.bind(_this)
-                },
                 chunkSize: 1000
             });
             var resultSet = result.resultSet;
@@ -46,25 +42,19 @@ var EasyDataView = /** @class */ (function () {
                 var col = _a[_i];
                 dataTable.columns.add(col);
             }
-            if (_this.resultTable.columns.count === 0) {
-                for (var _b = 0, _c = resultSet.cols; _b < _c.length; _b++) {
-                    var col = _c[_b];
-                    _this.resultTable.columns.add(col);
-                }
-            }
-            for (var _d = 0, _e = resultSet.rows; _d < _e.length; _d++) {
-                var row = _e[_d];
+            for (var _b = 0, _c = resultSet.rows; _b < _c.length; _b++) {
+                var row = _c[_b];
                 dataTable.addRow(row);
             }
             var totalRecords = 0;
             if (result.meta && result.meta.totalRecords) {
                 totalRecords = result.meta.totalRecords;
-                dataTable.setTotal(result.meta.totalRecords);
             }
             return {
                 table: dataTable,
                 total: totalRecords,
-                hasNext: !params.needTotal || params.offset + params.limit < totalRecords
+                hasNext: !params.needTotal
+                    || params.offset + params.limit < totalRecords
             };
         });
     };
@@ -113,11 +103,11 @@ var EasyDataView = /** @class */ (function () {
         var _this = this;
         this.loadChunk({ offset: 0, limit: 1000, needTotal: true })
             .then(function (data) {
-            _this.resultTable.setTotal(data.table.getTotal());
             for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
                 var col = _a[_i];
                 _this.resultTable.columns.add(col);
             }
+            _this.resultTable.setTotal(data.total);
             for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
                 var row = _c[_b];
                 _this.resultTable.addRow(row);
@@ -127,14 +117,12 @@ var EasyDataView = /** @class */ (function () {
                 slot: gridSlot,
                 dataTable: _this.resultTable,
                 paging: {
-                    enabled: true,
+                    pageSize: 15,
                 },
                 addColumns: true,
                 onAddColumnClick: _this.addClickHandler.bind(_this),
                 onGetCellRenderer: _this.manageCellRenderer.bind(_this)
             });
-            _this.grid.setData(_this.resultTable);
-            _this.grid.refresh();
         });
     };
     EasyDataView.prototype.manageCellRenderer = function (column, defaultRenderer) {
@@ -273,6 +261,7 @@ var EasyDataView = /** @class */ (function () {
         });
     };
     EasyDataView.prototype.generateEditForm = function (params) {
+        var _this = this;
         var isIE = ui_1.browserUtils.IsIE();
         var fb;
         var form = ui_1.domel('div')
@@ -308,7 +297,7 @@ var EasyDataView = /** @class */ (function () {
             return attr.defaultEditor || new core_2.ValueEditor();
         };
         var addFormField = function (parent, attr) {
-            var value = params.values
+            var value = params.values && attr.kind !== core_2.EntityAttrKind.Lookup
                 ? params.values.getValue(attr.id)
                 : undefined;
             var editor = getEditor(attr);
@@ -324,6 +313,85 @@ var EasyDataView = /** @class */ (function () {
                 .addChild('label', function (b) { return b
                 .attr('for', attr.id)
                 .addText(attr.caption + ": "); });
+            if (attr.kind === core_2.EntityAttrKind.Lookup) {
+                var lookupEntity_1 = _this.model.getRootEntity()
+                    .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
+                var dataAttr_1 = _this.model.getAttributeById(attr.dataAttr);
+                value = params.values
+                    ? params.values.getValue(dataAttr_1.id)
+                    : undefined;
+                ui_1.domel(parent)
+                    .addChild('input', function (b) {
+                    b.name(dataAttr_1.id);
+                    b.type(getInputType(dataAttr_1.dataType));
+                    b.value(value);
+                    b.on('focus', function (ev) {
+                        var lookupTable = new core_1.EasyDataTable({
+                            loader: {
+                                loadChunk: function (params) { return _this.loadChunk(params, lookupEntity_1.id); }
+                            }
+                        });
+                        _this.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
+                            .then(function (data) {
+                            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                                var col = _a[_i];
+                                lookupTable.columns.add(col);
+                            }
+                            lookupTable.setTotal(data.total);
+                            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                                var row = _c[_b];
+                                lookupTable.addRow(row);
+                            }
+                            var ds = new ui_1.DefaultDialogService();
+                            var gridSlot = null;
+                            var labelEl = null;
+                            var slot = ui_1.domel('div')
+                                .addClass("kfrm-form")
+                                .addChild('div', function (b) {
+                                b.addClass("" + (ui_1.browserUtils.IsIE()
+                                    ? 'kfrm-fields-ie'
+                                    : 'kfrm-fields'));
+                                b.addChild('div')
+                                    .addClass("kfrm-field")
+                                    .addChild('label', function (b) { return labelEl = b
+                                    .toDOM(); })
+                                    .addChild('div', function (b) { return b
+                                    .addClass('kfrm-control')
+                                    .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
+                            })
+                                .toDOM();
+                            var inputEl = ev.target;
+                            var selectedValue = inputEl.value;
+                            var updateLabel = function () { return labelEl.innerHTML = "Selected value: '" + selectedValue + "'"; };
+                            updateLabel();
+                            var lookupGrid = new ui_1.EasyGrid({
+                                slot: gridSlot,
+                                dataTable: lookupTable,
+                                paging: {
+                                    pageSize: 10
+                                },
+                                onRowDbClick: function (ev) {
+                                    var row = ev.row;
+                                    selectedValue = row.getValue(attr.lookupDataAttr);
+                                    updateLabel();
+                                }
+                            });
+                            ds.open({
+                                title: "Select " + lookupEntity_1.caption,
+                                body: slot,
+                                onSubmit: function () {
+                                    ev.target.value = selectedValue;
+                                    return true;
+                                },
+                                onDestroy: function () {
+                                    lookupGrid.destroy();
+                                }
+                            });
+                        });
+                    });
+                });
+                return;
+            }
             switch (editor.tag) {
                 case core_2.EditorTag.DateTime:
                     ui_1.domel(parent)
@@ -387,7 +455,8 @@ var EasyDataView = /** @class */ (function () {
         };
         for (var _i = 0, _a = params.entity.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
-            if (attr.isPrimaryKey && !params.editPK)
+            if (attr.isPrimaryKey && !params.editPK
+                || attr.isForeignKey)
                 continue;
             addFormField(fb.toDOM(), attr);
         }

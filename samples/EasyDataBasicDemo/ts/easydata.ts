@@ -6,7 +6,7 @@ import {
     domel, DomElementBuilder, GridColumn, GridCellRenderer, DialogService
 } from '@easydata/ui';
 
-import { DataModel, Entity, EntityAttr, ValueEditor, EditorTag, HttpClient } from '@easyquery/core';
+import { DataModel, Entity, EntityAttr, ValueEditor, EditorTag, HttpClient, EntityAttrKind } from '@easyquery/core';
 import { DefaultDateTimePicker } from '@easyquery/ui';
 
 class EasyDataView {
@@ -53,8 +53,10 @@ class EasyDataView {
             });
     }
 
-    private loadChunk(params?: DataChunkDescriptor): Promise<DataChunk> {
-        const url = `${this.endpoint}/models/${this.model.getId()}/crud/${this.activeEntity.id}`
+    private loadChunk(params: DataChunkDescriptor, entityId?: string): Promise<DataChunk> {
+        const url = 
+            `${this.endpoint}/models/${this.model.getId()}/crud/${entityId || this.activeEntity.id}`;
+
         return this.http.get(url, { queryParams: params as any})
             .then((result) => {
 
@@ -145,7 +147,7 @@ class EasyDataView {
                     slot: gridSlot,
                     dataTable: this.resultTable,
                     paging: {
-                        enabled: true,
+                        pageSize: 15,
                     },
                     addColumns: true,
                     onAddColumnClick: this.addClickHandler.bind(this),
@@ -351,7 +353,7 @@ class EasyDataView {
         }
 
         const addFormField = (parent: HTMLElement, attr: EntityAttr) => {
-            const value = params.values 
+            let value = params.values && attr.kind !== EntityAttrKind.Lookup
                 ? params.values.getValue(attr.id)
                 : undefined;
 
@@ -370,6 +372,103 @@ class EasyDataView {
                     .attr('for', attr.id)
                     .addText(`${attr.caption}: `)
             );
+
+            if (attr.kind === EntityAttrKind.Lookup) {
+
+                const lookupEntity = this.model.getRootEntity()
+                .subEntities.filter(ent => ent.id == attr.lookupEntity)[0]; 
+                const dataAttr = this.model.getAttributeById(attr.dataAttr);
+
+                value = params.values 
+                    ? params.values.getValue(dataAttr.id)
+                    : undefined;
+
+                domel(parent)
+                .addChild('input', b => { 
+                   b.name(dataAttr.id)
+                   b.type(getInputType(dataAttr.dataType));
+
+                    b.value(value);
+
+                    b.on('focus', (ev) => {
+                   
+                        const lookupTable = new EasyDataTable({
+                            loader: {
+                                loadChunk: (params) => this.loadChunk(params, lookupEntity.id)
+                            } 
+                        });
+
+                        this.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity.id)
+                            .then(data => {
+
+                                for(const col of data.table.columns.getItems()) {
+                                    lookupTable.columns.add(col);
+                                }
+                
+                                lookupTable.setTotal(data.total);
+                
+                                for(const row of data.table.getCachedRows()) {
+                                    lookupTable.addRow(row);
+                                }
+
+                                const ds = new DefaultDialogService();
+                                let gridSlot: HTMLElement = null;
+
+                                let labelEl: HTMLElement = null;
+
+                                const slot = domel('div')
+                                    .addClass(`kfrm-form`)
+                                    .addChild('div', b => {
+                                        b.addClass(`${browserUtils.IsIE() 
+                                            ? 'kfrm-fields-ie' 
+                                            : 'kfrm-fields'}`)
+                                        b.addChild('div')
+                                            .addClass(`kfrm-field`)
+                                            .addChild('label', b => labelEl = b
+                                                .toDOM()
+                                            )
+                                            .addChild('div', b => b
+                                                .addClass('kfrm-control')
+                                                .addChild('div', b => gridSlot = b.toDOM())
+                                            )
+                                    })
+                                    .toDOM();
+        
+                                const inputEl = (ev.target as HTMLInputElement);
+                                let selectedValue = inputEl.value;
+
+                                const updateLabel = () => labelEl.innerHTML = `Selected value: '${selectedValue}'`;
+                                updateLabel();
+
+                                const lookupGrid = new EasyGrid({
+                                    slot: gridSlot,
+                                    dataTable: lookupTable,
+                                    paging: {
+                                        pageSize: 10
+                                    },
+                                    onRowDbClick: (ev) => {
+                                        const row = ev.row;
+                                        selectedValue = row.getValue(attr.lookupDataAttr);
+                                        updateLabel();
+                                    }
+                                });
+                                
+                                ds.open({
+                                    title: `Select ${lookupEntity.caption}`,
+                                    body: slot,
+                                    onSubmit: () => {
+                                        (ev.target as HTMLInputElement).value = selectedValue;
+                                        return true;
+                                    },
+                                    onDestroy: () => {
+                                        lookupGrid.destroy();
+                                    }
+                                });
+                            });
+                    });
+                });
+                return;
+            }
 
             switch (editor.tag) {
                 case EditorTag.DateTime:
@@ -442,7 +541,8 @@ class EasyDataView {
         }
 
         for(const attr of params.entity.attributes) {
-            if (attr.isPrimaryKey && !params.editPK)
+            if (attr.isPrimaryKey && !params.editPK
+                || attr.isForeignKey)
                 continue;
 
             addFormField(fb.toDOM(), attr)

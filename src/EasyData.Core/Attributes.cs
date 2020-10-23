@@ -13,9 +13,9 @@ namespace EasyData
 
     public enum EntityAttrKind
     { 
-        Data,
-        Virtual,
-        Lookup
+        Data = 0,
+        Virtual = 1,
+        Lookup = 2
     }
 
 
@@ -70,13 +70,76 @@ namespace EasyData
         /// </summary>
         public int Index { get; set; } = int.MaxValue;
 
+
+        internal string _lookupEntityId = null;
+        private MetaEntity _lookupEntity = null;
+        public MetaEntity LookupEntity
+        {
+            get {
+                if (_lookupEntity == null)
+                {
+                    CheckModel();
+                    _lookupEntity = string.IsNullOrEmpty(_lookupEntityId)
+                        ? null
+                        : Model.FindEntity(_lookupEntityId);
+
+                }
+
+                return _lookupEntity;
+            }
+            set {
+                _lookupEntity = value;
+                _lookupEntityId = value?.Id;
+            }
+        }
+
+        internal string _lookupDataAttrId = null;
+        private MetaEntityAttr _lookupDataAttr = null;
+        public MetaEntityAttr LookupDataAttribute
+        {
+            get {
+                if (_lookupDataAttr == null)
+                {
+                    CheckModel();
+                    _lookupDataAttr = string.IsNullOrEmpty(_lookupDataAttrId)
+                        ? null
+                        : Model.GetAttributeByID(_lookupDataAttrId, false);
+
+                }
+
+                return _lookupDataAttr;
+            }
+            set {
+                _lookupDataAttr = value;
+                _lookupDataAttrId = value?.ID;
+            }
+        }
+
+        internal string _dataAttrId = null;
+        private MetaEntityAttr _dataAttr = null;
+        public MetaEntityAttr DataAttr
+        {
+            get {
+                if (_dataAttr == null) {
+                    CheckModel();
+                    _dataAttr = string.IsNullOrEmpty(_dataAttrId) 
+                        ? null 
+                        : Model.GetAttributeByID(_dataAttrId, false);
+
+                }
+
+                return _dataAttr;
+            }
+            set {
+                _dataAttr = value;
+                _dataAttrId = value?.ID;
+            }
+        }
+
         /// <summary>
         /// Attribute expression
         /// </summary>
         protected string expr = "";
-
-        internal string _lookupAttrId = null;
-        private MetaEntityAttr _lookupAttr = null;
 
         /// <summary>
         /// Gets ot sets a value indicating wether Attribute is a primary key
@@ -103,16 +166,20 @@ namespace EasyData
             }
         }
 
+        internal string _lookupAttrId = null;
+        private MetaEntityAttr _lookupAttr = null;
+
         /// <summary>
         /// Gets the lookup attribute.
         /// </summary>
         public MetaEntityAttr LookupAttr
         {
             get {
-                if (_lookupAttr == null)
-                {
+                if (_lookupAttr == null) {
                     CheckModel();
-                    _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) ? null : Model.GetAttributeByID(_lookupAttrId, false);
+                    _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) 
+                        ? null 
+                        : Model.GetAttributeByID(_lookupAttrId, false);
 
                 }
 
@@ -121,8 +188,7 @@ namespace EasyData
 
             set {
                 _lookupAttr = value;
-                if (value != null)
-                {
+                if (value != null) {
                     _lookupAttrId = value.ID;
                     _lookupAttr._lookupAttrId = ID;
                 }
@@ -402,7 +468,7 @@ namespace EasyData
             await writer.WriteValueAsync(DataType.ToInt()).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("kind").ConfigureAwait(false);
-            await writer.WriteValueAsync(Kind.ToString()).ConfigureAwait(false);
+            await writer.WriteValueAsync(Kind).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("size").ConfigureAwait(false);
             await writer.WriteValueAsync(Size).ConfigureAwait(false);
@@ -416,6 +482,21 @@ namespace EasyData
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
+            }
+
+            if (DataAttr != null) {
+                await writer.WritePropertyNameAsync("dattr").ConfigureAwait(false);
+                await writer.WriteValueAsync(DataAttr.ID).ConfigureAwait(false);
+            }
+
+            if (LookupEntity != null) {
+                await writer.WritePropertyNameAsync("lent").ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupEntity.Id).ConfigureAwait(false);
+            }
+
+            if (LookupDataAttribute != null) {
+                await writer.WritePropertyNameAsync("ldattr").ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupDataAttribute.ID).ConfigureAwait(false);
             }
 
             if (DefaultEditor != null) {
@@ -484,7 +565,7 @@ namespace EasyData
                     DefaultEditor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
                     break;
                 case "kind":
-                    Kind = (EntityAttrKind)Enum.Parse(typeof(EntityAttrKind), await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    Kind = (EntityAttrKind)await reader.ReadAsInt32Async().ConfigureAwait(false);
                     break;
                 case "virtual":
                     if ((await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value)
@@ -501,6 +582,15 @@ namespace EasyData
                     break;
                 case "lattr":
                     _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "dattr":
+                    _dataAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "ldattr":
+                    _lookupDataAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "lent":
+                    _lookupEntityId = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "opg":
                     await reader.SkipAsync().ConfigureAwait(false);

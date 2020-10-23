@@ -1675,6 +1675,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EntityAttr", function() { return EntityAttr; });
 /* harmony import */ var _easydata_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @easydata/core */ "../../../easyquery/easyquery.js/packs/easydata.core/dist/lib/public_api.js");
 /* harmony import */ var _value_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./value_editor */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/value_editor.js");
+/* harmony import */ var _types_entity_attr_kind__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/entity_attr_kind */ "../../../easyquery/easyquery.js/packs/core/dist/lib/types/entity_attr_kind.js");
+
 
 
 /**
@@ -1775,6 +1777,7 @@ var EntityAttr = /** @class */ (function () {
         this.lookupAttr = "";
         this.expr = "";
         this.entity = entity;
+        this.kind = _types_entity_attr_kind__WEBPACK_IMPORTED_MODULE_2__["EntityAttrKind"].Data;
     }
     /**
      * Loads entity attribute from JSON representation object.
@@ -1791,11 +1794,16 @@ var EntityAttr = /** @class */ (function () {
             this.useInResult = data.uir;
             this.useInSorting = data.uis;
             this.isPrimaryKey = data.ipk;
+            this.isForeignKey = data.ifk;
             this.size = data.size;
             this.expr = data.sql;
             this.defaultOperator = data.defOperator;
             this.operators = data.ops;
             this.lookupAttr = data.lattr;
+            this.lookupEntity = data.lent;
+            this.dataAttr = data.dattr;
+            this.lookupDataAttr = data.ldattr;
+            this.kind = data.kind;
             if (data.udata)
                 this.userData = data.udata;
             if (data.edtr) {
@@ -4225,7 +4233,7 @@ var Widget = /** @class */ (function () {
 /*!****************************************************************************!*\
   !*** c:/projects/easyquery/easyquery.js/packs/core/dist/lib/public_api.js ***!
   \****************************************************************************/
-/*! exports provided: equtils, DataDisplayFormatter, eqconsts, EqServiceProvider, Tree, EasyQueryDataLoader, GoogleDataConverter, DataKind, LinkType, CondTag, ConditionPart, ExprTag, EditorTag, WidgetGroup, AggrFunction, DataModel, Entity, EntityAttr, Operator, Operand, ValueEditor, EqAction, EqModelLoader, BrowserQueryStorage, EqContext, Widget, EqActionResult, SortDirection, Column, Condition, Expression, InvalidQueryError, Query, QueryChangePart, QueryChangeAction, EqServerExporter, EqServerModelLoader, EqServerQueryExecutor, EqServerQuerySynchronizer, EqServerValueListResolver, EqQueryFileLoader, HttpMethod, HttpRequest, HttpActionResult, HttpResponseError, HttpClient, FormatParser, versionInfo, i18n */
+/*! exports provided: equtils, DataDisplayFormatter, eqconsts, EqServiceProvider, Tree, EasyQueryDataLoader, GoogleDataConverter, DataKind, LinkType, CondTag, ConditionPart, ExprTag, EditorTag, WidgetGroup, EntityAttrKind, AggrFunction, DataModel, Entity, EntityAttr, Operator, Operand, ValueEditor, EqAction, EqModelLoader, BrowserQueryStorage, EqContext, Widget, EqActionResult, SortDirection, Column, Condition, Expression, InvalidQueryError, Query, QueryChangePart, QueryChangeAction, EqServerExporter, EqServerModelLoader, EqServerQueryExecutor, EqServerQuerySynchronizer, EqServerValueListResolver, EqQueryFileLoader, HttpMethod, HttpRequest, HttpActionResult, HttpResponseError, HttpClient, FormatParser, versionInfo, i18n */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4272,103 +4280,107 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _types_widget_group__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./types/widget_group */ "../../../easyquery/easyquery.js/packs/core/dist/lib/types/widget_group.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WidgetGroup", function() { return _types_widget_group__WEBPACK_IMPORTED_MODULE_13__["WidgetGroup"]; });
 
-/* harmony import */ var _dm_aggr_function__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./dm/aggr_function */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/aggr_function.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AggrFunction", function() { return _dm_aggr_function__WEBPACK_IMPORTED_MODULE_14__["AggrFunction"]; });
+/* harmony import */ var _types_entity_attr_kind__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./types/entity_attr_kind */ "../../../easyquery/easyquery.js/packs/core/dist/lib/types/entity_attr_kind.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EntityAttrKind", function() { return _types_entity_attr_kind__WEBPACK_IMPORTED_MODULE_14__["EntityAttrKind"]; });
 
-/* harmony import */ var _dm_data_model__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./dm/data_model */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/data_model.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DataModel", function() { return _dm_data_model__WEBPACK_IMPORTED_MODULE_15__["DataModel"]; });
+/* harmony import */ var _dm_aggr_function__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./dm/aggr_function */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/aggr_function.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AggrFunction", function() { return _dm_aggr_function__WEBPACK_IMPORTED_MODULE_15__["AggrFunction"]; });
 
-/* harmony import */ var _dm_entity__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./dm/entity */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/entity.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Entity", function() { return _dm_entity__WEBPACK_IMPORTED_MODULE_16__["Entity"]; });
+/* harmony import */ var _dm_data_model__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./dm/data_model */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/data_model.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DataModel", function() { return _dm_data_model__WEBPACK_IMPORTED_MODULE_16__["DataModel"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EntityAttr", function() { return _dm_entity__WEBPACK_IMPORTED_MODULE_16__["EntityAttr"]; });
+/* harmony import */ var _dm_entity__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./dm/entity */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/entity.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Entity", function() { return _dm_entity__WEBPACK_IMPORTED_MODULE_17__["Entity"]; });
 
-/* harmony import */ var _dm_operator__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./dm/operator */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/operator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Operator", function() { return _dm_operator__WEBPACK_IMPORTED_MODULE_17__["Operator"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EntityAttr", function() { return _dm_entity__WEBPACK_IMPORTED_MODULE_17__["EntityAttr"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Operand", function() { return _dm_operator__WEBPACK_IMPORTED_MODULE_17__["Operand"]; });
+/* harmony import */ var _dm_operator__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./dm/operator */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/operator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Operator", function() { return _dm_operator__WEBPACK_IMPORTED_MODULE_18__["Operator"]; });
 
-/* harmony import */ var _dm_value_editor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./dm/value_editor */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/value_editor.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ValueEditor", function() { return _dm_value_editor__WEBPACK_IMPORTED_MODULE_18__["ValueEditor"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Operand", function() { return _dm_operator__WEBPACK_IMPORTED_MODULE_18__["Operand"]; });
 
-/* harmony import */ var _main_eq_actions__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./main/eq_actions */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/eq_actions.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqAction", function() { return _main_eq_actions__WEBPACK_IMPORTED_MODULE_19__["EqAction"]; });
+/* harmony import */ var _dm_value_editor__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./dm/value_editor */ "../../../easyquery/easyquery.js/packs/core/dist/lib/dm/value_editor.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ValueEditor", function() { return _dm_value_editor__WEBPACK_IMPORTED_MODULE_19__["ValueEditor"]; });
 
-/* harmony import */ var _main_model_loader__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./main/model_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/model_loader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqModelLoader", function() { return _main_model_loader__WEBPACK_IMPORTED_MODULE_20__["EqModelLoader"]; });
+/* harmony import */ var _main_eq_actions__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./main/eq_actions */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/eq_actions.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqAction", function() { return _main_eq_actions__WEBPACK_IMPORTED_MODULE_20__["EqAction"]; });
 
-/* harmony import */ var _main_query_storage__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./main/query_storage */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/query_storage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BrowserQueryStorage", function() { return _main_query_storage__WEBPACK_IMPORTED_MODULE_21__["BrowserQueryStorage"]; });
+/* harmony import */ var _main_model_loader__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./main/model_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/model_loader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqModelLoader", function() { return _main_model_loader__WEBPACK_IMPORTED_MODULE_21__["EqModelLoader"]; });
 
-/* harmony import */ var _main_context__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./main/context */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/context.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqContext", function() { return _main_context__WEBPACK_IMPORTED_MODULE_22__["EqContext"]; });
+/* harmony import */ var _main_query_storage__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./main/query_storage */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/query_storage.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BrowserQueryStorage", function() { return _main_query_storage__WEBPACK_IMPORTED_MODULE_22__["BrowserQueryStorage"]; });
 
-/* harmony import */ var _main_widget__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./main/widget */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/widget.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Widget", function() { return _main_widget__WEBPACK_IMPORTED_MODULE_23__["Widget"]; });
+/* harmony import */ var _main_context__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./main/context */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/context.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqContext", function() { return _main_context__WEBPACK_IMPORTED_MODULE_23__["EqContext"]; });
 
-/* harmony import */ var _main_messages__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./main/messages */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/messages.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqActionResult", function() { return _main_messages__WEBPACK_IMPORTED_MODULE_24__["EqActionResult"]; });
+/* harmony import */ var _main_widget__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./main/widget */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/widget.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Widget", function() { return _main_widget__WEBPACK_IMPORTED_MODULE_24__["Widget"]; });
 
-/* harmony import */ var _query_column__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./query/column */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/column.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SortDirection", function() { return _query_column__WEBPACK_IMPORTED_MODULE_25__["SortDirection"]; });
+/* harmony import */ var _main_messages__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./main/messages */ "../../../easyquery/easyquery.js/packs/core/dist/lib/main/messages.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqActionResult", function() { return _main_messages__WEBPACK_IMPORTED_MODULE_25__["EqActionResult"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Column", function() { return _query_column__WEBPACK_IMPORTED_MODULE_25__["Column"]; });
+/* harmony import */ var _query_column__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./query/column */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/column.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SortDirection", function() { return _query_column__WEBPACK_IMPORTED_MODULE_26__["SortDirection"]; });
 
-/* harmony import */ var _query_condition__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./query/condition */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/condition.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Condition", function() { return _query_condition__WEBPACK_IMPORTED_MODULE_26__["Condition"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Column", function() { return _query_column__WEBPACK_IMPORTED_MODULE_26__["Column"]; });
 
-/* harmony import */ var _query_expression__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./query/expression */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/expression.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Expression", function() { return _query_expression__WEBPACK_IMPORTED_MODULE_27__["Expression"]; });
+/* harmony import */ var _query_condition__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./query/condition */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/condition.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Condition", function() { return _query_condition__WEBPACK_IMPORTED_MODULE_27__["Condition"]; });
 
-/* harmony import */ var _query_query__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./query/query */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/query.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InvalidQueryError", function() { return _query_query__WEBPACK_IMPORTED_MODULE_28__["InvalidQueryError"]; });
+/* harmony import */ var _query_expression__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./query/expression */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/expression.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Expression", function() { return _query_expression__WEBPACK_IMPORTED_MODULE_28__["Expression"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Query", function() { return _query_query__WEBPACK_IMPORTED_MODULE_28__["Query"]; });
+/* harmony import */ var _query_query__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./query/query */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/query.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InvalidQueryError", function() { return _query_query__WEBPACK_IMPORTED_MODULE_29__["InvalidQueryError"]; });
 
-/* harmony import */ var _query_query_events__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./query/query_events */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/query_events.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QueryChangePart", function() { return _query_query_events__WEBPACK_IMPORTED_MODULE_29__["QueryChangePart"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Query", function() { return _query_query__WEBPACK_IMPORTED_MODULE_29__["Query"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QueryChangeAction", function() { return _query_query_events__WEBPACK_IMPORTED_MODULE_29__["QueryChangeAction"]; });
+/* harmony import */ var _query_query_events__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./query/query_events */ "../../../easyquery/easyquery.js/packs/core/dist/lib/query/query_events.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QueryChangePart", function() { return _query_query_events__WEBPACK_IMPORTED_MODULE_30__["QueryChangePart"]; });
 
-/* harmony import */ var _eqs_eqs_exporter__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./eqs/eqs_exporter */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_exporter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerExporter", function() { return _eqs_eqs_exporter__WEBPACK_IMPORTED_MODULE_30__["EqServerExporter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QueryChangeAction", function() { return _query_query_events__WEBPACK_IMPORTED_MODULE_30__["QueryChangeAction"]; });
 
-/* harmony import */ var _eqs_eqs_model_loader__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./eqs/eqs_model_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_model_loader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerModelLoader", function() { return _eqs_eqs_model_loader__WEBPACK_IMPORTED_MODULE_31__["EqServerModelLoader"]; });
+/* harmony import */ var _eqs_eqs_exporter__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./eqs/eqs_exporter */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_exporter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerExporter", function() { return _eqs_eqs_exporter__WEBPACK_IMPORTED_MODULE_31__["EqServerExporter"]; });
 
-/* harmony import */ var _eqs_eqs_query_executor__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./eqs/eqs_query_executor */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_executor.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerQueryExecutor", function() { return _eqs_eqs_query_executor__WEBPACK_IMPORTED_MODULE_32__["EqServerQueryExecutor"]; });
+/* harmony import */ var _eqs_eqs_model_loader__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./eqs/eqs_model_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_model_loader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerModelLoader", function() { return _eqs_eqs_model_loader__WEBPACK_IMPORTED_MODULE_32__["EqServerModelLoader"]; });
 
-/* harmony import */ var _eqs_eqs_query_synchronizer__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./eqs/eqs_query_synchronizer */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_synchronizer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerQuerySynchronizer", function() { return _eqs_eqs_query_synchronizer__WEBPACK_IMPORTED_MODULE_33__["EqServerQuerySynchronizer"]; });
+/* harmony import */ var _eqs_eqs_query_executor__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./eqs/eqs_query_executor */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_executor.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerQueryExecutor", function() { return _eqs_eqs_query_executor__WEBPACK_IMPORTED_MODULE_33__["EqServerQueryExecutor"]; });
 
-/* harmony import */ var _eqs_eqs_value_list_resolver__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./eqs/eqs_value_list_resolver */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_value_list_resolver.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerValueListResolver", function() { return _eqs_eqs_value_list_resolver__WEBPACK_IMPORTED_MODULE_34__["EqServerValueListResolver"]; });
+/* harmony import */ var _eqs_eqs_query_synchronizer__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./eqs/eqs_query_synchronizer */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_synchronizer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerQuerySynchronizer", function() { return _eqs_eqs_query_synchronizer__WEBPACK_IMPORTED_MODULE_34__["EqServerQuerySynchronizer"]; });
 
-/* harmony import */ var _eqs_eqs_query_file_loader__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./eqs/eqs_query_file_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_file_loader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqQueryFileLoader", function() { return _eqs_eqs_query_file_loader__WEBPACK_IMPORTED_MODULE_35__["EqQueryFileLoader"]; });
+/* harmony import */ var _eqs_eqs_value_list_resolver__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./eqs/eqs_value_list_resolver */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_value_list_resolver.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqServerValueListResolver", function() { return _eqs_eqs_value_list_resolver__WEBPACK_IMPORTED_MODULE_35__["EqServerValueListResolver"]; });
 
-/* harmony import */ var _http_http_client__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./http/http_client */ "../../../easyquery/easyquery.js/packs/core/dist/lib/http/http_client.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpMethod", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_36__["HttpMethod"]; });
+/* harmony import */ var _eqs_eqs_query_file_loader__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./eqs/eqs_query_file_loader */ "../../../easyquery/easyquery.js/packs/core/dist/lib/eqs/eqs_query_file_loader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EqQueryFileLoader", function() { return _eqs_eqs_query_file_loader__WEBPACK_IMPORTED_MODULE_36__["EqQueryFileLoader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpRequest", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_36__["HttpRequest"]; });
+/* harmony import */ var _http_http_client__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./http/http_client */ "../../../easyquery/easyquery.js/packs/core/dist/lib/http/http_client.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpMethod", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_37__["HttpMethod"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpActionResult", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_36__["HttpActionResult"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpRequest", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_37__["HttpRequest"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpResponseError", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_36__["HttpResponseError"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpActionResult", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_37__["HttpActionResult"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpClient", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_36__["HttpClient"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpResponseError", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_37__["HttpResponseError"]; });
 
-/* harmony import */ var _utils_format_parser__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./utils/format_parser */ "../../../easyquery/easyquery.js/packs/core/dist/lib/utils/format_parser.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FormatParser", function() { return _utils_format_parser__WEBPACK_IMPORTED_MODULE_37__["FormatParser"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HttpClient", function() { return _http_http_client__WEBPACK_IMPORTED_MODULE_37__["HttpClient"]; });
 
-/* harmony import */ var _utils_version_info__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./utils/version_info */ "../../../easyquery/easyquery.js/packs/core/dist/lib/utils/version_info.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "versionInfo", function() { return _utils_version_info__WEBPACK_IMPORTED_MODULE_38__["versionInfo"]; });
+/* harmony import */ var _utils_format_parser__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./utils/format_parser */ "../../../easyquery/easyquery.js/packs/core/dist/lib/utils/format_parser.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FormatParser", function() { return _utils_format_parser__WEBPACK_IMPORTED_MODULE_38__["FormatParser"]; });
 
-/* harmony import */ var _easydata_core__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! @easydata/core */ "../../../easyquery/easyquery.js/packs/easydata.core/dist/lib/public_api.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _easydata_core__WEBPACK_IMPORTED_MODULE_39__["i18n"]; });
+/* harmony import */ var _utils_version_info__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./utils/version_info */ "../../../easyquery/easyquery.js/packs/core/dist/lib/utils/version_info.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "versionInfo", function() { return _utils_version_info__WEBPACK_IMPORTED_MODULE_39__["versionInfo"]; });
 
-/* harmony import */ var _i18n_text_resources__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./i18n/text_resources */ "../../../easyquery/easyquery.js/packs/core/dist/lib/i18n/text_resources.js");
+/* harmony import */ var _easydata_core__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! @easydata/core */ "../../../easyquery/easyquery.js/packs/easydata.core/dist/lib/public_api.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _easydata_core__WEBPACK_IMPORTED_MODULE_40__["i18n"]; });
+
+/* harmony import */ var _i18n_text_resources__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./i18n/text_resources */ "../../../easyquery/easyquery.js/packs/core/dist/lib/i18n/text_resources.js");
+
 
 
 
@@ -6355,6 +6367,26 @@ var EditorTag;
     EditorTag["BindToParentColumn"] = "BINDTOPARENTCOLUMN";
 })(EditorTag || (EditorTag = {}));
 //# sourceMappingURL=editor_tag.js.map
+
+/***/ }),
+
+/***/ "../../../easyquery/easyquery.js/packs/core/dist/lib/types/entity_attr_kind.js":
+/*!****************************************************************************************!*\
+  !*** c:/projects/easyquery/easyquery.js/packs/core/dist/lib/types/entity_attr_kind.js ***!
+  \****************************************************************************************/
+/*! exports provided: EntityAttrKind */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EntityAttrKind", function() { return EntityAttrKind; });
+var EntityAttrKind;
+(function (EntityAttrKind) {
+    EntityAttrKind[EntityAttrKind["Data"] = 0] = "Data";
+    EntityAttrKind[EntityAttrKind["Virtual"] = 1] = "Virtual";
+    EntityAttrKind[EntityAttrKind["Lookup"] = 2] = "Lookup";
+})(EntityAttrKind || (EntityAttrKind = {}));
+//# sourceMappingURL=entity_attr_kind.js.map
 
 /***/ }),
 
@@ -27680,8 +27712,8 @@ var EasyDataView = /** @class */ (function () {
             }
         });
     }
-    EasyDataView.prototype.loadChunk = function (params) {
-        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + this.activeEntity.id;
+    EasyDataView.prototype.loadChunk = function (params, entityId) {
+        var url = this.endpoint + "/models/" + this.model.getId() + "/crud/" + (entityId || this.activeEntity.id);
         return this.http.get(url, { queryParams: params })
             .then(function (result) {
             var dataTable = new core_1.EasyDataTable({
@@ -27767,7 +27799,7 @@ var EasyDataView = /** @class */ (function () {
                 slot: gridSlot,
                 dataTable: _this.resultTable,
                 paging: {
-                    enabled: true,
+                    pageSize: 15,
                 },
                 addColumns: true,
                 onAddColumnClick: _this.addClickHandler.bind(_this),
@@ -27911,6 +27943,7 @@ var EasyDataView = /** @class */ (function () {
         });
     };
     EasyDataView.prototype.generateEditForm = function (params) {
+        var _this = this;
         var isIE = ui_1.browserUtils.IsIE();
         var fb;
         var form = ui_1.domel('div')
@@ -27946,7 +27979,7 @@ var EasyDataView = /** @class */ (function () {
             return attr.defaultEditor || new core_2.ValueEditor();
         };
         var addFormField = function (parent, attr) {
-            var value = params.values
+            var value = params.values && attr.kind !== core_2.EntityAttrKind.Lookup
                 ? params.values.getValue(attr.id)
                 : undefined;
             var editor = getEditor(attr);
@@ -27962,6 +27995,85 @@ var EasyDataView = /** @class */ (function () {
                 .addChild('label', function (b) { return b
                 .attr('for', attr.id)
                 .addText(attr.caption + ": "); });
+            if (attr.kind === core_2.EntityAttrKind.Lookup) {
+                var lookupEntity_1 = _this.model.getRootEntity()
+                    .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
+                var dataAttr_1 = _this.model.getAttributeById(attr.dataAttr);
+                value = params.values
+                    ? params.values.getValue(dataAttr_1.id)
+                    : undefined;
+                ui_1.domel(parent)
+                    .addChild('input', function (b) {
+                    b.name(dataAttr_1.id);
+                    b.type(getInputType(dataAttr_1.dataType));
+                    b.value(value);
+                    b.on('focus', function (ev) {
+                        var lookupTable = new core_1.EasyDataTable({
+                            loader: {
+                                loadChunk: function (params) { return _this.loadChunk(params, lookupEntity_1.id); }
+                            }
+                        });
+                        _this.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
+                            .then(function (data) {
+                            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                                var col = _a[_i];
+                                lookupTable.columns.add(col);
+                            }
+                            lookupTable.setTotal(data.total);
+                            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                                var row = _c[_b];
+                                lookupTable.addRow(row);
+                            }
+                            var ds = new ui_1.DefaultDialogService();
+                            var gridSlot = null;
+                            var labelEl = null;
+                            var slot = ui_1.domel('div')
+                                .addClass("kfrm-form")
+                                .addChild('div', function (b) {
+                                b.addClass("" + (ui_1.browserUtils.IsIE()
+                                    ? 'kfrm-fields-ie'
+                                    : 'kfrm-fields'));
+                                b.addChild('div')
+                                    .addClass("kfrm-field")
+                                    .addChild('label', function (b) { return labelEl = b
+                                    .toDOM(); })
+                                    .addChild('div', function (b) { return b
+                                    .addClass('kfrm-control')
+                                    .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
+                            })
+                                .toDOM();
+                            var inputEl = ev.target;
+                            var selectedValue = inputEl.value;
+                            var updateLabel = function () { return labelEl.innerHTML = "Selected value: '" + selectedValue + "'"; };
+                            updateLabel();
+                            var lookupGrid = new ui_1.EasyGrid({
+                                slot: gridSlot,
+                                dataTable: lookupTable,
+                                paging: {
+                                    pageSize: 10
+                                },
+                                onRowDbClick: function (ev) {
+                                    var row = ev.row;
+                                    selectedValue = row.getValue(attr.lookupDataAttr);
+                                    updateLabel();
+                                }
+                            });
+                            ds.open({
+                                title: "Select " + lookupEntity_1.caption,
+                                body: slot,
+                                onSubmit: function () {
+                                    ev.target.value = selectedValue;
+                                    return true;
+                                },
+                                onDestroy: function () {
+                                    lookupGrid.destroy();
+                                }
+                            });
+                        });
+                    });
+                });
+                return;
+            }
             switch (editor.tag) {
                 case core_2.EditorTag.DateTime:
                     ui_1.domel(parent)
@@ -28025,7 +28137,8 @@ var EasyDataView = /** @class */ (function () {
         };
         for (var _i = 0, _a = params.entity.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
-            if (attr.isPrimaryKey && !params.editPK)
+            if (attr.isPrimaryKey && !params.editPK
+                || attr.isForeignKey)
                 continue;
             addFormField(fb.toDOM(), attr);
         }
