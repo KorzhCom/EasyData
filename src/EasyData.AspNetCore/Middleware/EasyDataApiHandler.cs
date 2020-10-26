@@ -196,10 +196,12 @@ namespace EasyData.AspNetCore
                 throw ex;
             }
 
+            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
             if (ex is ContainerNotFoundException || ex is EntityNotFoundException)
                 HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
-            await WriteErrorJsonResponseAsync(HttpContext, ex.Message);
+            await WriteErrorJsonResponseAsync(HttpContext, ex.InnerException?.Message ?? ex.Message);
             return;
         }
 

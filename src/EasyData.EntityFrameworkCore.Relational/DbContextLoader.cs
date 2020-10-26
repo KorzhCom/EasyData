@@ -76,7 +76,7 @@ namespace EasyData.EntityFrameworkCore
 
         protected string GetEntityName(IEntityType entityType)
         { 
-            return entityType.Name.Split('.').Last(); ;
+            return entityType.Name.Split('.').Last();
         }
 
 
@@ -169,6 +169,8 @@ namespace EasyData.EntityFrameworkCore
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();
+
+            entityAttr.IsNullable = property.IsNullable;
 
             var propInfo = property.PropertyInfo;
             if (propInfo != null) {

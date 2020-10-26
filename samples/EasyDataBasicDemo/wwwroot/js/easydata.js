@@ -1772,6 +1772,8 @@ var EntityAttr = /** @class */ (function () {
         this.useInResult = true;
         this.useInSorting = true;
         this.isPrimaryKey = false;
+        this.isForeignKey = false;
+        this.isNullable = true;
         this.defaultOperator = "";
         this.operators = new Array();
         this.lookupAttr = "";
@@ -1803,6 +1805,9 @@ var EntityAttr = /** @class */ (function () {
             this.lookupEntity = data.lent;
             this.dataAttr = data.dattr;
             this.lookupDataAttr = data.ldattr;
+            this.isNullable = typeof data.nul !== 'undefined'
+                ? data.nul
+                : this.isNullable;
             this.kind = data.kind;
             if (data.udata)
                 this.userData = data.udata;
@@ -7913,6 +7918,10 @@ var utils;
         return (typeof value !== 'undefined') ? value : defaultValue;
     }
     utils.getIfDefined = getIfDefined;
+    function IsDefinedAndNotNull(value) {
+        return typeof value !== 'undefined' && value !== null;
+    }
+    utils.IsDefinedAndNotNull = IsDefinedAndNotNull;
     function copyArrayTo(collection1, collection2) {
         var len1 = collection1.length;
         var len2 = collection2.length;
@@ -26926,7 +26935,7 @@ exports.push([module.i, ".kdlg-modal, .kdlg-modal-background {\r\n    bottom: 0;
 
 exports = module.exports = __webpack_require__(/*! ../../../../../../../EasyData/samples/EasyDataBasicDemo/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "/* BUTTONS */\r\n\r\n.kfrm-buttons {\r\n    align-items: center;\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: flex-start;\r\n}\r\n\r\n.kfrm-buttons.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-buttons.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-buttons:last-child {\r\n    margin-bottom: -.5rem;\r\n}\r\n\r\n.kfrm-buttons .kfrm-button {\r\n    margin-bottom: .5rem;\r\n}\r\n\r\n.kfrm-button {\r\n    position: relative;\r\n    vertical-align: top;\r\n    line-height: 1.5;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1rem;\r\n    height: 2.5em;\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n\r\n\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-width: 1px;\r\n    color: #363636;\r\n    cursor: pointer;\r\n    justify-content: center;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: 1em;\r\n    padding-right: 1em;\r\n    padding-top: calc(.5em - 1px);\r\n    text-align: center;\r\n    white-space: nowrap;\r\n\r\n    -webkit-touch-callout:none;\r\n    -webkit-user-select:none;\r\n    -moz-user-select:none;\r\n    -ms-user-select:none;\r\n    user-select:none\r\n}\r\n\r\n.kfrm-button:not(:last-child) {\r\n    margin-right: .5em;\r\n}\r\n\r\n.kfrm-button.is-hovered, .kfrm-button:hover {\r\n    border-color: #b5b5b5;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused, .kfrm-button:focus {\r\n    outline: none;\r\n    border-color: #3273dc;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused:not(:active), .kfrm-button:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-active, .kfrm-button:active {\r\n    border-color: #4a4a4a;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button[disabled], fieldset[disabled] .kfrm-button {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    box-shadow: none;\r\n    opacity: .5;\r\n    cursor: not-allowed;\r\n}\r\n\r\n.kfrm-button.is-loading {\r\n    color: transparent!important;\r\n    pointer-events: none;\r\n}\r\n\r\n.kfrm-button.is-loading::after {\r\n    -webkit-animation:spinAround .5s infinite linear;\r\n    animation:spinAround .5s infinite linear;\r\n    border:2px solid #dbdbdb;\r\n    border-radius:290486px;\r\n    border-right-color:transparent;\r\n    border-top-color:transparent;\r\n    content:\"\";\r\n    display:block;\r\n    height:1em;\r\n    width:1em;\r\n\r\n    left: calc(50% - (1em / 2));\r\n    top: calc(50% - (1em / 2));\r\n    position: absolute!important;\r\n}\r\n\r\n@keyframes spinAround {\r\n    from {\r\n        transform:rotate(0deg);\r\n    }\r\n    to {\r\n        transform:rotate(360deg);\r\n    }\r\n}\r\n\r\n/* SIZES */\r\n\r\n.kfrm-button.size-small,\r\n.kfrm-buttons.size-small .kfrm-button:not(.size-default):not(.size-medium):not(.size-large) {\r\n    border-radius: 2px;\r\n    font-size: .75rem;\r\n}\r\n\r\n.kfrm-button.size-default\r\n.kfrm-buttons.size-default .kfrm-button:not(.size-small):not(.size-medium):not(.size-large) {\r\n    font-size: 1rem;\r\n}\r\n\r\n.kfrm-button.size-medium,\r\n.kfrm-buttons.size-medium .kfrm-button:not(.size-small):not(.size-default):not(.size-large) {\r\n    font-size: 1.25rem;\r\n}\r\n\r\n.kfrm-button.size-large\r\n.kfrm-buttons.size-large .kfrm-button:not(.size-small):not(.size-default):not(.size-medium) {\r\n    font-size: 1.5rem;\r\n}\r\n\r\n/* SIZES END */\r\n\r\n\r\n\r\n/* COLORS */\r\n\r\n/* white */\r\n.kfrm-button.is-white {\r\n    background-color: #fff;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-hovered, .kfrm-button.is-white:hover {\r\n    background-color: #f9f9f9;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused, .kfrm-button.is-white:focus {\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused:not(:active), .kfrm-button.is-white:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(150,150,150,.15);\r\n}\r\n\r\n.kfrm-button.is-white.is-active, .kfrm-button.is-white:active {\r\n    background-color: #f2f2f2;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n/* dark */\r\n\r\n.kfrm-button.is-dark {\r\n    background-color: #363636e6;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-hovered, .kfrm-button.is-dark:hover {\r\n    background-color: #2f2f2f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused, .kfrm-button.is-dark:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused:not(:active), .kfrm-button.is-dark:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(54,54,54,.25);\r\n}\r\n\r\n.kfrm-button.is-dark.is-active, .kfrm-button.is-dark:active {\r\n    background-color: #292929;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n/* primary */\r\n\r\n.kfrm-button.is-primary {\r\n    background-color: #00d1b2;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-hovered, .kfrm-button.is-primary:hover {\r\n    background-color: #00c4a7;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused, .kfrm-button.is-primary:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused:not(:active), .kfrm-button.is-primary:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(0,209,178,.25);\r\n}\r\n\r\n.kfrm-button.is-primary.is-active, .kfrm-button.is-primary:active {\r\n    background-color: #00b89c;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* link */\r\n\r\n.kfrm-button.is-link {\r\n    background-color: #3273dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-hovered, .kfrm-button.is-link:hover {\r\n    background-color: #276cda;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused, .kfrm-button.is-link:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused:not(:active), .kfrm-button.is-link:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-link.is-active, .kfrm-button.is-link:active {\r\n    background-color: #2366d1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* info */\r\n\r\n.kfrm-button.is-info {\r\n    background-color: #3298dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-hovered, .kfrm-button.is-info:hover {\r\n    background-color: #2793da;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused, .kfrm-button.is-info:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused:not(:active), .kfrm-button.is-info:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,152,220,.25);\r\n}\r\n\r\n.kfrm-button.is-info.is-active, .kfrm-button.is-info:active {\r\n    background-color: #238cd1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* success */\r\n\r\n.kfrm-button.is-success {\r\n    background-color: #48c774;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-hovered, .kfrm-button.is-success:hover {\r\n    background-color: #3ec46d;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-focused:not(:active), .kfrm-button.is-success:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(72,199,116,.25);\r\n}\r\n\r\n.kfrm-button.is-success.is-active, .kfrm-button.is-success:active {\r\n    background-color: #3abb67;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* warning */\r\n\r\n.kfrm-button.is-warning {\r\n    background-color: #ffdd57;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-hovered, .kfrm-button.is-warning:hover {\r\n    background-color: #ffdb4a;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused, .kfrm-button.is-warning:focus {\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused:not(:active), .kfrm-button.is-warning:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(255,221,87,.25);\r\n}\r\n\r\n.kfrm-button.is-warning.is-active, .kfrm-button.is-warning:active {\r\n    background-color: #ffd83d;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-loading::after {\r\n    border-color: transparent transparent rgba(0,0,0,.7) rgba(0,0,0,.7)!important;\r\n}\r\n\r\n/* danger */\r\n\r\n.kfrm-button.is-danger {\r\n    background-color: #f14668;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-hovered, .kfrm-button.is-danger:hover {\r\n    background-color: #f03a5f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused, .kfrm-button.is-danger:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused:not(:active), .kfrm-button.is-danger:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(241,70,104,.25);\r\n}\r\n\r\n.kfrm-button.is-danger.is-active, .kfrm-button.is-danger:active {\r\n    background-color: #ef2e55;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* COLORS END */\r\n\r\n\r\n/* BUTTONS END *//* COLUMNS */\r\n\r\n.kfrm-row {\r\n    margin-left: -.75rem;\r\n    margin-right: -.75rem;\r\n    margin-top: -.75rem;\r\n}\r\n\r\n.kfrm-row:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n@media screen and (min-width: 769px), print {\r\n    .kfrm-row {\r\n        display: flex;\r\n        flex-wrap: wrap;\r\n    }\r\n\r\n    .kdlg-modal-window.size-small .kfrm-row {\r\n        display: block;\r\n    }\r\n\r\n\r\n    /* 12 columns grid */\r\n    .kfrm-column.size-1 {\r\n        flex: none;\r\n        width: 8.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-2 {\r\n        flex: none;\r\n        width: 16.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-3 {\r\n        flex: none;\r\n        width: 25%;\r\n    }\r\n\r\n    .kfrm-column.size-4 {\r\n        flex: none;\r\n        width: 33.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-5 {\r\n        flex: none;\r\n        width: 41.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-6 {\r\n        flex: none;\r\n        width: 50%;\r\n    }\r\n\r\n    .kfrm-column.size-7 {\r\n        flex: none;\r\n        width: 58.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-8 {\r\n        flex: none;\r\n        width: 66.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-9 {\r\n        flex: none;\r\n        width: 75%;\r\n    }\r\n\r\n    .kfrm-column.size-10 {\r\n        flex: none;\r\n        width: 83.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-11 {\r\n        flex: none;\r\n        width: 91.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-12 {\r\n        flex: none;\r\n        width: 100%;\r\n    }\r\n\r\n\r\n\r\n}\r\n\r\n.kfrm-column {\r\n    display: block;\r\n    flex-basis: 0;\r\n    flex-grow: 1;\r\n    flex-shrink: 1;\r\n    padding: .75rem;\r\n}\r\n\r\n/* COLUMNS END */\r\n\r\n/* CONTROLS */\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1em;\r\n    height: 2.5em;\r\n    justify-content: flex-start;\r\n    line-height: 1.5;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: calc(.75em - 1px);\r\n    padding-right: calc(.75em - 1px);\r\n    padding-top: calc(.5em - 1px);\r\n    position: relative;\r\n    vertical-align: top;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-radius: 4px;\r\n    color: #363636;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-form textarea {\r\n    box-shadow: inset 0 0.0625em 0.125em rgba(10,10,10,.05);\r\n    max-width: 100%;\r\n    width: 100%;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):hover, .kfrm-form input:not([type='checkbox']).is-hovered, .kfrm-form textarea:hover, .kfrm-form textarea.is-hovered, .kfrm-select select:hover, .kfrm-select select.is-hovered {\r\n    border-color: #b5b5b5;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):active, .kfrm-form input:not([type='checkbox']).is-active, .kfrm-form textarea:active, .kfrm-form textarea.is-active, .kfrm-select select:active, .kfrm-select select.is-active, \r\n.kfrm-form input:not([type='checkbox']):focus, .kfrm-form input:not([type='checkbox']).is-focused, .kfrm-form textarea:focus, .kfrm-form textarea.is-focused, .kfrm-select select:focus, .kfrm-select select.is-focused {\r\n        border-color: #3273dc;\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n    outline: 0;\r\n}\r\n\r\n\r\n.kfrm-select {\r\n    display: inline-block;\r\n    max-width: 100%;\r\n    position: relative;\r\n    vertical-align: top;\r\n    padding: 0;\r\n    width: max-content;\r\n}\r\n\r\n.kfrm-select select::-ms-expand {\r\n    display: none !important;\r\n}\r\n\r\n.kfrm-select:not(.is-multiple) {\r\n    height: 2.5em;\r\n}\r\n\r\n.kfrm-select select {\r\n    cursor: pointer;\r\n    display: block;\r\n    font-size: 1em;\r\n    max-width: 100%;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-select select:not([multiple]) {\r\n    padding-right: 2.5em;\r\n}\r\n\r\n .kfrm-select:not(.is-multiple):not(.is-loading)::after {\r\n    border: 3px solid #3273dc;\r\n    border-radius: 2px;\r\n    border-right: 0;\r\n    border-top: 0;\r\n    content: \" \";\r\n    display: block;\r\n    height: .425em;\r\n    margin-top: -.5em;\r\n    pointer-events: none;\r\n    position: absolute;\r\n    top: 50%;\r\n    transform: rotate(-45deg);\r\n    transform-origin: center;\r\n    width: .425em;\r\n    right: .7em;\r\n    z-index: 4;\r\n}\r\n\r\n\r\n.kfrm-form textarea {\r\n    display: block;\r\n    max-width: 100%;\r\n    min-width: 100%;\r\n    padding: calc(.75em - 1px);\r\n    resize: vertical;\r\n}\r\n\r\n.kfrm-form textarea:not([rows]) {\r\n    max-height: 40em;\r\n    min-height: 8em;\r\n}\r\n\r\n/* CONTROLS END */\r\n\r\n/* FORMS */\r\n.kfrm-form {\r\n    font-size: 16px;\r\n}\r\n\r\n.kfrm-form fieldset {\r\n    border: 1px solid #dbdbdb;\r\n    border-radius: 6px;\r\n    padding: 20px;\r\n}\r\n\r\n.kfrm-form fieldset > legend {\r\n    padding-inline-start: 10px;\r\n    padding-inline-end: 10px;\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-break, .kfrm-break-50 {\r\n    margin-top: 50px;\r\n}\r\n\r\n.kfrm-break-10 {\r\n    margin-top: 10px;\r\n}\r\n\r\n.kfrm-break-20 {\r\n    margin-top: 20px;\r\n}\r\n\r\n.kfrm-break-30 {\r\n    margin-top: 30px;\r\n}\r\n\r\n.kfrm-break-40 {\r\n    margin-top: 40px;\r\n}\r\n\r\n.kfrm-break-60 {\r\n    margin-top: 60px;\r\n}\r\n\r\n.kfrm-break-70 {\r\n    margin-top: 70px;\r\n}\r\n\r\n.kfrm-break-80 {\r\n    margin-top: 10px;\r\n}\r\n\r\n\r\n.kfrm-fields, .kfrm-fields.col-a {\r\n    display: grid;\r\n    grid-template-columns: auto;\r\n    grid-gap: 10px;\r\n    grid-auto-rows: auto;\r\n}\r\n\r\n.kfrm-fields:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n.kfrm-fields > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n.kfrm-fields > label:not(.checkbox) {\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-fields.label-above > label:not(.checkbox) {\r\n    padding: 0.5em 0 0 0;\r\n    margin-bottom: -0.5em;\r\n}\r\n\r\n.kfrm-fields.label-align-right > label:not(.checkbox) {\r\n    text-align: right;\r\n}\r\n\r\n.kfrm-fields.col-a-1 {\r\n    grid-template-columns: auto 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-a {\r\n    grid-template-columns: 1fr auto;\r\n}\r\n\r\n.kfrm-fields.col-a-a {\r\n    grid-template-columns: auto auto;\r\n}\r\n\r\n.kfrm-fields.col-1-1 {\r\n    grid-template-columns: 1fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-2 {\r\n    grid-template-columns: 1fr 2fr;\r\n}\r\n\r\n.kfrm-fields.col-1-3 {\r\n    grid-template-columns: 1fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-2-1 {\r\n    grid-template-columns: 2fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-3-1 {\r\n    grid-template-columns: 3fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-2-3 {\r\n    grid-template-columns: 2fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-3-2 {\r\n    grid-template-columns: 3fr 2fr;\r\n}\r\n\r\n.kfrm-fields.is-horizontal {\r\n    display: flex;\r\n    padding: 0;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-evenly {\r\n    justify-content: space-evenly;\r\n}\r\n\r\n.kfrm-fields.is-horizontal > label:not(:first-child) {\r\n    margin-left: .5rem;\r\n}\r\n\r\n/* IE */\r\n.kfrm-fields-ie {\r\n    display: flex;\r\n    flex-direction: column;\r\n    font-size: 16px;\r\n  }\r\n\r\n.kfrm-field-ie {\r\n    display: flex;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n/*  \r\n  .kfrm-field-ie > * {\r\n      font-size: 16px;\r\n  }\r\n*/\r\n\r\n.kfrm-field-ie > *:nth-child(1) {\r\n    margin-right: 20px;\r\n}\r\n\r\n.kfrm-field-ie > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n/*\r\n  .kfrm-field-ie > *:nth-child(2):not(.kfrm-select):not(.kfrm-fields-ie) {\r\n    padding: .5em;\r\n  }\r\n*/\r\n  .kfrm-fields-ie.col-ie-1-1 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 50%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-2 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 33.3333%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-3 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 25%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-4 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 20%;\r\n  }\r\n\r\n\r\n  .kfrm-fields-ie.label-align-right .kfrm-field-ie > *:nth-child(1) {\r\n    text-align: right;\r\n  }\r\n\r\n  .kfrm-fields-ie.label-above .kfrm-field-ie > *:nth-child(1):not(.checkbox) {\r\n      padding: 0.5em 0 0 0;\r\n      margin-bottom: -0.5em;\r\n  }\r\n\r\n  .kfrm-field-ie > label:not(.checkbox), .kfrm-fields-ie > label:not(.checkbox) {\r\n      font-weight: 600;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal {\r\n    display: flex;\r\n    padding: 0 !important;\r\n    flex-direction: row;\r\n  }\r\n\r\n  .kfrm-fields-ie.kfrm-fields-ie.is-horizontal > *:not(.kfrm-select) {\r\n    padding: .5em;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal > *:not(:first-child) {\r\n    margin-left: 1em;\r\n  }\r\n\r\n.kfrm-fields-ie > label {\r\n    padding-left: 0 !important;\r\n    padding-right: 0 !important;\r\n}\r\n\r\n\r\n/* FORMS END */\r\n", ""]);
+exports.push([module.i, "/* BUTTONS */\r\n\r\n.kfrm-buttons {\r\n    align-items: center;\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: flex-start;\r\n}\r\n\r\n.kfrm-buttons.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-buttons.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-buttons:last-child {\r\n    margin-bottom: -.5rem;\r\n}\r\n\r\n.kfrm-buttons .kfrm-button {\r\n    margin-bottom: .5rem;\r\n}\r\n\r\n.kfrm-button {\r\n    position: relative;\r\n    vertical-align: top;\r\n    line-height: 1.5;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1rem;\r\n    height: 2.5em;\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n\r\n\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-width: 1px;\r\n    color: #363636;\r\n    cursor: pointer;\r\n    justify-content: center;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: 1em;\r\n    padding-right: 1em;\r\n    padding-top: calc(.5em - 1px);\r\n    text-align: center;\r\n    white-space: nowrap;\r\n\r\n    -webkit-touch-callout:none;\r\n    -webkit-user-select:none;\r\n    -moz-user-select:none;\r\n    -ms-user-select:none;\r\n    user-select:none\r\n}\r\n\r\n.kfrm-button:not(:last-child) {\r\n    margin-right: .5em;\r\n}\r\n\r\n.kfrm-button.is-hovered, .kfrm-button:hover {\r\n    border-color: #b5b5b5;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused, .kfrm-button:focus {\r\n    outline: none;\r\n    border-color: #3273dc;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused:not(:active), .kfrm-button:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-active, .kfrm-button:active {\r\n    border-color: #4a4a4a;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button[disabled], fieldset[disabled] .kfrm-button {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    box-shadow: none;\r\n    opacity: .5;\r\n    cursor: not-allowed;\r\n}\r\n\r\n.kfrm-button.is-loading {\r\n    color: transparent!important;\r\n    pointer-events: none;\r\n}\r\n\r\n.kfrm-button.is-loading::after {\r\n    -webkit-animation:spinAround .5s infinite linear;\r\n    animation:spinAround .5s infinite linear;\r\n    border:2px solid #dbdbdb;\r\n    border-radius:290486px;\r\n    border-right-color:transparent;\r\n    border-top-color:transparent;\r\n    content:\"\";\r\n    display:block;\r\n    height:1em;\r\n    width:1em;\r\n\r\n    left: calc(50% - (1em / 2));\r\n    top: calc(50% - (1em / 2));\r\n    position: absolute!important;\r\n}\r\n\r\n@keyframes spinAround {\r\n    from {\r\n        transform:rotate(0deg);\r\n    }\r\n    to {\r\n        transform:rotate(360deg);\r\n    }\r\n}\r\n\r\n/* SIZES */\r\n\r\n.kfrm-button.size-small,\r\n.kfrm-buttons.size-small .kfrm-button:not(.size-default):not(.size-medium):not(.size-large) {\r\n    border-radius: 2px;\r\n    font-size: .75rem;\r\n}\r\n\r\n.kfrm-button.size-default\r\n.kfrm-buttons.size-default .kfrm-button:not(.size-small):not(.size-medium):not(.size-large) {\r\n    font-size: 1rem;\r\n}\r\n\r\n.kfrm-button.size-medium,\r\n.kfrm-buttons.size-medium .kfrm-button:not(.size-small):not(.size-default):not(.size-large) {\r\n    font-size: 1.25rem;\r\n}\r\n\r\n.kfrm-button.size-large\r\n.kfrm-buttons.size-large .kfrm-button:not(.size-small):not(.size-default):not(.size-medium) {\r\n    font-size: 1.5rem;\r\n}\r\n\r\n/* SIZES END */\r\n\r\n\r\n\r\n/* COLORS */\r\n\r\n/* white */\r\n.kfrm-button.is-white {\r\n    background-color: #fff;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-hovered, .kfrm-button.is-white:hover {\r\n    background-color: #f9f9f9;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused, .kfrm-button.is-white:focus {\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused:not(:active), .kfrm-button.is-white:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(150,150,150,.15);\r\n}\r\n\r\n.kfrm-button.is-white.is-active, .kfrm-button.is-white:active {\r\n    background-color: #f2f2f2;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n/* dark */\r\n\r\n.kfrm-button.is-dark {\r\n    background-color: #363636e6;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-hovered, .kfrm-button.is-dark:hover {\r\n    background-color: #2f2f2f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused, .kfrm-button.is-dark:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused:not(:active), .kfrm-button.is-dark:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(54,54,54,.25);\r\n}\r\n\r\n.kfrm-button.is-dark.is-active, .kfrm-button.is-dark:active {\r\n    background-color: #292929;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n/* primary */\r\n\r\n.kfrm-button.is-primary {\r\n    background-color: #00d1b2;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-hovered, .kfrm-button.is-primary:hover {\r\n    background-color: #00c4a7;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused, .kfrm-button.is-primary:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused:not(:active), .kfrm-button.is-primary:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(0,209,178,.25);\r\n}\r\n\r\n.kfrm-button.is-primary.is-active, .kfrm-button.is-primary:active {\r\n    background-color: #00b89c;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* link */\r\n\r\n.kfrm-button.is-link {\r\n    background-color: #3273dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-hovered, .kfrm-button.is-link:hover {\r\n    background-color: #276cda;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused, .kfrm-button.is-link:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused:not(:active), .kfrm-button.is-link:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-link.is-active, .kfrm-button.is-link:active {\r\n    background-color: #2366d1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* info */\r\n\r\n.kfrm-button.is-info {\r\n    background-color: #3298dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-hovered, .kfrm-button.is-info:hover {\r\n    background-color: #2793da;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused, .kfrm-button.is-info:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused:not(:active), .kfrm-button.is-info:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,152,220,.25);\r\n}\r\n\r\n.kfrm-button.is-info.is-active, .kfrm-button.is-info:active {\r\n    background-color: #238cd1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* success */\r\n\r\n.kfrm-button.is-success {\r\n    background-color: #48c774;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-hovered, .kfrm-button.is-success:hover {\r\n    background-color: #3ec46d;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-focused:not(:active), .kfrm-button.is-success:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(72,199,116,.25);\r\n}\r\n\r\n.kfrm-button.is-success.is-active, .kfrm-button.is-success:active {\r\n    background-color: #3abb67;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* warning */\r\n\r\n.kfrm-button.is-warning {\r\n    background-color: #ffdd57;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-hovered, .kfrm-button.is-warning:hover {\r\n    background-color: #ffdb4a;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused, .kfrm-button.is-warning:focus {\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused:not(:active), .kfrm-button.is-warning:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(255,221,87,.25);\r\n}\r\n\r\n.kfrm-button.is-warning.is-active, .kfrm-button.is-warning:active {\r\n    background-color: #ffd83d;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-loading::after {\r\n    border-color: transparent transparent rgba(0,0,0,.7) rgba(0,0,0,.7)!important;\r\n}\r\n\r\n/* danger */\r\n\r\n.kfrm-button.is-danger {\r\n    background-color: #f14668;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-hovered, .kfrm-button.is-danger:hover {\r\n    background-color: #f03a5f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused, .kfrm-button.is-danger:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused:not(:active), .kfrm-button.is-danger:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(241,70,104,.25);\r\n}\r\n\r\n.kfrm-button.is-danger.is-active, .kfrm-button.is-danger:active {\r\n    background-color: #ef2e55;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* COLORS END */\r\n\r\n\r\n/* BUTTONS END *//* COLUMNS */\r\n\r\n.kfrm-row {\r\n    margin-left: -.75rem;\r\n    margin-right: -.75rem;\r\n    margin-top: -.75rem;\r\n}\r\n\r\n.kfrm-row:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n@media screen and (min-width: 769px), print {\r\n    .kfrm-row {\r\n        display: flex;\r\n        flex-wrap: wrap;\r\n    }\r\n\r\n    .kdlg-modal-window.size-small .kfrm-row {\r\n        display: block;\r\n    }\r\n\r\n\r\n    /* 12 columns grid */\r\n    .kfrm-column.size-1 {\r\n        flex: none;\r\n        width: 8.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-2 {\r\n        flex: none;\r\n        width: 16.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-3 {\r\n        flex: none;\r\n        width: 25%;\r\n    }\r\n\r\n    .kfrm-column.size-4 {\r\n        flex: none;\r\n        width: 33.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-5 {\r\n        flex: none;\r\n        width: 41.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-6 {\r\n        flex: none;\r\n        width: 50%;\r\n    }\r\n\r\n    .kfrm-column.size-7 {\r\n        flex: none;\r\n        width: 58.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-8 {\r\n        flex: none;\r\n        width: 66.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-9 {\r\n        flex: none;\r\n        width: 75%;\r\n    }\r\n\r\n    .kfrm-column.size-10 {\r\n        flex: none;\r\n        width: 83.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-11 {\r\n        flex: none;\r\n        width: 91.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-12 {\r\n        flex: none;\r\n        width: 100%;\r\n    }\r\n\r\n\r\n\r\n}\r\n\r\n.kfrm-column {\r\n    display: block;\r\n    flex-basis: 0;\r\n    flex-grow: 1;\r\n    flex-shrink: 1;\r\n    padding: .75rem;\r\n}\r\n\r\n/* COLUMNS END */\r\n\r\n/* CONTROLS */\r\n\r\n.kfrm-form .errors-block {\r\n    color: red;\r\n}\r\n\r\n.kfrm-form input.is-valid:not([type='checkbox']),\r\n.kfrm-form input.is-valid:not([type='checkbox']):hover {\r\n    border-color: green;\r\n}\r\n\r\n.kfrm-form input.is-invalid:not([type='checkbox']),\r\n.kfrm-form input.is-invalid:not([type='checkbox']):hover {\r\n    border-color: red;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1em;\r\n    height: 2.5em;\r\n    justify-content: flex-start;\r\n    line-height: 1.5;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: calc(.75em - 1px);\r\n    padding-right: calc(.75em - 1px);\r\n    padding-top: calc(.5em - 1px);\r\n    position: relative;\r\n    vertical-align: top;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-radius: 4px;\r\n    color: #363636;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-form textarea {\r\n    box-shadow: inset 0 0.0625em 0.125em rgba(10,10,10,.05);\r\n    max-width: 100%;\r\n    width: 100%;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):hover, .kfrm-form input:not([type='checkbox']).is-hovered, .kfrm-form textarea:hover, .kfrm-form textarea.is-hovered, .kfrm-select select:hover, .kfrm-select select.is-hovered {\r\n    border-color: #b5b5b5;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):active, .kfrm-form input:not([type='checkbox']).is-active, .kfrm-form textarea:active, .kfrm-form textarea.is-active, .kfrm-select select:active, .kfrm-select select.is-active, \r\n.kfrm-form input:not([type='checkbox']):focus, .kfrm-form input:not([type='checkbox']).is-focused, .kfrm-form textarea:focus, .kfrm-form textarea.is-focused, .kfrm-select select:focus, .kfrm-select select.is-focused {\r\n    border-color: #3273dc;\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n    outline: 0;\r\n}\r\n\r\n\r\n.kfrm-select {\r\n    display: inline-block;\r\n    max-width: 100%;\r\n    position: relative;\r\n    vertical-align: top;\r\n    padding: 0;\r\n    width: max-content;\r\n}\r\n\r\n.kfrm-select select::-ms-expand {\r\n    display: none !important;\r\n}\r\n\r\n.kfrm-select:not(.is-multiple) {\r\n    height: 2.5em;\r\n}\r\n\r\n.kfrm-select select {\r\n    cursor: pointer;\r\n    display: block;\r\n    font-size: 1em;\r\n    max-width: 100%;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-select select:not([multiple]) {\r\n    padding-right: 2.5em;\r\n}\r\n\r\n .kfrm-select:not(.is-multiple):not(.is-loading)::after {\r\n    border: 3px solid #3273dc;\r\n    border-radius: 2px;\r\n    border-right: 0;\r\n    border-top: 0;\r\n    content: \" \";\r\n    display: block;\r\n    height: .425em;\r\n    margin-top: -.5em;\r\n    pointer-events: none;\r\n    position: absolute;\r\n    top: 50%;\r\n    transform: rotate(-45deg);\r\n    transform-origin: center;\r\n    width: .425em;\r\n    right: .7em;\r\n    z-index: 4;\r\n}\r\n\r\n\r\n.kfrm-form textarea {\r\n    display: block;\r\n    max-width: 100%;\r\n    min-width: 100%;\r\n    padding: calc(.75em - 1px);\r\n    resize: vertical;\r\n}\r\n\r\n.kfrm-form textarea:not([rows]) {\r\n    max-height: 40em;\r\n    min-height: 8em;\r\n}\r\n\r\n/* CONTROLS END */\r\n\r\n/* FORMS */\r\n.kfrm-form {\r\n    font-size: 16px;\r\n}\r\n\r\n.kfrm-form fieldset {\r\n    border: 1px solid #dbdbdb;\r\n    border-radius: 6px;\r\n    padding: 20px;\r\n}\r\n\r\n.kfrm-form fieldset > legend {\r\n    padding-inline-start: 10px;\r\n    padding-inline-end: 10px;\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-break, .kfrm-break-50 {\r\n    margin-top: 50px;\r\n}\r\n\r\n.kfrm-break-10 {\r\n    margin-top: 10px;\r\n}\r\n\r\n.kfrm-break-20 {\r\n    margin-top: 20px;\r\n}\r\n\r\n.kfrm-break-30 {\r\n    margin-top: 30px;\r\n}\r\n\r\n.kfrm-break-40 {\r\n    margin-top: 40px;\r\n}\r\n\r\n.kfrm-break-60 {\r\n    margin-top: 60px;\r\n}\r\n\r\n.kfrm-break-70 {\r\n    margin-top: 70px;\r\n}\r\n\r\n.kfrm-break-80 {\r\n    margin-top: 10px;\r\n}\r\n\r\n\r\n.kfrm-fields, .kfrm-fields.col-a {\r\n    display: grid;\r\n    grid-template-columns: auto;\r\n    grid-gap: 10px;\r\n    grid-auto-rows: auto;\r\n}\r\n\r\n.kfrm-fields:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n.kfrm-fields > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n.kfrm-fields > label:not(.checkbox) {\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-fields.label-above > label:not(.checkbox) {\r\n    padding: 0.5em 0 0 0;\r\n    margin-bottom: -0.5em;\r\n}\r\n\r\n.kfrm-fields.label-align-right > label:not(.checkbox) {\r\n    text-align: right;\r\n}\r\n\r\n.kfrm-fields.col-a-1 {\r\n    grid-template-columns: auto 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-a {\r\n    grid-template-columns: 1fr auto;\r\n}\r\n\r\n.kfrm-fields.col-a-a {\r\n    grid-template-columns: auto auto;\r\n}\r\n\r\n.kfrm-fields.col-1-1 {\r\n    grid-template-columns: 1fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-2 {\r\n    grid-template-columns: 1fr 2fr;\r\n}\r\n\r\n.kfrm-fields.col-1-3 {\r\n    grid-template-columns: 1fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-2-1 {\r\n    grid-template-columns: 2fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-3-1 {\r\n    grid-template-columns: 3fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-2-3 {\r\n    grid-template-columns: 2fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-3-2 {\r\n    grid-template-columns: 3fr 2fr;\r\n}\r\n\r\n.kfrm-fields.is-horizontal {\r\n    display: flex;\r\n    padding: 0;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-evenly {\r\n    justify-content: space-evenly;\r\n}\r\n\r\n.kfrm-fields.is-horizontal > label:not(:first-child) {\r\n    margin-left: .5rem;\r\n}\r\n\r\n/* IE */\r\n.kfrm-fields-ie {\r\n    display: flex;\r\n    flex-direction: column;\r\n    font-size: 16px;\r\n  }\r\n\r\n.kfrm-field-ie {\r\n    display: flex;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n/*  \r\n  .kfrm-field-ie > * {\r\n      font-size: 16px;\r\n  }\r\n*/\r\n\r\n.kfrm-field-ie > *:nth-child(1) {\r\n    margin-right: 20px;\r\n}\r\n\r\n.kfrm-field-ie > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n/*\r\n  .kfrm-field-ie > *:nth-child(2):not(.kfrm-select):not(.kfrm-fields-ie) {\r\n    padding: .5em;\r\n  }\r\n*/\r\n  .kfrm-fields-ie.col-ie-1-1 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 50%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-2 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 33.3333%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-3 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 25%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-4 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 20%;\r\n  }\r\n\r\n\r\n  .kfrm-fields-ie.label-align-right .kfrm-field-ie > *:nth-child(1) {\r\n    text-align: right;\r\n  }\r\n\r\n  .kfrm-fields-ie.label-above .kfrm-field-ie > *:nth-child(1):not(.checkbox) {\r\n      padding: 0.5em 0 0 0;\r\n      margin-bottom: -0.5em;\r\n  }\r\n\r\n  .kfrm-field-ie > label:not(.checkbox), .kfrm-fields-ie > label:not(.checkbox) {\r\n      font-weight: 600;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal {\r\n    display: flex;\r\n    padding: 0 !important;\r\n    flex-direction: row;\r\n  }\r\n\r\n  .kfrm-fields-ie.kfrm-fields-ie.is-horizontal > *:not(.kfrm-select) {\r\n    padding: .5em;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal > *:not(:first-child) {\r\n    margin-left: 1em;\r\n  }\r\n\r\n.kfrm-fields-ie > label {\r\n    padding-left: 0 !important;\r\n    padding-right: 0 !important;\r\n}\r\n\r\n\r\n/* FORMS END */\r\n", ""]);
 
 
 
@@ -27681,17 +27690,375 @@ module.exports = function (css) {
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__(/*! @easydata/core */ "../../../easyquery/easyquery.js/packs/easydata.core/dist/lib/public_api.js");
 var ui_1 = __webpack_require__(/*! @easydata/ui */ "../../../easyquery/easyquery.js/packs/easydata.ui/dist/lib/public_api.js");
 var core_2 = __webpack_require__(/*! @easyquery/core */ "../../../easyquery/easyquery.js/packs/core/dist/lib/public_api.js");
 var ui_2 = __webpack_require__(/*! @easyquery/ui */ "../../../easyquery/easyquery.js/packs/ui/dist/lib/public_api.js");
+var Validator = /** @class */ (function () {
+    function Validator() {
+    }
+    return Validator;
+}());
+var RequiredValidator = /** @class */ (function (_super) {
+    __extends(RequiredValidator, _super);
+    function RequiredValidator() {
+        var _this = _super.call(this) || this;
+        _this.name = 'Required';
+        return _this;
+    }
+    RequiredValidator.prototype.validate = function (attr, value) {
+        if (!attr.isNullable && (!core_1.utils.IsDefinedAndNotNull(value)
+            || value === ''))
+            return {
+                successed: false,
+                messages: ['Value is required.']
+            };
+        return { successed: true };
+    };
+    return RequiredValidator;
+}(Validator));
+var TypeValidator = /** @class */ (function (_super) {
+    __extends(TypeValidator, _super);
+    function TypeValidator() {
+        var _this = _super.call(this) || this;
+        _this.name = 'Type';
+        return _this;
+    }
+    TypeValidator.prototype.validate = function (attr, value) {
+        if (!core_1.utils.IsDefinedAndNotNull(value) || value == '')
+            return { successed: true };
+        if (core_1.utils.isNumericType(attr.dataType)) {
+            if (!core_1.utils.isNumeric(value))
+                return {
+                    successed: false,
+                    messages: ['Value should be a number']
+                };
+            if (core_1.utils.isIntType(attr.dataType)
+                && !Number.isInteger(Number.parseFloat(value))) {
+                return {
+                    successed: false,
+                    messages: ['Value should be an integer number']
+                };
+            }
+        }
+        return { successed: true };
+    };
+    return TypeValidator;
+}(Validator));
+var EasyForm = /** @class */ (function () {
+    function EasyForm(model, entity, html) {
+        this.model = model;
+        this.entity = entity;
+        this.html = html;
+        this.validators = [];
+        this.errorsDiv = html.querySelector('.errors-block');
+    }
+    EasyForm.prototype.getHtml = function () {
+        return this.html;
+    };
+    EasyForm.prototype.validate = function () {
+        this.clearErrors();
+        var inputs = Array.from(this.html.querySelectorAll('input, select'));
+        var isValid = true;
+        for (var _i = 0, inputs_1 = inputs; _i < inputs_1.length; _i++) {
+            var input = inputs_1[_i];
+            var attr = this.model.getAttributeById(input.name);
+            if (input.type === 'checkbox')
+                continue;
+            var result = this.validateValue(attr, input.value);
+            if (!result.successed) {
+                if (isValid) {
+                    ui_1.domel(this.errorsDiv)
+                        .addChild('ul');
+                }
+                isValid = false;
+                for (var _a = 0, _b = result.messages; _a < _b.length; _a++) {
+                    var message = _b[_a];
+                    this.errorsDiv.firstElementChild.innerHTML += "<li>" + attr.caption + ": " + message + "</li>";
+                }
+            }
+            this.markInputValid(input, result.successed);
+        }
+        return isValid;
+    };
+    EasyForm.prototype.getData = function () {
+        var inputs = Array.from(this.html.querySelectorAll('input, select'));
+        var obj = {};
+        for (var _i = 0, inputs_2 = inputs; _i < inputs_2.length; _i++) {
+            var input = inputs_2[_i];
+            var property = input.name.substring(input.name.lastIndexOf('.') + 1);
+            var attr = this.model.getAttributeById(input.name);
+            obj[property] = input.type !== 'checkbox'
+                ? this.mapValue(attr.dataType, input.value)
+                : input.checked;
+        }
+        return obj;
+    };
+    EasyForm.prototype.useValidator = function () {
+        var validator = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            validator[_i] = arguments[_i];
+        }
+        this.useValidators(validator);
+    };
+    EasyForm.prototype.useValidators = function (validators) {
+        this.validators = this.validators.concat(validators);
+    };
+    EasyForm.prototype.mapValue = function (type, value) {
+        if (core_1.utils.getDateDataTypes().indexOf(type) >= 0)
+            return new Date(value);
+        if (core_1.utils.isIntType(type))
+            return Number.parseInt(value);
+        if (core_1.utils.isNumericType(type))
+            return Number.parseFloat(value);
+        return value;
+    };
+    EasyForm.prototype.clearErrors = function () {
+        this.errorsDiv.innerHTML = '';
+        this.html.querySelectorAll('input, select').forEach(function (el) {
+            el.classList.remove('is-valid');
+            el.classList.remove('is-invalid');
+        });
+    };
+    EasyForm.prototype.markInputValid = function (input, valid) {
+        input.classList.add(valid ? 'is-valid' : 'is-invalid');
+    };
+    EasyForm.prototype.validateValue = function (attr, value) {
+        var result = { successed: true, messages: [] };
+        for (var _i = 0, _a = this.validators; _i < _a.length; _i++) {
+            var validator = _a[_i];
+            var res = validator.validate(attr, value);
+            if (!res.successed) {
+                result.successed = false;
+                result.messages = result.messages.concat(res.messages);
+            }
+        }
+        return result;
+    };
+    EasyForm.build = function (model, entity, params) {
+        var isIE = ui_1.browserUtils.IsIE();
+        var fb;
+        var formHtml = ui_1.domel('div')
+            .addClass('kfrm-form')
+            .addChild('div', function (b) { return b
+            .addClass("errors-block")
+            .toDOM(); })
+            .addChild('div', function (b) {
+            b.addClass("" + (isIE
+                ? 'kfrm-fields-ie col-ie-1-4 label-align-right'
+                : 'kfrm-fields col-a-1 label-align-right'));
+            fb = b;
+        })
+            .toDOM();
+        if (ui_1.browserUtils.IsIE()) {
+            fb = ui_1.domel('div', fb.toDOM())
+                .addClass('kfrm-field-ie');
+        }
+        var getInputType = function (dataType) {
+            if (dataType == core_1.DataType.Bool) {
+                return 'checkbox';
+            }
+            return 'text';
+        };
+        var getEditor = function (attr) {
+            return attr.defaultEditor || new core_2.ValueEditor();
+        };
+        var addFormField = function (parent, attr) {
+            var value = params.values && attr.kind !== core_2.EntityAttrKind.Lookup
+                ? params.values.getValue(attr.id)
+                : undefined;
+            var editor = getEditor(attr);
+            if (editor.tag == core_2.EditorTag.Unknown) {
+                if (core_1.utils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
+                    editor.tag = core_2.EditorTag.DateTime;
+                }
+                else {
+                    editor.tag = core_2.EditorTag.Edit;
+                }
+            }
+            ui_1.domel(parent)
+                .addChild('label', function (b) { return b
+                .attr('for', attr.id)
+                .addText(attr.caption + ": "); });
+            if (attr.kind === core_2.EntityAttrKind.Lookup) {
+                var lookupEntity_1 = model.getRootEntity()
+                    .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
+                var dataAttr_1 = model.getAttributeById(attr.dataAttr);
+                value = params.values
+                    ? params.values.getValue(dataAttr_1.id)
+                    : undefined;
+                ui_1.domel(parent)
+                    .addChild('input', function (b) {
+                    b.name(dataAttr_1.id);
+                    b.type(getInputType(dataAttr_1.dataType));
+                    b.value(core_1.utils.IsDefinedAndNotNull(value)
+                        ? value.toString() : '');
+                    b.on('focus', function (ev) {
+                        var lookupTable = new core_1.EasyDataTable({
+                            loader: {
+                                loadChunk: function (chunkParams) { return params.loadChunk(chunkParams, lookupEntity_1.id); }
+                            }
+                        });
+                        params.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
+                            .then(function (data) {
+                            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                                var col = _a[_i];
+                                lookupTable.columns.add(col);
+                            }
+                            lookupTable.setTotal(data.total);
+                            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                                var row = _c[_b];
+                                lookupTable.addRow(row);
+                            }
+                            var ds = new ui_1.DefaultDialogService();
+                            var gridSlot = null;
+                            var labelEl = null;
+                            var slot = ui_1.domel('div')
+                                .addClass("kfrm-form")
+                                .addChild('div', function (b) {
+                                b.addClass("" + (ui_1.browserUtils.IsIE()
+                                    ? 'kfrm-fields-ie'
+                                    : 'kfrm-fields'));
+                                b.addChild('div')
+                                    .addClass("kfrm-field")
+                                    .addChild('label', function (b) { return labelEl = b
+                                    .toDOM(); })
+                                    .addChild('div', function (b) { return b
+                                    .addClass('kfrm-control')
+                                    .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
+                            })
+                                .toDOM();
+                            var inputEl = ev.target;
+                            var selectedValue = inputEl.value;
+                            var updateLabel = function () {
+                                return labelEl.innerHTML = "Selected value: '" + selectedValue + "'";
+                            };
+                            updateLabel();
+                            var lookupGrid = new ui_1.EasyGrid({
+                                slot: gridSlot,
+                                dataTable: lookupTable,
+                                paging: {
+                                    pageSize: 10
+                                },
+                                onRowDbClick: function (ev) {
+                                    var row = ev.row;
+                                    selectedValue = row.getValue(attr.lookupDataAttr);
+                                    updateLabel();
+                                }
+                            });
+                            ds.open({
+                                title: "Select " + lookupEntity_1.caption,
+                                body: slot,
+                                onSubmit: function () {
+                                    ev.target.value = selectedValue;
+                                    return true;
+                                },
+                                onDestroy: function () {
+                                    lookupGrid.destroy();
+                                }
+                            });
+                        });
+                    });
+                });
+                return;
+            }
+            switch (editor.tag) {
+                case core_2.EditorTag.DateTime:
+                    ui_1.domel(parent)
+                        .addChild('input', function (b) {
+                        b.name(attr.id);
+                        b.value(core_1.utils.IsDefinedAndNotNull(value)
+                            ? new Date(value).toUTCString()
+                            : '');
+                        b.on('focus', function (ev) {
+                            var inputEl = ev.target;
+                            var oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
+                            var pickerOptions = {
+                                showCalendar: attr.dataType !== core_1.DataType.Time,
+                                showTimePicker: attr.dataType !== core_1.DataType.Date,
+                                onApply: function (dateTime) {
+                                    inputEl.value = dateTime.toUTCString();
+                                },
+                                onCancel: function () {
+                                    inputEl.value = oldValue.toUTCString();
+                                },
+                                onDateTimeChanged: function (dateTime) {
+                                    inputEl.value = dateTime.toUTCString();
+                                }
+                            };
+                            var dtp = new ui_2.DefaultDateTimePicker(pickerOptions);
+                            dtp.setDateTime(oldValue);
+                            dtp.show(inputEl);
+                        });
+                    });
+                    break;
+                case core_2.EditorTag.List:
+                    ui_1.domel(parent)
+                        .addChild('select', function (b) {
+                        b
+                            .attr('name', attr.id);
+                        if (editor.values) {
+                            for (var i = 0; i < editor.values.length; i++) {
+                                b.addOption({
+                                    value: value.id,
+                                    title: value.text,
+                                    selected: i === 0
+                                });
+                            }
+                        }
+                    });
+                case core_2.EditorTag.Edit:
+                default:
+                    ui_1.domel(parent)
+                        .addChild('input', function (b) {
+                        b
+                            .name(attr.id)
+                            .type(getInputType(attr.dataType));
+                        if (value) {
+                            if (attr.dataType == core_1.DataType.Bool)
+                                b.attr('checked', '');
+                            else
+                                b.value(core_1.utils.IsDefinedAndNotNull(value)
+                                    ? value.toString()
+                                    : '');
+                        }
+                    });
+                    break;
+            }
+        };
+        for (var _i = 0, _a = entity.attributes; _i < _a.length; _i++) {
+            var attr = _a[_i];
+            if (attr.isPrimaryKey && !params.editPK
+                || attr.isForeignKey)
+                continue;
+            addFormField(fb.toDOM(), attr);
+        }
+        return new EasyForm(model, entity, formHtml);
+    };
+    return EasyForm;
+}());
 var EasyDataView = /** @class */ (function () {
     function EasyDataView() {
         var _this = this;
         this.endpoint = '/api/easydata';
+        this.defaultValidators = [];
         this.dlg = new ui_1.DefaultDialogService();
         this.http = new core_2.HttpClient();
+        this.defaultValidators.push(new RequiredValidator(), new TypeValidator());
         this.basePath = this.getBasePath();
         this.model = new core_2.DataModel();
         this.resultTable = new core_1.EasyDataTable({
@@ -27828,25 +28195,15 @@ var EasyDataView = /** @class */ (function () {
     };
     EasyDataView.prototype.addClickHandler = function () {
         var _this = this;
-        var form = this.generateEditForm({ entity: this.activeEntity, editPK: true });
+        var form = EasyForm.build(this.model, this.activeEntity, { loadChunk: this.loadChunk.bind(this), editPK: true });
+        form.useValidators(this.defaultValidators);
         this.dlg.open({
             title: "Create " + this.activeEntity.caption,
-            body: form,
+            body: form.getHtml(),
             onSubmit: function () {
-                var obj = {};
-                var inputs = Array.from(form.querySelectorAll('input'));
-                for (var _i = 0, inputs_1 = inputs; _i < inputs_1.length; _i++) {
-                    var input = inputs_1[_i];
-                    var property = input.name.substring(input.name.lastIndexOf('.') + 1);
-                    var value = (input.type == 'date' || input.type == 'time')
-                        ? input.valueAsDate
-                        : (input.type == 'number')
-                            ? input.valueAsNumber
-                            : input.type == 'checkbox'
-                                ? input.checked
-                                : input.value;
-                    obj[property] = value;
-                }
+                if (!form.validate())
+                    return false;
+                var obj = form.getData();
                 var url = _this.endpoint + "/models/" + _this.model.getId() +
                     ("/crud/" + _this.activeEntity.id);
                 _this.http.post(url, obj, { dataType: 'json' })
@@ -27871,27 +28228,17 @@ var EasyDataView = /** @class */ (function () {
         this.resultTable.getRow(index)
             .then(function (row) {
             if (row) {
-                var form_1 = _this.generateEditForm({ entity: _this.activeEntity, values: row });
+                var form_1 = EasyForm.build(_this.model, _this.activeEntity, { loadChunk: _this.loadChunk.bind(_this), values: row });
+                form_1.useValidators(_this.defaultValidators);
                 _this.dlg.open({
                     title: "Edit " + _this.activeEntity.caption,
-                    body: form_1,
+                    body: form_1.getHtml(),
                     onSubmit: function () {
                         var keyAttrs = _this.activeEntity.attributes.filter(function (attr) { return attr.isPrimaryKey; });
                         var keys = keyAttrs.map(function (attr) { return row.getValue(attr.id); });
-                        var obj = {};
-                        var inputs = Array.from(form_1.querySelectorAll('input, select'));
-                        for (var _i = 0, inputs_2 = inputs; _i < inputs_2.length; _i++) {
-                            var input = inputs_2[_i];
-                            var property = input.name.substring(input.name.lastIndexOf('.') + 1);
-                            var value = (input.type == 'date' || input.type == 'time')
-                                ? input.valueAsDate
-                                : (input.type == 'number')
-                                    ? input.valueAsNumber
-                                    : input.type == 'checkbox'
-                                        ? input.checked
-                                        : input.value;
-                            obj[property] = value;
-                        }
+                        if (!form_1.validate())
+                            return false;
+                        var obj = form_1.getData();
                         var url = "/api/easydata/models/" + _this.model.getId() +
                             ("/crud/" + _this.activeEntity.id + "/" + keys.join(':'));
                         _this.http.put(url, obj, { dataType: 'json' })
@@ -27941,208 +28288,6 @@ var EasyDataView = /** @class */ (function () {
                 });
             }
         });
-    };
-    EasyDataView.prototype.generateEditForm = function (params) {
-        var _this = this;
-        var isIE = ui_1.browserUtils.IsIE();
-        var fb;
-        var form = ui_1.domel('div')
-            .addClass('kfrm-form')
-            .addChild('div', function (b) {
-            b.addClass("" + (isIE
-                ? 'kfrm-fields-ie col-ie-1-4 label-align-right'
-                : 'kfrm-fields col-a-1 label-align-right'));
-            fb = b;
-        })
-            .toDOM();
-        if (ui_1.browserUtils.IsIE()) {
-            fb = ui_1.domel('div', fb.toDOM())
-                .addClass('kfrm-field-ie');
-        }
-        var getInputType = function (dataType) {
-            if (dataType == core_1.DataType.Bool) {
-                return 'checkbox';
-            }
-            if (core_1.utils.isNumericType(dataType)) {
-                return 'number';
-            }
-            if (dataType == core_1.DataType.Date
-                || dataType == core_1.DataType.DateTime) {
-                return 'date';
-            }
-            if (dataType == core_1.DataType.Time) {
-                return 'time';
-            }
-            return 'text';
-        };
-        var getEditor = function (attr) {
-            return attr.defaultEditor || new core_2.ValueEditor();
-        };
-        var addFormField = function (parent, attr) {
-            var value = params.values && attr.kind !== core_2.EntityAttrKind.Lookup
-                ? params.values.getValue(attr.id)
-                : undefined;
-            var editor = getEditor(attr);
-            if (editor.tag == core_2.EditorTag.Unknown) {
-                if ([core_1.DataType.Date, core_1.DataType.DateTime, core_1.DataType.Time].indexOf(attr.dataType) >= 0) {
-                    editor.tag = core_2.EditorTag.DateTime;
-                }
-                else {
-                    editor.tag = core_2.EditorTag.Edit;
-                }
-            }
-            ui_1.domel(parent)
-                .addChild('label', function (b) { return b
-                .attr('for', attr.id)
-                .addText(attr.caption + ": "); });
-            if (attr.kind === core_2.EntityAttrKind.Lookup) {
-                var lookupEntity_1 = _this.model.getRootEntity()
-                    .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
-                var dataAttr_1 = _this.model.getAttributeById(attr.dataAttr);
-                value = params.values
-                    ? params.values.getValue(dataAttr_1.id)
-                    : undefined;
-                ui_1.domel(parent)
-                    .addChild('input', function (b) {
-                    b.name(dataAttr_1.id);
-                    b.type(getInputType(dataAttr_1.dataType));
-                    b.value(value);
-                    b.on('focus', function (ev) {
-                        var lookupTable = new core_1.EasyDataTable({
-                            loader: {
-                                loadChunk: function (params) { return _this.loadChunk(params, lookupEntity_1.id); }
-                            }
-                        });
-                        _this.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
-                            .then(function (data) {
-                            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
-                                var col = _a[_i];
-                                lookupTable.columns.add(col);
-                            }
-                            lookupTable.setTotal(data.total);
-                            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
-                                var row = _c[_b];
-                                lookupTable.addRow(row);
-                            }
-                            var ds = new ui_1.DefaultDialogService();
-                            var gridSlot = null;
-                            var labelEl = null;
-                            var slot = ui_1.domel('div')
-                                .addClass("kfrm-form")
-                                .addChild('div', function (b) {
-                                b.addClass("" + (ui_1.browserUtils.IsIE()
-                                    ? 'kfrm-fields-ie'
-                                    : 'kfrm-fields'));
-                                b.addChild('div')
-                                    .addClass("kfrm-field")
-                                    .addChild('label', function (b) { return labelEl = b
-                                    .toDOM(); })
-                                    .addChild('div', function (b) { return b
-                                    .addClass('kfrm-control')
-                                    .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
-                            })
-                                .toDOM();
-                            var inputEl = ev.target;
-                            var selectedValue = inputEl.value;
-                            var updateLabel = function () { return labelEl.innerHTML = "Selected value: '" + selectedValue + "'"; };
-                            updateLabel();
-                            var lookupGrid = new ui_1.EasyGrid({
-                                slot: gridSlot,
-                                dataTable: lookupTable,
-                                paging: {
-                                    pageSize: 10
-                                },
-                                onRowDbClick: function (ev) {
-                                    var row = ev.row;
-                                    selectedValue = row.getValue(attr.lookupDataAttr);
-                                    updateLabel();
-                                }
-                            });
-                            ds.open({
-                                title: "Select " + lookupEntity_1.caption,
-                                body: slot,
-                                onSubmit: function () {
-                                    ev.target.value = selectedValue;
-                                    return true;
-                                },
-                                onDestroy: function () {
-                                    lookupGrid.destroy();
-                                }
-                            });
-                        });
-                    });
-                });
-                return;
-            }
-            switch (editor.tag) {
-                case core_2.EditorTag.DateTime:
-                    ui_1.domel(parent)
-                        .addChild('input', function (b) {
-                        b.name(attr.id);
-                        b.type(getInputType(attr.dataType));
-                        b.value(value);
-                        b.on('focus', function (ev) {
-                            var inputEl = ev.target;
-                            var oldValue = inputEl.valueAsDate;
-                            var pickerOptions = {
-                                showCalendar: attr.dataType !== core_1.DataType.Time,
-                                showTimePicker: attr.dataType !== core_1.DataType.Date,
-                                onApply: function (dateTime) {
-                                    inputEl.valueAsDate = dateTime;
-                                },
-                                onCancel: function () {
-                                    inputEl.valueAsDate = oldValue;
-                                },
-                                onDateTimeChanged: function (dateTime) {
-                                    inputEl.valueAsDate = dateTime;
-                                }
-                            };
-                            var dtp = new ui_2.DefaultDateTimePicker(pickerOptions);
-                            dtp.setDateTime(oldValue);
-                            dtp.show(inputEl);
-                        });
-                    });
-                    break;
-                case core_2.EditorTag.List:
-                    ui_1.domel(parent)
-                        .addChild('select', function (b) {
-                        b
-                            .attr('name', attr.id);
-                        if (editor.values) {
-                            for (var i = 0; i < editor.values.length; i++) {
-                                b.addOption({
-                                    value: value.id,
-                                    title: value.text,
-                                    selected: i === 0
-                                });
-                            }
-                        }
-                    });
-                case core_2.EditorTag.Edit:
-                default:
-                    ui_1.domel(parent)
-                        .addChild('input', function (b) {
-                        b
-                            .name(attr.id)
-                            .type(getInputType(attr.dataType));
-                        if (value) {
-                            if (attr.dataType == core_1.DataType.Bool)
-                                b.attr('checked', '');
-                            else
-                                b.value(value);
-                        }
-                    });
-                    break;
-            }
-        };
-        for (var _i = 0, _a = params.entity.attributes; _i < _a.length; _i++) {
-            var attr = _a[_i];
-            if (attr.isPrimaryKey && !params.editPK
-                || attr.isForeignKey)
-                continue;
-            addFormField(fb.toDOM(), attr);
-        }
-        return form;
     };
     return EasyDataView;
 }());

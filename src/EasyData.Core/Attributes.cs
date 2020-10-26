@@ -420,6 +420,7 @@ namespace EasyData
             UserData = attr.UserData;
             IsNullable = attr.IsNullable;
             IsPrimaryKey = attr.IsPrimaryKey;
+            IsForeignKey = attr.IsForeignKey;
 
         }
 
@@ -478,6 +479,9 @@ namespace EasyData
 
             await writer.WritePropertyNameAsync("ifk").ConfigureAwait(false);
             await writer.WriteValueAsync(IsForeignKey).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("nul").ConfigureAwait(false);
+            await writer.WriteValueAsync(IsNullable).ConfigureAwait(false);
 
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
@@ -579,6 +583,9 @@ namespace EasyData
                     break;
                 case "ifk":
                     IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "nul":
+                    IsNullable = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "lattr":
                     _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
