@@ -1,12 +1,14 @@
-﻿import { DataRow, DataType, utils as dataUtils, 
-    EasyDataTable, DataLoader, DataChunk, DataChunkDescriptor
+﻿import { 
+    DataRow, DataType, utils as dataUtils, 
+    EasyDataTable, DataChunk, DataChunkDescriptor, 
+    MetaData, MetaEntity, MetaEntityAttr, EntityAttrKind,
+    MetaValueEditor, MetaEditorTag, HttpClient
 } from '@easydata/core';
 import {
     EasyGrid, DefaultDialogService, browserUtils,
     domel, DomElementBuilder, GridColumn, GridCellRenderer, DialogService
 } from '@easydata/ui';
 
-import { DataModel, Entity, EntityAttr, ValueEditor, EditorTag, HttpClient, EntityAttrKind } from '@easyquery/core';
 import { DefaultDateTimePicker } from '@easyquery/ui';
 
 
@@ -19,7 +21,7 @@ abstract class Validator {
 
     public name: string;
 
-    public abstract validate(attr: EntityAttr, value: any): ValidationResult
+    public abstract validate(attr: MetaEntityAttr, value: any): ValidationResult
     
 }
 
@@ -30,7 +32,7 @@ class RequiredValidator extends Validator {
         this.name = 'Required'
     }
 
-    public validate(attr: EntityAttr, value: any): ValidationResult {
+    public validate(attr: MetaEntityAttr, value: any): ValidationResult {
        
         if (!attr.isNullable && (
             !dataUtils.IsDefinedAndNotNull(value)
@@ -52,7 +54,7 @@ class TypeValidator extends Validator {
         this.name = 'Type'
     }
 
-    public validate(attr: EntityAttr, value: any): ValidationResult {
+    public validate(attr: MetaEntityAttr, value: any): ValidationResult {
        
         if (!dataUtils.IsDefinedAndNotNull(value) || value == '')
             return { successed: true };
@@ -90,7 +92,7 @@ class EasyForm {
 
     private errorsDiv: HTMLElement;
 
-    private constructor(private model: DataModel, private entity: Entity, private html: HTMLElement){
+    private constructor(private model: MetaData, private entity: MetaEntity, private html: HTMLElement){
         this.errorsDiv = html.querySelector('.errors-block');
     }
 
@@ -182,7 +184,7 @@ class EasyForm {
         input.classList.add(valid ? 'is-valid' : 'is-invalid');
     }
 
-    private validateValue(attr: EntityAttr, value: any): ValidationResult {
+    private validateValue(attr: MetaEntityAttr, value: any): ValidationResult {
         const result = { successed: true, messages: []}
         for(const validator of this.validators) {
             const res = validator.validate(attr, value);
@@ -195,7 +197,7 @@ class EasyForm {
         return result;
     }
 
-    public static build(model: DataModel, entity: Entity, 
+    public static build(model: MetaData, entity: MetaEntity, 
         params: FormBuildParams): EasyForm {
 
             const isIE = browserUtils.IsIE();
@@ -230,22 +232,22 @@ class EasyForm {
                 return 'text';
             }
     
-            const getEditor = (attr: EntityAttr): ValueEditor => {
-                return attr.defaultEditor || new ValueEditor();
+            const getEditor = (attr: MetaEntityAttr): MetaValueEditor => {
+                return attr.defaultEditor || new MetaValueEditor();
             }
     
-            const addFormField = (parent: HTMLElement, attr: EntityAttr) => {
+            const addFormField = (parent: HTMLElement, attr: MetaEntityAttr) => {
                 let value = params.values && attr.kind !== EntityAttrKind.Lookup
                     ? params.values.getValue(attr.id)
                     : undefined;
     
                 const editor = getEditor(attr);
-                if (editor.tag == EditorTag.Unknown) {
+                if (editor.tag == MetaEditorTag.Unknown) {
                     if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
-                        editor.tag = EditorTag.DateTime;
+                        editor.tag = MetaEditorTag.DateTime;
                     }
                     else {
-                        editor.tag = EditorTag.Edit;  
+                        editor.tag = MetaEditorTag.Edit;  
                     }
                 }
     
@@ -355,7 +357,7 @@ class EasyForm {
                 }
     
                 switch (editor.tag) {
-                    case EditorTag.DateTime:
+                    case MetaEditorTag.DateTime:
                         domel(parent)
                          .addChild('input', b => { 
     
@@ -388,7 +390,7 @@ class EasyForm {
                          });
                         break;
     
-                    case EditorTag.List:
+                    case MetaEditorTag.List:
                         domel(parent)
                             .addChild('select', b => {
                                 b
@@ -405,7 +407,7 @@ class EasyForm {
                                 }
                             });
     
-                    case EditorTag.Edit:
+                    case MetaEditorTag.Edit:
                         default:
                             domel(parent)
                                 .addChild('input', b => {
@@ -441,11 +443,11 @@ class EasyForm {
 
 class EasyDataView {
 
-    private activeEntity?: Entity;
+    private activeEntity?: MetaEntity;
     private grid?: EasyGrid;
     private resultTable?: EasyDataTable;
 
-    private model: DataModel;
+    private model: MetaData;
 
     private basePath: string;
 
@@ -466,7 +468,7 @@ class EasyDataView {
     
         this.basePath = this.getBasePath();
 
-        this.model = new DataModel();
+        this.model = new MetaData();
         this.resultTable = new EasyDataTable({
             loader: {
                 loadChunk: this.loadChunk.bind(this)
@@ -523,7 +525,7 @@ class EasyDataView {
             });
     }
 
-    private getActiveEntity(): Entity | null {
+    private getActiveEntity(): MetaEntity | null {
         const decodedUrl = decodeURIComponent(window.location.href);
         const splitIndex = decodedUrl.lastIndexOf('/');
         const typeName = decodedUrl.substring(splitIndex + 1);
