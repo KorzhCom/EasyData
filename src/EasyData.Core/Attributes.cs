@@ -151,6 +151,16 @@ namespace EasyData
         /// </summary>
         public bool IsForeignKey { get; set; } = false;
 
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is editable
+        /// </summary>
+        public bool IsEditable { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible
+        /// </summary>
+        public bool IsVisible { get; set; } = true;
+
         private ValueEditor _defaultEditor = null;
         /// <summary>
         /// Gets or sets the default value editor.
@@ -421,7 +431,8 @@ namespace EasyData
             IsNullable = attr.IsNullable;
             IsPrimaryKey = attr.IsPrimaryKey;
             IsForeignKey = attr.IsForeignKey;
-
+            IsEditable = attr.IsEditable;
+            IsVisible = attr.IsVisible;
         }
 
         /// <summary>
@@ -482,6 +493,12 @@ namespace EasyData
 
             await writer.WritePropertyNameAsync("nul").ConfigureAwait(false);
             await writer.WriteValueAsync(IsNullable).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("ied").ConfigureAwait(false);
+            await writer.WriteValueAsync(IsEditable).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("ivis").ConfigureAwait(false);
+            await writer.WriteValueAsync(IsVisible).ConfigureAwait(false);
 
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);

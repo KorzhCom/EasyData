@@ -85,7 +85,9 @@ type FormBuildParams = {
     loadChunk: (params: DataChunkDescriptor, entityId?: string) => Promise<DataChunk>, 
     
     values?: DataRow, 
-    editPK?: boolean
+    editPK?: boolean,
+
+    onlyEditable?: boolean
 };
 
 class EasyForm {
@@ -254,7 +256,7 @@ class EasyForm {
                 domel(parent)
                     .addChild('label', b => b
                         .attr('for', attr.id)
-                        .addText(`${attr.caption}: `)
+                        .addHtml(`${attr.caption} ${!attr.isNullable ? '<sup style="color: red">*</sup>': ''}: `)
                 );
     
                 if (attr.kind === EntityAttrKind.Lookup) {
@@ -431,7 +433,7 @@ class EasyForm {
     
         for(const attr of entity.attributes) {
             if (attr.isPrimaryKey && !params.editPK
-                || attr.isForeignKey)
+                || attr.isForeignKey || !attr.isEditable && params.onlyEditable)
                 continue;
 
             addFormField(fb.toDOM(), attr)
@@ -659,7 +661,7 @@ class EasyDataView {
             .then(row => {
                 if (row) {
                     const form = EasyForm.build(this.model, this.activeEntity, 
-                        { loadChunk: this.loadChunk.bind(this), values: row});
+                        { loadChunk: this.loadChunk.bind(this), onlyEditable: true, values: row});
                     form.useValidators(this.defaultValidators);
 
                     this.dlg.open({

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -45,6 +46,8 @@ namespace EasyData.EntityFrameworkCore
             var entityTypes = GetEntityTypes(context.Model);
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
+                if (entity is null)
+                    continue;
 
                 entity.Attributes.Reorder();
                 entity.SubEntities.Reorder();
@@ -55,12 +58,12 @@ namespace EasyData.EntityFrameworkCore
             }
 
             foreach (var entityType in entityTypes) {
-                var entity = EntityTypeEntities[entityType];
-
-                var navigations = entityType.GetNavigations();
-                int attrCount = entity.Attributes.Max(attr => attr.Index) + 1;
-                foreach (var navigation in navigations) {
-                    ProcessNavigationProperty(entity, entityType, context.Model, navigation, ref attrCount);
+                if (EntityTypeEntities.TryGetValue(entityType, out var entity)) {
+                    var navigations = entityType.GetNavigations();
+                    int attrCount = entity.Attributes.Max(attr => attr.Index) + 1;
+                    foreach (var navigation in navigations) {
+                        ProcessNavigationProperty(entity, entityType, context.Model, navigation, ref attrCount);
+                    }
                 }
             }
 
@@ -87,6 +90,20 @@ namespace EasyData.EntityFrameworkCore
             var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
             entity.Name = GetEntityName(entityType);
+
+            var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
+            if (annotation != null) {
+                if (!annotation.Enabled)
+                    return null;
+
+                if (string.IsNullOrEmpty(annotation.DisplayName)) {
+                    entity.Name = annotation.DisplayName;
+                }
+
+                if (string.IsNullOrEmpty(annotation.Description)) {
+                    entity.Description = annotation.Description;
+                }
+            }
 
             TableEntity.Add(tableName, entity);
 
@@ -123,36 +140,80 @@ namespace EasyData.EntityFrameworkCore
             // do not process collections for now
             if (navigation.IsCollection())
                 return;
-             
-            var lookUpAttr = Model.CreateLookupEntityAttr(entity);
-            lookUpAttr.ID = DataUtils.ComposeKey(entity.Id, navigation.Name);
-            lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
-
 
             var foreignKey = navigation.ForeignKey;
             var property = foreignKey.Properties.First();
 
-            var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
-            var dataAttr = entity.FindAttributeById(dataAttrId);
-            if (dataAttr == null) {
-                dataAttr = CreateEntityAttribute(entityType, property);
-                dataAttr.Index = attrCounter++;
-                entity.Attributes.Add(dataAttr);
+            if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
+                var lookUpAttr = Model.CreateLookupEntityAttr(entity);
+                lookUpAttr.ID = DataUtils.ComposeKey(entity.Id, navigation.Name);
+                lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
+
+                lookUpAttr = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
+                if (lookUpAttr is null)
+                    return;
+
+                var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
+                var dataAttr = entity.FindAttributeById(dataAttrId);
+                if (dataAttr == null) {
+                    dataAttr = CreateEntityAttribute(entityType, property);
+                    if (dataAttr == null)
+                        return;
+
+                    if (dataAttr.Index == int.MaxValue) {
+                        dataAttr.Index = attrCounter;
+                    }
+
+                    attrCounter++;
+                    entity.Attributes.Add(dataAttr);
+                }
+                lookUpAttr.DataAttr = dataAttr;
+
+                lookUpAttr.LookupEntity = lookupEntity;
+
+                var principalKey = foreignKey.PrincipalKey;
+                var principalProp = principalKey.Properties.First();
+                var lookupDataAttrId = DataUtils.ComposeKey(lookupEntity.Id, principalProp.Name);
+                var lookupDataAttr = lookupEntity.FindAttributeById(lookupDataAttrId);
+                if (lookupDataAttr != null) {
+                    lookUpAttr.LookupDataAttribute = lookupDataAttr;
+
+                    if (dataAttr.Index == int.MaxValue) {
+                        dataAttr.Index = attrCounter;
+                    }
+
+                    attrCounter++;
+                    entity.Attributes.Add(lookUpAttr);
+                }
             }
-            lookUpAttr.DataAttr = dataAttr;
 
-            var lookupEntity = EntityTypeEntities[foreignKey.PrincipalEntityType];
-            lookUpAttr.LookupEntity = lookupEntity;
+        }
 
-            var principalKey = foreignKey.PrincipalKey;
-            var principalProp = principalKey.Properties.First();
-            var lookupDataAttrId = DataUtils.ComposeKey(lookupEntity.Id, principalProp.Name);
-            var lookupDataAttr = lookupEntity.FindAttributeById(lookupDataAttrId);
-            lookUpAttr.LookupDataAttribute = lookupDataAttr;
+        private MetaEntityAttr ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
+        {
+            var annotation = (MetaEntityAttrAttribute)prop.GetCustomAttribute(typeof(MetaEntityAttrAttribute));
+            if (annotation != null) {
+                if (!annotation.Enabled)
+                    return null;
 
-            lookUpAttr.Index = attrCounter++;
+                if (!string.IsNullOrEmpty(annotation.DisplayName)) {
+                    entityAttr.Caption = annotation.DisplayName;
+                }
 
-            entity.Attributes.Add(lookUpAttr);
+                if (!string.IsNullOrEmpty(annotation.Description)) {
+                    entityAttr.Description = annotation.Description;
+                }
+
+                entityAttr.IsEditable = annotation.Editable;
+
+                entityAttr.IsVisible = annotation.Visible;
+
+                if (annotation.Index != int.MaxValue) {
+                    entityAttr.Index = annotation.Index;
+                }
+            }
+
+            return entityAttr;
         }
 
         protected virtual MetaEntityAttr CreateEntityAttribute(IEntityType entityType, IProperty property)
@@ -174,12 +235,15 @@ namespace EasyData.EntityFrameworkCore
 
             var propInfo = property.PropertyInfo;
             if (propInfo != null) {
+         
                 if (propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
                     entityAttr.Caption = displayAttr.Name;
                 }
                 else {
                     entityAttr.Caption = DataUtils.PrettifyName(entityAttr.Caption);
                 }
+
+                entityAttr = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
             }
 
             return entityAttr;

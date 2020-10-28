@@ -201,7 +201,7 @@ var EasyForm = /** @class */ (function () {
             ui_1.domel(parent)
                 .addChild('label', function (b) { return b
                 .attr('for', attr.id)
-                .addText(attr.caption + ": "); });
+                .addHtml(attr.caption + " " + (!attr.isNullable ? '<sup style="color: red">*</sup>' : '') + ": "); });
             if (attr.kind === core_1.EntityAttrKind.Lookup) {
                 var lookupEntity_1 = model.getRootEntity()
                     .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
@@ -351,7 +351,7 @@ var EasyForm = /** @class */ (function () {
         for (var _i = 0, _a = entity.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
             if (attr.isPrimaryKey && !params.editPK
-                || attr.isForeignKey)
+                || attr.isForeignKey || !attr.isEditable && params.onlyEditable)
                 continue;
             addFormField(fb.toDOM(), attr);
         }
@@ -536,7 +536,7 @@ var EasyDataView = /** @class */ (function () {
         this.resultTable.getRow(index)
             .then(function (row) {
             if (row) {
-                var form_1 = EasyForm.build(_this.model, _this.activeEntity, { loadChunk: _this.loadChunk.bind(_this), values: row });
+                var form_1 = EasyForm.build(_this.model, _this.activeEntity, { loadChunk: _this.loadChunk.bind(_this), onlyEditable: true, values: row });
                 form_1.useValidators(_this.defaultValidators);
                 _this.dlg.open({
                     title: "Edit " + _this.activeEntity.caption,
