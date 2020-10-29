@@ -16,10 +16,200 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@easydata/core");
 var ui_1 = require("@easydata/ui");
 var ui_2 = require("@easyquery/ui");
+var isIE = ui_1.browserUtils.IsIE();
 var Validator = /** @class */ (function () {
     function Validator() {
     }
     return Validator;
+}());
+var TextFilter = /** @class */ (function () {
+    function TextFilter(grid, loadChunk) {
+        var _this = this;
+        this.grid = grid;
+        this.loadChunk = loadChunk;
+        this.filterValue = null;
+        this.justServerSide = true;
+        var renderer = this.highlightCellRenderer.bind(this);
+        var stringDefRenderer = this.grid.cellRendererStore
+            .getDefaultRendererByType(ui_1.CellRendererType.STRING);
+        this.grid.cellRendererStore
+            .setDefaultRenderer(ui_1.CellRendererType.STRING, function (value, column, cell) {
+            return _this.highlightCellRenderer(stringDefRenderer, value, column, cell);
+        });
+        var numDefRenderer = this.grid.cellRendererStore
+            .getDefaultRendererByType(ui_1.CellRendererType.NUMBER);
+        this.grid.cellRendererStore
+            .setDefaultRenderer(ui_1.CellRendererType.NUMBER, function (value, column, cell) {
+            return _this.highlightCellRenderer(numDefRenderer, value, column, cell);
+        });
+        this.initTable = grid.getData();
+    }
+    TextFilter.prototype.highlightCellRenderer = function (defaultRenderer, value, column, cell) {
+        if (core_1.utils.isIntType(column.type)
+            || core_1.utils.getStringDataTypes().indexOf(column.type) >= 0) {
+            if (value)
+                value = this.highlightText(value.toString());
+        }
+        defaultRenderer(value, column, cell);
+    };
+    TextFilter.prototype.highlightText = function (content) {
+        if (this.filterValue && this.filterValue.length > 0 && content && content.length > 0) {
+            var insertValue1 = "<span style='background-color: yellow'>";
+            var insertValue2 = "</span>";
+            var indexInMas = [];
+            var words = this.filterValue.trim().split(/\s+/);
+            for (var i = 0; i < words.length; i++) {
+                var pos = 0;
+                var lowerWord = words[i].toLowerCase();
+                while (pos < content.length - 1) {
+                    var index = content.toLowerCase().indexOf(lowerWord, pos);
+                    if (index >= 0) {
+                        indexInMas.push({ index: index, length: words[i].length });
+                        pos = index + lowerWord.length;
+                    }
+                    else {
+                        pos++;
+                    }
+                }
+            }
+            if (indexInMas.length > 0) {
+                //sort array item by index
+                indexInMas.sort(function (item1, item2) {
+                    if (item1.index > item2.index) {
+                        return 1;
+                    }
+                    else if (item1.index == item2.index2) {
+                        return 0;
+                    }
+                    else {
+                        return -1;
+                    }
+                });
+                //remove intersecting gaps
+                for (var i = 0; i < indexInMas.length - 1;) {
+                    var delta = indexInMas[i + 1].index - (indexInMas[i].index + indexInMas[i].length);
+                    if (delta < 0) {
+                        var addDelta = indexInMas[i + 1].length + delta;
+                        if (addDelta > 0) {
+                            indexInMas[i].length += addDelta;
+                        }
+                        indexInMas.splice(i + 1, 1);
+                    }
+                    else {
+                        i++;
+                    }
+                }
+                var result = '';
+                for (var i = 0; i < indexInMas.length; i++) {
+                    if (i === 0) {
+                        result += content.substring(0, indexInMas[i].index);
+                    }
+                    result += insertValue1
+                        + content.substring(indexInMas[i].index, indexInMas[i].index + indexInMas[i].length)
+                        + insertValue2;
+                    if (i < indexInMas.length - 1) {
+                        result += content.substring(indexInMas[i].index
+                            + indexInMas[i].length, indexInMas[i + 1].index);
+                    }
+                    else {
+                        result += content.substring(indexInMas[i].index
+                            + indexInMas[i].length);
+                    }
+                }
+                content = result;
+            }
+        }
+        return content;
+    };
+    TextFilter.prototype.apply = function (value) {
+        var _this = this;
+        if (this.filterValue != value) {
+            this.filterValue = value;
+        }
+        else {
+            return;
+        }
+        if (this.filterValue) {
+            this.applyCore()
+                .then(function (table) {
+                _this.filteredTable = table;
+                _this.grid.setData(_this.filteredTable);
+            });
+        }
+        else {
+            this.grid.setData(this.initTable);
+            this.filteredTable = null;
+        }
+    };
+    TextFilter.prototype.applyCore = function () {
+        var _this = this;
+        if (this.initTable.getTotal() == this.initTable.getCachedCount() && !this.justServerSide) {
+            return this.applyInMemoryFilter();
+        }
+        else {
+            return this.loadChunk({
+                offset: 0,
+                limit: this.initTable.chunkSize,
+                needTotal: true,
+                filter: this.filterValue
+            })
+                .then(function (data) {
+                var filteredTable = new core_1.EasyDataTable({
+                    chunkSize: _this.initTable.chunkSize,
+                    loader: {
+                        loadChunk: _this.loadChunk
+                    }
+                });
+                for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                    var col = _a[_i];
+                    filteredTable.columns.add(col);
+                }
+                filteredTable.setTotal(data.total);
+                for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                    var row = _c[_b];
+                    filteredTable.addRow(row);
+                }
+                return filteredTable;
+            });
+        }
+    };
+    TextFilter.prototype.applyInMemoryFilter = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var filteredTable = new core_1.EasyDataTable({
+                chunkSize: _this.initTable.chunkSize,
+                loader: {
+                    loadChunk: _this.loadChunk
+                }
+            });
+            for (var _i = 0, _a = _this.initTable.columns.getItems(); _i < _a.length; _i++) {
+                var col = _a[_i];
+                filteredTable.columns.add(col);
+            }
+            var hasEnterance = function (row) {
+                for (var _i = 0, _a = _this.initTable.columns.getItems(); _i < _a.length; _i++) {
+                    var col = _a[_i];
+                    if (core_1.utils.isIntType(col.type)
+                        || core_1.utils.getStringDataTypes().indexOf(col.type) >= 0) {
+                        var value = row.getValue(col.id);
+                        if (value && value.toString()
+                            .toLowerCase().indexOf(_this.filterValue.toLowerCase()) >= 0) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+            for (var _b = 0, _c = _this.initTable.getCachedRows(); _b < _c.length; _b++) {
+                var row = _c[_b];
+                if (hasEnterance(row)) {
+                    filteredTable.addRow(row);
+                }
+            }
+            resolve(filteredTable);
+        });
+    };
+    return TextFilter;
 }());
 var RequiredValidator = /** @class */ (function (_super) {
     __extends(RequiredValidator, _super);
@@ -158,7 +348,6 @@ var EasyForm = /** @class */ (function () {
         return result;
     };
     EasyForm.build = function (model, entity, params) {
-        var isIE = ui_1.browserUtils.IsIE();
         var fb;
         var formHtml = ui_1.domel('div')
             .addClass('kfrm-form')
@@ -172,7 +361,7 @@ var EasyForm = /** @class */ (function () {
             fb = b;
         })
             .toDOM();
-        if (ui_1.browserUtils.IsIE()) {
+        if (isIE) {
             fb = ui_1.domel('div', fb.toDOM())
                 .addClass('kfrm-field-ie');
         }
@@ -212,17 +401,26 @@ var EasyForm = /** @class */ (function () {
                 value = params.values
                     ? params.values.getValue(dataAttr_1.id)
                     : undefined;
+                var horizClass_1 = isIE
+                    ? 'kfrm-fields-ie is-horizontal'
+                    : 'kfrm-fields is-horizontal';
+                var inputEl_1;
                 ui_1.domel(parent)
-                    .addChild('input', function (b) {
-                    if (readOnly)
+                    .addChild('div', function (b) {
+                    b
+                        .addClass(horizClass_1)
+                        .addChild('input', function (b) {
+                        inputEl_1 = b.toDOM();
                         b.attr('readonly', '');
-                    b.name(dataAttr_1.id);
-                    b.type(getInputType(dataAttr_1.dataType));
-                    b.value(core_1.utils.IsDefinedAndNotNull(value)
-                        ? value.toString() : '');
+                        b.name(dataAttr_1.id);
+                        b.type(getInputType(dataAttr_1.dataType));
+                        b.value(core_1.utils.IsDefinedAndNotNull(value)
+                            ? value.toString() : '');
+                    });
                     if (!readOnly)
-                        b.addChild('a', function (b) { return b
-                            .attr('href', 'javasctipt:void(0)')
+                        b.addChild('button', function (b) { return b
+                            .addClass('kfrm-button')
+                            .attr('title', 'Navigation values')
                             .addText('...')
                             .on('click', function (ev) {
                             var lookupTable = new core_1.EasyDataTable({
@@ -259,8 +457,7 @@ var EasyForm = /** @class */ (function () {
                                         .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
                                 })
                                     .toDOM();
-                                var inputEl = ev.target;
-                                var selectedValue = inputEl.value;
+                                var selectedValue = inputEl_1.value;
                                 var updateLabel = function () {
                                     return labelEl.innerHTML = "Selected value: '" + selectedValue + "'";
                                 };
@@ -281,7 +478,7 @@ var EasyForm = /** @class */ (function () {
                                     title: "Select " + lookupEntity_1.caption,
                                     body: slot,
                                     onSubmit: function () {
-                                        ev.target.value = selectedValue;
+                                        inputEl_1.value = selectedValue;
                                         return true;
                                     },
                                     onDestroy: function () {
@@ -375,12 +572,16 @@ var EasyForm = /** @class */ (function () {
     return EasyForm;
 }());
 var EasyDataView = /** @class */ (function () {
-    function EasyDataView() {
+    function EasyDataView(options) {
         var _this = this;
         this.endpoint = '/api/easydata';
         this.defaultValidators = [];
+        this.options = {
+            showBackToEntities: true
+        };
         this.dlg = new ui_1.DefaultDialogService();
         this.http = new core_1.HttpClient();
+        this.options = core_1.utils.assignDeep(this.options, options || {});
         this.defaultValidators.push(new RequiredValidator(), new TypeValidator());
         this.slot = document.getElementById('EasyData');
         if (!this.slot) {
@@ -401,7 +602,10 @@ var EasyDataView = /** @class */ (function () {
             }
             _this.activeEntity = _this.getActiveEntity();
             if (_this.activeEntity) {
-                _this.slot.innerHTML = "<h1>" + _this.activeEntity.caption + "</h1><a href=\"" + _this.basePath + "\"> \u2190 Back to entities</a>";
+                _this.slot.innerHTML = "<h1>" + _this.activeEntity.caption + "</h1>";
+                if (_this.options.showBackToEntities) {
+                    _this.slot.innerHTML += "<a href=\"" + _this.basePath + "\"> \u2190 Back to entities</a>";
+                }
                 _this.renderGrid();
             }
             else {
@@ -494,6 +698,9 @@ var EasyDataView = /** @class */ (function () {
                 var row = _c[_b];
                 _this.resultTable.addRow(row);
             }
+            var horizClass = isIE
+                ? 'kfrm-fields-ie is-horizontal'
+                : 'kfrm-fields is-horizontal';
             var gridSlot = document.createElement('div');
             _this.slot.appendChild(gridSlot);
             gridSlot.id = 'Grid';
@@ -507,6 +714,33 @@ var EasyDataView = /** @class */ (function () {
                 onAddColumnClick: _this.addClickHandler.bind(_this),
                 onGetCellRenderer: _this.manageCellRenderer.bind(_this)
             });
+            var filter = new TextFilter(_this.grid, _this.loadChunk.bind(_this));
+            var filterInput;
+            var filterBar = ui_1.domel('div')
+                .addClass("kfrm-form")
+                .setStyle('margin', '10px 0px')
+                .addChild('div', function (b) { return b
+                .addClass(horizClass)
+                .addChild('input', function (b) { return filterInput = b
+                .attr("placeholder", "Search..")
+                .toDOM(); })
+                .addChild('button', function (b) { return b
+                .addClass('kfrm-button')
+                .addText('Search')
+                .on('click', function () {
+                if (filterInput.value)
+                    filter.apply(filterInput.value);
+            }); })
+                .addChild('button', function (b) { return b
+                .addClass('kfrm-button')
+                .addText('Clear')
+                .on('click', function () {
+                if (filterInput.value) {
+                    filter.apply(null);
+                    filterInput.value = '';
+                }
+            }); }); }).toDOM();
+            _this.slot.insertBefore(filterBar, gridSlot);
         });
     };
     EasyDataView.prototype.manageCellRenderer = function (column, defaultRenderer) {

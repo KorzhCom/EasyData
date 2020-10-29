@@ -2,15 +2,16 @@
     DataRow, DataType, utils as dataUtils, 
     EasyDataTable, DataChunk, DataChunkDescriptor, 
     MetaData, MetaEntity, MetaEntityAttr, EntityAttrKind,
-    MetaValueEditor, MetaEditorTag, HttpClient
+    MetaValueEditor, MetaEditorTag, HttpClient, DataColumn
 } from '@easydata/core';
 import {
     EasyGrid, DefaultDialogService, browserUtils,
-    domel, DomElementBuilder, GridColumn, GridCellRenderer, DialogService
+    domel, DomElementBuilder, GridColumn, GridCellRenderer, DialogService, CellRendererType
 } from '@easydata/ui';
 
 import { DefaultDateTimePicker } from '@easyquery/ui';
 
+const isIE = browserUtils.IsIE();
 
 interface ValidationResult {
     successed: boolean;
@@ -22,6 +23,221 @@ abstract class Validator {
     public name: string;
 
     public abstract validate(attr: MetaEntityAttr, value: any): ValidationResult
+    
+}
+
+type LoadChunkFunc = (params: DataChunkDescriptor, entityId?: string) => Promise<DataChunk>;
+
+class TextFilter {
+
+    private filteredTable: EasyDataTable;
+    private initTable: EasyDataTable;
+
+    private filterValue = null;
+
+    private justServerSide = true;
+
+    constructor (private grid: EasyGrid, private loadChunk: LoadChunkFunc) {
+        const renderer = this.highlightCellRenderer.bind(this);
+        const stringDefRenderer =  this.grid.cellRendererStore
+            .getDefaultRendererByType(CellRendererType.STRING);
+        this.grid.cellRendererStore
+            .setDefaultRenderer(CellRendererType.STRING, (value, column, cell) => 
+                this.highlightCellRenderer(stringDefRenderer, value, column, cell));
+
+        const numDefRenderer =  this.grid.cellRendererStore
+                .getDefaultRendererByType(CellRendererType.NUMBER);
+        this.grid.cellRendererStore
+            .setDefaultRenderer(CellRendererType.NUMBER, (value, column, cell) => 
+                this.highlightCellRenderer(numDefRenderer, value, column, cell));
+
+        this.initTable = grid.getData();
+    }
+
+    private highlightCellRenderer(defaultRenderer:GridCellRenderer, value: any, column: GridColumn, cell: HTMLElement) {   
+        if (dataUtils.isIntType(column.type) 
+        || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) {
+            if (value)
+                value = this.highlightText(value.toString());
+        }
+
+        defaultRenderer(value, column, cell);
+    }
+
+    private highlightText(content: string): string {
+        if (this.filterValue && this.filterValue.length > 0 && content && content.length > 0) {
+            const insertValue1 = `<span style='background-color: yellow'>`;
+            const insertValue2 = `</span>`;
+    
+            let indexInMas = [];
+            const words = this.filterValue.trim().split(/\s+/);
+            for(let i = 0; i < words.length; i++) {
+                let pos = 0;
+                let lowerWord = words[i].toLowerCase();
+                while (pos < content.length - 1) {
+                    const index = content.toLowerCase().indexOf(lowerWord, pos);
+                    if (index >= 0) {
+                        indexInMas.push({index: index, length: words[i].length});
+                        pos = index + lowerWord.length;
+                    } else {
+                        pos++;
+                    }
+                }
+            }
+    
+            if (indexInMas.length > 0) {
+                
+                //sort array item by index
+                indexInMas.sort((item1, item2) => {
+    
+                    if (item1.index > item2.index) {
+                        return 1;
+                    } 
+                    else if (item1.index == item2.index2) {
+                        return 0;
+                    } 
+                    else {
+                        return -1;
+                    }
+    
+                });
+    
+                //remove intersecting gaps
+                for(let i = 0; i < indexInMas.length - 1;) {
+                    const delta = indexInMas[i + 1].index - (indexInMas[i].index + indexInMas[i].length);
+                    if (delta < 0) {
+                        const addDelta = indexInMas[i + 1].length + delta;
+                        if (addDelta > 0) {
+                            indexInMas[i].length += addDelta;
+                        }
+                        indexInMas.splice(i + 1, 1);
+                    } else {
+                        i++;
+                    }
+                }
+    
+                let result = '';
+                for (let i = 0; i < indexInMas.length; i++) {
+                    if (i === 0) {
+                        result += content.substring(0, indexInMas[i].index);
+                    }
+    
+                    result += insertValue1 
+                        + content.substring(indexInMas[i].index, 
+                            indexInMas[i].index + indexInMas[i].length) 
+                        + insertValue2;
+    
+                    if (i < indexInMas.length - 1) {
+                        result += content.substring(indexInMas[i].index 
+                            + indexInMas[i].length, indexInMas[i + 1].index);
+                    } else {
+                        result += content.substring(indexInMas[i].index 
+                            + indexInMas[i].length);
+                    }
+    
+                }
+    
+                content = result;
+            }
+        }
+
+        return content;
+    }
+    
+    public apply(value: string) {
+        if (this.filterValue != value) {
+            this.filterValue = value;
+        }
+        else {
+            return;
+        }
+
+        if (this.filterValue) {
+            this.applyCore()
+                .then(table => {
+                    this.filteredTable = table;
+                    this.grid.setData(this.filteredTable);
+                })
+        }
+        else {
+            this.grid.setData(this.initTable)
+            this.filteredTable = null;
+        }
+    }
+
+    private applyCore(): Promise<EasyDataTable> {
+        if (this.initTable.getTotal() == this.initTable.getCachedCount() && !this.justServerSide) {
+            return this.applyInMemoryFilter();
+        }
+        else {
+            return this.loadChunk({ 
+                offset: 0, 
+                limit: this.initTable.chunkSize, 
+                needTotal: true, 
+                filter: this.filterValue
+            } as any)
+            .then(data => {
+
+                const filteredTable = new EasyDataTable({
+                    chunkSize: this.initTable.chunkSize,
+                    loader: {
+                        loadChunk: this.loadChunk
+                    }
+                });
+
+                for(const col of data.table.columns.getItems()) {
+                    filteredTable.columns.add(col);
+                }
+
+                filteredTable.setTotal(data.total);
+
+                for(const row of data.table.getCachedRows()) {
+                    filteredTable.addRow(row);
+                }
+
+                return filteredTable;
+            })
+
+        }
+    }
+
+    private applyInMemoryFilter(): Promise<EasyDataTable> {
+        return new Promise((resolve, reject) => {
+            const filteredTable = new EasyDataTable({
+                chunkSize: this.initTable.chunkSize,
+                loader: {
+                    loadChunk: this.loadChunk
+                }
+            });
+
+            for(const col of this.initTable.columns.getItems()) {
+                filteredTable.columns.add(col);
+            }   
+            
+            const hasEnterance = (row: DataRow) => {
+                for (const col of this.initTable.columns.getItems()) {
+                    if (dataUtils.isIntType(col.type) 
+                        || dataUtils.getStringDataTypes().indexOf(col.type) >= 0) {
+                        const value = row.getValue(col.id);
+                        if (value && value.toString()
+                            .toLowerCase().indexOf(this.filterValue.toLowerCase()) >= 0) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            for(const row of this.initTable.getCachedRows()) {
+                if (hasEnterance(row)) {
+                    filteredTable.addRow(row); 
+                }
+            }
+
+            resolve(filteredTable);
+        });
+    }
     
 }
 
@@ -82,7 +298,7 @@ class TypeValidator extends Validator {
 
 type FormBuildParams = { 
     // temporary, possibly we will add context for EasyData
-    loadChunk: (params: DataChunkDescriptor, entityId?: string) => Promise<DataChunk>, 
+    loadChunk: LoadChunkFunc, 
     
     values?: DataRow, 
     isEditForm?: boolean;
@@ -199,9 +415,6 @@ class EasyForm {
 
     public static build(model: MetaData, entity: MetaEntity, 
         params: FormBuildParams): EasyForm {
-
-            const isIE = browserUtils.IsIE();
-
             let fb: DomElementBuilder<HTMLDivElement>;
             const formHtml =
              domel('div')
@@ -219,7 +432,7 @@ class EasyForm {
                 })
                 .toDOM();
     
-            if (browserUtils.IsIE()) {
+            if (isIE) {
                 fb = domel('div', fb.toDOM())
                     .addClass('kfrm-field-ie');
             }
@@ -281,7 +494,6 @@ class EasyForm {
                         .addClass(horizClass)
                         .addChild('input', b => { 
                             inputEl = b.toDOM(); 
-                            
                             b.attr('readonly', '');
 
                             b.name(dataAttr.id)
@@ -470,6 +682,11 @@ class EasyForm {
     }
 }
 
+
+interface EasyDataViewOptions {
+    showBackToEntities?: boolean
+}
+
 class EasyDataView {
 
     private activeEntity?: MetaEntity;
@@ -490,9 +707,15 @@ class EasyDataView {
 
     private defaultValidators: Validator[] = [];
 
-    constructor() {
+    private options = {
+        showBackToEntities: true
+    }
+
+    constructor(options?: EasyDataViewOptions) {
         this.dlg = new DefaultDialogService();
         this.http = new HttpClient();
+
+        this.options = dataUtils.assignDeep(this.options, options || {});
 
         this.defaultValidators.push(new RequiredValidator(), new TypeValidator());
 
@@ -519,7 +742,10 @@ class EasyDataView {
 
                 this.activeEntity = this.getActiveEntity();
                 if (this.activeEntity) {
-                    this.slot.innerHTML = `<h1>${this.activeEntity.caption}</h1><a href="${this.basePath}"> ← Back to entities</a>`;
+                    this.slot.innerHTML = `<h1>${this.activeEntity.caption}</h1>`;
+                    if (this.options.showBackToEntities) {
+                        this.slot.innerHTML += `<a href="${this.basePath}"> ← Back to entities</a>`;
+                    }
                     this.renderGrid();
                 }
                 else {
@@ -620,6 +846,10 @@ class EasyDataView {
                     this.resultTable.addRow(row);
                 }
 
+                const horizClass = isIE 
+                    ? 'kfrm-fields-ie is-horizontal' 
+                    : 'kfrm-fields is-horizontal';
+
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
@@ -633,7 +863,39 @@ class EasyDataView {
                     onAddColumnClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this)
                 });
+
+                const filter = new TextFilter(this.grid, this.loadChunk.bind(this));
+                let filterInput: HTMLInputElement;
+                const filterBar = domel('div')
+                    .addClass(`kfrm-form`)
+                    .setStyle('margin', '10px 0px')
+                    .addChild('div', b => b
+                        .addClass(horizClass)
+                        .addChild('input', b => filterInput = b
+                            .attr("placeholder", "Search..")
+                            .toDOM()
+                        )
+                        .addChild('button', b => b
+                            .addClass('kfrm-button')
+                            .addText('Search')
+                            .on('click', () => {
+                                if (filterInput.value)
+                                    filter.apply(filterInput.value)
+                            })
+                        )
+                        .addChild('button', b => b
+                            .addClass('kfrm-button')
+                            .addText('Clear')
+                            .on('click', () => {
+                                if (filterInput.value) {
+                                    filter.apply(null);
+                                    filterInput.value = '';
+                                }
+                            })
+                        )
+                    ).toDOM();
                 
+                this.slot.insertBefore(filterBar, gridSlot);
             });
     }
 

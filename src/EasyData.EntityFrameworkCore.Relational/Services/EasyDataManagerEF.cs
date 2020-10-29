@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
+using EasyData.EntityFrameworkCore.Relational.Services;
 
 namespace EasyData.Services
 {
@@ -33,10 +34,10 @@ namespace EasyData.Services
             return Task.FromResult(model);
         }
 
-        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, int? offset = null, int? fetch = null)
+        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, string filter = null, int? offset = null, int? fetch = null)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, offset, fetch);
+            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, filter, offset, fetch);
 
             var result = new EasyDataResultSet();
 
@@ -56,10 +57,10 @@ namespace EasyData.Services
 
         }
 
-        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer)
+        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, string filter = null)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            return await CountAllEntitiesAsync(DbContext, entityType.ClrType);
+            return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filter);
         }
 
         public override async Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr)
@@ -173,27 +174,27 @@ namespace EasyData.Services
             return (object)((dynamic)task).Result;
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, int? offset = null, int? fetch = null)
+        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, string filter = null, int? offset = null, int? fetch = null)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
                        .Single(m => m.Name == "ListAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, offset,fetch });
+                       .Invoke(this, new object[] { dbContext, filter, offset, fetch });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
         }
 
-        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType)
+        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, string filter = null)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
                        .Single(m => m.Name == "CountAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext });
+                       .Invoke(this, new object[] { dbContext, filter });
 
             await task.ConfigureAwait(false);
             return (long)((dynamic)task).Result;
@@ -204,21 +205,43 @@ namespace EasyData.Services
             return await dbContext.Set<T>().FindAsync(keys.ToArray());
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, int? offset, int? fetch) where T : class
+        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, string filter, int? offset, int? fetch) where T : class
         {
-            var query = dbContext.Set<T>().Cast<object>();
+            var query = dbContext.Set<T>().AsQueryable();
+            if (!string.IsNullOrWhiteSpace(filter)) {
+                query = query.FullTextSearchQuery(filter, GetFilterOptions());
+            }
             if (offset.HasValue) {
                 query = query.Skip(offset.Value);
             }
             if (fetch.HasValue) {
                 query = query.Take(fetch.Value);
             }
-            return await query.ToListAsync();
+            return await query.Cast<object>().ToListAsync();
         }
 
-        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext) where T : class
+        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, string filter) where T : class
         {
-            return await dbContext.Set<T>().LongCountAsync();
+            var query = dbContext.Set<T>().AsQueryable();
+            if (!string.IsNullOrWhiteSpace(filter)) {
+                query = query.FullTextSearchQuery(filter, GetFilterOptions());
+            }
+            return await query.LongCountAsync();
+        }
+
+        private FullTextSearchOptions GetFilterOptions()
+        {
+            return new FullTextSearchOptions {
+
+                Filter = (prop) => {
+                    var metaAttr = (MetaEntityAttrAttribute)prop.GetCustomAttribute(typeof(MetaEntityAttrAttribute));
+                    if (metaAttr != null) {
+                        if (!metaAttr.Enabled || metaAttr.Visible)
+                            return false;
+                    }
+                    return true;
+                }
+            };
         }
     }
 }

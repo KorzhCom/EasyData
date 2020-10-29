@@ -79,6 +79,9 @@ namespace EasyData.AspNetCore
         {
             int? offset = null;
             int? fetch = null;
+
+            string filter = null;
+
             bool needTotal = false;
             var queryParams = HttpContext.Request.Query;
             if (queryParams.TryGetValue("offset", out var value)) {
@@ -90,12 +93,16 @@ namespace EasyData.AspNetCore
             if (queryParams.TryGetValue("needTotal", out value)) {
                 needTotal = bool.Parse(value);
             }
+            if (queryParams.TryGetValue("filter", out value)) {
+                filter = value;
+            }
 
             long? total = null;
             if (needTotal) {
-                total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer);
+                total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer, filter);
             }
-            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, offset, fetch);
+
+            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filter, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
                 await WriteGetEntitiesResponseAsync(jsonWriter, result, total);
             });

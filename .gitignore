@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js.map
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js
+
+/samples/EasyDataBasicDemo/ts/easydata.js
