@@ -85,9 +85,7 @@ type FormBuildParams = {
     loadChunk: (params: DataChunkDescriptor, entityId?: string) => Promise<DataChunk>, 
     
     values?: DataRow, 
-    editPK?: boolean,
-
-    onlyEditable?: boolean
+    isEditForm?: boolean;
 };
 
 class EasyForm {
@@ -252,11 +250,13 @@ class EasyForm {
                         editor.tag = MetaEditorTag.Edit;  
                     }
                 }
-    
+
+                let readOnly = params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+                const required = !attr.isNullable;
                 domel(parent)
                     .addChild('label', b => b
                         .attr('for', attr.id)
-                        .addHtml(`${attr.caption} ${!attr.isNullable ? '<sup style="color: red">*</sup>': ''}: `)
+                        .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>': ''}: `)
                 );
     
                 if (attr.kind === EntityAttrKind.Lookup) {
@@ -265,96 +265,115 @@ class EasyForm {
                     .subEntities.filter(ent => ent.id == attr.lookupEntity)[0]; 
                     const dataAttr = model.getAttributeById(attr.dataAttr);
     
+                    readOnly = readOnly && dataAttr.isEditable;
+
                     value = params.values 
                         ? params.values.getValue(dataAttr.id)
                         : undefined;
     
+                    const horizClass = isIE 
+                        ? 'kfrm-fields-ie is-horizontal' 
+                        : 'kfrm-fields is-horizontal';
+
+                    let inputEl: HTMLInputElement;
                     domel(parent)
-                    .addChild('input', b => { 
-                       b.name(dataAttr.id)
-                       b.type(getInputType(dataAttr.dataType));
-    
-                        b.value(dataUtils.IsDefinedAndNotNull(value)
-                            ? value.toString() : '');
-    
-                        b.on('focus', (ev) => {
-                       
-                            const lookupTable = new EasyDataTable({
-                                loader: {
-                                    loadChunk: (chunkParams) => params.loadChunk(chunkParams, lookupEntity.id)
-                                } 
-                            });
-    
-                            params.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity.id)
-                                .then(data => {
-    
-                                    for(const col of data.table.columns.getItems()) {
-                                        lookupTable.columns.add(col);
-                                    }
-                    
-                                    lookupTable.setTotal(data.total);
-                    
-                                    for(const row of data.table.getCachedRows()) {
-                                        lookupTable.addRow(row);
-                                    }
-    
-                                    const ds = new DefaultDialogService();
-                                    let gridSlot: HTMLElement = null;
-    
-                                    let labelEl: HTMLElement = null;
-    
-                                    const slot = domel('div')
-                                        .addClass(`kfrm-form`)
-                                        .addChild('div', b => {
-                                            b.addClass(`${browserUtils.IsIE() 
-                                                ? 'kfrm-fields-ie' 
-                                                : 'kfrm-fields'}`)
-                                            b.addChild('div')
-                                                .addClass(`kfrm-field`)
-                                                .addChild('label', b => labelEl = b
-                                                    .toDOM()
-                                                )
-                                                .addChild('div', b => b
-                                                    .addClass('kfrm-control')
-                                                    .addChild('div', b => gridSlot = b.toDOM())
-                                                )
-                                        })
-                                        .toDOM();
+                    .addChild('div', b => { b
+                        .addClass(horizClass)
+                        .addChild('input', b => { 
+                            inputEl = b.toDOM(); 
+                            
+                            b.attr('readonly', '');
+
+                            b.name(dataAttr.id)
+                            b.type(getInputType(dataAttr.dataType));
             
-                                    const inputEl = (ev.target as HTMLInputElement);
-                                    let selectedValue = inputEl.value;
-    
-                                    const updateLabel = () => 
-                                        labelEl.innerHTML = `Selected value: '${selectedValue}'`;
-                                    updateLabel();
-    
-                                    const lookupGrid = new EasyGrid({
-                                        slot: gridSlot,
-                                        dataTable: lookupTable,
-                                        paging: {
-                                            pageSize: 10
-                                        },
-                                        onRowDbClick: (ev) => {
-                                            const row = ev.row;
-                                            selectedValue = row.getValue(attr.lookupDataAttr);
-                                            updateLabel();
-                                        }
-                                    });
-                                    
-                                    ds.open({
-                                        title: `Select ${lookupEntity.caption}`,
-                                        body: slot,
-                                        onSubmit: () => {
-                                            (ev.target as HTMLInputElement).value = selectedValue;
-                                            return true;
-                                        },
-                                        onDestroy: () => {
-                                            lookupGrid.destroy();
-                                        }
-                                    });
-                                });
+                            b.value(dataUtils.IsDefinedAndNotNull(value)
+                                    ? value.toString() : '');     
                         });
-                    });
+
+                        if (!readOnly)
+                            b.addChild('button', b => b
+                                .addClass('kfrm-button')
+                                .attr('title', 'Navigation values')
+                                .addText('...')
+                                .on('click', (ev) => {
+                            
+                                    const lookupTable = new EasyDataTable({
+                                        loader: {
+                                            loadChunk: (chunkParams) => params.loadChunk(chunkParams, lookupEntity.id)
+                                        } 
+                                    });
+            
+                                    params.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity.id)
+                                    .then(data => {
+        
+                                        for(const col of data.table.columns.getItems()) {
+                                            lookupTable.columns.add(col);
+                                        }
+                        
+                                        lookupTable.setTotal(data.total);
+                        
+                                        for(const row of data.table.getCachedRows()) {
+                                            lookupTable.addRow(row);
+                                        }
+        
+                                        const ds = new DefaultDialogService();
+                                        let gridSlot: HTMLElement = null;
+        
+                                        let labelEl: HTMLElement = null;
+        
+                                        const slot = domel('div')
+                                            .addClass(`kfrm-form`)
+                                            .addChild('div', b => {
+                                                b.addClass(`${browserUtils.IsIE() 
+                                                    ? 'kfrm-fields-ie' 
+                                                    : 'kfrm-fields'}`)
+                                                b.addChild('div')
+                                                    .addClass(`kfrm-field`)
+                                                    .addChild('label', b => labelEl = b
+                                                        .toDOM()
+                                                    )
+                                                    .addChild('div', b => b
+                                                        .addClass('kfrm-control')
+                                                        .addChild('div', b => gridSlot = b.toDOM())
+                                                    )
+                                            })
+                                            .toDOM();
+                
+                                        let selectedValue = inputEl.value;
+        
+                                        const updateLabel = () => 
+                                            labelEl.innerHTML = `Selected value: '${selectedValue}'`;
+                                        updateLabel();
+        
+                                        const lookupGrid = new EasyGrid({
+                                            slot: gridSlot,
+                                            dataTable: lookupTable,
+                                            paging: {
+                                                pageSize: 10
+                                            },
+                                            onRowDbClick: (ev) => {
+                                                const row = ev.row;
+                                                selectedValue = row.getValue(attr.lookupDataAttr);
+                                                updateLabel();
+                                            }
+                                        });
+                                        
+                                        ds.open({
+                                            title: `Select ${lookupEntity.caption}`,
+                                            body: slot,
+                                            onSubmit: () => {
+                                                inputEl.value = selectedValue;
+                                                return true;
+                                            },
+                                            onDestroy: () => {
+                                                lookupGrid.destroy();
+                                            }
+                                        });
+                                    });
+                                })
+                            );
+                        });
                     return;
                 }
     
@@ -363,38 +382,44 @@ class EasyForm {
                         domel(parent)
                          .addChild('input', b => { 
     
+                            if (readOnly)
+                                b.attr('readonly', '');
+
                             b.name(attr.id)
                             b.value(dataUtils.IsDefinedAndNotNull(value) 
                                 ? new Date(value).toUTCString() 
                                 : '');
     
-                             b.on('focus', (ev) => {
-                                 const inputEl = ev.target as HTMLInputElement;
-                                 const oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
-                                 const pickerOptions = {
-                                     showCalendar: attr.dataType !== DataType.Time,
-                                     showTimePicker: attr.dataType !== DataType.Date,
-                                     onApply: (dateTime: Date) => {
-                                        inputEl.value = dateTime.toUTCString();
-                                     },
-                                     onCancel: () => {
-                                        inputEl.value = oldValue.toUTCString();
-                                     },
-                                     onDateTimeChanged: (dateTime: Date) => {
-                                        inputEl.value = dateTime.toUTCString();
-                                     }
-                                 };
+                            if (!readOnly)
+                                b.on('focus', (ev) => {
+                                    const inputEl = ev.target as HTMLInputElement;
+                                    const oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
+                                    const pickerOptions = {
+                                        showCalendar: attr.dataType !== DataType.Time,
+                                        showTimePicker: attr.dataType !== DataType.Date,
+                                        onApply: (dateTime: Date) => {
+                                            inputEl.value = dateTime.toUTCString();
+                                        },
+                                        onCancel: () => {
+                                            inputEl.value = oldValue.toUTCString();
+                                        },
+                                        onDateTimeChanged: (dateTime: Date) => {
+                                            inputEl.value = dateTime.toUTCString();
+                                        }
+                                    };
 
-                                 const dtp = new DefaultDateTimePicker(pickerOptions);
-                                 dtp.setDateTime(oldValue);
-                                 dtp.show(inputEl);
-                             });
+                                    const dtp = new DefaultDateTimePicker(pickerOptions);
+                                    dtp.setDateTime(oldValue);
+                                    dtp.show(inputEl);
+                                });
                          });
                         break;
     
                     case MetaEditorTag.List:
                         domel(parent)
                             .addChild('select', b => {
+                                if (readOnly)
+                                    b.attr('readonly', '');
                                 b
                                 .attr('name', attr.id)
                                 
@@ -413,6 +438,9 @@ class EasyForm {
                         default:
                             domel(parent)
                                 .addChild('input', b => {
+                                    if (readOnly)
+                                        b.attr('readonly', '');
+
                                     b
                                         .name(attr.id)
                                         .type(getInputType(attr.dataType));
@@ -432,8 +460,7 @@ class EasyForm {
             }
     
         for(const attr of entity.attributes) {
-            if (attr.isPrimaryKey && !params.editPK
-                || attr.isForeignKey || !attr.isEditable && params.onlyEditable)
+            if (attr.isForeignKey)
                 continue;
 
             addFormField(fb.toDOM(), attr)
@@ -459,6 +486,8 @@ class EasyDataView {
 
     private endpoint = '/api/easydata';
 
+    private slot: HTMLElement;
+
     private defaultValidators: Validator[] = [];
 
     constructor() {
@@ -467,7 +496,11 @@ class EasyDataView {
 
         this.defaultValidators.push(new RequiredValidator(), new TypeValidator());
 
-    
+        this.slot = document.getElementById('EasyData');
+        if (!this.slot) {
+            throw new Error("Entry element with id 'EasyData' is not found");
+        }
+
         this.basePath = this.getBasePath();
 
         this.model = new MetaData();
@@ -485,9 +518,13 @@ class EasyDataView {
                 }
 
                 this.activeEntity = this.getActiveEntity();
-                this.renderEntitySelector();
                 if (this.activeEntity) {
+                    this.slot.innerHTML = `<h1>${this.activeEntity.caption}</h1><a href="${this.basePath}"> ← Back to entities</a>`;
                     this.renderGrid();
+                }
+                else {
+                    this.slot.innerHTML = `<h1>${this.model.getId()}</h1>`;
+                    this.renderEntitySelector();
                 }
             });
     }
@@ -546,11 +583,10 @@ class EasyDataView {
 
     private renderEntitySelector() {
         const entities = this.model.getRootEntity().subEntities;
-        const entityListSlot = document.getElementById('EntityList');
-        if (entityListSlot) {
+        if (this.slot) {
             const ul = document.createElement('ul');
             ul.className = 'list-group';
-            entityListSlot.appendChild(ul);
+            this.slot.appendChild(ul);
 
             for(const entity of entities) {
                 const li = document.createElement('li');
@@ -562,6 +598,9 @@ class EasyDataView {
                     window.location.href = `${this.basePath}/${entity.id}`;
                 });
                 li.innerHTML = entity.caption;
+                if (entity.description) {
+                    li.innerHTML += `<span title="${entity.description}" style="float: right; font-family: cursive">i</span>`
+                }
                 ul.appendChild(li);
             }
         }
@@ -581,7 +620,9 @@ class EasyDataView {
                     this.resultTable.addRow(row);
                 }
 
-                const gridSlot = document.getElementById('Grid');
+                const gridSlot = document.createElement('div');
+                this.slot.appendChild(gridSlot);
+                gridSlot.id = 'Grid';
                 this.grid = new EasyGrid({
                     slot: gridSlot,
                     dataTable: this.resultTable,
@@ -620,7 +661,7 @@ class EasyDataView {
     private addClickHandler() {
 
         const form = EasyForm.build(this.model, this.activeEntity, 
-            { loadChunk: this.loadChunk.bind(this), editPK: true});
+            { loadChunk: this.loadChunk.bind(this) });
 
         form.useValidators(this.defaultValidators);
 
@@ -661,7 +702,7 @@ class EasyDataView {
             .then(row => {
                 if (row) {
                     const form = EasyForm.build(this.model, this.activeEntity, 
-                        { loadChunk: this.loadChunk.bind(this), onlyEditable: true, values: row});
+                        { loadChunk: this.loadChunk.bind(this), isEditForm: true, values: row});
                     form.useValidators(this.defaultValidators);
 
                     this.dlg.open({

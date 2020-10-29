@@ -96,11 +96,11 @@ namespace EasyData.EntityFrameworkCore
                 if (!annotation.Enabled)
                     return null;
 
-                if (string.IsNullOrEmpty(annotation.DisplayName)) {
+                if (!string.IsNullOrEmpty(annotation.DisplayName)) {
                     entity.Name = annotation.DisplayName;
                 }
 
-                if (string.IsNullOrEmpty(annotation.Description)) {
+                if (!string.IsNullOrEmpty(annotation.Description)) {
                     entity.Description = annotation.Description;
                 }
             }
@@ -168,6 +168,7 @@ namespace EasyData.EntityFrameworkCore
                     entity.Attributes.Add(dataAttr);
                 }
                 lookUpAttr.DataAttr = dataAttr;
+                lookUpAttr.IsNullable = dataAttr.IsNullable;
 
                 lookUpAttr.LookupEntity = lookupEntity;
 

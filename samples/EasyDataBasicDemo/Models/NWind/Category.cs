@@ -9,7 +9,7 @@ using EasyData.EntityFrameworkCore;
 
 namespace EasyDataBasicDemo.Models
 {
-
+    [MetaEntity(Description = "Categories of Product")]
     public class Category
     {
 

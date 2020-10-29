@@ -198,89 +198,98 @@ var EasyForm = /** @class */ (function () {
                     editor.tag = core_1.MetaEditorTag.Edit;
                 }
             }
+            var readOnly = params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+            var required = !attr.isNullable;
             ui_1.domel(parent)
                 .addChild('label', function (b) { return b
                 .attr('for', attr.id)
-                .addHtml(attr.caption + " " + (!attr.isNullable ? '<sup style="color: red">*</sup>' : '') + ": "); });
+                .addHtml(attr.caption + " " + (required ? '<sup style="color: red">*</sup>' : '') + ": "); });
             if (attr.kind === core_1.EntityAttrKind.Lookup) {
                 var lookupEntity_1 = model.getRootEntity()
                     .subEntities.filter(function (ent) { return ent.id == attr.lookupEntity; })[0];
                 var dataAttr_1 = model.getAttributeById(attr.dataAttr);
+                readOnly = readOnly && dataAttr_1.isEditable;
                 value = params.values
                     ? params.values.getValue(dataAttr_1.id)
                     : undefined;
                 ui_1.domel(parent)
                     .addChild('input', function (b) {
+                    if (readOnly)
+                        b.attr('readonly', '');
                     b.name(dataAttr_1.id);
                     b.type(getInputType(dataAttr_1.dataType));
                     b.value(core_1.utils.IsDefinedAndNotNull(value)
                         ? value.toString() : '');
-                    b.on('focus', function (ev) {
-                        var lookupTable = new core_1.EasyDataTable({
-                            loader: {
-                                loadChunk: function (chunkParams) { return params.loadChunk(chunkParams, lookupEntity_1.id); }
-                            }
-                        });
-                        params.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
-                            .then(function (data) {
-                            for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
-                                var col = _a[_i];
-                                lookupTable.columns.add(col);
-                            }
-                            lookupTable.setTotal(data.total);
-                            for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
-                                var row = _c[_b];
-                                lookupTable.addRow(row);
-                            }
-                            var ds = new ui_1.DefaultDialogService();
-                            var gridSlot = null;
-                            var labelEl = null;
-                            var slot = ui_1.domel('div')
-                                .addClass("kfrm-form")
-                                .addChild('div', function (b) {
-                                b.addClass("" + (ui_1.browserUtils.IsIE()
-                                    ? 'kfrm-fields-ie'
-                                    : 'kfrm-fields'));
-                                b.addChild('div')
-                                    .addClass("kfrm-field")
-                                    .addChild('label', function (b) { return labelEl = b
-                                    .toDOM(); })
-                                    .addChild('div', function (b) { return b
-                                    .addClass('kfrm-control')
-                                    .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
-                            })
-                                .toDOM();
-                            var inputEl = ev.target;
-                            var selectedValue = inputEl.value;
-                            var updateLabel = function () {
-                                return labelEl.innerHTML = "Selected value: '" + selectedValue + "'";
-                            };
-                            updateLabel();
-                            var lookupGrid = new ui_1.EasyGrid({
-                                slot: gridSlot,
-                                dataTable: lookupTable,
-                                paging: {
-                                    pageSize: 10
-                                },
-                                onRowDbClick: function (ev) {
-                                    var row = ev.row;
-                                    selectedValue = row.getValue(attr.lookupDataAttr);
-                                    updateLabel();
+                    if (!readOnly)
+                        b.addChild('a', function (b) { return b
+                            .attr('href', 'javasctipt:void(0)')
+                            .addText('...')
+                            .on('click', function (ev) {
+                            var lookupTable = new core_1.EasyDataTable({
+                                loader: {
+                                    loadChunk: function (chunkParams) { return params.loadChunk(chunkParams, lookupEntity_1.id); }
                                 }
                             });
-                            ds.open({
-                                title: "Select " + lookupEntity_1.caption,
-                                body: slot,
-                                onSubmit: function () {
-                                    ev.target.value = selectedValue;
-                                    return true;
-                                },
-                                onDestroy: function () {
-                                    lookupGrid.destroy();
+                            params.loadChunk({ offset: 0, limit: 1000, needTotal: true }, lookupEntity_1.id)
+                                .then(function (data) {
+                                for (var _i = 0, _a = data.table.columns.getItems(); _i < _a.length; _i++) {
+                                    var col = _a[_i];
+                                    lookupTable.columns.add(col);
                                 }
+                                lookupTable.setTotal(data.total);
+                                for (var _b = 0, _c = data.table.getCachedRows(); _b < _c.length; _b++) {
+                                    var row = _c[_b];
+                                    lookupTable.addRow(row);
+                                }
+                                var ds = new ui_1.DefaultDialogService();
+                                var gridSlot = null;
+                                var labelEl = null;
+                                var slot = ui_1.domel('div')
+                                    .addClass("kfrm-form")
+                                    .addChild('div', function (b) {
+                                    b.addClass("" + (ui_1.browserUtils.IsIE()
+                                        ? 'kfrm-fields-ie'
+                                        : 'kfrm-fields'));
+                                    b.addChild('div')
+                                        .addClass("kfrm-field")
+                                        .addChild('label', function (b) { return labelEl = b
+                                        .toDOM(); })
+                                        .addChild('div', function (b) { return b
+                                        .addClass('kfrm-control')
+                                        .addChild('div', function (b) { return gridSlot = b.toDOM(); }); });
+                                })
+                                    .toDOM();
+                                var inputEl = ev.target;
+                                var selectedValue = inputEl.value;
+                                var updateLabel = function () {
+                                    return labelEl.innerHTML = "Selected value: '" + selectedValue + "'";
+                                };
+                                updateLabel();
+                                var lookupGrid = new ui_1.EasyGrid({
+                                    slot: gridSlot,
+                                    dataTable: lookupTable,
+                                    paging: {
+                                        pageSize: 10
+                                    },
+                                    onRowDbClick: function (ev) {
+                                        var row = ev.row;
+                                        selectedValue = row.getValue(attr.lookupDataAttr);
+                                        updateLabel();
+                                    }
+                                });
+                                ds.open({
+                                    title: "Select " + lookupEntity_1.caption,
+                                    body: slot,
+                                    onSubmit: function () {
+                                        ev.target.value = selectedValue;
+                                        return true;
+                                    },
+                                    onDestroy: function () {
+                                        lookupGrid.destroy();
+                                    }
+                                });
                             });
-                        });
-                    });
+                        }); });
                 });
                 return;
             }
@@ -288,35 +297,40 @@ var EasyForm = /** @class */ (function () {
                 case core_1.MetaEditorTag.DateTime:
                     ui_1.domel(parent)
                         .addChild('input', function (b) {
+                        if (readOnly)
+                            b.attr('readonly', '');
                         b.name(attr.id);
                         b.value(core_1.utils.IsDefinedAndNotNull(value)
                             ? new Date(value).toUTCString()
                             : '');
-                        b.on('focus', function (ev) {
-                            var inputEl = ev.target;
-                            var oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
-                            var pickerOptions = {
-                                showCalendar: attr.dataType !== core_1.DataType.Time,
-                                showTimePicker: attr.dataType !== core_1.DataType.Date,
-                                onApply: function (dateTime) {
-                                    inputEl.value = dateTime.toUTCString();
-                                },
-                                onCancel: function () {
-                                    inputEl.value = oldValue.toUTCString();
-                                },
-                                onDateTimeChanged: function (dateTime) {
-                                    inputEl.value = dateTime.toUTCString();
-                                }
-                            };
-                            var dtp = new ui_2.DefaultDateTimePicker(pickerOptions);
-                            dtp.setDateTime(oldValue);
-                            dtp.show(inputEl);
-                        });
+                        if (!readOnly)
+                            b.on('focus', function (ev) {
+                                var inputEl = ev.target;
+                                var oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
+                                var pickerOptions = {
+                                    showCalendar: attr.dataType !== core_1.DataType.Time,
+                                    showTimePicker: attr.dataType !== core_1.DataType.Date,
+                                    onApply: function (dateTime) {
+                                        inputEl.value = dateTime.toUTCString();
+                                    },
+                                    onCancel: function () {
+                                        inputEl.value = oldValue.toUTCString();
+                                    },
+                                    onDateTimeChanged: function (dateTime) {
+                                        inputEl.value = dateTime.toUTCString();
+                                    }
+                                };
+                                var dtp = new ui_2.DefaultDateTimePicker(pickerOptions);
+                                dtp.setDateTime(oldValue);
+                                dtp.show(inputEl);
+                            });
                     });
                     break;
                 case core_1.MetaEditorTag.List:
                     ui_1.domel(parent)
                         .addChild('select', function (b) {
+                        if (readOnly)
+                            b.attr('readonly', '');
                         b
                             .attr('name', attr.id);
                         if (editor.values) {
@@ -333,6 +347,8 @@ var EasyForm = /** @class */ (function () {
                 default:
                     ui_1.domel(parent)
                         .addChild('input', function (b) {
+                        if (readOnly)
+                            b.attr('readonly', '');
                         b
                             .name(attr.id)
                             .type(getInputType(attr.dataType));
@@ -350,8 +366,7 @@ var EasyForm = /** @class */ (function () {
         };
         for (var _i = 0, _a = entity.attributes; _i < _a.length; _i++) {
             var attr = _a[_i];
-            if (attr.isPrimaryKey && !params.editPK
-                || attr.isForeignKey || !attr.isEditable && params.onlyEditable)
+            if (attr.isForeignKey)
                 continue;
             addFormField(fb.toDOM(), attr);
         }
@@ -367,6 +382,10 @@ var EasyDataView = /** @class */ (function () {
         this.dlg = new ui_1.DefaultDialogService();
         this.http = new core_1.HttpClient();
         this.defaultValidators.push(new RequiredValidator(), new TypeValidator());
+        this.slot = document.getElementById('EasyData');
+        if (!this.slot) {
+            throw new Error("Entry element with id 'EasyData' is not found");
+        }
         this.basePath = this.getBasePath();
         this.model = new core_1.MetaData();
         this.resultTable = new core_1.EasyDataTable({
@@ -381,9 +400,13 @@ var EasyDataView = /** @class */ (function () {
                 _this.model.loadFromData(result.model);
             }
             _this.activeEntity = _this.getActiveEntity();
-            _this.renderEntitySelector();
             if (_this.activeEntity) {
+                _this.slot.innerHTML = "<h1>" + _this.activeEntity.caption + "</h1><a href=\"" + _this.basePath + "\"> \u2190 Back to entities</a>";
                 _this.renderGrid();
+            }
+            else {
+                _this.slot.innerHTML = "<h1>" + _this.model.getId() + "</h1>";
+                _this.renderEntitySelector();
             }
         });
     }
@@ -432,11 +455,10 @@ var EasyDataView = /** @class */ (function () {
     EasyDataView.prototype.renderEntitySelector = function () {
         var _this = this;
         var entities = this.model.getRootEntity().subEntities;
-        var entityListSlot = document.getElementById('EntityList');
-        if (entityListSlot) {
+        if (this.slot) {
             var ul = document.createElement('ul');
             ul.className = 'list-group';
-            entityListSlot.appendChild(ul);
+            this.slot.appendChild(ul);
             var _loop_1 = function (entity) {
                 var li = document.createElement('li');
                 li.className = 'list-group-item';
@@ -447,6 +469,9 @@ var EasyDataView = /** @class */ (function () {
                     window.location.href = _this.basePath + "/" + entity.id;
                 });
                 li.innerHTML = entity.caption;
+                if (entity.description) {
+                    li.innerHTML += "<span title=\"" + entity.description + "\" style=\"float: right; font-family: cursive\">i</span>";
+                }
                 ul.appendChild(li);
             };
             var this_1 = this;
@@ -469,7 +494,9 @@ var EasyDataView = /** @class */ (function () {
                 var row = _c[_b];
                 _this.resultTable.addRow(row);
             }
-            var gridSlot = document.getElementById('Grid');
+            var gridSlot = document.createElement('div');
+            _this.slot.appendChild(gridSlot);
+            gridSlot.id = 'Grid';
             _this.grid = new ui_1.EasyGrid({
                 slot: gridSlot,
                 dataTable: _this.resultTable,
@@ -503,7 +530,7 @@ var EasyDataView = /** @class */ (function () {
     };
     EasyDataView.prototype.addClickHandler = function () {
         var _this = this;
-        var form = EasyForm.build(this.model, this.activeEntity, { loadChunk: this.loadChunk.bind(this), editPK: true });
+        var form = EasyForm.build(this.model, this.activeEntity, { loadChunk: this.loadChunk.bind(this) });
         form.useValidators(this.defaultValidators);
         this.dlg.open({
             title: "Create " + this.activeEntity.caption,
@@ -536,7 +563,7 @@ var EasyDataView = /** @class */ (function () {
         this.resultTable.getRow(index)
             .then(function (row) {
             if (row) {
-                var form_1 = EasyForm.build(_this.model, _this.activeEntity, { loadChunk: _this.loadChunk.bind(_this), onlyEditable: true, values: row });
+                var form_1 = EasyForm.build(_this.model, _this.activeEntity, { loadChunk: _this.loadChunk.bind(_this), isEditForm: true, values: row });
                 form_1.useValidators(_this.defaultValidators);
                 _this.dlg.open({
                     title: "Edit " + _this.activeEntity.caption,

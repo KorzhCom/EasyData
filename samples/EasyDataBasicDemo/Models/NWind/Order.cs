@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyData.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,6 +21,7 @@ namespace EasyDataBasicDemo.Models
         }
         
         [Display(Name = "Ordered")]
+        [MetaEntityAttr(Editable = false)]
         public DateTime? OrderDate { get; set; }
 
         [Display(Name = "Required")]
@@ -33,6 +35,7 @@ namespace EasyDataBasicDemo.Models
         public string CustomerID { get; set; }
 
         [ForeignKey("CustomerID")]
+        [MetaEntityAttr( Editable = false )]
         public virtual Customer Customer { get; set; }
 
         public int? EmployeeID { get; set; }
