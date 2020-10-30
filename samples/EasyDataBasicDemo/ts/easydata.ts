@@ -35,7 +35,9 @@ class TextFilter {
 
     private filterValue = null;
 
-    private justServerSide = true;
+    //turns off client-side search
+    //for test purposes
+    private justServerSide = false;
 
     constructor (private grid: EasyGrid, private loadChunk: LoadChunkFunc) {
         const renderer = this.highlightCellRenderer.bind(this);
@@ -57,25 +59,34 @@ class TextFilter {
     private highlightCellRenderer(defaultRenderer:GridCellRenderer, value: any, column: GridColumn, cell: HTMLElement) {   
         if (dataUtils.isIntType(column.type) 
         || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) {
-            if (value)
+            if (value) {
+                if(typeof value == 'number') {
+                    value = value.toLocaleString();
+                }
+
                 value = this.highlightText(value.toString());
+            }
         }
 
         defaultRenderer(value, column, cell);
     }
 
     private highlightText(content: string): string {
+        const normalizedContent = content.toLowerCase();
         if (this.filterValue && this.filterValue.length > 0 && content && content.length > 0) {
             const insertValue1 = `<span style='background-color: yellow'>`;
             const insertValue2 = `</span>`;
     
             let indexInMas = [];
-            const words = this.filterValue.trim().split(/\s+/);
+            const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
             for(let i = 0; i < words.length; i++) {
                 let pos = 0;
-                let lowerWord = words[i].toLowerCase();
+                let lowerWord = words[i];
+                if (lowerWord === normalizedContent) {
+                    return insertValue1 + content + insertValue2;
+                }
                 while (pos < content.length - 1) {
-                    const index = content.toLowerCase().indexOf(lowerWord, pos);
+                    const index = normalizedContent.indexOf(lowerWord, pos);
                     if (index >= 0) {
                         indexInMas.push({index: index, length: words[i].length});
                         pos = index + lowerWord.length;
@@ -214,14 +225,21 @@ class TextFilter {
                 filteredTable.columns.add(col);
             }   
             
+            const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
             const hasEnterance = (row: DataRow) => {
                 for (const col of this.initTable.columns.getItems()) {
                     if (dataUtils.isIntType(col.type) 
                         || dataUtils.getStringDataTypes().indexOf(col.type) >= 0) {
                         const value = row.getValue(col.id);
-                        if (value && value.toString()
-                            .toLowerCase().indexOf(this.filterValue.toLowerCase()) >= 0) {
-                            return true;
+                        if (value) {
+                           const normalized = value.toString()
+                            .toLowerCase();
+
+                            for(const word of words) {
+                                if (normalized.indexOf(word) >= 0) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
@@ -533,23 +551,46 @@ class EasyForm {
                                         let gridSlot: HTMLElement = null;
         
                                         let labelEl: HTMLElement = null;
-        
+                                        let filterInput: HTMLInputElement = null;
+
                                         const slot = domel('div')
                                             .addClass(`kfrm-form`)
-                                            .addChild('div', b => {
-                                                b.addClass(`${browserUtils.IsIE() 
-                                                    ? 'kfrm-fields-ie' 
-                                                    : 'kfrm-fields'}`)
-                                                b.addChild('div')
-                                                    .addClass(`kfrm-field`)
-                                                    .addChild('label', b => labelEl = b
-                                                        .toDOM()
-                                                    )
-                                                    .addChild('div', b => b
-                                                        .addClass('kfrm-control')
-                                                        .addChild('div', b => gridSlot = b.toDOM())
-                                                    )
-                                            })
+         
+                                            .addChild('div', b => b
+                                                .addClass(`kfrm-field`)
+                                                .addChild('label', b => labelEl = b
+                                                    .toDOM()
+                                                )
+                                            )  
+                                            .addChild('div', b => b
+                                                .addClass(horizClass)
+                                                .addChild('input', b => filterInput = b
+                                                    .attr("placeholder", "Search..")
+                                                    .toDOM()
+                                                )
+                                                .addChild('button', b => b
+                                                    .addClass('kfrm-button')
+                                                    .addText('Search')
+                                                    .on('click', () => {
+                                                        if (filterInput.value)
+                                                            filter.apply(filterInput.value)
+                                                    })
+                                                )
+                                                .addChild('button', b => b
+                                                    .addClass('kfrm-button')
+                                                    .addText('Clear')
+                                                    .on('click', () => {
+                                                        if (filterInput.value) {
+                                                            filter.apply(null);
+                                                            filterInput.value = '';
+                                                        }
+                                                    })
+                                                )
+                                            )   
+                                            .addChild('div', b => b
+                                                .addClass('kfrm-control')
+                                                .addChild('div', b => gridSlot = b.toDOM())
+                                            )
                                             .toDOM();
                 
                                         let selectedValue = inputEl.value;
@@ -570,6 +611,8 @@ class EasyForm {
                                                 updateLabel();
                                             }
                                         });
+
+                                        const filter = new TextFilter(lookupGrid, params.loadChunk);
                                         
                                         ds.open({
                                             title: `Select ${lookupEntity.caption}`,
