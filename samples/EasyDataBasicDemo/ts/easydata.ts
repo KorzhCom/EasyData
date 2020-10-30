@@ -33,7 +33,7 @@ class TextFilter {
     private filteredTable: EasyDataTable;
     private initTable: EasyDataTable;
 
-    private filterValue = null;
+    private filterValue = '';
 
     //turns off client-side search
     //for test purposes
@@ -171,9 +171,14 @@ class TextFilter {
                 })
         }
         else {
-            this.grid.setData(this.initTable)
-            this.filteredTable = null;
+           this.drop();
         }
+    }
+
+    public drop() {
+        this.filterValue = '';
+        this.grid.setData(this.initTable)
+        this.filteredTable = null;
     }
 
     private applyCore(): Promise<EasyDataTable> {
@@ -566,23 +571,26 @@ class EasyForm {
                                                 .addClass(horizClass)
                                                 .addChild('input', b => filterInput = b
                                                     .attr("placeholder", "Search..")
+                                                    .type('search')
+                                                    .on('search', (ev) => {
+                                                        if (filterInput.value) {
+                                                            filter.apply(filterInput.value)
+                                                        }
+                                                        else {
+                                                            filter.drop();
+                                                        }
+                                                    })
                                                     .toDOM()
                                                 )
                                                 .addChild('button', b => b
                                                     .addClass('kfrm-button')
                                                     .addText('Search')
                                                     .on('click', () => {
-                                                        if (filterInput.value)
-                                                            filter.apply(filterInput.value)
-                                                    })
-                                                )
-                                                .addChild('button', b => b
-                                                    .addClass('kfrm-button')
-                                                    .addText('Clear')
-                                                    .on('click', () => {
                                                         if (filterInput.value) {
-                                                            filter.apply(null);
-                                                            filterInput.value = '';
+                                                            filter.apply(filterInput.value)
+                                                        }
+                                                        else {
+                                                            filter.drop();
                                                         }
                                                     })
                                                 )
@@ -853,25 +861,33 @@ class EasyDataView {
     private renderEntitySelector() {
         const entities = this.model.getRootEntity().subEntities;
         if (this.slot) {
-            const ul = document.createElement('ul');
-            ul.className = 'list-group';
-            this.slot.appendChild(ul);
+            domel(this.slot)
+            .addChild('div', b => b
+                .addClass('ed-root')
+                .addChild('div', b => b
+                    .addClass('ed-entity-menu')
+                    .addChild('ul', b => {
+                        b.addClass('list-group')
+                        entities.forEach(ent => {
+                            b.addChild('li', b => {
+                            b.addClass('list-group-item')
+                            .on('click', () => {
+                                window.location.href = `${this.basePath}/${ent.id}`;
+                            })
+                            .addHtml(ent.caption);
 
-            for(const entity of entities) {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
-                if (entity === this.activeEntity) {
-                    li.classList.add('active');
-                }
-                li.addEventListener('click', () => {
-                    window.location.href = `${this.basePath}/${entity.id}`;
-                });
-                li.innerHTML = entity.caption;
-                if (entity.description) {
-                    li.innerHTML += `<span title="${entity.description}" style="float: right; font-family: cursive">i</span>`
-                }
-                ul.appendChild(li);
-            }
+                            if (ent.description) {
+                                b.addHtml(`<span title="${ent.description}" style="float: right; font-family: cursive">i</span>`);
+                            }
+                            });
+                        });
+                    })
+                )
+                .addChild('div', b => b
+                    .addClass('ed-menu-description')
+                    .addText('Click on an entity to view/edit its content')
+                )
+            );
         }
     }
 
@@ -916,23 +932,26 @@ class EasyDataView {
                         .addClass(horizClass)
                         .addChild('input', b => filterInput = b
                             .attr("placeholder", "Search..")
+                            .type('search')
+                            .on('search', (ev) => {
+                                if (filterInput.value) {
+                                    filter.apply(filterInput.value)
+                                }
+                                else {
+                                    filter.drop();
+                                }
+                            })
                             .toDOM()
                         )
                         .addChild('button', b => b
                             .addClass('kfrm-button')
                             .addText('Search')
                             .on('click', () => {
-                                if (filterInput.value)
-                                    filter.apply(filterInput.value)
-                            })
-                        )
-                        .addChild('button', b => b
-                            .addClass('kfrm-button')
-                            .addText('Clear')
-                            .on('click', () => {
                                 if (filterInput.value) {
-                                    filter.apply(null);
-                                    filterInput.value = '';
+                                    filter.apply(filterInput.value)
+                                }
+                                else {
+                                    filter.drop();
                                 }
                             })
                         )
