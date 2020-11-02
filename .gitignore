@@ -348,6 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# JS files generated on build
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js.map
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js
 /samples/EasyDataBasicDemo/ts/easydata.js
