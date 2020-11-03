@@ -52,6 +52,7 @@ namespace EasyData.AspNetCore
         {
             var model = await Manager.GetModelAsync(modelId);
             if (model != null && !model.IsEmpty) {
+                model.ID = "EasyData";
                 await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
                     await WriteGetModelResponseAsync(jsonWriter, model);
                 });

@@ -1,0 +1,183 @@
+import { 
+    HttpClient, MetaData,
+    MetaEntity, combinePath, 
+    EasyDataTable, 
+    DataLoader
+} from '@easydata/core';
+
+import { EasyDataLoader } from './easy_data_loader';
+
+type EasyDataEndpointKey = 
+    'GetMetaData'   |
+    'GetEntities'   | 
+    'GetEntity'     |
+    'CreateEntity'  |
+    'UpdateEntity'  |
+    'DeleteEntity'  ;
+
+export interface EasyDataContextOptions {
+    metaDataId?: string;
+    endpoint?: string;
+}
+
+export class EasyDataContext {
+
+    private endpoints: Map<string, string> = new Map<string, string>();
+
+    private http: HttpClient;
+
+    private model: MetaData;
+
+    private data: EasyDataTable;
+
+    private dataLoader: EasyDataLoader;
+
+    private activeEntity: MetaEntity;
+
+    constructor(options?: EasyDataContextOptions) {
+        options = options || {};
+
+        this.http = new HttpClient();
+        this.model = new MetaData();
+        this.model.id = options.metaDataId || '__default';
+
+        this.dataLoader = new EasyDataLoader(this);
+        this.data = new EasyDataTable({
+            loader: this.dataLoader
+        });
+
+        this.setDefaultEndpoints(options.endpoint || '/api/easydata')
+    }
+
+    public setActiveEntity(entityId: string) {
+        this.activeEntity = this.model.getRootEntity().subEntities
+                .filter(e => e.id == entityId)[0];
+    }
+
+    public getMetaData(): MetaData {
+       return this.model;
+    }
+
+    public getData() {
+        return this.data;
+    }
+
+    public getDataLoader(): DataLoader {
+        return this.dataLoader;
+    }
+
+    public loadMetaData(): Promise<MetaData> {
+        const url = this.resolveEndpoint('GetMetaData');
+        return this.http.get(url) 
+            .then(result => {
+                if (result.model) {
+                    this.model.loadFromData(result.model);
+                }
+
+                return this.model;
+            })
+            .catch(error => { 
+                console.error(`Error: ${error.message}. Source: ${error.sourceError}`);
+                return null;
+            });
+    }
+
+
+    public getActiveEntity() {
+        return this.activeEntity;
+    }
+
+    public getHttpClient() {
+        return this.http;
+    }
+
+    public getEntities() {
+        return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
+            .then(result => {
+                
+                for(const col of result.table.columns.getItems()) {
+                    this.data.columns.add(col);
+                }
+
+                this.data.setTotal(result.total);
+
+                for(const row of result.table.getCachedRows()) {
+                    this.data.addRow(row);
+                }
+
+                return this.data;
+            })
+    }
+
+    public createEntity(obj) {
+        const url = this.resolveEndpoint('CreateEntity');
+        return this.http.post(url, obj, { dataType: 'json' }).getPromise();
+    }
+
+    public updateEntity(id: string, obj) {
+        const url = this.resolveEndpoint('UpdateEntity', { id: id});
+
+        return this.http.put(url, obj, { dataType: 'json' }).getPromise();
+    }
+
+    public deleteEntity(id: string) {
+        const url = this.resolveEndpoint('DeleteEntity', { id: id});
+        return this.http.delete(url).getPromise();
+    }
+
+    public setEndpoint(key: EasyDataEndpointKey, value: string) : void
+    public setEndpoint(key: EasyDataEndpointKey | string, value: string) : void {
+        this.endpoints.set(key, value);
+    }
+
+    public setEnpointIfNotExist(key: EasyDataEndpointKey, value: string): void
+    public setEnpointIfNotExist(key: EasyDataEndpointKey | string, value: string): void {
+        if (!this.endpoints.has(key))
+         this.endpoints.set(key, value);
+    }
+
+    private endpointVarsRegex = /\{.*?\}/g;
+
+    public resolveEndpoint(endpointKey: EasyDataEndpointKey, options?: any): string 
+    public resolveEndpoint(endpointKey: EasyDataEndpointKey | string, options?: any) : string {
+
+        options = options || {};
+
+        let result = this.endpoints.get(endpointKey);
+        if (!result) {
+            throw endpointKey + ' endpoint is not defined';            
+        }
+
+        let matches = result.match(this.endpointVarsRegex);
+        if (matches) {
+            for (let match of matches) {
+                let opt = match.substring(1, match.length - 1);
+                let optVal = options[opt];
+                if (!optVal) {
+                    if (opt == 'modelId') {
+                        optVal = this.model.getId();
+                    }
+                    else if (opt == 'entityId') {
+                        optVal = this.activeEntity.id;
+                    }
+                    else {
+                        throw `Parameter [${opt}] is not defined`;
+                    }
+                }
+    
+                result = result.replace(match, optVal);
+            }
+        }
+      
+        return result;
+    }
+
+    private setDefaultEndpoints(endpointBase : string) {
+        this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
+        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}'));
+        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
+        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}'));
+        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
+        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
+    }
+}
