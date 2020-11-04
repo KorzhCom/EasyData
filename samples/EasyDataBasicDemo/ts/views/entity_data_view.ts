@@ -33,7 +33,8 @@ export class EntityDataView {
         private context: EasyDataContext, 
         private basePath: string,
         options: EasyDataViewOptions) {
-
+        options = options || {}
+        
         this.options = dataUtils.assignDeep(this.options, options || {});
 
         this.dlg = new DefaultDialogService();

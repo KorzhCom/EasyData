@@ -1,6 +1,6 @@
 import { EasyDataContext } from '../main/easy_data_context';
 import { EntityDataView } from './entity_data_view';
-import { EasyDataViewOptions } from './options';
+import { EasyDataViewDispatcherOptions } from './options';
 import { RootDataView } from './root_data_view';
 
 export class EasyDataViewDispatcher {
@@ -8,10 +8,44 @@ export class EasyDataViewDispatcher {
     private context: EasyDataContext;
     private basePath: string;
 
-    constructor(private slot: HTMLElement, private options?: EasyDataViewOptions) {
+    private container: HTMLElement;
+
+    constructor(private options?: EasyDataViewDispatcherOptions) {
+
+        options = options || {};
+
+        this.setContainer(options.container);
+
         this.context = new EasyDataContext();
 
         this.basePath = this.getBasePath();
+    }
+
+    private setContainer(container: HTMLElement | string) {
+        if (!container) {
+            this.container = document.getElementById('EasyDataContainer');
+            return;
+        }
+
+        if (typeof container === 'string') {
+            if (container.length){
+                if (container[0] === '#') {
+                    this.container = document.getElementById(container.substring(1));
+                }
+                else if (container[0] === '.') {
+                    const result = document.getElementsByClassName(container.substring(1));
+                    if (result.length) 
+                        this.container = result[0] as HTMLElement;
+                }
+                else {
+                    throw Error('Unrecognized container parameter ' + 
+                    '(Must be id, class or HTMLElement): ' + container);
+                }
+            }
+        }
+        else {
+            this.container = container;
+        }
     }
 
     private getActiveEntityId(): string | null {
@@ -37,11 +71,11 @@ export class EasyDataViewDispatcher {
             if (activeEntityId) {
                 this.context.setActiveEntity(activeEntityId);
                 console.log('Active entity: ', this.context.getActiveEntity());
-                new EntityDataView(this.slot, this.context, 
+                new EntityDataView(this.container, this.context, 
                     this.basePath, this.options);
             }
             else {
-                new RootDataView(this.slot, metaData, this.basePath);
+                new RootDataView(this.container, metaData, this.basePath);
             }
         })
     }
