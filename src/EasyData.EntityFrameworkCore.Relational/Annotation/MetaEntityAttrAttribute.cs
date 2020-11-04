@@ -7,7 +7,6 @@ namespace EasyData.EntityFrameworkCore
     [AttributeUsage(AttributeTargets.Property)]
     public class MetaEntityAttrAttribute : Attribute
     {
-
         public bool Enabled { get; set; } = true;
 
         public string DisplayName { get; set; }
