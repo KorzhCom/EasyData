@@ -6,10 +6,10 @@ import {
 
 import { 
     browserUtils, DefaultDialogService, 
-    domel, DomElementBuilder, EasyGrid 
+    domel, DomElementBuilder, EasyGrid,
+    DefaultDateTimePicker
 } from '@easydata/ui';
 
-import { DefaultDateTimePicker } from '@easyquery/ui';
 import { EasyDataContext } from '../main/easy_data_context';
 
 import { ValidationResult, Validator } from '../validators/validator';
