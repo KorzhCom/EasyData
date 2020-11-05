@@ -4,12 +4,14 @@ import { DataFilter } from '../filter/data_filter';
 
 export interface TextFilterWidgetOptions {
     instantMode?: boolean;
+    instantTimeout?: number
 }
 
 export class TextFilterWidget {
 
     private options = {
-        instantMode: false
+        instantMode: false,
+        instantTimeout: 1000
     }
 
     constructor(
@@ -20,13 +22,13 @@ export class TextFilterWidget {
 
         this.options = dataUtils.assignDeep(this.options, options || {});
 
-        const stringDefRenderer =  this.grid.cellRendererStore
+        const stringDefRenderer = this.grid.cellRendererStore
             .getDefaultRendererByType(CellRendererType.STRING);
          this.grid.cellRendererStore
             .setDefaultRenderer(CellRendererType.STRING, (value, column, cell) => 
                 this.highlightCellRenderer(stringDefRenderer, value, column, cell));
 
-        const numDefRenderer =  this.grid.cellRendererStore
+        const numDefRenderer = this.grid.cellRendererStore
             .getDefaultRendererByType(CellRendererType.NUMBER);
         this.grid.cellRendererStore
             .setDefaultRenderer(CellRendererType.NUMBER, (value, column, cell) => 
@@ -71,19 +73,19 @@ export class TextFilterWidget {
         }
 
         this.applyFilterTimeout = setTimeout(() => {
-            this.toggleFilter();
-        }, 1000);
+            this.applyFilter();
+        }, this.options.instantTimeout);
     }
 
     private inputSearchHandler() {
-        this.toggleFilter();
+        this.applyFilter();
     }
 
     private buttonClickHandler() {
-       this.toggleFilter();
+       this.applyFilter();
     }
 
-    private toggleFilter() {
+    private applyFilter() {
 
         if (this.applyFilterTimeout) {
             clearTimeout(this.applyFilterTimeout);
@@ -91,18 +93,10 @@ export class TextFilterWidget {
 
         const filterValue = this.filter.getValue();
         if (filterValue != this.filterInput.value) {
-            if (this.filterInput.value) {
-                this.filter.apply(this.filterInput.value)
-                    .then(data => {
-                        this.grid.setData(data);
-                    });
-            }
-            else {
-                this.filter.drop()
-                    .then(data => {
-                        this.grid.setData(data);
-                    });
-            }
+            this.filter.apply(this.filterInput.value)
+                .then(data => {
+                    this.grid.setData(data);
+                });
         }
     }
 

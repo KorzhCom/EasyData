@@ -7,7 +7,7 @@ import {
 } from '@easydata/ui';
 
 import { EasyForm } from '../form/easy_form';
-import { TextFilterWidget } from '../form/text_filter_widget';
+import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 import { EasyDataContext } from '../main/easy_data_context';
 import { RequiredValidator } from '../validators/required_validator';

@@ -2,7 +2,8 @@ export * from './filter/data_filter'
 export * from './filter/text_data_filter'
 
 export * from './form/easy_form'
-export * from './form/text_filter_widget'
+
+export * from './widgets/text_filter_widget'
 
 export * from './main/easy_data_context'
 export * from './main/easy_data_loader'

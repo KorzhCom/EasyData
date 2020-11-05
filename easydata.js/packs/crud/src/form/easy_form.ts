@@ -13,7 +13,7 @@ import {
 import { EasyDataContext } from '../main/easy_data_context';
 
 import { ValidationResult, Validator } from '../validators/validator';
-import { TextFilterWidget } from './text_filter_widget';
+import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 export type FormBuildParams = { 
     values?: DataRow, 

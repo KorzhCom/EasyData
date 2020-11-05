@@ -7,8 +7,6 @@ import { DataFilter } from './data_filter';
 
 export class TextDataFilter implements DataFilter {
 
-    private filteredTable: EasyDataTable;
-
     private filterValue = '';
 
     //turns off client-side search
@@ -17,7 +15,7 @@ export class TextDataFilter implements DataFilter {
 
     constructor (
         private loader: DataLoader, 
-        private initTable: EasyDataTable,  
+        private sourceTable: EasyDataTable,  
         private entityId: string) {
     }
 
@@ -30,31 +28,26 @@ export class TextDataFilter implements DataFilter {
         this.filterValue = value;
 
         if (this.filterValue) {
-            return this.applyCore()
-                .then(table => {
-                    this.filteredTable = table;
-                    return this.filteredTable;
-                });
+            return this.applyCore();
         }
         else {
-           return this.drop();
+           return this.clear();
         }
     }
 
-    public drop(): Promise<EasyDataTable> {
+    public clear(): Promise<EasyDataTable> {
         this.filterValue = '';
-        this.filteredTable = null;
-        return Promise.resolve(this.initTable);
+        return Promise.resolve(this.sourceTable);
     }
 
     private applyCore(): Promise<EasyDataTable> {
-        if (this.initTable.getTotal() == this.initTable.getCachedCount() && !this.justServerSide) {
+        if (this.sourceTable.getTotal() == this.sourceTable.getCachedCount() && !this.justServerSide) {
             return this.applyInMemoryFilter();
         }
         else {
             return this.loader.loadChunk({ 
                 offset: 0, 
-                limit: this.initTable.chunkSize, 
+                limit: this.sourceTable.chunkSize, 
                 needTotal: true, 
                 filter: this.filterValue,
                 entityId: this.entityId
@@ -62,7 +55,7 @@ export class TextDataFilter implements DataFilter {
             .then(data => {
 
                 const filteredTable = new EasyDataTable({
-                    chunkSize: this.initTable.chunkSize,
+                    chunkSize: this.sourceTable.chunkSize,
                     loader: {
                         loadChunk: (params) => this.loader
                             .loadChunk({ ...params, filter: this.filterValue, entityId: this.entityId } as any)
@@ -88,17 +81,17 @@ export class TextDataFilter implements DataFilter {
     private applyInMemoryFilter(): Promise<EasyDataTable> {
         return new Promise((resolve, reject) => {
             const filteredTable = new EasyDataTable({
-                chunkSize: this.initTable.chunkSize,
+                chunkSize: this.sourceTable.chunkSize,
                 loader: this.loader
             });
 
-            for(const col of this.initTable.columns.getItems()) {
+            for(const col of this.sourceTable.columns.getItems()) {
                 filteredTable.columns.add(col);
             }   
             
             const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
             const hasEnterance = (row: DataRow) => {
-                for (const col of this.initTable.columns.getItems()) {
+                for (const col of this.sourceTable.columns.getItems()) {
                     if (dataUtils.isIntType(col.type) 
                         || dataUtils.getStringDataTypes().indexOf(col.type) >= 0) {
                         const value = row.getValue(col.id);
@@ -118,7 +111,7 @@ export class TextDataFilter implements DataFilter {
                 return false;
             }
 
-            for(const row of this.initTable.getCachedRows()) {
+            for(const row of this.sourceTable.getCachedRows()) {
                 if (hasEnterance(row)) {
                     filteredTable.addRow(row); 
                 }
