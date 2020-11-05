@@ -25,9 +25,9 @@
   
  
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\EasyData.Core\EasyData.Core.csproj" />
-    <ProjectReference Include="..\..\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj" />
+    <ProjectReference Include="..\..\easydata.net\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\easydata.net\src\EasyData.Core\EasyData.Core.csproj" />
+    <ProjectReference Include="..\..\easydata.net\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj" />
   </ItemGroup>
 
   <ItemGroup>

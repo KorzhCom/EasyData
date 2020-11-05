@@ -9,13 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{0957
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AFA27B1D-9AD5-4592-8F01-3820735869DD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core", "src\EasyData.Core\EasyData.Core.csproj", "{13C5510F-6B6E-44EC-B6E8-3A7259022E8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core", "easydata.net\src\EasyData.Core\EasyData.Core.csproj", "{13C5510F-6B6E-44EC-B6E8-3A7259022E8F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core.Test", "test\EasyData.Core.Test\EasyData.Core.Test.csproj", "{8D9A1317-00FC-4464-AFFB-68A9DDD090AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core.Test", "easydata.net\test\EasyData.Core.Test\EasyData.Core.Test.csproj", "{8D9A1317-00FC-4464-AFFB-68A9DDD090AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.EntityFrameworkCore.Relational", "src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj", "{225FC9AE-7FF8-46C0-AC74-A14DD17D8B36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.EntityFrameworkCore.Relational", "easydata.net\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj", "{225FC9AE-7FF8-46C0-AC74-A14DD17D8B36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore", "src\EasyData.AspNetCore\EasyData.AspNetCore.csproj", "{CA9CE555-3472-4985-9009-C27F6AC7C35A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore", "easydata.net\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj", "{CA9CE555-3472-4985-9009-C27F6AC7C35A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo", "samples\EasyDataBasicDemo\EasyDataBasicDemo.csproj", "{3ABCB15D-BBED-4645-BB14-43EBB9F2C218}"
 EndProject

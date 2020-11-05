@@ -7,25 +7,20 @@ process.title = 'setlinks';
 const fs = require('fs');
 const path = require('path');
 
-let unlink = process.argv.length > 2 ? process.argv[2] == "unlink" : false;
+const unlink = process.argv.length > 2 ? process.argv[2] == "unlink" : false;
 
 
-let corePath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/core");
-let uiPath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/ui");
-let enterprisePath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/enterprise");
+const corePath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.core");
+const uiPath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.ui");
+const crudPath = path.resolve(__dirname, "../packs/crud");
 
-
-let easydataUIPath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.ui");
-let easydataCorePath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.core");
-
+link(corePath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/ui"));
 
 // -------------- demo projects --------------
-
-link(corePath, path.resolve(__dirname, "../EasyDataBasicDemo/node_modules/@easyquery/core"));
-link(uiPath, path.resolve(__dirname, "../EasyDataBasicDemo/node_modules/@easyquery/ui"));
-link(enterprisePath, path.resolve(__dirname, "../EasyDataBasicDemo/node_modules/@easyquery/enterprise"));
-link(easydataCorePath, path.resolve(__dirname, "../EasyDataBasicDemo/node_modules/@easydata/core"));
-link(easydataUIPath, path.resolve(__dirname, "../EasyDataBasicDemo/node_modules/@easydata/ui"));
+link(corePath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_modules/@easydata/ui"));
+link(crudPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_modules/@easydata/crud"));
 
 
 function link(to, from) {
@@ -72,15 +67,13 @@ function link(to, from) {
 	}
 }
 
-function trim(path)     
-{     
-	let res = path.replace(/\\$/, "");
+function trim(path) {     
+	const res = path.replace(/\\$/, "");
 	return res;
 } 
 
-function RemoveLastDirectoryPartOf(dir)
-{
-    var the_arr = dir.split(path.sep);
+function RemoveLastDirectoryPartOf(dir) {
+    const the_arr = dir.split(path.sep);
     the_arr.pop();
     return( the_arr.join(path.sep) );
 }

@@ -350,6 +350,11 @@ MigrationBackup/
 .ionide/
 
 # JS files generated on build
+easydata.js/**/docs
+
+package-lock.json
+dist/
+
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js.map
 /samples/EasyDataBasicDemo/wwwroot/js/easydata.js
 

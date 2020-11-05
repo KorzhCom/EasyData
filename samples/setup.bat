@@ -1,8 +1,11 @@
-cd .\EasyDataBasicDemo
+cd .\EasyDataBasicDemo 
 
-npm install
+call npm install 
 
-cd ..
+cd ../../easydata.js 
 
-call .\link-all.bat
+call npm run linkall 
+
+cd ../samples
+
 	

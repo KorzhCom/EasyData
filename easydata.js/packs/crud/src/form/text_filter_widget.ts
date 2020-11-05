@@ -63,9 +63,9 @@ export class TextFilterWidget {
         )
     }
 
-    private applyFilterTimeout: number;
+    private applyFilterTimeout: any;
 
-    private inputKeyupHandler(ev: KeyboardEvent) {
+    private inputKeyupHandler() {
         if (this.applyFilterTimeout) {
             clearTimeout(this.applyFilterTimeout);
         }
@@ -79,7 +79,7 @@ export class TextFilterWidget {
         this.toggleFilter();
     }
 
-    private buttonClickHandler(ev: MouseEvent) {
+    private buttonClickHandler() {
        this.toggleFilter();
     }
 
