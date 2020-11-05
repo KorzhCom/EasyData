@@ -1,7 +1,7 @@
 import { utils as dataUtils } from '@easydata/core';
 
 import { 
-    browserUtils, DefaultDialogService, 
+    DefaultDialogService, 
     DialogService, domel, EasyGrid, 
     GridCellRenderer, GridColumn 
 } from '@easydata/ui';
@@ -14,8 +14,6 @@ import { RequiredValidator } from '../validators/required_validator';
 import { TypeValidator } from '../validators/type_validator';
 import { Validator } from '../validators/validator';
 import { EasyDataViewOptions } from './options';
-
-const isIE = browserUtils.IsIE();
 
 export class EntityDataView {
 
