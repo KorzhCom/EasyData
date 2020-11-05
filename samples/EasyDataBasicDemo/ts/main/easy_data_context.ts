@@ -4,6 +4,8 @@ import {
     EasyDataTable, 
     DataLoader
 } from '@easydata/core';
+import { DataFilter } from '../filter/data_filter';
+import { TextDataFilter } from '../filter/text_data_filter';
 
 import { EasyDataLoader } from './easy_data_loader';
 
@@ -64,6 +66,12 @@ export class EasyDataContext {
 
     public getDataLoader(): DataLoader {
         return this.dataLoader;
+    }
+
+    public createFilter(): DataFilter
+    public createFilter(entityId: string, data: EasyDataTable): DataFilter
+    public createFilter(entityId?: string, data?: EasyDataTable): DataFilter {
+        return new TextDataFilter(this.dataLoader, data || this.getData(), entityId || this.activeEntity.id)
     }
 
     public loadMetaData(): Promise<MetaData> {

@@ -6,7 +6,7 @@ import {
     GridCellRenderer, GridColumn 
 } from '@easydata/ui';
 import { EasyForm } from '../form/easy_form';
-import { TextFilter } from '../form/text_filter';
+import { TextFilterWidget } from '../form/text_filter_widget';
 
 import { EasyDataContext } from '../main/easy_data_context';
 import { RequiredValidator } from '../validators/required_validator';
@@ -50,59 +50,31 @@ export class EntityDataView {
     private renderGrid() {
         this.context.getEntities()
             .then(result => {
-                const horizClass = isIE 
-                ? 'kfrm-fields-ie is-horizontal' 
-                : 'kfrm-fields is-horizontal';
+                const gridSlot = document.createElement('div');
+                this.slot.appendChild(gridSlot);
+                gridSlot.id = 'Grid';
+                this.grid = new EasyGrid({
+                    slot: gridSlot,
+                    dataTable: result,
+                    paging: {
+                        pageSize: 15,
+                    },
+                    addColumns: true,
+                    onAddColumnClick: this.addClickHandler.bind(this),
+                    onGetCellRenderer: this.manageCellRenderer.bind(this)
+                });
 
-            const gridSlot = document.createElement('div');
-            this.slot.appendChild(gridSlot);
-            gridSlot.id = 'Grid';
-            this.grid = new EasyGrid({
-                slot: gridSlot,
-                dataTable: result,
-                paging: {
-                    pageSize: 15,
-                },
-                addColumns: true,
-                onAddColumnClick: this.addClickHandler.bind(this),
-                onGetCellRenderer: this.manageCellRenderer.bind(this)
-            });
+                let widgetSlot: HTMLElement;
+                const filterBar = domel('div')
+                    .addClass(`kfrm-form`)
+                    .setStyle('margin', '10px 0px')
+                    .addChild('div', b => widgetSlot = b.toDOM()
+                    ).toDOM();
+                
+                this.slot.insertBefore(filterBar, gridSlot);
 
-            const filter = new TextFilter(this.grid, this.context);
-            let filterInput: HTMLInputElement;
-            const filterBar = domel('div')
-                .addClass(`kfrm-form`)
-                .setStyle('margin', '10px 0px')
-                .addChild('div', b => b
-                    .addClass(horizClass)
-                    .addChild('input', b => filterInput = b
-                        .attr("placeholder", "Search..")
-                        .type('search')
-                        .on('search', (ev) => {
-                            if (filterInput.value) {
-                                filter.apply(filterInput.value)
-                            }
-                            else {
-                                filter.drop();
-                            }
-                        })
-                        .toDOM()
-                    )
-                    .addChild('button', b => b
-                        .addClass('kfrm-button')
-                        .addText('Search')
-                        .on('click', () => {
-                            if (filterInput.value) {
-                                filter.apply(filterInput.value)
-                            }
-                            else {
-                                filter.drop();
-                            }
-                        })
-                    )
-                ).toDOM();
-            
-            this.slot.insertBefore(filterBar, gridSlot);
+                const dataFilter = this.context.createFilter();
+                new TextFilterWidget(widgetSlot, this.grid, dataFilter);
             });
     }
 

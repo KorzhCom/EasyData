@@ -13,7 +13,7 @@ import {
 import { EasyDataContext } from '../main/easy_data_context';
 
 import { ValidationResult, Validator } from '../validators/validator';
-import { TextFilter } from './text_filter';
+import { TextFilterWidget } from './text_filter_widget';
 
 export type FormBuildParams = { 
     values?: DataRow, 
@@ -253,8 +253,8 @@ export class EasyForm {
                                         let gridSlot: HTMLElement = null;
         
                                         let labelEl: HTMLElement = null;
-                                        let filterInput: HTMLInputElement = null;
 
+                                        let widgetSlot: HTMLElement;
                                         const slot = domel('div')
                                             .addClass(`kfrm-form`)
          
@@ -264,34 +264,7 @@ export class EasyForm {
                                                     .toDOM()
                                                 )
                                             )  
-                                            .addChild('div', b => b
-                                                .addClass(horizClass)
-                                                .addChild('input', b => filterInput = b
-                                                    .attr("placeholder", "Search..")
-                                                    .type('search')
-                                                    .on('search', (ev) => {
-                                                        if (filterInput.value) {
-                                                            filter.apply(filterInput.value)
-                                                        }
-                                                        else {
-                                                            filter.drop();
-                                                        }
-                                                    })
-                                                    .toDOM()
-                                                )
-                                                .addChild('button', b => b
-                                                    .addClass('kfrm-button')
-                                                    .addText('Search')
-                                                    .on('click', () => {
-                                                        if (filterInput.value) {
-                                                            filter.apply(filterInput.value)
-                                                        }
-                                                        else {
-                                                            filter.drop();
-                                                        }
-                                                    })
-                                                )
-                                            )   
+                                            .addChild('div', b => widgetSlot = b.toDOM())   
                                             .addChild('div', b => b
                                                 .addClass('kfrm-control')
                                                 .addChild('div', b => gridSlot = b.toDOM())
@@ -317,7 +290,9 @@ export class EasyForm {
                                             }
                                         });
 
-                                        const filter = new TextFilter(lookupGrid, context, lookupEntity.id);
+                                        const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData());
+
+                                        new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true });
                                         
                                         ds.open({
                                             title: `Select ${lookupEntity.caption}`,
