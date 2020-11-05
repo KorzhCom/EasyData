@@ -134,7 +134,7 @@ export class TextFilterWidget {
                 let pos = 0;
                 let lowerWord = words[i];
                 if (!lowerWord.length)
-                    return content;
+                    continue;
                 if (lowerWord === normalizedContent) {
                     return insertValue1 + content + insertValue2;
                 }

@@ -292,7 +292,7 @@ export class EasyForm {
 
                                         const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData());
 
-                                        new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true });
+                                        new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true});
                                         
                                         ds.open({
                                             title: `Select ${lookupEntity.caption}`,
@@ -377,16 +377,16 @@ export class EasyForm {
                                         b.attr('readonly', '');
 
                                     b
-                                        .name(attr.id)
-                                        .type(getInputType(attr.dataType));
+                                    .name(attr.id)
+                                    .type(getInputType(attr.dataType));
         
-                                    if (value) {
-                                        if (attr.dataType == DataType.Bool)
+                                    if (attr.dataType == DataType.Bool) {
+                                        if (value)
                                             b.attr('checked', '');
-                                        else
-                                            b.value(dataUtils.IsDefinedAndNotNull(value) 
-                                                ? value.toString() 
-                                                : '');
+                                    } else {
+                                        b.value(dataUtils.IsDefinedAndNotNull(value) 
+                                        ? value.toString() 
+                                        : '');
                                     }
                                 });
                             break;
