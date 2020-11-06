@@ -10,7 +10,7 @@ import {
     DefaultDateTimePicker
 } from '@easydata/ui';
 
-import { EasyDataContext } from '../main/easy_data_context';
+import { DataContext } from '../main/data_context';
 
 import { ValidationResult, Validator } from '../validators/validator';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
@@ -22,11 +22,11 @@ export type FormBuildParams = {
 
 const isIE = browserUtils.IsIE();
 
-export class EasyForm {
+export class EntityEditForm {
 
     private errorsDiv: HTMLElement;
 
-    private constructor(private context: EasyDataContext, private html: HTMLElement){
+    private constructor(private context: DataContext, private html: HTMLElement){
         this.errorsDiv = html.querySelector('.errors-block');
     }
 
@@ -132,7 +132,7 @@ export class EasyForm {
         return result;
     }
 
-    public static build(context: EasyDataContext, params?: FormBuildParams): EasyForm {
+    public static build(context: DataContext, params?: FormBuildParams): EntityEditForm {
             params = params || {};
             let fb: DomElementBuilder<HTMLDivElement>;
             const formHtml =
@@ -401,6 +401,6 @@ export class EasyForm {
             addFormField(fb.toDOM(), attr)
         }
 
-        return new EasyForm(context, formHtml)
+        return new EntityEditForm(context, formHtml)
     }
 }

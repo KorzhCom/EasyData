@@ -1,11 +1,11 @@
-import { EasyDataContext } from '../main/easy_data_context';
+import { DataContext } from '../main/data_context';
 import { EntityDataView } from './entity_data_view';
 import { EasyDataViewDispatcherOptions } from './options';
 import { RootDataView } from './root_data_view';
 
 export class EasyDataViewDispatcher {
 
-    private context: EasyDataContext;
+    private context: DataContext;
     private basePath: string;
 
     private container: HTMLElement;
@@ -16,7 +16,7 @@ export class EasyDataViewDispatcher {
 
         this.setContainer(options.container);
 
-        this.context = new EasyDataContext();
+        this.context = new DataContext();
 
         this.basePath = this.getBasePath();
     }

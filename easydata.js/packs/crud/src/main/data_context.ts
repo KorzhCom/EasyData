@@ -7,7 +7,7 @@ import {
 import { DataFilter } from '../filter/data_filter';
 import { TextDataFilter } from '../filter/text_data_filter';
 
-import { EasyDataLoader } from './easy_data_loader';
+import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
     'GetMetaData'   |
@@ -22,7 +22,7 @@ export interface EasyDataContextOptions {
     endpoint?: string;
 }
 
-export class EasyDataContext {
+export class DataContext {
 
     private endpoints: Map<string, string> = new Map<string, string>();
 
@@ -32,7 +32,7 @@ export class EasyDataContext {
 
     private data: EasyDataTable;
 
-    private dataLoader: EasyDataLoader;
+    private dataLoader: EasyDataServerLoader;
 
     private activeEntity: MetaEntity;
 
@@ -43,7 +43,7 @@ export class EasyDataContext {
         this.model = new MetaData();
         this.model.id = options.metaDataId || '__default';
 
-        this.dataLoader = new EasyDataLoader(this);
+        this.dataLoader = new EasyDataServerLoader(this);
         this.data = new EasyDataTable({
             loader: this.dataLoader
         });

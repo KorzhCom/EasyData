@@ -3,11 +3,11 @@ import {
     DataLoader, EasyDataTable 
 } from '@easydata/core';
 
-import { EasyDataContext } from './easy_data_context';
+import { DataContext } from './data_context';
 
-export class EasyDataLoader implements DataLoader {
+export class EasyDataServerLoader implements DataLoader {
 
-    constructor(protected context: EasyDataContext) {
+    constructor(protected context: DataContext) {
 
     }
 
