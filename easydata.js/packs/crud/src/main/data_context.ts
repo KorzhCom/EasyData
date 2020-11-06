@@ -69,9 +69,13 @@ export class DataContext {
     }
 
     public createFilter(): DataFilter
-    public createFilter(entityId: string, data: EasyDataTable): DataFilter
-    public createFilter(entityId?: string, data?: EasyDataTable): DataFilter {
-        return new TextDataFilter(this.dataLoader, data || this.getData(), entityId || this.activeEntity.id)
+    public createFilter(entityId: string, data: EasyDataTable, isLookup?: boolean): DataFilter
+    public createFilter(entityId?: string, data?: EasyDataTable, isLookup?: boolean): DataFilter {
+        return new TextDataFilter(
+            this.dataLoader, 
+            data || this.getData(), 
+            entityId || this.activeEntity.id, 
+            isLookup);
     }
 
     public loadMetaData(): Promise<MetaData> {

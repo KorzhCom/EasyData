@@ -11,12 +11,13 @@ export class TextDataFilter implements DataFilter {
 
     //turns off client-side search
     //for test purposes
-    private justServerSide = false;
+    private justServerSide = true;
 
     constructor (
         private loader: DataLoader, 
         private sourceTable: EasyDataTable,  
-        private entityId: string) {
+        private entityId: string,
+        private isLookup = false) {
     }
 
     public getValue() {
@@ -50,7 +51,8 @@ export class TextDataFilter implements DataFilter {
                 limit: this.sourceTable.chunkSize, 
                 needTotal: true, 
                 filter: this.filterValue,
-                entityId: this.entityId
+                entityId: this.entityId,
+                lookup: this.isLookup
             } as any)
             .then(data => {
 
@@ -58,11 +60,11 @@ export class TextDataFilter implements DataFilter {
                     chunkSize: this.sourceTable.chunkSize,
                     loader: {
                         loadChunk: (params) => this.loader
-                            .loadChunk({ ...params, filter: this.filterValue, entityId: this.entityId } as any)
+                            .loadChunk({ ...params, filter: this.filterValue, entityId: this.entityId, lookup: this.isLookup } as any)
                     }
                 });
 
-                for(const col of data.table.columns.getItems()) {
+                for(const col of this.sourceTable.columns.getItems()) {
                     filteredTable.columns.add(col);
                 }
 

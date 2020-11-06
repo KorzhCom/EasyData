@@ -73,9 +73,9 @@ namespace EasyData.Services
 
         public abstract Task<MetaData> GetModelAsync(string modelId);
 
-        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, string filter = null, int? offset = null, int? fetch = null);
+        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, string filter = null, bool isLookup = false, int? offset = null, int? fetch = null);
 
-        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, string filter = null);
+        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, string filter = null, bool isLookup = false);
 
         public abstract Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr);
 

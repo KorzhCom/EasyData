@@ -80,6 +80,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Services
         {
             var texts = text.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(t => t.Trim().ToLower())
+                    .Where(t => t.Length > 0)
                     .ToList();
 
             var properties = type.GetProperties().AsEnumerable();

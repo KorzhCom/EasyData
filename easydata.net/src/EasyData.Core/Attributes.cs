@@ -157,6 +157,11 @@ namespace EasyData
         public bool IsEditable { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating wether Attribute is shown in LookUp editor
+        /// </summary>
+        public bool ShowInLookup { get; set; } = false;
+
+        /// <summary>
         /// Gets ot sets a value indicating wether Attribute is visible
         /// </summary>
         public bool IsVisible { get; set; } = true;
@@ -500,6 +505,9 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ivis").ConfigureAwait(false);
             await writer.WriteValueAsync(IsVisible).ConfigureAwait(false);
 
+            await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
+
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
@@ -600,6 +608,9 @@ namespace EasyData
                     break;
                 case "ifk":
                     IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "sil":
+                    ShowInLookup = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "nul":
                     IsNullable = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using EasyData.EntityFrameworkCore;
+
 namespace EasyDataBasicDemo.Models
 {
     [DisplayColumn("FirstName")]
@@ -14,6 +16,7 @@ namespace EasyDataBasicDemo.Models
 
         [Required]
         [Display(Name = "Last name")]
+        [MetaEntityAttr(ShowInLookup = true)]
         public string LastName { get; set; }
 
         [Required]

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -91,6 +90,8 @@ namespace EasyData.EntityFrameworkCore
             entity.Id = GetEntityId(entityType);
             entity.Name = GetEntityName(entityType);
 
+            entity.ObjType = entityType.ClrType;
+
             var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
             if (annotation != null) {
                 if (!annotation.Enabled)
@@ -149,6 +150,8 @@ namespace EasyData.EntityFrameworkCore
                 lookUpAttr.ID = DataUtils.ComposeKey(entity.Id, navigation.Name);
                 lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
 
+                lookUpAttr.PropInfo = navigation.PropertyInfo;
+
                 lookUpAttr = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
                 if (lookUpAttr is null)
                     return;
@@ -186,6 +189,21 @@ namespace EasyData.EntityFrameworkCore
                     attrCounter++;
                     entity.Attributes.Add(lookUpAttr);
                 }
+
+                var hasDisplayAttrs = lookupEntity.Attributes.Any(attr => attr.ShowInLookup);
+                if (!hasDisplayAttrs) {
+                    var displayAttr = lookupEntity.Attributes.FirstOrDefault(attr => attr.Caption.ToLowerInvariant().Contains("name")
+                        && attr.DataType == DataType.String && attr.Kind != EntityAttrKind.Lookup);
+
+                    if (displayAttr == null) {
+                        displayAttr = lookupEntity.Attributes.FirstOrDefault(attr => attr.DataType == DataType.String 
+                            && attr.Kind != EntityAttrKind.Lookup);
+                    }
+
+                    if (displayAttr != null) {
+                        displayAttr.ShowInLookup = true;
+                    }
+                }
             }
 
         }
@@ -204,6 +222,8 @@ namespace EasyData.EntityFrameworkCore
                 if (!string.IsNullOrEmpty(annotation.Description)) {
                     entityAttr.Description = annotation.Description;
                 }
+
+                entityAttr.ShowInLookup = annotation.ShowInLookup;
 
                 entityAttr.IsEditable = annotation.Editable;
 
@@ -228,6 +248,8 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
+
+            entityAttr.PropInfo = property.PropertyInfo;
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();

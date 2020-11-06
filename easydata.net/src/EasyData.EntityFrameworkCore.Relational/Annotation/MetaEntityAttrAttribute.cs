@@ -18,5 +18,7 @@ namespace EasyData.EntityFrameworkCore
         public bool Editable { get; set; } = true;
 
         public int Index { get; set; } = int.MaxValue;
+
+        public bool ShowInLookup { get; set; } = false;
     }
 }

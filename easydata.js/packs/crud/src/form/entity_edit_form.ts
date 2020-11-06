@@ -240,7 +240,13 @@ export class EntityEditForm {
                                     .then(data => {
         
                                         for(const col of data.table.columns.getItems()) {
-                                            lookupTable.columns.add(col);
+                                            const attrs = lookupEntity.attributes.filter(attr => 
+                                                attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
+                                        
+                                            console.log("Attributes: ", attrs);
+                                            if (attrs.length) {
+                                                lookupTable.columns.add(col);
+                                            }
                                         }
                         
                                         lookupTable.setTotal(data.total);
@@ -290,7 +296,7 @@ export class EntityEditForm {
                                             }
                                         });
 
-                                        const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData());
+                                        const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
 
                                         new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true});
                                         
