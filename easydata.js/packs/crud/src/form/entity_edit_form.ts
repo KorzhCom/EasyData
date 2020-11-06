@@ -242,8 +242,7 @@ export class EntityEditForm {
                                         for(const col of data.table.columns.getItems()) {
                                             const attrs = lookupEntity.attributes.filter(attr => 
                                                 attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
-                                        
-                                            console.log("Attributes: ", attrs);
+                            
                                             if (attrs.length) {
                                                 lookupTable.columns.add(col);
                                             }

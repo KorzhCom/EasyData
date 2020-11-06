@@ -57,12 +57,16 @@ export class TextFilterWidget {
             if (this.options.instantMode) {
                 b.on('keyup', this.inputKeyupHandler.bind(this));
             }
-        })
-        .addChild('button', b => b
-            .addClass('kfrm-button')
-            .addText('Search')
-            .on('click', this.buttonClickHandler.bind(this))
-        )
+        });
+
+        if (!this.options.instantMode) {
+            domel(this.slot)
+                .addChild('button', b => b
+                    .addClass('kfrm-button')
+                    .addText('Search')
+                    .on('click', this.buttonClickHandler.bind(this))
+                );
+        }
     }
 
     private applyFilterTimeout: any;

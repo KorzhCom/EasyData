@@ -11,7 +11,7 @@ export class TextDataFilter implements DataFilter {
 
     //turns off client-side search
     //for test purposes
-    private justServerSide = true;
+    private justServerSide = false;
 
     constructor (
         private loader: DataLoader, 

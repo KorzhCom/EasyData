@@ -70,7 +70,6 @@ export class EasyDataViewDispatcher {
             const activeEntityId = this.getActiveEntityId();
             if (activeEntityId) {
                 this.context.setActiveEntity(activeEntityId);
-                console.log('Active entity: ', this.context.getActiveEntity());
                 new EntityDataView(this.container, this.context, 
                     this.basePath, this.options);
             }
