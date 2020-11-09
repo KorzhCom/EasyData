@@ -8,7 +8,7 @@ using EasyData.AspNetCore;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class EasyDataMiddlewareExtensions
+    public static class EasyDataApplicationBuilderExtensions
     {
 
         public static IApplicationBuilder UseEasyData(this IApplicationBuilder app, Action<EasyDataOptions> optionsTuner = null)

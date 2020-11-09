@@ -51,14 +51,12 @@ namespace EasyDataBasicDemo
 
             app.UseAuthorization();
 
-            app.UseEasyData(options =>
-            {
-                options.Endpoint = "/api/easydata";
-                options.UseManager<EasyDataManagerEF<AppDbContext>>();
-            });
-
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapEasyData(optionsTuner: (options) => {
+                    options.UseManager<EasyDataManagerEF<AppDbContext>>();
+                });
+
                 endpoints.MapRazorPages();
             });
 
