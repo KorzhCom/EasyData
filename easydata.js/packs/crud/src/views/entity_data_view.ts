@@ -1,9 +1,9 @@
-import { utils as dataUtils } from '@easydata/core';
+import { DataRow, utils as dataUtils } from '@easydata/core';
 
 import { 
     DefaultDialogService, 
     DialogService, domel, EasyGrid, 
-    GridCellRenderer, GridColumn 
+    GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
 
 import { EntityEditForm } from '../form/entity_edit_form';
@@ -60,7 +60,8 @@ export class EntityDataView {
                     },
                     addColumns: true,
                     onAddColumnClick: this.addClickHandler.bind(this),
-                    onGetCellRenderer: this.manageCellRenderer.bind(this)
+                    onGetCellRenderer: this.manageCellRenderer.bind(this),
+                    onRowDbClick: this.rowDbClickHandler.bind(this)
                 });
 
                 let widgetSlot: HTMLElement;
@@ -131,33 +132,41 @@ export class EntityDataView {
         this.context.getData().getRow(index)
             .then(row => {
                 if (row) {
-                    const activeEntity = this.context.getActiveEntity();
-                    const form = EntityEditForm.build(this.context, {isEditForm: true, values: row});
-                    form.useValidators(this.defaultValidators);
-
-                    this.dlg.open({
-                        title: `Edit ${activeEntity.caption}`,
-                        body: form.getHtml(),
-                        onSubmit: () => {
-                            const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
-                            const keys = keyAttrs.map(attr => row.getValue(attr.id));
-
-                            if (!form.validate())
-                                return false;
-
-                            const obj = form.getData();
-                        
-                            this.context.updateEntity(keys.join(':'), obj)
-                            .then(() => {
-                                window.location.reload();
-                            })       
-                            .catch((error) => {
-                               this.processError(error);
-                            });
-                        }
-                    })
+                    this.showEditForm(row);
                 }
             })
+    }
+
+    private showEditForm(row: DataRow) {
+        const activeEntity = this.context.getActiveEntity();
+        const form = EntityEditForm.build(this.context, {isEditForm: true, values: row});
+        form.useValidators(this.defaultValidators);
+
+        this.dlg.open({
+            title: `Edit ${activeEntity.caption}`,
+            body: form.getHtml(),
+            onSubmit: () => {
+                const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
+                const keys = keyAttrs.map(attr => row.getValue(attr.id));
+
+                if (!form.validate())
+                    return false;
+
+                const obj = form.getData();
+            
+                this.context.updateEntity(keys.join(':'), obj)
+                .then(() => {
+                    window.location.reload();
+                })       
+                .catch((error) => {
+                   this.processError(error);
+                });
+            }
+        })
+    }
+
+    private rowDbClickHandler(ev: RowClickEvent) {
+        this.showEditForm(ev.row);
     }
 
     private deleteClickHandler(ev: MouseEvent, cell: HTMLElement) {
