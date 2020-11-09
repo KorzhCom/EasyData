@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore", "easy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo", "samples\EasyDataBasicDemo\EasyDataBasicDemo.csproj", "{3ABCB15D-BBED-4645-BB14-43EBB9F2C218}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyData.EntityFrameworkCore.Relational.Tests", "easydata.net\test\EasyData.EntityFrameworkCore.Relational.Tests\EasyData.EntityFrameworkCore.Relational.Tests.csproj", "{CEC7BE02-590B-4476-820C-D0952897B4FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{3ABCB15D-BBED-4645-BB14-43EBB9F2C218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ABCB15D-BBED-4645-BB14-43EBB9F2C218}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ABCB15D-BBED-4645-BB14-43EBB9F2C218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEC7BE02-590B-4476-820C-D0952897B4FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC7BE02-590B-4476-820C-D0952897B4FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC7BE02-590B-4476-820C-D0952897B4FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC7BE02-590B-4476-820C-D0952897B4FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{225FC9AE-7FF8-46C0-AC74-A14DD17D8B36} = {31AA3146-8803-4B07-9E0F-30133D2B46E1}
 		{CA9CE555-3472-4985-9009-C27F6AC7C35A} = {31AA3146-8803-4B07-9E0F-30133D2B46E1}
 		{3ABCB15D-BBED-4645-BB14-43EBB9F2C218} = {0957E6EC-B9F4-4218-91CF-02D5999E7464}
+		{CEC7BE02-590B-4476-820C-D0952897B4FB} = {AFA27B1D-9AD5-4592-8F01-3820735869DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3511A88C-6DCD-4D80-BF6F-1EA767B2B0F6}

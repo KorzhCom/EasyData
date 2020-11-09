@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyDataBasicDemo.Models
 {
-    [MetaEntity(Enabled = false)]
     public class Supplier
     {
 
