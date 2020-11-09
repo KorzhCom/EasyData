@@ -288,10 +288,12 @@ export class EntityEditForm {
                                             paging: {
                                                 pageSize: 10
                                             },
-                                            onRowDbClick: (ev) => {
-                                                const row = ev.row;
-                                                selectedValue = row.getValue(attr.lookupDataAttr);
-                                                updateLabel();
+                                            onActiveRowChanged: (ev) => {
+                                                lookupTable.getRow(ev.newValue)
+                                                .then((row) => {
+                                                    selectedValue = row.getValue(attr.lookupDataAttr);
+                                                    updateLabel();
+                                                });
                                             }
                                         });
 
