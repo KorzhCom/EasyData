@@ -97,6 +97,8 @@ namespace EasyData
             return name;
         }
 
+
+
         public static string ComposeKey(string parent, string child)
         {
             if (string.IsNullOrEmpty(parent) && string.IsNullOrEmpty(child))
@@ -117,6 +119,8 @@ namespace EasyData
         {
             if (systemType == typeof(bool) || systemType == typeof(bool?))
                 return DataType.Bool;
+            else if (systemType == typeof(byte[]))
+                return DataType.Blob;
             else if (systemType == typeof(Guid))
                 return DataType.Guid;
             else if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))

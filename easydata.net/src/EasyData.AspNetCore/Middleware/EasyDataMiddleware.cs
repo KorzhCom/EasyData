@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 using EasyData.Services;
+using System.Web;
 
 namespace EasyData.AspNetCore
 {
@@ -71,7 +72,7 @@ namespace EasyData.AspNetCore
                                     "You possibly forgot to add UseManager at EasyData Middleware options");
                 }
 
-                var actionUrl = command.ToString();
+                var actionUrl = HttpUtility.UrlDecode(command.ToString());
                 var action = "";
                 var modelId = "";
                 var entityTypeName = "";

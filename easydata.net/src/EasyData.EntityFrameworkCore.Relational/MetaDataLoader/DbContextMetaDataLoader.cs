@@ -41,6 +41,7 @@ namespace EasyData.EntityFrameworkCore
 
         public virtual void LoadFromDbContext(DbContext context)
         {
+ 
             TableEntity.Clear();
 
             var entityTypes = GetEntityTypes(context.Model);
@@ -226,9 +227,11 @@ namespace EasyData.EntityFrameworkCore
 
                 entityAttr.ShowInLookup = annotation.ShowInLookup;
 
-                entityAttr.IsEditable = annotation.Editable;
+                if (entityAttr.IsEditable)
+                    entityAttr.IsEditable = annotation.Editable;
 
-                entityAttr.IsVisible = annotation.Visible;
+                if (entityAttr.IsVisible)
+                    entityAttr.IsVisible = annotation.Visible;
 
                 if (annotation.Index != int.MaxValue) {
                     entityAttr.Index = annotation.Index;
@@ -256,6 +259,10 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.IsForeignKey = property.IsForeignKey();
 
             entityAttr.IsNullable = property.IsNullable;
+
+            if (entityAttr.DataType == DataType.Blob) {
+                entityAttr.IsEditable = entityAttr.IsVisible = false;
+            }
 
             var propInfo = property.PropertyInfo;
             if (propInfo != null) {

@@ -59,6 +59,7 @@ export class EntityDataView {
                         pageSize: 15,
                     },
                     addColumns: true,
+                    showActiveRow: false,
                     onAddColumnClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this)

@@ -23,7 +23,6 @@ namespace EasyDataBasicDemo.Models
         public string Description { get; set; }
 
         [ScaffoldColumn(false)]
-        [MetaEntityAttr(Editable = false)]
         public byte[] Picture { get; set; } 
 
     }
