@@ -295,13 +295,14 @@ export class EntityEditForm {
                                             }
                                         });
 
-                                        const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
-
-                                        new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true});
-                                        
                                         ds.open({
                                             title: `Select ${lookupEntity.caption}`,
                                             body: slot,
+                                            beforeOpen: () => {
+                                                const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
+                                                new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, 
+                                                    { instantMode: true, focus: true});
+                                            },
                                             onSubmit: () => {
                                                 inputEl.value = selectedValue;
                                                 return true;

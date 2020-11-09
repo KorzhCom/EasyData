@@ -3,6 +3,7 @@ import { browserUtils, CellRendererType, domel, EasyGrid, GridCellRenderer, Grid
 import { DataFilter } from '../filter/data_filter';
 
 export interface TextFilterWidgetOptions {
+    focus?: boolean,
     instantMode?: boolean;
     instantTimeout?: number
 }
@@ -10,6 +11,7 @@ export interface TextFilterWidgetOptions {
 export class TextFilterWidget {
 
     private options = {
+        focus: false,
         instantMode: false,
         instantTimeout: 1000
     }
@@ -66,6 +68,10 @@ export class TextFilterWidget {
                     .addText('Search')
                     .on('click', this.buttonClickHandler.bind(this))
                 );
+        }
+
+        if (this.options.focus) {
+            this.filterInput.focus();
         }
     }
 

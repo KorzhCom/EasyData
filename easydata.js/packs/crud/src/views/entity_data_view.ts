@@ -80,7 +80,7 @@ export class EntityDataView {
 
     private manageCellRenderer(column: GridColumn, defaultRenderer: GridCellRenderer) {
         if (column.isRowNum) {
-            column.width = 100;
+            column.width = 110;
             return (value: any, column: GridColumn, cell: HTMLElement) => {
                 domel('div', cell)
                     .addClass(`keg-cell-value`)
