@@ -9,9 +9,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EasyData.EntityFrameworkCore
 {
-    public class DbContextLoader
+    public class DbContextMetaDataLoader
+
     {
-        protected readonly DbContextLoaderOptions Options = new DbContextLoaderOptions();
+        protected readonly DbContextMetaDataLoaderOptions Options = new DbContextMetaDataLoaderOptions();
 
         protected readonly Dictionary<string, MetaEntity> TableEntity = new Dictionary<string, MetaEntity>();
 
@@ -19,11 +20,11 @@ namespace EasyData.EntityFrameworkCore
 
         protected readonly MetaData Model;
 
-        public DbContextLoader(MetaData model): this(model, null)
+        public DbContextMetaDataLoader(MetaData model): this(model, null)
         {
         }
 
-        public DbContextLoader(MetaData model, DbContextLoaderOptions options)
+        public DbContextMetaDataLoader(MetaData model, DbContextMetaDataLoaderOptions options)
         {
             Model = model;
 

@@ -11,7 +11,7 @@ namespace EasyData.EntityFrameworkCore
     /// <summary>
     /// Contains different options for <see cref="DbContextLoader"/>
     /// </summary>
-    public class DbContextLoaderOptions
+    public class DbContextMetaDataLoaderOptions
     {
         /// <summary>
         /// The Filtes
