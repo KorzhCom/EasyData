@@ -1,0 +1,131 @@
+/* CONTROLS */
+
+.kfrm-form .errors-block {
+    color: red;
+}
+
+.kfrm-form input.is-valid:not([type='checkbox']),
+.kfrm-form input.is-valid:not([type='checkbox']):hover {
+    border-color: green;
+}
+
+.kfrm-form input.is-invalid:not([type='checkbox']),
+.kfrm-form input.is-invalid:not([type='checkbox']):hover {
+    border-color: red;
+}
+
+.kfrm-form input:not([type='checkbox']):read-only {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-shadow: none;
+    display: inline-flex;
+    font-size: 1em;
+    height: 2.5em;
+    justify-content: flex-start;
+    line-height: 1.5;
+    padding-bottom: calc(.5em - 1px);
+    padding-left: calc(.75em - 1px);
+    padding-right: calc(.75em - 1px);
+    padding-top: calc(.5em - 1px);
+    position: relative;
+    vertical-align: top;
+}
+
+.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {
+    background-color: #fff;
+    border-color: #dbdbdb;
+    border-radius: 4px;
+    color: #363636;
+    outline: 0;
+}
+
+.kfrm-form input:not([type='checkbox']), .kfrm-form textarea {
+    box-shadow: inset 0 0.0625em 0.125em rgba(10,10,10,.05);
+    max-width: 100%;
+    width: 100%;
+}
+
+.kfrm-form input:not([type='checkbox']):hover, .kfrm-form input:not([type='checkbox']).is-hovered, .kfrm-form textarea:hover, .kfrm-form textarea.is-hovered, .kfrm-select select:hover, .kfrm-select select.is-hovered {
+    border-color: #b5b5b5;
+}
+
+.kfrm-form input:not([type='checkbox']):active, .kfrm-form input:not([type='checkbox']).is-active, .kfrm-form textarea:active, .kfrm-form textarea.is-active, .kfrm-select select:active, .kfrm-select select.is-active, 
+.kfrm-form input:not([type='checkbox']):focus, .kfrm-form input:not([type='checkbox']).is-focused, .kfrm-form textarea:focus, .kfrm-form textarea.is-focused, .kfrm-select select:focus, .kfrm-select select.is-focused {
+    border-color: #3273dc;
+    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);
+    outline: 0;
+}
+
+
+.kfrm-select {
+    display: inline-block;
+    max-width: 100%;
+    position: relative;
+    vertical-align: top;
+    padding: 0;
+    width: max-content;
+}
+
+.kfrm-select select::-ms-expand {
+    display: none !important;
+}
+
+.kfrm-select:not(.is-multiple) {
+    height: 2.5em;
+}
+
+.kfrm-select select {
+    cursor: pointer;
+    display: block;
+    font-size: 1em;
+    max-width: 100%;
+    outline: 0;
+}
+
+.kfrm-select select:not([multiple]) {
+    padding-right: 2.5em;
+}
+
+ .kfrm-select:not(.is-multiple):not(.is-loading)::after {
+    border: 3px solid #3273dc;
+    border-radius: 2px;
+    border-right: 0;
+    border-top: 0;
+    content: " ";
+    display: block;
+    height: .425em;
+    margin-top: -.5em;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: rotate(-45deg);
+    transform-origin: center;
+    width: .425em;
+    right: .7em;
+    z-index: 4;
+}
+
+
+.kfrm-form textarea {
+    display: block;
+    max-width: 100%;
+    min-width: 100%;
+    padding: calc(.75em - 1px);
+    resize: vertical;
+}
+
+.kfrm-form textarea:not([rows]) {
+    max-height: 40em;
+    min-height: 8em;
+}
+
+/* CONTROLS END */
+

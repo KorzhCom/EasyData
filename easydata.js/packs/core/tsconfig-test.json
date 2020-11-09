@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+		"noImplicitAny": false,
+        "strictNullChecks" : false,
+        "sourceMap": true,
+		"strict": true,
+		"target": "es5",
+		"baseUrl": ".",
+		"outDir": "./test/dist"
+	  },
+}

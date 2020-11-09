@@ -3,13 +3,13 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"installall": "cd packs/crud && npm install",
-		"build:dev": "npm run linkall && cd packs/crud && npm run build:dev",
-		"build:prod": "npm run linkall && cd packs/crud && npm run build:prod",
-		"packall": "cd packs/crud && npm pack",
+		"installall": "cd packs/core && npm install && cd ../ui && npm install && cd ../crud && npm install && cd ../.. && npm run linkall",
+		"build:dev": "npm run linkall && cd packs/core && npm run build:dev && cd ../ui && npm run build:dev && cd ../crud && npm run build:dev && cd ../..",
+		"build:prod": "npm run linkall && cd packs/core && npm run build:prod && cd ../ui && npm run build:prod && cd ../crud && npm run build:prod && cd ../..",
+		"packall": "cd packs/core && npm pack && cd ../ui && npm pack && cd ../crud && npm pack && cd ../..",
 		"setver": "node ./tools/set_version.js",
 		"linkall": "node ./tools/set_links.js",
-		"test": "cd packs/crud"
+		"test": "cd packs/core && npm run test && cd ../.."
 	},
 	"author": "",
 	"license": "ISC",

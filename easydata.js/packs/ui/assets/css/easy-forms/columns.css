@@ -1,0 +1,98 @@
+/* COLUMNS */
+
+.kfrm-row {
+    margin-left: -.75rem;
+    margin-right: -.75rem;
+    margin-top: -.75rem;
+}
+
+.kfrm-row:not(:last-child) {
+    margin-bottom: calc(1.5rem - .75rem);
+}
+
+@media screen and (min-width: 769px), print {
+    .kfrm-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .kdlg-modal-window.size-small .kfrm-row {
+        display: block;
+    }
+
+
+    /* 12 columns grid */
+    .kfrm-column.size-1 {
+        flex: none;
+        width: 8.33333%;
+    }
+
+    .kfrm-column.size-2 {
+        flex: none;
+        width: 16.66667%;
+    }
+
+    .kfrm-column.size-3 {
+        flex: none;
+        width: 25%;
+    }
+
+    .kfrm-column.size-4 {
+        flex: none;
+        width: 33.33333%;
+    }
+
+    .kfrm-column.size-5 {
+        flex: none;
+        width: 41.66667%;
+    }
+
+    .kfrm-column.size-6 {
+        flex: none;
+        width: 50%;
+    }
+
+    .kfrm-column.size-7 {
+        flex: none;
+        width: 58.33333%;
+    }
+
+    .kfrm-column.size-8 {
+        flex: none;
+        width: 66.66667%;
+    }
+
+    .kfrm-column.size-9 {
+        flex: none;
+        width: 75%;
+    }
+
+    .kfrm-column.size-10 {
+        flex: none;
+        width: 83.33333%;
+    }
+
+    .kfrm-column.size-11 {
+        flex: none;
+        width: 91.66667%;
+    }
+
+    .kfrm-column.size-12 {
+        flex: none;
+        width: 100%;
+    }
+
+
+
+}
+
+.kfrm-column {
+    display: block;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: .75rem;
+}
+
+/* COLUMNS END */
+

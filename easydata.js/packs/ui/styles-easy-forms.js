@@ -1,0 +1,5 @@
+require('./assets/css/easy-forms/buttons.css')
+require('./assets/css/easy-forms/columns.css')
+require('./assets/css/easy-forms/controls.css')
+require('./assets/css/easy-forms/forms.css')
+require('./assets/css/easy-forms/datetimepicker.css')

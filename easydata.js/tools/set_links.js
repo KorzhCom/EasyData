@@ -10,9 +10,11 @@ const path = require('path');
 const unlink = process.argv.length > 2 ? process.argv[2] == "unlink" : false;
 
 
-const corePath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.core");
-const uiPath = path.resolve(__dirname, "../../../EasyQuery/EasyQuery.JS/packs/easydata.ui");
+const corePath = path.resolve(__dirname, "../packs/core");
+const uiPath = path.resolve(__dirname, "../packs/ui");
 const crudPath = path.resolve(__dirname, "../packs/crud");
+
+link(corePath, path.resolve(__dirname, "../packs/ui/node_modules/@easydata/core"));
 
 link(corePath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/core"));
 link(uiPath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/ui"));

@@ -1,0 +1,187 @@
+.kdlg-modal, .kdlg-modal-background {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.kdlg-modal-background {
+    background-color: rgba(10,10,10,.86);
+}
+
+.kdlg-modal {
+    font-family: "Roboto", Arial;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    align-items: center;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    position: fixed;
+    z-index: 40;
+}
+
+.kdlg-modal.is-active {
+    display: flex;
+}
+
+
+.kdlg-modal-window, .kdlg-modal-window.size-default {
+    margin: 0 20px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    -ms-overflow-y: visible;    
+}
+
+@media screen and (min-width: 481px), print {
+    .kdlg-modal-window.size-small {
+        margin: 0 auto;
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 769px), print {
+    .kdlg-modal-window, .kdlg-modal-window.size-default {
+        margin: 0 auto;
+        width: 640px;
+    }
+
+    .kdlg-modal-window.size-large, .kdlg-modal-window.size-xl {
+        margin: 0 20px;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 1025px), print {
+    .kdlg-modal-window.size-large {
+        margin: 0 auto;
+        width: 900px;
+    }
+}
+
+@media screen and (min-width: 1383px), print {
+    .kdlg-modal-window.size-xl {
+        margin: 0 auto;
+        width: 1200px;
+    }
+}
+
+
+
+.kdlg-footer, .kdlg-header {
+    align-items: center;
+    /*background-color: #f5f5f5;*/
+    background-color: #fff;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 20px;
+    position: relative;
+}
+
+.kdlg-footer.align-right {
+    justify-content: flex-end;
+}
+
+.kdlg-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.kdlg-header.has-border {
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.kdlg-footer {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.kdlg-footer.has-border {
+    border-top: 1px solid #dbdbdb;
+}
+
+.kdlg-header-title {
+    color: #363636;
+    flex-grow: 1;
+    flex-shrink: 0;
+    font-size: 1.6rem;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.kdlg-modal-close {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: rgba(10,10,10,.2);
+    border: none;
+    border-radius: 290486px;
+    cursor: pointer;
+    pointer-events: auto;
+    display: inline-block;
+    flex-grow: 0;
+    flex-shrink: 0;
+    font-size: 0;
+    height: 24px;
+    max-height: 24px;
+    max-width: 24px;
+    min-height: 24px;
+    min-width: 24px;
+    outline: 0;
+    position: relative;
+    vertical-align: top;
+    width: 24px;
+}
+
+.kdlg-modal-close::before, .kdlg-modal-close::after {
+    background-color: #fff;
+    content: "";
+    display: block;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    transform-origin: center center;
+}
+
+.kdlg-modal-close::before {
+    height: 2px;
+    width: 50%;
+}
+
+.kdlg-modal-close::after {
+    height: 50%;
+    width: 2px;
+}
+
+.kdlg-modal-close:focus, .kdlg-modal-close:hover {
+    background-color: rgba(255,1,1,.48);
+}
+
+
+.kdlg-body {
+    -webkit-overflow-scrolling: touch;
+    background-color: #fff;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+    padding: 20px;
+    font-size: 1em;
+    color: #4a4a4a;
+}
+
+
