@@ -51,5 +51,6 @@ export interface EasyGridOptions {
     onColumnMoved?: (ev: ColumnMovedEvent) => void;
     onActiveRowChanged?: (ev:ActiveRowChangedEvent) => void;
 
+    onSyncGridColumn?: (column: GridColumn) => void;
     onGetCellRenderer?: (column: GridColumn, defaultRenderer: GridCellRenderer) => GridCellRenderer;
 }

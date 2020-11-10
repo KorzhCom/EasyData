@@ -108,7 +108,11 @@ export class GridColumnList {
 
         if (columnList) {
             for (let column of columnList.getItems()) {
-                this.add(new GridColumn(column, this.grid));
+                const col = new GridColumn(column, this.grid);
+                if (this.grid.options.onSyncGridColumn) {
+                    this.grid.options.onSyncGridColumn(col);
+                }
+                this.add(col);
             }    
         }
     }

@@ -47,6 +47,15 @@ export class EntityDataView {
         this.renderGrid();
     }
 
+    private syncGridColumnHandler(column: GridColumn) {
+        if (column.dataColumn) {
+            const attr = this.context.getMetaData().getAttributeById(column.dataColumn.id);
+            if (attr) {
+                column.isVisible = attr.isVisible;
+            }
+        }
+    }
+
     private renderGrid() {
         this.context.getEntities()
             .then(result => {
@@ -63,7 +72,8 @@ export class EntityDataView {
                     showActiveRow: false,
                     onAddColumnClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
-                    onRowDbClick: this.rowDbClickHandler.bind(this)
+                    onRowDbClick: this.rowDbClickHandler.bind(this),
+                    onSyncGridColumn: this.syncGridColumnHandler.bind(this)
                 });
 
                 let widgetSlot: HTMLElement;
