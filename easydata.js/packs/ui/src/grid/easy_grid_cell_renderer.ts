@@ -14,26 +14,26 @@ export enum CellRendererType {
     BOOL
 }
 
-export type GridCellRenderer = (value: any, column: GridColumn, cell: HTMLElement) => void;
+export type GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => void;
 
 
-const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cell: HTMLElement) => {
+const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
     const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
-    domel('div', cell)
+    domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(text)
         .title(value || '');
 }
 
 
-const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cell: HTMLElement) => {
+const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
     let strValue = (value || '').toString();
 
     if(typeof value == 'number') {
         strValue = value.toLocaleString();
     }
 
-    let builder = domel('div', cell)
+    let builder = domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(strValue)
         .title(strValue);
@@ -45,7 +45,7 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
 }
 
 
-const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cell: HTMLElement) => {
+const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
     const isDate = Object.prototype.toString.call(value) === '[object Date]';
     let strValue = (value || '').toString();
 
@@ -64,7 +64,7 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
         }
     }
 
-    let builder = domel('div', cell)
+    let builder = domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(strValue)
         .title(strValue);
@@ -75,8 +75,8 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
 }
 
 
-const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cell: HTMLElement) => {
-    domel('div', cell)
+const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
+    domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addClass(`${cssPrefix}-cell-value-bool`)
         .addClass(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);

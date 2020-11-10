@@ -27,14 +27,14 @@ export class TextFilterWidget {
         const stringDefRenderer = this.grid.cellRendererStore
             .getDefaultRendererByType(CellRendererType.STRING);
          this.grid.cellRendererStore
-            .setDefaultRenderer(CellRendererType.STRING, (value, column, cell) => 
-                this.highlightCellRenderer(stringDefRenderer, value, column, cell));
+            .setDefaultRenderer(CellRendererType.STRING, (value, column, cellElement, rowElement) => 
+                this.highlightCellRenderer(stringDefRenderer, value, column, cellElement, rowElement));
 
         const numDefRenderer = this.grid.cellRendererStore
             .getDefaultRendererByType(CellRendererType.NUMBER);
         this.grid.cellRendererStore
-            .setDefaultRenderer(CellRendererType.NUMBER, (value, column, cell) => 
-                this.highlightCellRenderer(numDefRenderer, value, column, cell));
+            .setDefaultRenderer(CellRendererType.NUMBER, (value, column, cellElement, rowElement) => 
+                this.highlightCellRenderer(numDefRenderer, value, column, cellElement, rowElement));
 
         this.render();
     }
@@ -110,7 +110,7 @@ export class TextFilterWidget {
         }
     }
 
-    private highlightCellRenderer(defaultRenderer: GridCellRenderer, value: any, column: GridColumn, cell: HTMLElement) {   
+    private highlightCellRenderer(defaultRenderer: GridCellRenderer, value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) {   
         if (dataUtils.isIntType(column.type) 
         || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) {
             if (value) {
@@ -122,7 +122,7 @@ export class TextFilterWidget {
             }
         }
 
-        defaultRenderer(value, column, cell);
+        defaultRenderer(value, column, cellElement, rowElement);
     }
 
     private highlightText(content: string): string {

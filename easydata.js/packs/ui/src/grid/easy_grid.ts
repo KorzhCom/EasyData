@@ -613,13 +613,13 @@ export class EasyGrid {
             const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
             let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
 
-            rowElement.appendChild(this.renderCell(column, colindex, val));
+            rowElement.appendChild(this.renderCell(column, colindex, val, rowElement));
         });
         
         return rowElement;
     }
 
-    protected renderCell(column: GridColumn, colIndex: number, value: any): HTMLDivElement {
+    protected renderCell(column: GridColumn, colIndex: number, value: any, rowElement: HTMLElement): HTMLDivElement {
         let builder = domel('div')
             .addClass(`${this.cssPrefix}-cell`)
             .data('col-idx', `${colIndex}`)
@@ -637,7 +637,7 @@ export class EasyGrid {
         }
 
         if (column.cellRenderer) {
-            column.cellRenderer(value, column, builder.toDOM());
+            column.cellRenderer(value, column, builder.toDOM(), rowElement);
         }
 
         return builder.toDOM();
