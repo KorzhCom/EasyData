@@ -550,11 +550,26 @@ export class EasyGrid {
 
     }
 
-    protected renderRow(row: DataRow, index: number): HTMLDivElement {
-        let indexGlobal = index;
+    protected getLocalIndexByGlobal(index: number) {
         if (this.pagination) {
-            indexGlobal = (this.pagination.page - 1) * this.pagination.pageSize + index;
+            return index % this.pagination.pageSize;
         }
+        else {
+            return index;
+        }
+    }
+
+    protected getGlobalIndexByLocal(index: number) {
+        if (this.pagination) {
+            return (this.pagination.page - 1) * this.pagination.pageSize + index;
+        }
+        else {
+            return index;
+        }
+    }
+
+    protected renderRow(row: DataRow, index: number): HTMLDivElement {
+        let indexGlobal = this.getGlobalIndexByLocal(index);
 
         let rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
