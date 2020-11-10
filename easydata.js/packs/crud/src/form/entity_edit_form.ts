@@ -266,7 +266,7 @@ export class EntityEditForm {
                                             .addChild('div', b => b
                                                 .addClass(`kfrm-field`)
                                                 .addChild('label', b => b
-                                                    .addText('Selected value: ')
+                                                    .addText('Selected item: ')
                                                     .toDOM()
                                                 )
                                                 .addChild('div', b => selectedSlot = b
@@ -283,33 +283,23 @@ export class EntityEditForm {
                 
                                         let selectedValue = inputEl.value;
 
-                            
+                                        const getValue = (row: DataRow| any, colId: string) => {
+
+                                            if (row instanceof DataRow) {
+                                                return row.getValue(colId);
+                                            }
+
+                                            const property = colId.substring(colId.lastIndexOf('.') + 1);
+                                            return row[property]
+                                        }
+
                                         const updateSelectedValue = (row: DataRow | any) => {
-                                            selectedSlot.innerHTML = "";
-                                            domel('table', selectedSlot)
-                                            .addClass(`kfrm-lookup-selected`)
-                                            .addChild('thead', b => b
-                                                .addChild('tr', b => {
-                                                    for(const col of lookupTable.columns.getItems()) {
-                                                        b.addChild('th', b => b.addText(col.label));
-                                                    }
+                                            selectedSlot.innerHTML = lookupTable.columns
+                                                .getItems()
+                                                .map(col => {
+                                                    return `<b>${col.label}:</b> ${getValue(row, col.id)}`
                                                 })
-                                            )
-                                            .addChild('tbody', b => b
-                                                .addChild('tr', b => {
-                                                    if (row instanceof DataRow) {
-                                                        for(const col of lookupTable.columns.getItems()) {
-                                                            b.addChild('td', b => b.addText(row.getValue(col.id)));
-                                                        }
-                                                    }
-                                                    else {
-                                                        for(const col of lookupTable.columns.getItems()) {
-                                                            const property = col.id.substring(col.id.lastIndexOf('.') + 1);
-                                                            b.addChild('td', b => b.addText(row[property]));
-                                                        }
-                                                    }
-                                                })
-                                            )
+                                                .join(', ');
                                         } 
 
                                         context.getEntity(selectedValue, lookupEntity.id)
