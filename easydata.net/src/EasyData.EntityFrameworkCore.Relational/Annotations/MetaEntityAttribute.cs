@@ -14,6 +14,8 @@ namespace EasyData.EntityFrameworkCore
 
         public string DisplayName { get; set; }
 
+        public string DisplayNamePlural { get; set; }
+
         public string Description { get; set; }
     }
 }

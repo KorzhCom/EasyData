@@ -9,6 +9,10 @@ export interface MetaEntityDTO {
     id: string;
     /** The name. */
     name: string;
+    /**
+     * The name in plural form
+     */
+    namePlur?: string;
     /** The description. */
     desc?: string;
     /** List of sub-entities. */

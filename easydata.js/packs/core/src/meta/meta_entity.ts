@@ -22,8 +22,11 @@ export class MetaEntity {
     /** The name of entity. */
     public name: string;
 
-    /** The caption of entity. */
+    /** The caption of entity attr. */
     public caption: string;
+
+    /** The caption of entity attr in plural form. */
+    public captionPlural: string;
     
     /** The description of entity. */
     public description: string;
@@ -59,6 +62,7 @@ export class MetaEntity {
         if (dto) {
             this.id = dto.id;
             this.name = dto.name;
+            this.captionPlural = dto.namePlur;
             this.caption = dto.name;
             this.description = dto.desc;
             
@@ -126,6 +130,9 @@ export class MetaEntityAttr {
 
     /** The caption. */
     public caption: string;
+
+    /** The caption in plural form. */
+    public captionPlural: string;
 
     /** The description. */
     public description: string;

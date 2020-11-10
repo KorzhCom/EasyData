@@ -90,7 +90,8 @@ namespace EasyData.EntityFrameworkCore
             var entity = Model.CreateEntity();
             var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
-            entity.Name = GetEntityName(entityType);
+            entity.Name = DataUtils.PrettifyName(GetEntityName(entityType));
+            entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             entity.ObjType = entityType.ClrType;
 
@@ -100,11 +101,15 @@ namespace EasyData.EntityFrameworkCore
                     return null;
 
                 if (!string.IsNullOrEmpty(annotation.DisplayName)) {
-                    entity.Name = annotation.DisplayName;
+                    entity.Name = entity.NamePlural = annotation.DisplayName;
                 }
 
                 if (!string.IsNullOrEmpty(annotation.Description)) {
                     entity.Description = annotation.Description;
+                }
+
+                if (!string.IsNullOrEmpty(annotation.DisplayNamePlural)) {
+                    entity.NamePlural = annotation.DisplayNamePlural;
                 }
             }
 

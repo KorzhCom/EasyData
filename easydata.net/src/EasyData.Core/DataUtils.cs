@@ -54,51 +54,42 @@ namespace EasyData
             return new string(newString);
         }
 
-
         ///<summary>
-        /// Change plural to single
+        /// Change single to plural
         ///</summary>
-        public static string MakeSingle(string name)
+        public static string MakePlural(string name)
         {
-            if (name[name.Length - 1] == 's') {
-                //Rule for ending -y 
-                if (name.Substring(name.Length - 3) == "ies"){
-                    name = name.Remove(name.Length - 3);
-                    name += 'y';
-                }
-                else if (name.Substring(name.Length - 2) == "es") {
-                    //Rule for endings -s, -ss, -sh, -ch, -x
-                    if (name[name.Length - 3] == 'x' || name[name.Length - 3] == 's' ||
-                    (name[name.Length - 3] == 'h' && (name[name.Length - 4] == 's' || name[name.Length - 4] == 'c'))) {
-                        name = name.Remove(name.Length - 2);
-                    } //Rule for ending -o
-                    else if (name[name.Length - 3] == 'o') {
-                        name = name.Remove(name.Length - 2);
-                        //Rule for ending -f, -fe
-                    }
-                    else if (name[name.Length - 3] == 'v') {
-                        name = name.Remove(name.Length - 3);
-                        name += 'f';
-                    }
-                    else {
-                        name = name.Remove(name.Length - 1);
-                    }
 
-                }
-                else {
-                    name = name.Remove(name.Length - 1);
-                }
+            if (name.EndsWith("y")) {
+                name = name.Remove(name.Length - 1);
+                name += "ies";
+            }
+            else if (name.EndsWith("s")
+                || name.EndsWith("x")
+                || name.EndsWith("o")
+                || name.EndsWith("ss")
+                || name.EndsWith("sh")
+                || name.EndsWith("ch"))
+            {
+                name += "es";
+            }
+            else if (name.EndsWith("fe")) {
+                name = name.Remove(name.Length - 2);
+                name += "ves";
 
+            }
+            else if (name.EndsWith("f")) {
+                name = name.Remove(name.Length - 1);
+                name += "ves";
             }
             else {
-                // write here code for child - childrem, man - men etc.
+                name += "s";
             }
+             
 
             return name;
         }
-
-
-
+           
         public static string ComposeKey(string parent, string child)
         {
             if (string.IsNullOrEmpty(parent) && string.IsNullOrEmpty(child))

@@ -24,15 +24,15 @@ export class RootDataView {
                         b.addClass('list-group')
                         entities.forEach(ent => {
                             b.addChild('li', b => {
-                            b.addClass('list-group-item')
-                            .on('click', () => {
-                                window.location.href = `${this.basePath}/${ent.id}`;
-                            })
-                            .addHtml(ent.caption);
+                                b.addClass('list-group-item')
+                                .on('click', () => {
+                                    window.location.href = `${this.basePath}/${ent.id}`;
+                                })
+                                .addHtml(ent.captionPlural || ent.caption);
 
-                            if (ent.description) {
-                                b.addHtml(`<span title="${ent.description}" style="float: right; font-family: cursive">i</span>`);
-                            }
+                                if (ent.description) {
+                                    b.addHtml(`<span title="${ent.description}" style="float: right; font-family: cursive">i</span>`);
+                                }
                             });
                         });
                     })

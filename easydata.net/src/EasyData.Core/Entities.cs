@@ -51,6 +51,12 @@ namespace EasyData
         /// <value>Entity name</value>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the name of the entity in plural form.
+        /// </summary>
+        /// <value>Entity name</value>
+        public string NamePlural { get; set; }
+
 
         /// <summary>
         /// Gets or sets the type of the entity.
@@ -340,6 +346,11 @@ namespace EasyData
                 await writer.WriteValueAsync(Name).ConfigureAwait(false);
             }
 
+            if (!string.IsNullOrEmpty(NamePlural)) {
+                await writer.WritePropertyNameAsync("namePlur").ConfigureAwait(false);
+                await writer.WriteValueAsync(NamePlural).ConfigureAwait(false);
+            }
+
             if (!string.IsNullOrEmpty(Description))  {
                 await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
                 await writer.WriteValueAsync(Description).ConfigureAwait(false);
@@ -401,6 +412,9 @@ namespace EasyData
                     break;
                 case "name":
                     Name = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "namePlur":
+                    NamePlural = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "desc":
                     Description = await reader.ReadAsStringAsync().ConfigureAwait(false);

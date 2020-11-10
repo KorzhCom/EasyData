@@ -25,7 +25,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
                 ["Customer"] = 11,
                 ["Employee"] = 19,
                 ["Order"] = 16,
-                ["OrderDetail"] = 7,
+                ["Order Detail"] = 7,
                 ["Product"] = 12,
                 ["Shipper"] = 3,
                 ["Supplier"] = 12

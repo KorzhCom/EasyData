@@ -38,7 +38,8 @@ export class EntityDataView {
 
         this.dlg = new DefaultDialogService();
 
-        this.slot.innerHTML = `<h1>${this.context.getActiveEntity().caption}</h1>`;
+        const ent = this.context.getActiveEntity();
+        this.slot.innerHTML = `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
             this.slot.innerHTML += `<a href="${this.basePath}"> ← Back to entities</a>`;
         }
@@ -69,7 +70,8 @@ export class EntityDataView {
                 const filterBar = domel('div')
                     .addClass(`kfrm-form`)
                     .setStyle('margin', '10px 0px')
-                    .addChild('div', b => widgetSlot = b.toDOM()
+                    .addChild('div', b => 
+                        widgetSlot = b.toDOM()
                     ).toDOM();
                 
                 this.slot.insertBefore(filterBar, gridSlot);
