@@ -453,7 +453,7 @@ export class EasyGrid {
     }
 
     public ensureRowVisibility(index: number) {
-        const row = this.bodyCellContainerDiv.querySelector(`[data-row-idx="${index}"]`);
+        const row = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${index + 1})`);
         if (row) { 
             let rowRect = row.getBoundingClientRect();
             const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
@@ -551,10 +551,15 @@ export class EasyGrid {
     }
 
     protected renderRow(row: DataRow, index: number): HTMLDivElement {
+        let indexGlobal = index;
+        if (this.pagination) {
+            indexGlobal = (this.pagination.page - 1) * this.pagination.pageSize + index;
+        }
+
         let rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-${index % 2 == 1 ? 'odd' : 'even'}`)
-                .data('row-idx', `${index }`)
+                .data('row-idx', `${indexGlobal}`)
                 .attr('tabindex', '-1')
                 .on('click', (ev) => {
                     this.activeRowIndex = index;
@@ -581,13 +586,7 @@ export class EasyGrid {
 
         let rowElement = rowBuilder.toDOM();
 
-        let rowNum = index;
-        if (this.pagination) {
-            rowNum = (this.pagination.page - 1) * this.pagination.pageSize + 
-                index + 1;
-        }
-
-        if (this.options.showActiveRow && rowNum == this.activeRowIndex + 1) {
+        if (this.options.showActiveRow && index == this.activeRowIndex) {
             rowBuilder.addClass(`${this.cssPrefix}-row-active`);
         }
 
@@ -597,7 +596,7 @@ export class EasyGrid {
             }
 
             const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = column.isRowNum ? rowNum : row.getValue(colindex);
+            let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
 
             rowElement.appendChild(this.renderCell(column, colindex, val));
         });
@@ -875,7 +874,7 @@ export class EasyGrid {
             const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`) as NodeListOf<HTMLElement>;
             rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`)});
 
-            const activeRow = this.bodyCellContainerDiv.querySelector(`[data-row-idx="${this.activeRowIndex}"]`);
+            const activeRow = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${this.activeRowIndex + 1})`);
                 if (activeRow) {
                     activeRow.classList.add(`${this.cssPrefix}-row-active`);
                     this.ensureRowVisibility(this.activeRowIndex);
