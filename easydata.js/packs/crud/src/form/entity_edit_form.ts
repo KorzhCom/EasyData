@@ -257,7 +257,7 @@ export class EntityEditForm {
                                         const ds = new DefaultDialogService();
                                         let gridSlot: HTMLElement = null;
         
-                                        let labelEl: HTMLElement = null;
+                                        let selectedSlot: HTMLElement = null;
 
                                         let widgetSlot: HTMLElement;
                                         const slot = domel('div')
@@ -265,9 +265,14 @@ export class EntityEditForm {
          
                                             .addChild('div', b => b
                                                 .addClass(`kfrm-field`)
-                                                .addChild('label', b => labelEl = b
+                                                .addChild('label', b => b
+                                                    .addText('Selected value: ')
                                                     .toDOM()
                                                 )
+                                                .addChild('div', b => selectedSlot = b
+                                                    .addText('None')
+                                                .toDOM()
+                                            )
                                             )  
                                             .addChild('div', b => widgetSlot = b.toDOM())   
                                             .addChild('div', b => b
@@ -277,10 +282,42 @@ export class EntityEditForm {
                                             .toDOM();
                 
                                         let selectedValue = inputEl.value;
-        
-                                        const updateLabel = () => 
-                                            labelEl.innerHTML = `Selected value: '${selectedValue}'`;
-                                        updateLabel();
+
+                            
+                                        const updateSelectedValue = (row: DataRow | any) => {
+                                            selectedSlot.innerHTML = "";
+                                            domel('table', selectedSlot)
+                                            .addClass(`kfrm-lookup-selected`)
+                                            .addChild('thead', b => b
+                                                .addChild('tr', b => {
+                                                    for(const col of lookupTable.columns.getItems()) {
+                                                        b.addChild('th', b => b.addText(col.label));
+                                                    }
+                                                })
+                                            )
+                                            .addChild('tbody', b => b
+                                                .addChild('tr', b => {
+                                                    if (row instanceof DataRow) {
+                                                        for(const col of lookupTable.columns.getItems()) {
+                                                            b.addChild('td', b => b.addText(row.getValue(col.id)));
+                                                        }
+                                                    }
+                                                    else {
+                                                        for(const col of lookupTable.columns.getItems()) {
+                                                            const property = col.id.substring(col.id.lastIndexOf('.') + 1);
+                                                            b.addChild('td', b => b.addText(row[property]));
+                                                        }
+                                                    }
+                                                })
+                                            )
+                                        } 
+
+                                        context.getEntity(selectedValue, lookupEntity.id)
+                                            .then(data => {
+                                                if (data.entity) {
+                                                    updateSelectedValue(data.entity);
+                                                }
+                                            });
         
                                         const lookupGrid = new EasyGrid({
                                             slot: gridSlot,
@@ -292,7 +329,7 @@ export class EntityEditForm {
                                                 lookupTable.getRow(ev.newValue)
                                                 .then((row) => {
                                                     selectedValue = row.getValue(attr.lookupDataAttr);
-                                                    updateLabel();
+                                                    updateSelectedValue(row);
                                                 });
                                             }
                                         });

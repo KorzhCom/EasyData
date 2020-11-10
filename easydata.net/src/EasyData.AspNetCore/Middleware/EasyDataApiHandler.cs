@@ -134,14 +134,14 @@ namespace EasyData.AspNetCore
         {
             var result = await Manager.GetEntityAsync(modelId, entityContainer, keyStr);
             await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
-                await WriteCreateEntityResponseAsync(jsonWriter, result);
+                await WriteGetEntityResponseAsync(jsonWriter, result);
             });
         }
 
         protected virtual async Task WriteGetEntityResponseAsync(JsonWriter jsonWriter, object entity)
         {
-            await jsonWriter.WritePropertyNameAsync("entity");
             var jObj = JObject.FromObject(entity);
+            await jsonWriter.WritePropertyNameAsync("entity");
             await jObj.WriteToAsync(jsonWriter);
         }
 
@@ -160,8 +160,8 @@ namespace EasyData.AspNetCore
 
         protected virtual async Task WriteCreateEntityResponseAsync(JsonWriter jsonWriter, object entity)
         {
-            await jsonWriter.WritePropertyNameAsync("entity");
             var jObj = JObject.FromObject(entity);
+            await jsonWriter.WritePropertyNameAsync("entity");
             await jObj.WriteToAsync(jsonWriter);
         }
 
@@ -180,8 +180,8 @@ namespace EasyData.AspNetCore
 
         protected virtual async Task WriteUpdateEntityResponseAsync(JsonWriter jsonWriter, object entity)
         {
-            await jsonWriter.WritePropertyNameAsync("entity");
             var jObj = JObject.FromObject(entity);
+            await jsonWriter.WritePropertyNameAsync("entity");
             await jObj.WriteToAsync(jsonWriter);
         }
 

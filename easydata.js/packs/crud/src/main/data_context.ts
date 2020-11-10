@@ -121,19 +121,27 @@ export class DataContext {
             })
     }
 
-    public createEntity(obj) {
-        const url = this.resolveEndpoint('CreateEntity');
+    public getEntity(id: string, entityId?: string) {
+        const url = this.resolveEndpoint('GetEntity', { id, 
+            entityId: entityId || this.activeEntity.id });
+        return this.http.get(url).getPromise();
+    }
+
+    public createEntity(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('CreateEntity', 
+            { entityId: entityId || this.activeEntity.id });
         return this.http.post(url, obj, { dataType: 'json' }).getPromise();
     }
 
-    public updateEntity(id: string, obj) {
-        const url = this.resolveEndpoint('UpdateEntity', { id: id});
-
+    public updateEntity(id: string, obj, entityId?: string) {
+        const url = this.resolveEndpoint('UpdateEntity', { id, 
+            entityId: entityId || this.activeEntity.id });
         return this.http.put(url, obj, { dataType: 'json' }).getPromise();
     }
 
-    public deleteEntity(id: string) {
-        const url = this.resolveEndpoint('DeleteEntity', { id: id});
+    public deleteEntity(id: string, entityId?: string) {
+        const url = this.resolveEndpoint('DeleteEntity', { id, 
+            entityId: entityId || this.activeEntity.id });
         return this.http.delete(url).getPromise();
     }
 
