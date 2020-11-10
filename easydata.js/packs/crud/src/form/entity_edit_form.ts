@@ -327,6 +327,7 @@ export class EntityEditForm {
                                         ds.open({
                                             title: `Select ${lookupEntity.caption}`,
                                             body: slot,
+                                            arrangeParents: true,
                                             beforeOpen: () => {
                                                 const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
                                                 new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, 

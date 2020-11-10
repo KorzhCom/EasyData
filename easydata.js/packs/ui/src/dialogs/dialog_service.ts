@@ -5,6 +5,7 @@ export interface DialogOptions {
     cancelable?: boolean;
     width?: number;
     height?: number;
+    arrangeParents?: boolean;
     beforeOpen?: () => void;
     onSubmit?: () => boolean | void;
     onCancel?: () => void;

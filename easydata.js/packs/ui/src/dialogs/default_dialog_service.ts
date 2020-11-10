@@ -59,6 +59,7 @@ export class DefaultDialogService implements DialogService {
             closable: true,
             cancelable: true,
             body: template,
+            arrangeParents: false,
             beforeOpen: () => {
                 const input = document.getElementById(`${cssPrefix}-dialog-form-input`) as HTMLInputElement;
                 if (defVal) {
@@ -105,6 +106,10 @@ export class DefaultDialogService implements DialogService {
     public open(options: DialogOptions) {
 
         const destroy = () => {
+            if (options.arrangeParents) {
+                this.arrangeParents(false);
+            }
+    
             document.body.removeChild(builder.show().toDOM());
 
             if (options.onDestroy) {
@@ -201,6 +206,28 @@ export class DefaultDialogService implements DialogService {
         }
         if (options.width) {
             windowDiv.style.width = `${options.width}px`;
+        }
+
+        if (options.arrangeParents) {
+            this.arrangeParents(true);
+        }
+    }
+
+    private arrangeParents(turnOn: boolean) {
+        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal-window');
+
+        for (let i = 0; i < windowDivs.length - 1; i++ ) {
+            if (turnOn) {
+                const offset = i == 0 ? 20 : i * 40 + 20;
+                domel(windowDivs[i])
+                    .setStyle('margin-top', `${offset}px`)
+                    .setStyle('margin-left', `${offset}px`);
+            }
+            else {
+                domel(windowDivs[i])
+                    .removeStyle('margin-top')
+                    .removeStyle('margin-left');
+            }
         }
     }
 }
