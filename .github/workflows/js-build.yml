@@ -1,4 +1,4 @@
-name: EasyData.JS Build  
+name: EasyData.JS Pipeline  
 
 on:
   workflow_dispatch:
@@ -44,34 +44,31 @@ jobs:
       with:
         name: packs
         path: | 
-          ./easydata.js/packs/**/dist/**/*.*
-          ./easydata.js/packs/**/package.json
-          ./easydata.js/packs/**/LICENSE.md
-          ./easydata.js/packs/**/README.md
-          ./easydata.js/packs/**/tsconfig.json
-          ./easydata.js/packs/**/*.js
-          !node_modules/**/*.*
+          ./easydata.js/packs/*/dist/**/*.*
+          ./easydata.js/packs/*/package.json
+          ./easydata.js/packs/*/LICENSE.md
+          ./easydata.js/packs/*/README.md
+          ./easydata.js/packs/*/tsconfig.json
+          ./easydata.js/packs/*/*.js
+          !./easydata.js/packs/**/node_modules/**/*.*
 
   release:
     needs: [ build_and_test ]
     if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
 
-    defaults: 
-      run:
-        working-directory: ./easydata.js  
-
     steps:        
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
         name: packs
+        path: packs
 
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: 14.x
         registry-url: 'https://npm.pkg.github.com'
+        scope: '@korzh'
 
     - name: Push @easydata/core
       run: npm publish packs/core
