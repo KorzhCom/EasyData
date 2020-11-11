@@ -67,16 +67,16 @@ That’s it. Now you can run your web app, open the `/easydata` URL and enjoy CR
 
 # Main features
 
-## 1.  Declarative approach
+### 1.  Declarative approach
 
 All aspects of your CRUD UI are controlled by the data structure defined in DbContext. If you need to tune it up (e.g., to to hide a table or some fields or perhaps change their names), there are special attributes for your model classes and properties with which to do that.
 
-## 2. Automatic UI rendering
+### 2. Automatic UI rendering
 
 All data forms and dialogs are rendered automatically by EasyQuery.JS script according to the metadata acquired from the DbContext and your annotations on model classes and their properties.
 The script can be used with any framework or library used on the client side, such as Razor Pages, MVC Views, Angular, React, Vue, etc.
 
-## 3. Ad hoc data filtering
+### 3. Ad hoc data filtering
 
 In the data view mode, EasyData provides with a data-filtering functionality, which works out of the box and requires no additional setup or coding.
 
