@@ -44,17 +44,21 @@ jobs:
       with:
         name: packs
         path: | 
-          ./**/dist/**/*.*
-          ./**/package.json
-          ./**/LICENSE.md
-          ./**/README.md
-          ./**/tsconfig.json
-          ./**/*.js
+          ./easydata.js/**/dist/**/*.*
+          ./easydata.js/**/package.json
+          ./easydata.js/**/LICENSE.md
+          ./easydata.js/**/README.md
+          ./easydata.js/**/tsconfig.json
+          ./easydata.js/**/*.js
 
   release:
     needs: [ build_and_test ]
     if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
+
+    defaults: 
+      run:
+        working-directory: ./easydata.js  
 
     steps:        
     - name: Download artifacts
