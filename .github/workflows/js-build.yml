@@ -1,0 +1,87 @@
+name: EasyData.JS Build  
+
+on:
+  workflow_dispatch:
+    inputs:
+      is_release:
+        description: 'Determines wether build is a release'
+        required: true
+        default: 'false'
+  push:
+    branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
+  pull_request:
+    branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    defaults: 
+      run:
+        working-directory: ./easydata.js  
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Install dependencies
+      run: npm run installall
+
+    - name: Build
+      run: npm run build:prod
+
+    - name: Test
+      run: npm test
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: packs
+        path: | 
+          */dist/**/* 
+          */package.json
+          */LICENSE.md
+          */README.md
+          */tsconfig.json
+          */*.js
+
+  release:
+    needs: [ build_and_test ]
+    if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
+    runs-on: windows-latest
+
+    steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@korzh'
+        
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: packs
+
+    - name: Push @easydata/core
+      run: npm publish packs/core --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push @easydata/ui
+      run: npm publish packs/ui --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push @easydata/crud
+      run: npm publish packs/crud --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+

@@ -27,13 +27,13 @@ jobs:
       run: dotnet restore
 
     - name: Pack
-      run: dotnet pack -v normal --configuration Release --no-restore
+      run: dotnet pack -v normal -o ./easydata.net/packs --configuration Release --no-restore
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
-        with:
-          name: nupkg
-          path: ./easydata.net/src/${{ env.PROJECT_NAME }}/bin/Release/*.nupkg
+      with:
+        name: packs
+        path: ./easydata.net/packs/**/*.nupkg
