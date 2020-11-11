@@ -21,6 +21,8 @@ export interface EasyGridOptions {
     useRowNumeration?: boolean;
     allowDragDrop?: boolean;
 
+    fixHeightOnFirstRender?: boolean;
+
     pagination?: {
         maxButtonCount?: number;
         useBootstap?: boolean;

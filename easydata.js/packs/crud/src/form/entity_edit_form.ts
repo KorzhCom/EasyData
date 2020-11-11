@@ -262,7 +262,6 @@ export class EntityEditForm {
                                         let widgetSlot: HTMLElement;
                                         const slot = domel('div')
                                             .addClass(`kfrm-form`)
-         
                                             .addChild('div', b => b
                                                 .addClass(`kfrm-field`)
                                                 .addChild('label', b => b
@@ -312,6 +311,7 @@ export class EntityEditForm {
                                         const lookupGrid = new EasyGrid({
                                             slot: gridSlot,
                                             dataTable: lookupTable,
+                                            fixHeightOnFirstRender: true,
                                             paging: {
                                                 pageSize: 10
                                             },

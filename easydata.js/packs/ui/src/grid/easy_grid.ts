@@ -66,6 +66,7 @@ export class EasyGrid {
     protected defaultDataGridOptions : EasyGridOptions = {
         slot: null,
         dataTable: null,
+        fixHeightOnFirstRender: false,
         syncGridColumns: true,
         useRowNumeration: true,
         allowDragDrop: false,
@@ -242,6 +243,8 @@ export class EasyGrid {
 
     private containerInitialHeight: number = 0;
 
+    private firstRender = true;
+
     protected render() {
         if (!this.hasData() && !this.options.addColumns) 
             return;
@@ -269,32 +272,59 @@ export class EasyGrid {
 
         this.slot.appendChild(gridContainer);
 
-        setTimeout(() => {
-            this.updateHeight();
-        }, 100);
+        if (this.rowsOnPagePromise) {
+            this.rowsOnPagePromise
+                .then(() => this.updateHeight())
+                .then(() =>  {
+                    this.firstRender = false;
+                    this.rowsOnPagePromise = null
+                });
+        }
+        else {
+            setTimeout(() => {
+                this.updateHeight();
+
+                this.firstRender = false;
+            }, 100);    
+        }
+
     }
 
     protected updateHeight() {
-        if (this.options.viewportRowsCount) {
-            const firstRow = this.bodyCellContainerDiv.firstElementChild;
-            const rowHeight = firstRow ? (firstRow as HTMLElement).offsetHeight : DEFAULT_ROW_HEIGHT;
-            const rowCount = this.options.viewportRowsCount; // || DEFAULT_ROW_COUNT;
-            let bodyHeight = rowHeight * rowCount;
-            domel(this.bodyDiv)
-                .setStyle('height', `${bodyHeight}px`);
-
-            setTimeout(() => {
-                const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
-                bodyHeight = bodyHeight + sbHeight;
+        return new Promise((resolve) => {
+            if (this.options.viewportRowsCount) {
+                const firstRow = this.bodyCellContainerDiv.firstElementChild;
+                const rowHeight = firstRow ? (firstRow as HTMLElement).offsetHeight : DEFAULT_ROW_HEIGHT;
+                const rowCount = this.options.viewportRowsCount; // || DEFAULT_ROW_COUNT;
+                let bodyHeight = rowHeight * rowCount;
                 domel(this.bodyDiv)
                     .setStyle('height', `${bodyHeight}px`);
-            }, 100);
-        }
-        else if (this.containerInitialHeight > 0) {
-            const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
-            domel(this.bodyDiv)
-                .setStyle('height', `${bodyHeight}px`);
-        }
+    
+                setTimeout(() => {
+                    const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
+                    bodyHeight = bodyHeight + sbHeight;
+                    domel(this.bodyDiv)
+                        .setStyle('height', `${bodyHeight}px`);
+
+                        resolve();
+                }, 100);
+
+                return;
+            }
+            else if (this.containerInitialHeight > 0) {
+                const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
+                domel(this.bodyDiv)
+                    .setStyle('height', `${bodyHeight}px`);
+
+            }
+            resolve();
+        })
+        .then(() => {
+            if (this.options.fixHeightOnFirstRender && this.firstRender) {
+                this.slot.style.height = `${this.slot.offsetHeight}px`
+            }
+        });
+        
     }
 
     protected renderHeader() {
@@ -533,8 +563,6 @@ export class EasyGrid {
                     .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
                     .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
                     .replace('{Total}', `<span>${total.toString()}</span>`);
-
-                this.rowsOnPagePromise = null;
             });
         }
     
