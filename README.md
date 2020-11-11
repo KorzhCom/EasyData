@@ -13,16 +13,16 @@ The real advantage here is that whenever you change something in your DbContext 
 So, as you can see, EasyData can be very useful for quick prototyping of any database-related ASP.NET Core project. In just minutes you'll have a working web app with all CRUD forms for your database.
 
 
-# Getting started
+## Getting started
 
 Installing EasyData to your project takes the following 3 simple steps:
 
-## 1. Install EasyData NuGet packages
+### 1. Install EasyData NuGet packages
 
 * EasyData.AspNetCore
 * EasyData.EntityFrameworkCore.Relational
 
-## 2. Add EasyData middleware in `Startup.Configure`
+### 2. Add EasyData middleware in `Startup.Configure`
 
 ```c#
 using EasyData.Services;
@@ -41,7 +41,7 @@ using EasyData.Services;
 
 In the middleware options we also specify the type of DbContext that will be used as the source of the metadata.
 
-## 3. Set up a catch-all page for all CRUD operations
+### 3. Set up a catch-all page for all CRUD operations
 
 If you're using Razor Pages, add a new page (for example `EasyData.chstml`). If it’s MVC, you'll need a controller and a view.
 This page will "catch" all URLs that begin with a certain prefix (`/easydata` in our example). So, we use a special catch-all parameter in the route definition (`"/easydata/{**entity}"`).
@@ -65,7 +65,7 @@ We also add `easydata.crud.min.js` script, which facilitates the rendering of da
 That’s it. Now you can run your web app, open the `/easydata` URL and enjoy CRUD functionality.
 
 
-# Main features
+## Main features
 
 ### 1.  Declarative approach
 
@@ -80,7 +80,7 @@ The script can be used with any framework or library used on the client side, su
 
 In the data view mode, EasyData provides with a data-filtering functionality, which works out of the box and requires no additional setup or coding.
 
-# Questions, Suggestions?
+## Questions, Suggestions?
 
 Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
 However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain on our spare time.
