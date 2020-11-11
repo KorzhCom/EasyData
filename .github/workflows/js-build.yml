@@ -44,12 +44,13 @@ jobs:
       with:
         name: packs
         path: | 
-          ./easydata.js/**/dist/**/*.*
-          ./easydata.js/**/package.json
-          ./easydata.js/**/LICENSE.md
-          ./easydata.js/**/README.md
-          ./easydata.js/**/tsconfig.json
-          ./easydata.js/**/*.js
+          ./easydata.js/packs/**/dist/**/*.*
+          ./easydata.js/packs/**/package.json
+          ./easydata.js/packs/**/LICENSE.md
+          ./easydata.js/packs/**/README.md
+          ./easydata.js/packs/**/tsconfig.json
+          ./easydata.js/packs/**/*.js
+          !node_modules/**/*.*
 
   release:
     needs: [ build_and_test ]
