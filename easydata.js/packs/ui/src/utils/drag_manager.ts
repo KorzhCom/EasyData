@@ -1,6 +1,7 @@
+import { utils } from '@easydata/core';
+
 import { getElementAbsolutePos } from './ui-utils';
 import { domel } from '../utils/dom_elem_builder';
-import { utils } from '@easydata/core';
 
 const touchEventIsDefined = typeof TouchEvent !== 'undefined';
 

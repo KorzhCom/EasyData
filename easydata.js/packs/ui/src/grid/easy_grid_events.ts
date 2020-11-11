@@ -50,5 +50,6 @@ export interface ColumnDeletedEvent extends GridEvent {
 export interface ActiveRowChangedEvent extends GridEvent {
     type: 'activeRowChanged';
     oldValue: number;
-    newValue: number
+    newValue: number;
+    rowIndex: number;
 }

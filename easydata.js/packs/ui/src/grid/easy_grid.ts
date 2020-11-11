@@ -434,16 +434,16 @@ export class EasyGrid {
             const rowCount = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;
             let newValue;
             switch (ev.key) {
-                case "ArrowLeft":
+                case 'ArrowLeft':
                     break;
-                case "ArrowRight":
+                case 'ArrowRight':
                     break;
-                case "ArrowUp":
+                case 'ArrowUp':
                     ev.preventDefault();
                     newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? rowCount - 1 : this.activeRowIndex - 1;
                     this.activeRowIndex = newValue >= 0 ? newValue : 0; 
                     break;
-                case "ArrowDown":
+                case 'ArrowDown':
                     ev.preventDefault();
                     newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? 0 : this.activeRowIndex + 1;
                     this.activeRowIndex = newValue < rowCount ? newValue : rowCount - 1; 
@@ -524,9 +524,9 @@ export class EasyGrid {
 
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise.then(count => {
-                
-                const fistPageRecordNum = (this.pagination.page - 1) * this.pagination.pageSize + 1;
-                const lastPageRecordNum = fistPageRecordNum + count - 1;
+
+                const fistPageRecordNum = count ? (this.pagination.page - 1) * this.pagination.pageSize + 1 : 0;
+                const lastPageRecordNum = count ? fistPageRecordNum + count - 1 : 0;
                 const total = this.dataTable.getTotal();
 
                 pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
@@ -879,7 +879,8 @@ export class EasyGrid {
             this.fireEvent({
                 type: 'activeRowChanged',
                 oldValue,
-                newValue: this.activeRowIndex
+                newValue: this.activeRowIndex,
+                rowIndex: this.getGlobalIndexByLocal(this.activeRowIndex)
             } as ActiveRowChangedEvent)
         }
     }

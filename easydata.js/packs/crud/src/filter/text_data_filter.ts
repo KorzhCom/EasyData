@@ -84,7 +84,6 @@ export class TextDataFilter implements DataFilter {
         return new Promise((resolve, reject) => {
             const filteredTable = new EasyDataTable({
                 chunkSize: this.sourceTable.chunkSize,
-                loader: this.loader
             });
 
             for(const col of this.sourceTable.columns.getItems()) {
@@ -118,6 +117,9 @@ export class TextDataFilter implements DataFilter {
                     filteredTable.addRow(row); 
                 }
             }
+
+            if (filteredTable.getCachedCount() == 0)
+                filteredTable.setTotal(0);
 
             resolve(filteredTable);
         });

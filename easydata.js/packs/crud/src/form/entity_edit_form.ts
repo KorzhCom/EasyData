@@ -316,7 +316,7 @@ export class EntityEditForm {
                                                 pageSize: 10
                                             },
                                             onActiveRowChanged: (ev) => {
-                                                lookupTable.getRow(ev.newValue)
+                                                lookupGrid.getData().getRow(ev.rowIndex)
                                                 .then((row) => {
                                                     selectedValue = row.getValue(attr.lookupDataAttr);
                                                     updateSelectedValue(row);

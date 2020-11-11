@@ -88,7 +88,7 @@ export class EasyDataTable {
         }
 
         if (fromIndex >= this.total) {
-            Promise.resolve([]);
+            return Promise.resolve([]);
         }
 
         let endIndex = fromIndex + count;
