@@ -1,13 +1,18 @@
 name: .NET Core
 
 on:
+  workflow_dispatch:  
   push:
     branches: [ master ]
+    paths: 
+      - './easydata.net/*' 
   pull_request:
     branches: [ master ]
+    paths: 
+      - './easydata.net/*' 
 
 jobs:
-  build:
+  build_and_test:
 
     runs-on: windows-latest
 
@@ -17,9 +22,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
+
     - name: Install dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --configuration Release --no-restore
+
     - name: Test
       run: dotnet test --no-restore --verbosity normal

@@ -1,13 +1,18 @@
 name: TypeScript  
 
 on:
+  workflow_dispatch:  
   push:
     branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
   pull_request:
     branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
 
 jobs:
-  build:
+  build_ant_test:
 
     runs-on: windows-latest
 
@@ -21,6 +26,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-    - run: npm run installall
-    - run: npm run build:prod
-    - run: npm test
+    - name: Install dependencies
+      run: npm run installall
+
+    - name: Build
+      run: npm run build:prod
+
+    - name: Test
+      run: npm test
