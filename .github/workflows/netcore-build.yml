@@ -26,8 +26,14 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Pack
+      run: dotnet pack -v normal --configuration Release --no-restore
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: ./easydata.net/src/${{ env.PROJECT_NAME }}/bin/Release/*.nupkg

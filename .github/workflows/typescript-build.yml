@@ -34,3 +34,12 @@ jobs:
 
     - name: Test
       run: npm test
+
+    - name: Pack
+      run: npm run packall
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+        with:
+          name: packs
+          path: ./packs/**/*.tgz
