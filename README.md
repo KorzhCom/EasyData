@@ -15,7 +15,9 @@ So, as you can see, EasyData can be very useful for quick prototyping of any dat
 
 ## Getting started
 
-Installing EasyData to your project takes the following 3 simple steps:
+First of all, to test EasyData you can open and run our [sample project](https://github.com/korzh/EasyData/tree/master/samples). 
+
+Installing EasyData to your own project takes the following 3 simple steps:
 
 ### 1. Install EasyData NuGet packages
 
