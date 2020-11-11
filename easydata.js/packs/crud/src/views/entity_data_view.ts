@@ -94,19 +94,22 @@ export class EntityDataView {
     private manageCellRenderer(column: GridColumn, defaultRenderer: GridCellRenderer) {
         if (column.isRowNum) {
             column.width = 110;
-            return (value: any, column: GridColumn, cell: HTMLElement) => {
+            return (value: any, column: GridColumn, cell: HTMLElement, rowEl: HTMLElement) => {
                 domel('div', cell)
                     .addClass(`keg-cell-value`)
                     .addChild('a', b => b
                         .attr('href', 'javascript:void(0)')
                         .text('Edit')
-                        .on('click', (ev) => this.editClickHandler(ev as MouseEvent, cell))
+                        .on('click', (ev) =>  this.editClickHandler(ev as MouseEvent, 
+                            Number.parseInt(rowEl.getAttribute('data-row-idx'))))
                     )
                     .addChild('span', b => b.text(' | '))
                     .addChild('a', b => b
                         .attr('href', 'javascript:void(0)')
                         .text('Delete')
-                        .on('click', (ev) => this.deleteClickHandler(ev as MouseEvent, cell))
+                        .on('click', (ev) => 
+                            this.deleteClickHandler(ev as MouseEvent, 
+                                Number.parseInt(rowEl.getAttribute('data-row-idx'))))
                     );
             }
         }
@@ -138,11 +141,8 @@ export class EntityDataView {
         });
     }
 
-    private editClickHandler(ev: MouseEvent, cell: HTMLElement) {
-        const rowEl = cell.parentElement;
-        const index = Number.parseInt(rowEl.getAttribute('data-row-idx'));
-
-        this.context.getData().getRow(index)
+    private editClickHandler(ev: MouseEvent, rowIndex: number) {
+        this.context.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     this.showEditForm(row);
@@ -182,10 +182,8 @@ export class EntityDataView {
         this.showEditForm(ev.row);
     }
 
-    private deleteClickHandler(ev: MouseEvent, cell: HTMLElement) {
-        const rowEl = cell.parentElement;
-        const index = Number.parseInt(rowEl.getAttribute('data-row-idx'));
-        this.context.getData().getRow(index)
+    private deleteClickHandler(ev: MouseEvent, rowIndex: number) {
+        this.context.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
