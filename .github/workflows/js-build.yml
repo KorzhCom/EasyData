@@ -50,7 +50,7 @@ jobs:
           ./easydata.js/packs/**/README.md
           ./easydata.js/packs/**/tsconfig.json
           ./easydata.js/packs/**/*.js
-          !node_modules/**/*.*
+          !./easydata.js/packs/**/node_modules/**/*.*
 
   release:
     needs: [ build_and_test ]
