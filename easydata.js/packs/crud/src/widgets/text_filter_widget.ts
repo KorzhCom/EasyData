@@ -49,16 +49,32 @@ export class TextFilterWidget {
 
         domel(this.slot)
         .addClass(horizClass)
-        .addChild('input', b => { 
+        .addChild('div', b => {
+            b
+            .addClass('control')
+            .addClass('has-icons-right')
+            .addChild('input', b => { 
                 this.filterInput = b.toDOM();
-            b  
-            .attr("placeholder", "Search..")
-            .type('search')
-            .on('search', this.inputSearchHandler.bind(this));
+                b  
+                .attr("placeholder", "Search..")
+                .type('text')
+                //.on('change', this.inputSearchHandler.bind(this));
 
-            if (this.options.instantMode) {
-                b.on('keyup', this.inputKeyupHandler.bind(this));
-            }
+                if (this.options.instantMode) {
+                    b.on('keyup', this.inputKeyupHandler.bind(this));
+                }
+            })
+            .addChild('span', b => {
+                b
+                .addClass('icon')
+                .addClass('is-right')
+                .addClass('is-clickable')
+                .html('&#x1F5D9;')
+                .on('click', () => {
+                    this.filterInput.value = '';
+                    this.filterInput.focus();
+                });
+            });
         });
 
         if (!this.options.instantMode) {
