@@ -53,8 +53,8 @@ namespace EasyDataBasicDemo
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapEasyData(optionsTuner: (options) => {
-                    options.UseManager<EasyDataManagerEF<AppDbContext>>();
+                endpoints.MapEasyData((options) => {
+                    options.UseDbContext<AppDbContext>();
                 });
 
                 endpoints.MapRazorPages();

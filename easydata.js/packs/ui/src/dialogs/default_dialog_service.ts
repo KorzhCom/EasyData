@@ -202,10 +202,14 @@ export class DefaultDialogService implements DialogService {
             .querySelector<HTMLElement>('.kdlg-modal-window');
             
         if (options.height) {
-            windowDiv.style.height = `${options.height}px`;
+            windowDiv.style.height = typeof options.height === 'string' 
+                ? options.height 
+                : `${options.height}px`;
         }
         if (options.width) {
-            windowDiv.style.width = `${options.width}px`;
+            windowDiv.style.width = typeof options.width === 'string' 
+                ? options.width 
+                : `${options.width}px`;
         }
 
         if (options.arrangeParents) {

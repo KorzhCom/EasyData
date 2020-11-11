@@ -8,7 +8,7 @@ namespace EasyData.Services
 
     public class EasyDataOptions
     {
-        public string Endpoint { get; set; } = "api/easydata";
+        public string Endpoint { get; set; } = "/api/easydata";
 
         public EasyDataManagerResolver ManagerResolver {get; private set;}
 

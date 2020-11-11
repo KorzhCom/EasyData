@@ -3,8 +3,8 @@ export interface DialogOptions {
     body: string | HTMLElement;
     closable?: boolean;
     cancelable?: boolean;
-    width?: number;
-    height?: number;
+    width?: number | string;
+    height?: number | string;
     arrangeParents?: boolean;
     beforeOpen?: () => void;
     onSubmit?: () => boolean | void;
