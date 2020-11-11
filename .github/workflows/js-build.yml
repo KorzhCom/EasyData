@@ -1,0 +1,88 @@
+name: EasyData.JS Pipeline  
+
+on:
+  workflow_dispatch:
+    inputs:
+      is_release:
+        description: 'Determines wether build is a release'
+        required: true
+        default: 'false'
+  push:
+    branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
+  pull_request:
+    branches: [ master ]
+    paths: 
+      - './easydata.js/*' 
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    defaults: 
+      run:
+        working-directory: ./easydata.js  
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Install dependencies
+      run: npm run installall
+
+    - name: Build
+      run: npm run build:prod
+
+    - name: Test
+      run: npm test
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: packs
+        path: | 
+          ./easydata.js/packs/*/dist/**/*.*
+          ./easydata.js/packs/*/package.json
+          ./easydata.js/packs/*/LICENSE.md
+          ./easydata.js/packs/*/README.md
+          ./easydata.js/packs/*/tsconfig.json
+          ./easydata.js/packs/*/*.js
+          !./easydata.js/packs/**/node_modules/**/*.*
+
+  release:
+    needs: [ build_and_test ]
+    if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
+    runs-on: windows-latest
+
+    steps:        
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: packs
+        path: packs
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@korzh'
+
+    - name: Push @easydata/core
+      run: npm publish packs/core
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push @easydata/ui
+      run: npm publish packs/ui
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push @easydata/crud
+      run: npm publish packs/crud
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
