@@ -44,12 +44,12 @@ jobs:
       with:
         name: packs
         path: | 
-          */dist/**/* 
-          */package.json
-          */LICENSE.md
-          */README.md
-          */tsconfig.json
-          */*.js
+          ./**/dist/**/*.*
+          ./**/package.json
+          ./**/LICENSE.md
+          ./**/README.md
+          ./**/tsconfig.json
+          ./**/*.js
 
   release:
     needs: [ build_and_test ]
@@ -67,7 +67,6 @@ jobs:
       with:
         node-version: 14.x
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@korzh'
 
     - name: Push @easydata/core
       run: npm publish packs/core
