@@ -33,7 +33,7 @@ using EasyData.Services;
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapEasyData(optionsTuner: (options) => {
-            options.UseManager<EasyDataManagerEF<AppDbContext>>();
+            options.UseDbContext<AppDbContext>();
         });
 
         endpoints.MapRazorPages();
@@ -41,7 +41,7 @@ using EasyData.Services;
 
 ```
 
-In the middleware options we also specify the type of DbContext that will be used as the source of the metadata.
+In the middleware options we also specify the type of DbContext object that will be used as the source of the metadata.
 
 ### 3. Set up a catch-all page for all CRUD operations
 
@@ -75,7 +75,7 @@ All aspects of your CRUD UI are controlled by the data structure defined in DbCo
 
 ### 2. Automatic UI rendering
 
-All data forms and dialogs are rendered automatically by EasyQuery.JS script according to the metadata acquired from the DbContext and your annotations on model classes and their properties.
+All data forms and dialogs are rendered automatically by EasyData.JS script according to the metadata acquired from the DbContext and your annotations on model classes and their properties.
 The script can be used with any framework or library used on the client side, such as Razor Pages, MVC Views, Angular, React, Vue, etc.
 
 ### 3. Ad hoc data filtering
