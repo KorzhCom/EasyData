@@ -56,31 +56,31 @@ jobs:
     if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
 
-    steps:
+    steps:        
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: packs
+
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
         registry-url: 'https://npm.pkg.github.com'
         scope: '@korzh'
-        
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: packs
 
     - name: Push @easydata/core
-      run: npm publish packs/core --access public
+      run: npm publish packs/core
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push @easydata/ui
-      run: npm publish packs/ui --access public
+      run: npm publish packs/ui
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push @easydata/crud
-      run: npm publish packs/crud --access public
+      run: npm publish packs/crud
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
