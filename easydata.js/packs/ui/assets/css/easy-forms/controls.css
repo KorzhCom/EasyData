@@ -4,6 +4,67 @@
     color: red;
 }
 
+
+.kfrm-form .control {
+    box-sizing: border-box;
+    clear: both;
+    position: relative;
+    text-align: inherit;
+    display: inline-flex;
+    width: 100%;
+    max-width: 100%;
+}
+
+.kfrm-form .icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    height: 1.5em;
+    width: 1.5em;
+}
+
+.kfrm-form .control.has-icons-left input, .kfrm-form .control.has-icons-left .select select {
+    padding-left: 2.5em;
+}
+
+.kfrm-form .control.has-icons-right input, .kfrm-form .control.has-icons-right .select select {
+    padding-right: 2.5em;
+}
+
+.kfrm-form .control.has-icons-left .icon.is-left {
+    left: 0;
+}
+
+.kfrm-form .control.has-icons-right .icon.is-right {
+    right: 0;
+}
+
+.kfrm-form .control .icon {
+    color: #dbdbdb;
+    height: 2.5em;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 2.5em;
+    z-index: 4;
+}
+
+.kfrm-form .control .icon.is-clickable {
+    pointer-events: auto;
+}
+
+/*
+.kfrm-form .control input:focus~.icon, .kfrm-form .control .select:focus~.icon {
+    color: #4a4a4a;
+}
+*/
+
+.kfrm-form .control .icon.is-clickable:hover {
+    color: #4a4a4a;
+    cursor: pointer;
+}
+
+
 .kfrm-form input.is-valid:not([type='checkbox']),
 .kfrm-form input.is-valid:not([type='checkbox']):hover {
     border-color: green;
