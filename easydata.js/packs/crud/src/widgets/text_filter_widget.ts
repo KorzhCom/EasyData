@@ -58,7 +58,6 @@ export class TextFilterWidget {
                 b  
                 .attr("placeholder", "Search..")
                 .type('text')
-                //.on('change', this.inputSearchHandler.bind(this));
 
                 if (this.options.instantMode) {
                     b.on('keyup', this.inputKeyupHandler.bind(this));
@@ -70,10 +69,7 @@ export class TextFilterWidget {
                 .addClass('is-right')
                 .addClass('is-clickable')
                 .html('&#x1F5D9;')
-                .on('click', () => {
-                    this.filterInput.value = '';
-                    this.filterInput.focus();
-                });
+                .on('click', this.clearButtonClickHander.bind(this));
             });
         });
 
@@ -82,7 +78,7 @@ export class TextFilterWidget {
                 .addChild('button', b => b
                     .addClass('kfrm-button')
                     .addText('Search')
-                    .on('click', this.buttonClickHandler.bind(this))
+                    .on('click', this.searchButtonClickHandler.bind(this))
                 );
         }
 
@@ -103,11 +99,14 @@ export class TextFilterWidget {
         }, this.options.instantTimeout);
     }
 
-    private inputSearchHandler() {
+    private clearButtonClickHander() {
+        this.filterInput.value = '';
+        this.filterInput.focus();
+
         this.applyFilter();
     }
 
-    private buttonClickHandler() {
+    private searchButtonClickHandler() {
        this.applyFilter();
     }
 
