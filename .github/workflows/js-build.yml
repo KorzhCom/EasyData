@@ -18,6 +18,7 @@ on:
 
 jobs:
   build_and_test:
+    name: Build & Test
     runs-on: windows-latest
 
     defaults: 
@@ -33,6 +34,9 @@ jobs:
     - name: Install dependencies
       run: npm run installall
 
+    - name: Set version
+      run: npm run setver
+      
     - name: Build
       run: npm run build:prod
 
@@ -53,10 +57,11 @@ jobs:
           !./easydata.js/packs/**/node_modules/**/*.*
 
   release:
+    name: Release
     needs: [ build_and_test ]
     if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
-
+    
     steps:        
     - name: Download artifacts
       uses: actions/download-artifact@v2
@@ -67,22 +72,20 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        registry-url: 'https://npm.pkg.github.com'
-        scope: '@korzh'
+        registry-url: 'https://www.myget.org/F/korzh-npm/npm/'
 
-    - name: Push @easydata/core
+    - name: Publish @easydata/core
       run: npm publish packs/core
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env: 
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
-    - name: Push @easydata/ui
+    - name: Publish @easydata/ui
       run: npm publish packs/ui
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env: 
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
-    - name: Push @easydata/crud
+    - name: Publish @easydata/crud
       run: npm publish packs/crud
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      env: 
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
