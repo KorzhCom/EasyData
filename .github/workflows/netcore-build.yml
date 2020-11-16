@@ -10,11 +10,11 @@ on:
   push:
     branches: [ master ]
     paths: 
-      - './easydata.net/*' 
+      - './easydata.net/**' 
   pull_request:
     branches: [ master ]
     paths: 
-      - './easydata.net/*' 
+      - './easydata.net/**' 
 
 jobs:
   build_and_test:
