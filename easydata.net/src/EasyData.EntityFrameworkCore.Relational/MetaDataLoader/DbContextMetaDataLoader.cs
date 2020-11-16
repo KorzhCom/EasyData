@@ -199,16 +199,16 @@ namespace EasyData.EntityFrameworkCore
 
                 var hasDisplayAttrs = lookupEntity.Attributes.Any(attr => attr.ShowInLookup);
                 if (!hasDisplayAttrs) {
-                    var displayAttr = lookupEntity.Attributes.FirstOrDefault(attr => attr.Caption.ToLowerInvariant().Contains("name")
+                    var attrs = lookupEntity.Attributes.Where(attr => attr.Caption.ToLowerInvariant().Contains("name")
                         && attr.DataType == DataType.String && attr.Kind != EntityAttrKind.Lookup);
 
-                    if (displayAttr == null) {
-                        displayAttr = lookupEntity.Attributes.FirstOrDefault(attr => attr.DataType == DataType.String 
+                    if (!attrs.Any()) {
+                        attrs = lookupEntity.Attributes.Where(attr => attr.DataType == DataType.String
                             && attr.Kind != EntityAttrKind.Lookup);
                     }
 
-                    if (displayAttr != null) {
-                        displayAttr.ShowInLookup = true;
+                    foreach(var attr in attrs) {
+                        attr.ShowInLookup = true;
                     }
                 }
             }

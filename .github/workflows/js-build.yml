@@ -43,7 +43,7 @@ jobs:
     - name: Test
       run: npm test
 
-    - name: Upload artifacts
+    - name: Upload packs artifacts
       uses: actions/upload-artifact@v2
       with:
         name: packs
@@ -56,14 +56,45 @@ jobs:
           ./easydata.js/packs/*/*.js
           !./easydata.js/packs/**/node_modules/**/*.*
 
+    - name: Upload browser artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: browser
+        path: | 
+          ./easydata.js/packs/crud/dist/browser/*.js
+          ./easydata.js/packs/crud/dist/browser/*.css
+
   release:
     name: Release
     needs: [ build_and_test ]
     if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
     
-    steps:        
-    - name: Download artifacts
+    steps: 
+    - uses: actions/checkout@v2
+
+    - name: Download browser artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: browser
+        path: browser
+
+    - name: Read version.json
+      id: version
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./easydata.js/version.json
+
+    - name: Publish to CDN
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      with:
+        server: ${{ secrets.CDN_FTP_SERVER }}
+        username: ${{ secrets.CDN_FTP_USER }}
+        password: ${{ secrets.CDN_FTP_PWD }}
+        local-dir: './browser/'
+        server-dir: 'cdn.korzh.com/ed/${{ fromJSON(steps.version.outputs.content).baseVersion }}/'
+
+    - name: Download packs artifacts
       uses: actions/download-artifact@v2
       with:
         name: packs

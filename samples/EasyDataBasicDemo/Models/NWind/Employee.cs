@@ -16,7 +16,6 @@ namespace EasyDataBasicDemo.Models
 
         [Required]
         [Display(Name = "Last name")]
-        [MetaEntityAttr(ShowInLookup = true)]
         public string LastName { get; set; }
 
         [Required]
