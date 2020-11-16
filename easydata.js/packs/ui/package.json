@@ -14,19 +14,20 @@
         "clean-test": "rimraf ./test/dist"
     },
     "author": "Korzh.com",
-    "homepage": "https://korzh.com/easyquery/javascript",
+    "homepage": "https://github.com/KorzhCom/EasyData",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KorzhCom/EasyData.git"
+    },
     "keywords": [
         "grid",
-        "query-builder",
-        "reporting",
-        "ad hoc",
         "data",
         "filtering",
-        "free",
-        "community"
+        "ui",
+        "free"
     ],
-    "bugs": "https://korzh.com/support",
-    "license": "LGPL-3.0",
+    "bugs": "https://github.com/KorzhCom/EasyData/issues",
+    "license": "MIT",
     "peerDependencies": {
         "@easydata/core": "1.0.0"
     },
@@ -34,11 +35,10 @@
         "@types/jasmine": "^3.3.12",
         "@types/jsdom": "^12.2.4",
         "autoprefixer": "^9.7.2",
-        "cpx": "^1.5.0",
         "css-loader": "^2.1.0",
         "es6-promise": "^4.2.8",
         "extract-text-webpack-plugin": "^4.0.0-beta.0",
-        "filemanager-webpack-plugin": "2.0.5",
+        "filemanager-webpack-plugin": "^3.0.0-alpha.7",
         "jasmine": "^3.4.0",
         "jasmine-ts-console-reporter": "^3.1.1",
         "jsdom": "^15.1.1",
@@ -54,7 +54,7 @@
         "typedoc-webpack-plugin": "^1.1.4",
         "typescript": "3.5.*",
         "typings-for-css-modules-loader": "1.7.0",
-        "uglifyjs-webpack-plugin": "2.1.1",
+        "terser-webpack-plugin": "^4.2.3",
         "webpack": "^4.36.1",
         "webpack-cli": "^3.3.6"
     },

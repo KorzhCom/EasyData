@@ -1,6 +1,6 @@
 {
 	"compileOnSave": false,
-	"compilerOptions": {
+	"compilerOptions": {	
 		"noImplicitAny": false,
 		"strictNullChecks" : false,
 		"strict": true,

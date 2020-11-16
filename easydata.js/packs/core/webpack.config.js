@@ -1,5 +1,5 @@
 const path = require("path");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
 let confBundles = {
@@ -28,13 +28,14 @@ let confBundles = {
         ]
     },
     optimization: {
-        minimizer: [new UglifyJsPlugin({
+        minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
             sourceMap: true
         })]
     },
 	plugins: [
 		new TypedocWebpackPlugin({
+            skipLibCkeck: true,
             mode: 'file',
             json: '../../../../docs/easydatacore.json',
             includeDeclarations: false,

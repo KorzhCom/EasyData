@@ -1,5 +1,5 @@
 const path = require("path");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
@@ -29,7 +29,7 @@ let confBundles = {
         ]
     },
     optimization: {
-        minimizer: [new UglifyJsPlugin({
+        minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
             sourceMap: true
         })]
@@ -42,14 +42,13 @@ let confBundles = {
 			ignoreCompilerErrors: true
         }),
 		new FileManagerPlugin({
-			onEnd: {
-				copy: [
-				  { source: './assets/**/*', destination: './dist/assets' }
-                ],
-                delete: [
-                    './dist/assets/css/easy-forms'
-                ]
-			}
+            events: {
+                onEnd: {
+                    copy: [
+                      { source: './assets/css/*', destination: './dist/assets/css' }
+                    ]
+                }
+            }
         })
 	]
 };
@@ -75,11 +74,13 @@ let confEasyForms = {
     plugins: [
         easyFormsCss,
         new FileManagerPlugin({
-			onEnd: {
-				delete: [
-					'./dist/easy-forms.js',
-				]
-			}
+            events: {
+                onEnd: {
+                    delete: [
+                        './dist/easy-forms.js',
+                    ]
+                }
+            }
 		}),
     ]
 }

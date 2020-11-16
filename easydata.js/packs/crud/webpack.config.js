@@ -1,5 +1,5 @@
 const path = require("path");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -33,7 +33,7 @@ const confBundles = {
         ]
     },
     optimization: {
-        minimizer: [new UglifyJsPlugin({
+        minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
             sourceMap: true
         })]
@@ -46,11 +46,13 @@ const confBundles = {
 			ignoreCompilerErrors: true
         }),
 		new FileManagerPlugin({
-			onEnd: {
-				copy: [
-				  { source: './assets/**/*', destination: './dist/assets' }
-                ]
-			}
+            events: {
+                onEnd: {
+                    copy: [
+                      { source: './assets/**/*', destination: './dist/assets' }
+                    ]
+                }
+            }
         })
 	]
 };
@@ -100,7 +102,7 @@ const confBrowser = {
         ]
     },
     optimization: {
-        minimizer: [new UglifyJsPlugin({
+        minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
             sourceMap: true,
 			extractComments: true,
