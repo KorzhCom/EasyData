@@ -1,5 +1,6 @@
 import * as strf from './string_utils';
 import { DataType } from '../types/data_type';
+import { i18n } from '../i18n/i18n';
 
 
 export namespace utils {
@@ -424,14 +425,28 @@ export namespace utils {
         return (621355968e9 + (new Date()).getTime() * 1e4)
     }
 
+   
+    function safeParseInt(str: string) {
+
+        let isnum = /^\d+$/.test(str);
+        if (!isnum)
+            throw "Is not a valid number";
+
+        return parseInt(str);
+    }
+
+    function getDaysInMonth(month, year) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
     // ------------- date/time functions -------------------
-    export function strToDate(value: string, format: string): Date {
+    export function strToDateTime(value: string, format: string): Date {
 
         if (!value || value.length == 0)
             return new Date();
 
-        const normalized      = value.replace(/[^a-zA-Z0-9]/g, '-');
-        const normalizedFormat= format.replace(/[^a-zA-Z0-9]/g, '-');
+        const normalized      = value.replace(/[^a-zA-Z0-9_]/g, '-');
+        const normalizedFormat= format.replace(/[^a-zA-Z0-9_]/g, '-');
         const formatItems     = normalizedFormat.split('-');
         const dateItems       = normalized.split('-');
     
@@ -444,15 +459,68 @@ export namespace utils {
     
         const today = new Date();
     
-        const year  = yearIndex > -1 && yearIndex < dateItems.length   ? parseInt(dateItems[yearIndex])   : today.getFullYear();
-        const month = monthIndex > -1 && monthIndex < dateItems.length ? parseInt(dateItems[monthIndex]) - 1 : today.getMonth() - 1;
-        const day   = dayIndex > -1 && dayIndex < dateItems.length     ? parseInt(dateItems[dayIndex]) : today.getDate();
-    
-        const hour    = hourIndex > -1 && hourIndex < dateItems.length         ? parseInt(dateItems[hourIndex]) : 0;
-        const minute  = minutesIndex > -1 && minutesIndex < dateItems.length   ? parseInt(dateItems[minutesIndex]) : 0;
-        const second  = secondsIndex > -1 && secondsIndex < dateItems.length   ? parseInt(dateItems[secondsIndex]) : 0;
-    
-        return new Date(year,month,day,hour,minute,second);
+        try {
+            const year  = yearIndex > -1 && yearIndex < dateItems.length   ? safeParseInt(dateItems[yearIndex])   : today.getFullYear();
+            const month = monthIndex > -1 && monthIndex < dateItems.length ? safeParseInt(dateItems[monthIndex]) - 1 : today.getMonth() - 1;
+            if (month > 11)
+                throw '';
+
+            const day = dayIndex > -1 && dayIndex < dateItems.length     ? safeParseInt(dateItems[dayIndex]) : today.getDate();
+            if (day > getDaysInMonth(month, year)) 
+                throw '';
+        
+            const hour    = hourIndex > -1 && hourIndex < dateItems.length         ? safeParseInt(dateItems[hourIndex]) : 0;
+            if (hour > 23) 
+                throw '';
+
+            const minute  = minutesIndex > -1 && minutesIndex < dateItems.length   ? safeParseInt(dateItems[minutesIndex]) : 0;
+            if (minute > 59)
+                throw '';
+
+            const second  = secondsIndex > -1 && secondsIndex < dateItems.length   ? safeParseInt(dateItems[secondsIndex]) : 0;
+            if (second > 59)
+                throw '';
+
+            return new Date(year,month,day,hour,minute,second);
+        }
+        catch {
+            throw "Is not a valid date time."
+        }
     }
+
+    /**
+     * Returns string representation of the date/time value according to the custom format (second parameter) 
+     * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+     * @param date 
+     * @param format 
+     */
+    export function dateTimeToStr(date: Date, format: string): string {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        
+        const hour = date.getHours();
+        const minute = date.getMinutes();
+        const second = date.getSeconds();
+
+        const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
+        const isPm = hour > 11;
+
+        return format.replace('yyyy', year.toString())
+                    .replace('MMMM', i18n.getLongMonthName(month))
+                    .replace('MMM', i18n.getShortMonthName(month))
+                    .replace('MM', (month < 10) ? '0' + month : month.toString())
+                    .replace('M', month.toString())
+                    .replace('dd', (day < 10) ? '0' + day : day.toString())
+                    .replace('d', day.toString())
+                    .replace('HH', (hour < 10) ? '0' + hour : hour.toString())
+                    .replace('H', hour.toString())
+                    .replace('hh', (hour12 < 10) ? '0' + hour12 : hour12.toString())
+                    .replace('h', hour12.toString())
+                    .replace('tt', isPm ? 'PM' : 'AM')
+                    .replace('mm', (minute < 10) ? '0' + minute : minute.toString())
+                    .replace('ss', (second < 10) ? '0' + second : second.toString());
+    }
+
 
 }

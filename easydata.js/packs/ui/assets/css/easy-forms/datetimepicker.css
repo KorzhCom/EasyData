@@ -51,6 +51,10 @@
     padding: 0;
 }
 
+.kdtp-cal * {
+    outline: none !important;
+}
+
 .kdtp-cal-body {
     display: -ms-grid;
     display: grid;
@@ -258,6 +262,28 @@
 .kdtp-cal-body > *:nth-child(49) {
     -ms-grid-row: 13;
     -ms-grid-column: 13;
+}
+
+.kdtp-cal-header-input {
+    width: 100%;
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+    height: 100%;
+    height: -moz-available;          /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    height: fill-available;
+
+    font-size: 1em;
+    padding: 2px 5px;
+    border: 1px solid silver;
+    outline: none;
+    background: #fff;
+    color: #262626;
+}
+
+.kdtp-cal-header-input.error {
+    border-color: red;
 }
 
 .kdtp-cal-header {

@@ -1,3 +1,5 @@
+import { mask } from './mask'
+
 type elementType = "div" | "button" | "a" | "img" | "input" | string;
 
 export class DomElementBuilder<TElement extends HTMLElement>  {
@@ -208,6 +210,11 @@ export class DomInputElementBuilder extends DomElementBuilder<HTMLInputElement> 
             this.element.value = value;
         }
 
+        return this;
+    }
+
+    public mask(maskPattern: string) {
+        mask(this.element, maskPattern);
         return this;
     }
 }

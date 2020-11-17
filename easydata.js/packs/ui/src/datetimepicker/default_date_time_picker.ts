@@ -7,6 +7,7 @@ import { CalendarOptions } from './calendar'
 import { DefaultCalendar } from './default_calendar'
 import { TimePickerOptions } from './time_picker';
 import { DefaultTimePicker } from './default_time_picker';
+import { getElementAbsolutePos } from '../utils/ui-utils';
 
 export class DefaultDateTimePicker extends DateTimePicker {
 
@@ -95,7 +96,6 @@ export class DefaultDateTimePicker extends DateTimePicker {
     }
 
     protected createCalendar(options: CalendarOptions) {
-
         this.calendarSlot = 
             domel('div', this.slot)
             .addClass(`${this.cssPrefix}-cal`)
@@ -113,10 +113,21 @@ export class DefaultDateTimePicker extends DateTimePicker {
         return new DefaultTimePicker(this.timePickerSlot, options)
     }
 
-    public show(achor?: HTMLElement) {
-        super.show(achor);
-
-        this.slot.focus();
+    public show(anchor?: HTMLElement) {
+        if (this.options.showDateTimeInput) {
+            if (this.options.beforeShow) {
+                this.options.beforeShow();
+            }
+    
+            const anchorPos = getElementAbsolutePos(anchor || document.body);
+            const parentPos = getElementAbsolutePos(anchor ? anchor.parentElement || anchor : document.body);
+            this.slot.style.top = parentPos.y + 'px';
+            this.slot.style.left = anchorPos.x + 'px';
+        }
+        else {
+            super.show(anchor);
+            this.slot.focus();
+        }
 
         setTimeout(() => {
             document.addEventListener('mousedown', this.globalMouseDownHandler, true);

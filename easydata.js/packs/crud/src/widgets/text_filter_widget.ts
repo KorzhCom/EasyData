@@ -1,4 +1,4 @@
-import { utils as dataUtils } from '@easydata/core';
+import { i18n, utils as dataUtils } from '@easydata/core';
 import { browserUtils, CellRendererType, domel, EasyGrid, GridCellRenderer, GridColumn } from '@easydata/ui';
 import { DataFilter } from '../filter/data_filter';
 
@@ -56,8 +56,10 @@ export class TextFilterWidget {
             .addChild('input', b => { 
                 this.filterInput = b.toDOM();
                 b  
-                .attr("placeholder", "Search..")
+                .attr('placeholder', i18n.getText('SearchInputPlaceholder'))
                 .type('text')
+
+                b.on('keydown', this.inputKeydownHandler.bind(this))
 
                 if (this.options.instantMode) {
                     b.on('keyup', this.inputKeyupHandler.bind(this));
@@ -77,7 +79,7 @@ export class TextFilterWidget {
             domel(this.slot)
                 .addChild('button', b => b
                     .addClass('kfrm-button')
-                    .addText('Search')
+                    .addText(i18n.getText('SearchBtn'))
                     .on('click', this.searchButtonClickHandler.bind(this))
                 );
         }
@@ -88,6 +90,12 @@ export class TextFilterWidget {
     }
 
     private applyFilterTimeout: any;
+
+    private inputKeydownHandler(ev: Event) {
+        if ((ev as KeyboardEvent).keyCode == 13) {
+            this.applyFilter();
+        }
+    }
 
     private inputKeyupHandler() {
         if (this.applyFilterTimeout) {

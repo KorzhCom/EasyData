@@ -7,14 +7,21 @@ on:
         description: 'Determines wether build is a release'
         required: true
         default: 'false'
+
   push:
-    branches: [ master ]
+    branches: 
+      - master
     paths: 
-      - './easydata.js/**' 
+      - .github/workflows/js-build.yml
+      - easydata.js/**
+
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master
+
     paths: 
-      - './easydata.js/**' 
+      - .github/workflows/js-build.yml
+      - easydata.js/** 
 
 jobs:
   build_and_test:

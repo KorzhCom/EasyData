@@ -18,6 +18,7 @@ export * from './datetimepicker/time_picker'
 export * from './utils/browser_utils'
 export * from './utils/dom_elem_builder'
 export * from './utils/drag_manager'
+export * from './utils/mask'
 export * from './utils/ui-utils'
 
 //dialogs

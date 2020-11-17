@@ -7,14 +7,20 @@ on:
         description: 'Determines wether build is a release'
         required: true
         default: 'false'
+
   push:
-    branches: [ master ]
+    branches: 
+      - master 
     paths: 
-      - './easydata.net/**' 
+      - .github/workflows/netcore-build.yml
+      - easydata.net/** 
+
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master 
     paths: 
-      - './easydata.net/**' 
+      - .github/workflows/netcore-build.yml
+      - easydata.net/** 
 
 jobs:
   build_and_test:
