@@ -42,3 +42,15 @@ if (typeof Object.values !== 'function') {
         return Object.keys(obj).map(key => obj[key]);
     }
 }
+
+if (typeof Math.trunc !== 'function') {
+    Math.trunc = function(x) {
+        if (isNaN(x)) {
+          return NaN;
+        }
+        if (x > 0) {
+          return Math.floor(x);
+        }
+        return Math.ceil(x);
+    };
+}

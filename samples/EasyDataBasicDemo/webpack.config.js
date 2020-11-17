@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 
 module.exports = {
     entry: ["./ts/styles.js", "./ts/easydata.ts"],
@@ -33,5 +34,10 @@ module.exports = {
     },
     watchOptions: {
         aggregateTimeout: 2000
-    }
+    },
+    plugins: [
+		new webpack.ProvidePlugin({
+		  Promise: ['es6-promise', 'Promise']
+		})
+	]
 };

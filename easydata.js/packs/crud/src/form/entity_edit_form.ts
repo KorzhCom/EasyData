@@ -99,10 +99,10 @@ export class EntityEditForm {
             return new Date(value);
 
         if (dataUtils.isIntType(type))
-            return Number.parseInt(value);
+            return parseInt(value);
 
         if (dataUtils.isNumericType(type))
-            return Number.parseFloat(value);
+            return parseFloat(value);
 
         return value;
     }
@@ -152,10 +152,6 @@ export class EntityEditForm {
                 })
                 .toDOM();
     
-            if (isIE) {
-                fb = domel('div', fb.toDOM())
-                    .addClass('kfrm-field-ie');
-            }
     
             const getInputType = (dataType: DataType): string => {
                 if (dataType == DataType.Bool) {
@@ -186,6 +182,13 @@ export class EntityEditForm {
 
                 let readOnly = params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
                 const required = !attr.isNullable;
+
+                if (isIE) {
+                    parent = domel('div', parent)
+                        .addClass('kfrm-field-ie')
+                        .toDOM();
+                }
+
                 domel(parent)
                     .addChild('label', b => b
                         .attr('for', attr.id)
