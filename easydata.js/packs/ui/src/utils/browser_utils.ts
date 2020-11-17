@@ -19,6 +19,10 @@ export namespace browserUtils {
         
     }
 
+    export function IsEdge(): boolean {
+        return !IsIE() && eval('!!window.StyleMedia');
+    }
+
     export function IsFirefox(): boolean {
 
         if (_isFirefox === null) {

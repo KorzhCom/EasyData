@@ -47,12 +47,13 @@ export class TextFilterWidget {
             ? 'kfrm-fields-ie is-horizontal' 
             : 'kfrm-fields is-horizontal';
 
+        const isEdgeOrIE = browserUtils.IsIE() || browserUtils.IsEdge();
+        
         domel(this.slot)
         .addClass(horizClass)
         .addChild('div', b => {
             b
             .addClass('control')
-            .addClass('has-icons-right')
             .addChild('input', b => { 
                 this.filterInput = b.toDOM();
                 b  
@@ -64,15 +65,20 @@ export class TextFilterWidget {
                 if (this.options.instantMode) {
                     b.on('keyup', this.inputKeyupHandler.bind(this));
                 }
-            })
-            .addChild('span', b => {
-                b
-                .addClass('icon')
-                .addClass('is-right')
-                .addClass('is-clickable')
-                .html('&#x1F5D9;')
-                .on('click', this.clearButtonClickHander.bind(this));
             });
+
+            if (!isEdgeOrIE) {
+                b                
+                .addClass('has-icons-right')
+                .addChild('span', b => {
+                    b
+                    .addClass('icon')
+                    .addClass('is-right')
+                    .addClass('is-clickable')
+                    .html('&#x1F5D9;')
+                    .on('click', this.clearButtonClickHander.bind(this));
+                });
+            }
         });
 
         if (!this.options.instantMode) {
