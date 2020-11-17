@@ -13,6 +13,7 @@
     display: inline-flex;
     width: 100%;
     max-width: 100%;
+    padding: 0 !important;
 }
 
 .kfrm-form .icon {

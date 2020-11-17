@@ -31,7 +31,7 @@ export class RootDataView {
                                 .addHtml(ent.captionPlural || ent.caption);
 
                                 if (ent.description) {
-                                    b.addHtml(`<span title="${ent.description}" style="float: right; font-family: cursive">i</span>`);
+                                    b.addHtml(`<span title="${ent.description}" class="ed-entity-info"></span>`);
                                 }
                             });
                         });
