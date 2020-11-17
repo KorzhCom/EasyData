@@ -11,7 +11,7 @@
 		"linkall": "node ./tools/set_links.js",
 		"test": "cd packs/core && npm run test && cd ../.."
 	},
-	"author": "",
+	"author": " ",
 	"license": "ISC",
 	"dependencies": {
 		"cpx": "^1.5.0"
