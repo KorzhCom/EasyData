@@ -1,22 +1,24 @@
-import { i18n } from '@easydata/core';
+import { i18n, utils as dataUtils } from '@easydata/core';
 
 import { domel } from '../utils/dom_elem_builder';
-
 import { Calendar, CalendarOptions } from './calendar';
 
-export class DefaultCalendar extends Calendar {
 
+export class DefaultCalendar extends Calendar {
     protected daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     protected months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     protected calendarBody: HTMLElement | null = null;
     protected headerTextElem: HTMLElement | null;
+    protected manualInputElem: HTMLInputElement | null;
 
     protected selectYearElem: HTMLSelectElement | null;
     protected selectMonthElem: HTMLSelectElement | null;
 
     protected selectedMonth: number;
     protected selectedYear: number;
+
+    private isManualInputChanging: boolean = false;
 
     constructor(slot: HTMLElement, options?: CalendarOptions) {
         super(slot, options);
@@ -36,13 +38,21 @@ export class DefaultCalendar extends Calendar {
         this.selectedMonth = this.currentDate.getMonth();
         this.selectedYear = this.currentDate.getFullYear();
 
-        this.rerenderMonth();
+        this.rerenderMonth();    
     }
 
     public render() {
-        domel('div', this.slot)
-            .addClass(`${this.cssPrefix}-header`)
-            .addChild('span', builder => this.headerTextElem = builder.toDOM());
+        const header = domel('div', this.slot)
+            .addClass(`${this.cssPrefix}-header`);
+
+            if (this.options.showDateTimeInput) {
+                header
+                    .addChildElement(this.renderManualDateInput());
+            }
+            else {
+                header
+                    .addChild('span', builder => this.headerTextElem = builder.toDOM());
+            }
 
         domel(this.slot)
             .addChildElement(this.renderCalendarButtons());
@@ -50,6 +60,87 @@ export class DefaultCalendar extends Calendar {
         this.calendarBody = domel('div', this.slot)
             .addClass(`${this.cssPrefix}-body`)
             .toDOM();
+
+    }
+
+    private getInputDateFormat() {
+        const settings = i18n.getLocaleSettings();
+        return (this.options.timePickerIsUsed)
+            ? `${settings.editDateFormat} ${settings.editTimeFormat}`
+            : settings.editDateFormat;
+    }
+
+    protected renderManualDateInput() {
+        const format = this.getInputDateFormat();
+
+        const builder = domel('input')
+            .attr('placeholder', format)
+            .addClass(`${this.cssPrefix}-header-input`);
+
+        builder
+            .mask(format.replace('yyyy', '9999')
+                                     .replace('MM', '99')
+                                     .replace('dd', '99')
+                                     .replace('HH', '99')
+                                     .replace('mm', '99')
+                                     .replace('ss', '99'))
+            .on('input', ev => {
+                builder.removeClass('error');
+                try {
+                    this.isManualInputChanging = true;
+                    const newDate = dataUtils.strToDateTime(this.manualInputElem.value, format);
+                    this.currentDate = newDate;
+                    this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
+                    this.dateChanged(false);
+                }
+                catch (e) {
+                    builder.addClass('error');
+                }
+                finally {
+                    this.isManualInputChanging = false;
+                }
+            })
+            .on('keydown', (ev) => {
+                if ((ev as KeyboardEvent).keyCode === 13) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    if (this.manualInputElem.className.indexOf('error') < 0
+                        && !this.isManualInputChanging)
+                        this.dateChanged(true);
+                }
+            })
+            .on('focus', () => {
+                setTimeout(() => {
+                    this.manualInputElem.selectionStart = 0;
+                    this.manualInputElem.selectionEnd = 0;
+                }, 50);
+            });
+
+        this.manualInputElem = builder.toDOM();
+
+        return this.manualInputElem;
+    }
+
+    protected updateDisplayedDateValue() {
+        if (this.manualInputElem) {
+            if (!this.isManualInputChanging) {
+                const format = this.getInputDateFormat();
+
+                this.manualInputElem.value = dataUtils.dateTimeToStr(this.currentDate, format);
+                this.manualInputElem.focus();
+            }
+        }
+        else if (this.headerTextElem) {
+            const locale = i18n.getCurrentLocale();
+            this.headerTextElem.innerText = this.currentDate.toLocaleString(
+                locale == 'en' ? undefined : locale,
+                {  
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+        }
     }
 
     protected renderCalendarButtons() {
@@ -141,16 +232,8 @@ export class DefaultCalendar extends Calendar {
     }
 
     protected rerenderMonth() {
-
         //header text
-        const locale = i18n.getCurrentLocale();
-        this.headerTextElem.innerText = this.currentDate.toLocaleString(
-            locale == 'en' ? undefined : locale,
-            {  
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            });
+        this.updateDisplayedDateValue();
 
         this.rerenderSelectYear();
 
@@ -187,8 +270,7 @@ export class DefaultCalendar extends Calendar {
                     this.currentDate.setFullYear(this.selectedYear);
                     this.currentDate.setMonth(this.selectedMonth);
                     this.currentDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
-    
-                    this.dateChanged();
+                    this.dateChanged(this.options.oneClickDateSelection);
                 });
     
             if (day === today.getDate() && this.selectedYear === today.getFullYear() && this.selectedMonth === today.getMonth()) {
@@ -214,8 +296,8 @@ export class DefaultCalendar extends Calendar {
         }
     }
 
-    protected dateChanged() {
-        super.dateChanged();
+    protected dateChanged(apply?: boolean) {
+        super.dateChanged(apply);
         
         this.rerenderMonth();
     }

@@ -1,10 +1,12 @@
 export interface CalendarOptions {
     yearRange?: string;
-    onDateChanged?: (date: Date) => void;
+    showDateTimeInput?: boolean;
+    timePickerIsUsed?: boolean;
+    oneClickDateSelection?: boolean;
+    onDateChanged?: (date: Date, apply?: boolean) => void;
 }
 
 export abstract class Calendar {
-
     protected currentDate: Date;
 
     protected slot: HTMLElement;
@@ -34,9 +36,9 @@ export abstract class Calendar {
         return new Date(this.currentDate);
     }
 
-    protected dateChanged() {
+    protected dateChanged(apply?: boolean) {
         if (this.options.onDateChanged) {
-            this.options.onDateChanged(this.currentDate);
+            this.options.onDateChanged(this.currentDate, apply);
         }
     }
 }

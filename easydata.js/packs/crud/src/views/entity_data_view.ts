@@ -1,4 +1,4 @@
-import { DataRow, utils as dataUtils } from '@easydata/core';
+import { DataRow, i18n, utils as dataUtils } from '@easydata/core';
 
 import { 
     DefaultDialogService, 
@@ -41,7 +41,7 @@ export class EntityDataView {
         const ent = this.context.getActiveEntity();
         this.slot.innerHTML = `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
-            this.slot.innerHTML += `<a href="${this.basePath}"> ← Back to entities</a>`;
+            this.slot.innerHTML += `<a href="${this.basePath}"> ← ${i18n.getText('BackToEntities')}</a>`;
         }
 
         this.renderGrid();
@@ -99,14 +99,14 @@ export class EntityDataView {
                     .addClass(`keg-cell-value`)
                     .addChild('a', b => b
                         .attr('href', 'javascript:void(0)')
-                        .text('Edit')
+                        .text(i18n.getText('EditBtn'))
                         .on('click', (ev) =>  this.editClickHandler(ev as MouseEvent, 
                             Number.parseInt(rowEl.getAttribute('data-row-idx'))))
                     )
                     .addChild('span', b => b.text(' | '))
                     .addChild('a', b => b
                         .attr('href', 'javascript:void(0)')
-                        .text('Delete')
+                        .text(i18n.getText('DeleteBtn'))
                         .on('click', (ev) => 
                             this.deleteClickHandler(ev as MouseEvent, 
                                 Number.parseInt(rowEl.getAttribute('data-row-idx'))))
@@ -117,12 +117,14 @@ export class EntityDataView {
 
     private addClickHandler() {
 
+        const activeEntity = this.context.getActiveEntity();
         const form = EntityEditForm.build(this.context);
 
         form.useValidators(this.defaultValidators);
 
         this.dlg.open({
-            title: `Create ${this.context.getActiveEntity().caption}`,
+            title: i18n.getText('AddDlgCaption')
+                .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
             onSubmit: () => {
 
@@ -156,7 +158,8 @@ export class EntityDataView {
         form.useValidators(this.defaultValidators);
 
         this.dlg.open({
-            title: `Edit ${activeEntity.caption}`,
+            title: i18n.getText('EditDlgCaption')
+                .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
             onSubmit: () => {
                 const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
@@ -191,8 +194,10 @@ export class EntityDataView {
                     const keys = keyAttrs.map(attr => row.getValue(attr.id));
                     const entityId = keyAttrs.map((attr, index) => `${attr.id}:${keys[index]}`).join(';');
                     this.dlg.openConfirm(
-                        `Delete ${activeEntity.caption}`, 
-                        `Are you shure about removing this entity: [${entityId}]?`
+                        i18n.getText('DeleteDlgCaption')
+                            .replace('{entity}', activeEntity.caption), 
+                        i18n.getText('DeleteDlgMessage')
+                            .replace('{entityId}', entityId), 
                     )
                     .then((result) => {
                         if (result) {

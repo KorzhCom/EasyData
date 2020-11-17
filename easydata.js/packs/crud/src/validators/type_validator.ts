@@ -1,4 +1,4 @@
-import { MetaEntityAttr, utils as dataUtils } from '@easydata/core';
+import { MetaEntityAttr, i18n, utils as dataUtils } from '@easydata/core';
 import { ValidationResult, Validator } from './validator';
 
 export class TypeValidator extends Validator {
@@ -17,7 +17,7 @@ export class TypeValidator extends Validator {
             if (!dataUtils.isNumeric(value))
                 return { 
                     successed: false, 
-                    messages: ['Value should be a number']
+                    messages: [ i18n.getText('NumberError') ]
                 };
 
 
@@ -25,7 +25,7 @@ export class TypeValidator extends Validator {
                 && !Number.isInteger(Number.parseFloat(value))) {
                     return {
                         successed: false,
-                        messages: ['Value should be an integer number']
+                        messages: [ i18n.getText('IntNumberError') ]
                     }
                 }
         }

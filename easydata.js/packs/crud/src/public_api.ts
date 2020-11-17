@@ -16,3 +16,5 @@ export * from './views/easy_data_view_dispatcher'
 export * from './views/root_data_view'
 export * from './views/entity_data_view'
 export * from './views/options'
+
+import './i18n/text_resources'

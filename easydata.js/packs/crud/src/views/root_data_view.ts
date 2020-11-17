@@ -1,4 +1,4 @@
-import { MetaData } from '@easydata/core';
+import { i18n, MetaData } from '@easydata/core';
 import { domel } from '@easydata/ui';
 
 export class RootDataView {
@@ -39,7 +39,7 @@ export class RootDataView {
                 )
                 .addChild('div', b => b
                     .addClass('ed-menu-description')
-                    .addText('Click on an entity to view/edit its content')
+                    .addText(i18n.getText('EntityMenuDesc'))
                 )
             );
         }

@@ -41,21 +41,24 @@ export abstract class DateTimePicker {
     }
 
     protected render() {
-
         if (this.options.showCalendar) {
             this.calendar = this.createCalendar({
                 yearRange: this.options.yearRange,
-                onDateChanged: (date) => {
+                showDateTimeInput: this.options.showDateTimeInput,
+                timePickerIsUsed: this.options.showTimePicker,
+                oneClickDateSelection: this.options.oneClickDateSelection,
+                onDateChanged: (date, apply) => {
+                    this.currentDateTime = date;
 
-                    this.currentDateTime.setFullYear(date.getFullYear());
-                    this.currentDateTime.setMonth(date.getMonth());
-                    this.currentDateTime.setDate(date.getDate());
+                    if (this.timePicker) {
+                        this.timePicker.setTime(this.currentDateTime);
+                    }
 
-                    if (this.options.showTimePicker || !this.options.oneClickDateSelection) {
+                    if (this.options.showTimePicker) {
                         this.dateTimeChanged();
                     }
-                    else {
-                        this.apply(date);
+                    if (apply) {
+                        this.apply(this.currentDateTime);
                     }
                 }
             });
@@ -69,6 +72,10 @@ export abstract class DateTimePicker {
                 onTimeChanged: (time) => {
                     this.currentDateTime.setHours(time.getHours());
                     this.currentDateTime.setMinutes(time.getMinutes());
+
+                    if (this.calendar) {
+                        this.calendar.setDate(this.currentDateTime);
+                    }
 
                     this.dateTimeChanged();
                 } 

@@ -35,6 +35,8 @@ export * from './utils/easy_guid'
 export * from './utils/string_utils'
 export * from './utils/utils'
 
+import './i18n/load_default_locale_settings'
+
 if (typeof Object.values !== 'function') {
     Object.values = function (obj) {
         return Object.keys(obj).map(key => obj[key]);

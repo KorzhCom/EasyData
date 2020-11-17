@@ -1,5 +1,5 @@
 import { 
-    DataType, utils as dataUtils, 
+    DataType, i18n, utils as dataUtils, 
     MetaEntityAttr, DataRow, MetaEditorTag, 
     MetaValueEditor, EntityAttrKind, EasyDataTable 
 } from '@easydata/core';
@@ -7,7 +7,8 @@ import {
 import { 
     browserUtils, DefaultDialogService, 
     domel, DomElementBuilder, EasyGrid,
-    DefaultDateTimePicker
+    DefaultDateTimePicker,
+    DateTimePickerOptions
 } from '@easydata/ui';
 
 import { DataContext } from '../main/data_context';
@@ -224,7 +225,7 @@ export class EntityEditForm {
                         if (!readOnly)
                             b.addChild('button', b => b
                                 .addClass('kfrm-button')
-                                .attr('title', 'Navigation values')
+                                .attr('title', i18n.getText('NavigationBtnTitle'))
                                 .addText('...')
                                 .on('click', (ev) => {
                             
@@ -265,7 +266,7 @@ export class EntityEditForm {
                                             .addChild('div', b => b
                                                 .addClass(`kfrm-field`)
                                                 .addChild('label', b => b
-                                                    .addText('Selected item: ')
+                                                    .addText(i18n.getText('LookupSelectedItem'))
                                                     .toDOM()
                                                 )
                                                 .addChild('div', b => selectedSlot = b
@@ -325,7 +326,8 @@ export class EntityEditForm {
                                         });
 
                                         ds.open({
-                                            title: `Select ${lookupEntity.caption}`,
+                                            title: i18n.getText('LookupDlgCaption')
+                                                .replace('{entity}', lookupEntity.caption),
                                             body: slot,
                                             arrangeParents: true,
                                             beforeOpen: () => {
@@ -365,7 +367,7 @@ export class EntityEditForm {
                                 b.on('focus', (ev) => {
                                     const inputEl = ev.target as HTMLInputElement;
                                     const oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
-                                    const pickerOptions = {
+                                    const pickerOptions: DateTimePickerOptions = {
                                         showCalendar: attr.dataType !== DataType.Time,
                                         showTimePicker: attr.dataType !== DataType.Date,
                                         onApply: (dateTime: Date) => {

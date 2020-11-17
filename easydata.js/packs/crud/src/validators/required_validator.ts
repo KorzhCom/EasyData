@@ -1,4 +1,4 @@
-import { MetaEntityAttr, utils as dataUtils } from '@easydata/core';
+import { MetaEntityAttr, i18n, utils as dataUtils } from '@easydata/core';
 import { ValidationResult, Validator } from "./validator";
 
 export class RequiredValidator extends Validator {
@@ -16,7 +16,7 @@ export class RequiredValidator extends Validator {
 
             return {
                 successed: false,
-                messages: ['Value is required.']
+                messages: [ i18n.getText('RequiredError') ]
             }
 
         return { successed: true };
