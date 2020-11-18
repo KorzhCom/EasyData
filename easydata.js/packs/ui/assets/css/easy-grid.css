@@ -60,12 +60,9 @@
     outline: none;
     border-color: #dde2eb;
     border-width: 1px;
+    border-bottom-style: solid;
     height: 26px;
     align-items: center;
-}
-
-.keg-row:not(.keg-row-first) {
-    border-top-style: solid;
 }
 
 .keg-row:not(.keg-row-active):hover {
