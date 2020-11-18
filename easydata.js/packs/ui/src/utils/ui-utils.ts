@@ -119,8 +119,8 @@ export function createBrowserEvent(eventName) {
 }
 
 export function getViewportSize() {
-    const width = Math.max(document.documentElement.clientWidth, document.body.clientWidth, window.innerWidth || 0);
-    const height = Math.max(document.documentElement.clientHeight,  document.body.clientHeight,  window.innerHeight || 0);
+    const width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
 
     return {
         width: width,
