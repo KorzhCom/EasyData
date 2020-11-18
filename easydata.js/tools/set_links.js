@@ -24,6 +24,10 @@ link(corePath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_mod
 link(uiPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_modules/@easydata/ui"));
 link(crudPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo/node_modules/@easydata/crud"));
 
+link(corePath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/ui"));
+link(crudPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/crud"));
+
 
 function link(to, from) {
 	to = trim(to.toLowerCase());

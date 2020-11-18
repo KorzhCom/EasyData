@@ -39,7 +39,7 @@ export class EntityDataView {
         this.dlg = new DefaultDialogService();
 
         const ent = this.context.getActiveEntity();
-        this.slot.innerHTML = `<h1>${ent.captionPlural || ent.caption}</h1>`;
+        this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
             this.slot.innerHTML += `<a href="${this.basePath}"> ← ${i18n.getText('BackToEntities')}</a>`;
         }
@@ -59,9 +59,15 @@ export class EntityDataView {
     private renderGrid() {
         this.context.getEntities()
             .then(result => {
+
+                console.log("Result", result);
+
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
+
+                console.log(gridSlot);
+
                 this.grid = new EasyGrid({
                     slot: gridSlot,
                     dataTable: result,
@@ -101,7 +107,7 @@ export class EntityDataView {
                         .attr('href', 'javascript:void(0)')
                         .text(i18n.getText('EditBtn'))
                         .on('click', (ev) =>  this.editClickHandler(ev as MouseEvent, 
-                            Number.parseInt(rowEl.getAttribute('data-row-idx'))))
+                            parseInt(rowEl.getAttribute('data-row-idx'))))
                     )
                     .addChild('span', b => b.text(' | '))
                     .addChild('a', b => b
@@ -109,7 +115,7 @@ export class EntityDataView {
                         .text(i18n.getText('DeleteBtn'))
                         .on('click', (ev) => 
                             this.deleteClickHandler(ev as MouseEvent, 
-                                Number.parseInt(rowEl.getAttribute('data-row-idx'))))
+                                parseInt(rowEl.getAttribute('data-row-idx'))))
                     );
             }
         }
