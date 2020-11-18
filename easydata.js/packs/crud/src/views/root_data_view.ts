@@ -19,28 +19,31 @@ export class RootDataView {
             .addChild('div', b => b
                 .addClass('ed-root')
                 .addChild('div', b => b
-                    .addClass('ed-entity-menu')
-                    .addChild('ul', b => {
-                        b.addClass('list-group')
-                        entities.forEach(ent => {
-                            b.addChild('li', b => {
-                                b.addClass('list-group-item')
-                                .on('click', () => {
-                                    window.location.href = `${this.basePath}/${ent.id}`;
-                                })
-                                .addHtml(ent.captionPlural || ent.caption);
-
-                                if (ent.description) {
-                                    b.addHtml(`<span title="${ent.description}" class="ed-entity-info"></span>`);
-                                }
-                            });
-                        });
-                    })
-                )
-                .addChild('div', b => b
                     .addClass('ed-menu-description')
                     .addText(i18n.getText('EntityMenuDesc'))
                 )
+                .addChild('ul', b => {
+                    b.addClass('ed-entity-menu');
+                    entities.forEach(ent => {
+                        b.addChild('li', b => {
+                            b.addClass('ed-entity-item')
+                            .on('click', () => {
+                                window.location.href = `${this.basePath}/${ent.id}`;
+                            })
+                            .addChild('div', b => {
+                                b.addClass('ed-entity-item-caption')
+                                .addText(ent.captionPlural || ent.caption);
+                            });
+
+                            if (ent.description) {
+                                b.addChild('div', b => {
+                                    b.addClass('ed-entity-item-descr')
+                                    .addText(`*&nbsp;${ent.description}`);
+                                });
+                            }
+                        });
+                    });
+                })
             );
         }
     }
