@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Data.Common;
+
+using Microsoft.Data.Sqlite;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.TestHost;
@@ -16,15 +16,16 @@ using Korzh.DbUtils;
 namespace EasyData.AspNetCore.Tests
 {
 
-    public class EasyDataMiddlewareFixture
+    public class EasyDataMiddlewareFixture: IDisposable
     {
 
         private readonly IHost _host;
 
-        private readonly string _connectionString = "Data Source=file::memory:?cache=shared";
+        private readonly SqliteConnection _connection;
 
         public EasyDataMiddlewareFixture()
         {
+            _connection = new SqliteConnection("Data Source=file::memory:");
 
             _host = new HostBuilder()
              .ConfigureWebHost(webBuilder =>
@@ -33,8 +34,10 @@ namespace EasyData.AspNetCore.Tests
                      .UseTestServer()
                      .ConfigureServices(services =>
                      {
-                         services.AddDbContextPool<TestDbContext>(options => {
-                             options.UseSqlite(_connectionString);
+                         services.AddEntityFrameworkSqlite();
+                         services.AddDbContext<TestDbContext>(options => {
+                             options.UseSqlite(_connection);
+                             options.UseInternalServiceProvider(services.BuildServiceProvider());
                          });
 
                          services.AddRouting();
@@ -69,7 +72,7 @@ namespace EasyData.AspNetCore.Tests
                 context.Database.OpenConnection();
                 if (context.Database.EnsureCreated()) {
                     DbInitializer.Create(options => {
-                        options.UseSqlite(_connectionString);
+                        options.UseSqlite(_connection);
                         options.UseJsonImporter();
                         options.UseResourceFileUnpacker(typeof(EasyDataMiddlewareFixture).Assembly, "Resources\\Nwind");
                     })
@@ -81,6 +84,11 @@ namespace EasyData.AspNetCore.Tests
         public IHost GetTestHost()
         {
             return _host;
+        }
+
+        public void Dispose()
+        {
+            _connection.Dispose();
         }
     }
 }
