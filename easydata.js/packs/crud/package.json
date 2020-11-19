@@ -1,7 +1,7 @@
 {
     "name": "@easydata/crud",
-    "version": "1.0.0",
-    "description": "EasyData CRUD widgets",
+    "version": "1.1.0",
+    "description": "EasyData.JS UI widgets and view for CRUD manipulations",
     "types": "./dist/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.crud.js",
     "module": "./dist/lib/public_api.js",
@@ -20,11 +20,9 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
-        "data",
-        "filtering",
-        "ui",
-        "crud",
-        "free"
+        "database",
+        "data filter",
+        "crud"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",

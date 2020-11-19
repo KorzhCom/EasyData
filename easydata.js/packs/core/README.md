@@ -22,7 +22,7 @@ To start with ASP.NET Core backend you can simply visit [EasyData repository on 
 
 ### 2. Any other backend platform.
 
-Sorry, but it's not possible for now yet :(
+Sorry, but it's not possible yet :(
 
 Please [submit an issue on GitHub](https://github.com/KorzhCom/EasyData/issues) (or vote for an existing one) to encourage us to add the support for your platform of choice faster.
 
