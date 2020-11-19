@@ -4,6 +4,7 @@ export * from './filter/text_data_filter'
 export * from './form/entity_edit_form'
 
 export * from './widgets/text_filter_widget'
+export * from './widgets/progress_bar'
 
 export * from './main/data_context'
 export * from './main/easy_data_server_loader'

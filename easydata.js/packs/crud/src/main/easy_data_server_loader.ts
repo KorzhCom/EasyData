@@ -16,6 +16,7 @@ export class EasyDataServerLoader implements DataLoader {
             { entityId: params.entityId || this.context.getActiveEntity().id });
         delete params.entityId;
 
+        this.context.startProcess();
         const http = this.context.getHttpClient();
         return http.get(url, { queryParams: params as any})
             .then((result) => {
@@ -45,6 +46,9 @@ export class EasyDataServerLoader implements DataLoader {
                         || params.offset + params.limit < totalRecords
                 }
         
+            })
+            .finally(() => {
+                this.context.endProcess();
             });
     }
 

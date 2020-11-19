@@ -1,3 +1,4 @@
+import { ProgressBar } from '../widgets/progress_bar';
 import { DataContext } from '../main/data_context';
 import { EntityDataView } from './entity_data_view';
 import { EasyDataViewDispatcherOptions } from './options';
@@ -16,7 +17,16 @@ export class EasyDataViewDispatcher {
 
         this.setContainer(options.container);
 
-        this.context = new DataContext();
+        const progressBarSlot = document.createElement('div');
+        const bar = new ProgressBar(progressBarSlot);   
+        
+        const parent = this.container.parentElement;
+        parent.insertBefore(progressBarSlot, parent.firstElementChild);
+        
+        this.context = new DataContext({
+            onProcessStart: () => bar.show(),
+            onProcessEnd: () => bar.hide()
+        });
 
         this.basePath = this.getBasePath();
     }
@@ -74,7 +84,7 @@ export class EasyDataViewDispatcher {
                     this.basePath, this.options);
             }
             else {
-                new RootDataView(this.container, metaData, this.basePath);
+                new RootDataView(this.container, this.context, this.basePath);
             }
         })
     }

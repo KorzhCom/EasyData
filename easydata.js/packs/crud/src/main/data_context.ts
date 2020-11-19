@@ -20,6 +20,8 @@ type EasyDataEndpointKey =
 export interface EasyDataContextOptions {
     metaDataId?: string;
     endpoint?: string;
+    onProcessStart?: () => void;
+    onProcessEnd?: () => void;
 }
 
 export class DataContext {
@@ -36,8 +38,10 @@ export class DataContext {
 
     private activeEntity: MetaEntity;
 
+    private options: EasyDataContextOptions;
+
     constructor(options?: EasyDataContextOptions) {
-        options = options || {};
+        this.options = options || {};
 
         this.http = new HttpClient();
         this.model = new MetaData();
@@ -48,7 +52,7 @@ export class DataContext {
             loader: this.dataLoader
         });
 
-        this.setDefaultEndpoints(options.endpoint || '/api/easydata')
+        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata')
     }
 
     public setActiveEntity(entityId: string) {
@@ -80,6 +84,7 @@ export class DataContext {
 
     public loadMetaData(): Promise<MetaData> {
         const url = this.resolveEndpoint('GetMetaData');
+        this.startProcess();
         return this.http.get(url) 
             .then(result => {
                 if (result.model) {
@@ -91,6 +96,9 @@ export class DataContext {
             .catch(error => { 
                 console.error(`Error: ${error.message}. Source: ${error.sourceError}`);
                 return null;
+            })
+            .finally(() => {
+                this.endProcess();
             });
     }
 
@@ -124,25 +132,34 @@ export class DataContext {
     public getEntity(id: string, entityId?: string) {
         const url = this.resolveEndpoint('GetEntity', { id, 
             entityId: entityId || this.activeEntity.id });
-        return this.http.get(url).getPromise();
+        
+        this.startProcess();
+        return this.http.get(url).getPromise()
+            .finally(() => this.endProcess());
     }
 
     public createEntity(obj: any, entityId?: string) {
         const url = this.resolveEndpoint('CreateEntity', 
             { entityId: entityId || this.activeEntity.id });
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise();
+
+        this.startProcess();
+        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
     }
 
     public updateEntity(id: string, obj, entityId?: string) {
         const url = this.resolveEndpoint('UpdateEntity', { id, 
             entityId: entityId || this.activeEntity.id });
-        return this.http.put(url, obj, { dataType: 'json' }).getPromise();
+        
+        this.startProcess();
+        return this.http.put(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
     }
 
     public deleteEntity(id: string, entityId?: string) {
         const url = this.resolveEndpoint('DeleteEntity', { id, 
             entityId: entityId || this.activeEntity.id });
-        return this.http.delete(url).getPromise();
+
+        this.startProcess();
+        return this.http.delete(url).getPromise().finally(() => this.endProcess());
     }
 
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
@@ -190,6 +207,16 @@ export class DataContext {
         }
       
         return result;
+    }
+
+    public startProcess() {
+        if (this.options.onProcessStart)
+            this.options.onProcessStart();
+    }
+
+    public endProcess() {
+        if (this.options.onProcessEnd)
+            this.options.onProcessEnd();
     }
 
     private setDefaultEndpoints(endpointBase : string) {

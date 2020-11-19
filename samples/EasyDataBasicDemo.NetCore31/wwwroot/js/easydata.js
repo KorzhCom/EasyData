@@ -3785,7 +3785,37 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "../../easydata.js/packs/crud/dist/assets/css/ed-view.css":
+/*!*******************************************************************************!*\
+  !*** c:/projects/easydata/easydata.js/packs/crud/dist/assets/css/ed-view.css ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!./ed-view.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/crud/dist/assets/css/ed-view.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
 
 /***/ }),
 
@@ -4369,7 +4399,7 @@ var DataContext = /** @class */ (function () {
     function DataContext(options) {
         this.endpoints = new Map();
         this.endpointVarsRegex = /\{.*?\}/g;
-        options = options || {};
+        this.options = options || {};
         this.http = new _easydata_core__WEBPACK_IMPORTED_MODULE_0__["HttpClient"]();
         this.model = new _easydata_core__WEBPACK_IMPORTED_MODULE_0__["MetaData"]();
         this.model.id = options.metaDataId || '__default';
@@ -4377,7 +4407,7 @@ var DataContext = /** @class */ (function () {
         this.data = new _easydata_core__WEBPACK_IMPORTED_MODULE_0__["EasyDataTable"]({
             loader: this.dataLoader
         });
-        this.setDefaultEndpoints(options.endpoint || '/api/easydata');
+        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata');
     }
     DataContext.prototype.setActiveEntity = function (entityId) {
         this.activeEntity = this.model.getRootEntity().subEntities
@@ -4398,6 +4428,7 @@ var DataContext = /** @class */ (function () {
     DataContext.prototype.loadMetaData = function () {
         var _this = this;
         var url = this.resolveEndpoint('GetMetaData');
+        this.startProcess();
         return this.http.get(url)
             .then(function (result) {
             if (result.model) {
@@ -4408,6 +4439,9 @@ var DataContext = /** @class */ (function () {
             .catch(function (error) {
             console.error("Error: " + error.message + ". Source: " + error.sourceError);
             return null;
+        })
+            .finally(function () {
+            _this.endProcess();
         });
     };
     DataContext.prototype.getActiveEntity = function () {
@@ -4433,23 +4467,32 @@ var DataContext = /** @class */ (function () {
         });
     };
     DataContext.prototype.getEntity = function (id, entityId) {
+        var _this = this;
         var url = this.resolveEndpoint('GetEntity', { id: id,
             entityId: entityId || this.activeEntity.id });
-        return this.http.get(url).getPromise();
+        this.startProcess();
+        return this.http.get(url).getPromise()
+            .finally(function () { return _this.endProcess(); });
     };
     DataContext.prototype.createEntity = function (obj, entityId) {
+        var _this = this;
         var url = this.resolveEndpoint('CreateEntity', { entityId: entityId || this.activeEntity.id });
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise();
+        this.startProcess();
+        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(function () { return _this.endProcess(); });
     };
     DataContext.prototype.updateEntity = function (id, obj, entityId) {
+        var _this = this;
         var url = this.resolveEndpoint('UpdateEntity', { id: id,
             entityId: entityId || this.activeEntity.id });
-        return this.http.put(url, obj, { dataType: 'json' }).getPromise();
+        this.startProcess();
+        return this.http.put(url, obj, { dataType: 'json' }).getPromise().finally(function () { return _this.endProcess(); });
     };
     DataContext.prototype.deleteEntity = function (id, entityId) {
+        var _this = this;
         var url = this.resolveEndpoint('DeleteEntity', { id: id,
             entityId: entityId || this.activeEntity.id });
-        return this.http.delete(url).getPromise();
+        this.startProcess();
+        return this.http.delete(url).getPromise().finally(function () { return _this.endProcess(); });
     };
     DataContext.prototype.setEndpoint = function (key, value) {
         this.endpoints.set(key, value);
@@ -4486,6 +4529,14 @@ var DataContext = /** @class */ (function () {
         }
         return result;
     };
+    DataContext.prototype.startProcess = function () {
+        if (this.options.onProcessStart)
+            this.options.onProcessStart();
+    };
+    DataContext.prototype.endProcess = function () {
+        if (this.options.onProcessEnd)
+            this.options.onProcessEnd();
+    };
     DataContext.prototype.setDefaultEndpoints = function (endpointBase) {
         this.setEnpointIfNotExist('GetMetaData', Object(_easydata_core__WEBPACK_IMPORTED_MODULE_0__["combinePath"])(endpointBase, 'models/{modelId}'));
         this.setEnpointIfNotExist('GetEntities', Object(_easydata_core__WEBPACK_IMPORTED_MODULE_0__["combinePath"])(endpointBase, 'models/{modelId}/crud/{entityId}'));
@@ -4518,8 +4569,10 @@ var EasyDataServerLoader = /** @class */ (function () {
         this.context = context;
     }
     EasyDataServerLoader.prototype.loadChunk = function (params) {
+        var _this = this;
         var url = this.context.resolveEndpoint('GetEntities', { entityId: params.entityId || this.context.getActiveEntity().id });
         delete params.entityId;
+        this.context.startProcess();
         var http = this.context.getHttpClient();
         return http.get(url, { queryParams: params })
             .then(function (result) {
@@ -4545,6 +4598,9 @@ var EasyDataServerLoader = /** @class */ (function () {
                 hasNext: !params.needTotal
                     || params.offset + params.limit < totalRecords
             };
+        })
+            .finally(function () {
+            _this.context.endProcess();
         });
     };
     return EasyDataServerLoader;
@@ -4558,7 +4614,7 @@ var EasyDataServerLoader = /** @class */ (function () {
 /*!**************************************************************************!*\
   !*** c:/projects/easydata/easydata.js/packs/crud/dist/lib/public_api.js ***!
   \**************************************************************************/
-/*! exports provided: TextDataFilter, EntityEditForm, TextFilterWidget, DataContext, EasyDataServerLoader, Validator, TypeValidator, RequiredValidator, EasyDataViewDispatcher, RootDataView, EntityDataView */
+/*! exports provided: TextDataFilter, EntityEditForm, TextFilterWidget, ProgressBar, DataContext, EasyDataServerLoader, Validator, TypeValidator, RequiredValidator, EasyDataViewDispatcher, RootDataView, EntityDataView */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4572,31 +4628,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _widgets_text_filter_widget__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./widgets/text_filter_widget */ "../../easydata.js/packs/crud/dist/lib/widgets/text_filter_widget.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextFilterWidget", function() { return _widgets_text_filter_widget__WEBPACK_IMPORTED_MODULE_2__["TextFilterWidget"]; });
 
-/* harmony import */ var _main_data_context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./main/data_context */ "../../easydata.js/packs/crud/dist/lib/main/data_context.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DataContext", function() { return _main_data_context__WEBPACK_IMPORTED_MODULE_3__["DataContext"]; });
+/* harmony import */ var _widgets_progress_bar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./widgets/progress_bar */ "../../easydata.js/packs/crud/dist/lib/widgets/progress_bar.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ProgressBar", function() { return _widgets_progress_bar__WEBPACK_IMPORTED_MODULE_3__["ProgressBar"]; });
 
-/* harmony import */ var _main_easy_data_server_loader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main/easy_data_server_loader */ "../../easydata.js/packs/crud/dist/lib/main/easy_data_server_loader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EasyDataServerLoader", function() { return _main_easy_data_server_loader__WEBPACK_IMPORTED_MODULE_4__["EasyDataServerLoader"]; });
+/* harmony import */ var _main_data_context__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main/data_context */ "../../easydata.js/packs/crud/dist/lib/main/data_context.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DataContext", function() { return _main_data_context__WEBPACK_IMPORTED_MODULE_4__["DataContext"]; });
 
-/* harmony import */ var _validators_validator__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./validators/validator */ "../../easydata.js/packs/crud/dist/lib/validators/validator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Validator", function() { return _validators_validator__WEBPACK_IMPORTED_MODULE_5__["Validator"]; });
+/* harmony import */ var _main_easy_data_server_loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./main/easy_data_server_loader */ "../../easydata.js/packs/crud/dist/lib/main/easy_data_server_loader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EasyDataServerLoader", function() { return _main_easy_data_server_loader__WEBPACK_IMPORTED_MODULE_5__["EasyDataServerLoader"]; });
 
-/* harmony import */ var _validators_type_validator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./validators/type_validator */ "../../easydata.js/packs/crud/dist/lib/validators/type_validator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeValidator", function() { return _validators_type_validator__WEBPACK_IMPORTED_MODULE_6__["TypeValidator"]; });
+/* harmony import */ var _validators_validator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./validators/validator */ "../../easydata.js/packs/crud/dist/lib/validators/validator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Validator", function() { return _validators_validator__WEBPACK_IMPORTED_MODULE_6__["Validator"]; });
 
-/* harmony import */ var _validators_required_validator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./validators/required_validator */ "../../easydata.js/packs/crud/dist/lib/validators/required_validator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RequiredValidator", function() { return _validators_required_validator__WEBPACK_IMPORTED_MODULE_7__["RequiredValidator"]; });
+/* harmony import */ var _validators_type_validator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./validators/type_validator */ "../../easydata.js/packs/crud/dist/lib/validators/type_validator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeValidator", function() { return _validators_type_validator__WEBPACK_IMPORTED_MODULE_7__["TypeValidator"]; });
 
-/* harmony import */ var _views_easy_data_view_dispatcher__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./views/easy_data_view_dispatcher */ "../../easydata.js/packs/crud/dist/lib/views/easy_data_view_dispatcher.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EasyDataViewDispatcher", function() { return _views_easy_data_view_dispatcher__WEBPACK_IMPORTED_MODULE_8__["EasyDataViewDispatcher"]; });
+/* harmony import */ var _validators_required_validator__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./validators/required_validator */ "../../easydata.js/packs/crud/dist/lib/validators/required_validator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RequiredValidator", function() { return _validators_required_validator__WEBPACK_IMPORTED_MODULE_8__["RequiredValidator"]; });
 
-/* harmony import */ var _views_root_data_view__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./views/root_data_view */ "../../easydata.js/packs/crud/dist/lib/views/root_data_view.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RootDataView", function() { return _views_root_data_view__WEBPACK_IMPORTED_MODULE_9__["RootDataView"]; });
+/* harmony import */ var _views_easy_data_view_dispatcher__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./views/easy_data_view_dispatcher */ "../../easydata.js/packs/crud/dist/lib/views/easy_data_view_dispatcher.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EasyDataViewDispatcher", function() { return _views_easy_data_view_dispatcher__WEBPACK_IMPORTED_MODULE_9__["EasyDataViewDispatcher"]; });
 
-/* harmony import */ var _views_entity_data_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./views/entity_data_view */ "../../easydata.js/packs/crud/dist/lib/views/entity_data_view.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EntityDataView", function() { return _views_entity_data_view__WEBPACK_IMPORTED_MODULE_10__["EntityDataView"]; });
+/* harmony import */ var _views_root_data_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./views/root_data_view */ "../../easydata.js/packs/crud/dist/lib/views/root_data_view.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RootDataView", function() { return _views_root_data_view__WEBPACK_IMPORTED_MODULE_10__["RootDataView"]; });
 
-/* harmony import */ var _i18n_text_resources__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./i18n/text_resources */ "../../easydata.js/packs/crud/dist/lib/i18n/text_resources.js");
+/* harmony import */ var _views_entity_data_view__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./views/entity_data_view */ "../../easydata.js/packs/crud/dist/lib/views/entity_data_view.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EntityDataView", function() { return _views_entity_data_view__WEBPACK_IMPORTED_MODULE_11__["EntityDataView"]; });
+
+/* harmony import */ var _i18n_text_resources__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./i18n/text_resources */ "../../easydata.js/packs/crud/dist/lib/i18n/text_resources.js");
+
 
 
 
@@ -4753,9 +4813,11 @@ var Validator = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EasyDataViewDispatcher", function() { return EasyDataViewDispatcher; });
-/* harmony import */ var _main_data_context__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../main/data_context */ "../../easydata.js/packs/crud/dist/lib/main/data_context.js");
-/* harmony import */ var _entity_data_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./entity_data_view */ "../../easydata.js/packs/crud/dist/lib/views/entity_data_view.js");
-/* harmony import */ var _root_data_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./root_data_view */ "../../easydata.js/packs/crud/dist/lib/views/root_data_view.js");
+/* harmony import */ var _widgets_progress_bar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../widgets/progress_bar */ "../../easydata.js/packs/crud/dist/lib/widgets/progress_bar.js");
+/* harmony import */ var _main_data_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../main/data_context */ "../../easydata.js/packs/crud/dist/lib/main/data_context.js");
+/* harmony import */ var _entity_data_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./entity_data_view */ "../../easydata.js/packs/crud/dist/lib/views/entity_data_view.js");
+/* harmony import */ var _root_data_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./root_data_view */ "../../easydata.js/packs/crud/dist/lib/views/root_data_view.js");
+
 
 
 
@@ -4764,7 +4826,14 @@ var EasyDataViewDispatcher = /** @class */ (function () {
         this.options = options;
         options = options || {};
         this.setContainer(options.container);
-        this.context = new _main_data_context__WEBPACK_IMPORTED_MODULE_0__["DataContext"]();
+        var progressBarSlot = document.createElement('div');
+        var bar = new _widgets_progress_bar__WEBPACK_IMPORTED_MODULE_0__["ProgressBar"](progressBarSlot);
+        var parent = this.container.parentElement;
+        parent.insertBefore(progressBarSlot, parent.firstElementChild);
+        this.context = new _main_data_context__WEBPACK_IMPORTED_MODULE_1__["DataContext"]({
+            onProcessStart: function () { return bar.show(); },
+            onProcessEnd: function () { return bar.hide(); }
+        });
         this.basePath = this.getBasePath();
     }
     EasyDataViewDispatcher.prototype.setContainer = function (container) {
@@ -4812,10 +4881,10 @@ var EasyDataViewDispatcher = /** @class */ (function () {
             var activeEntityId = _this.getActiveEntityId();
             if (activeEntityId) {
                 _this.context.setActiveEntity(activeEntityId);
-                new _entity_data_view__WEBPACK_IMPORTED_MODULE_1__["EntityDataView"](_this.container, _this.context, _this.basePath, _this.options);
+                new _entity_data_view__WEBPACK_IMPORTED_MODULE_2__["EntityDataView"](_this.container, _this.context, _this.basePath, _this.options);
             }
             else {
-                new _root_data_view__WEBPACK_IMPORTED_MODULE_2__["RootDataView"](_this.container, metaData, _this.basePath);
+                new _root_data_view__WEBPACK_IMPORTED_MODULE_3__["RootDataView"](_this.container, _this.context, _this.basePath);
             }
         });
     };
@@ -5047,11 +5116,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var RootDataView = /** @class */ (function () {
-    function RootDataView(slot, metaData, basePath) {
+    function RootDataView(slot, context, basePath) {
         this.slot = slot;
-        this.metaData = metaData;
+        this.context = context;
         this.basePath = basePath;
-        this.slot.innerHTML = "<h1>" + metaData.getId() + "</h1>";
+        this.metaData = this.context.getMetaData();
+        this.slot.innerHTML = "<h1>" + this.metaData.getId() + "</h1>";
         this.renderEntitySelector();
     }
     RootDataView.prototype.renderEntitySelector = function () {
@@ -5062,31 +5132,65 @@ var RootDataView = /** @class */ (function () {
                 .addChild('div', function (b) { return b
                 .addClass('ed-root')
                 .addChild('div', function (b) { return b
-                .addClass('ed-entity-menu')
+                .addClass('ed-menu-description')
+                .addText(_easydata_core__WEBPACK_IMPORTED_MODULE_0__["i18n"].getText('EntityMenuDesc')); })
                 .addChild('ul', function (b) {
-                b.addClass('list-group');
+                b.addClass('ed-entity-menu');
                 entities.forEach(function (ent) {
                     b.addChild('li', function (b) {
-                        b.addClass('list-group-item')
+                        b.addClass('ed-entity-item')
                             .on('click', function () {
+                            _this.context.startProcess();
                             window.location.href = _this.basePath + "/" + ent.id;
                         })
-                            .addHtml(ent.captionPlural || ent.caption);
+                            .addChild('div', function (b) {
+                            b.addClass('ed-entity-item-caption')
+                                .addText(ent.captionPlural || ent.caption);
+                        });
                         if (ent.description) {
-                            b.addHtml("<span title=\"" + ent.description + "\" class=\"ed-entity-info\"></span>");
+                            b.addChild('div', function (b) {
+                                b.addClass('ed-entity-item-descr')
+                                    .addText("*&nbsp;" + ent.description);
+                            });
                         }
                     });
                 });
-            }); })
-                .addChild('div', function (b) { return b
-                .addClass('ed-menu-description')
-                .addText(_easydata_core__WEBPACK_IMPORTED_MODULE_0__["i18n"].getText('EntityMenuDesc')); }); });
+            }); });
         }
     };
     return RootDataView;
 }());
 
 //# sourceMappingURL=root_data_view.js.map
+
+/***/ }),
+
+/***/ "../../easydata.js/packs/crud/dist/lib/widgets/progress_bar.js":
+/*!************************************************************************************!*\
+  !*** c:/projects/easydata/easydata.js/packs/crud/dist/lib/widgets/progress_bar.js ***!
+  \************************************************************************************/
+/*! exports provided: ProgressBar */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressBar", function() { return ProgressBar; });
+var ProgressBar = /** @class */ (function () {
+    function ProgressBar(slot) {
+        this.slot = slot;
+        this.hide();
+        this.slot.classList.add('ed-progress-bar');
+    }
+    ProgressBar.prototype.show = function () {
+        this.slot.style.removeProperty('display');
+    };
+    ProgressBar.prototype.hide = function () {
+        this.slot.style.display = 'none';
+    };
+    return ProgressBar;
+}());
+
+//# sourceMappingURL=progress_bar.js.map
 
 /***/ }),
 
@@ -6486,7 +6590,7 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -6498,7 +6602,7 @@ return Promise$1;
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!./easy-dialog.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-dialog.css");
+var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!./easy-dialog.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-dialog.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -6512,7 +6616,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -6528,7 +6632,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!./easy-forms.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-forms.css");
+var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!./easy-forms.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-forms.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -6542,7 +6646,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -6558,7 +6662,7 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!./easy-grid.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-grid.css");
+var content = __webpack_require__(/*! !../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!./easy-grid.css */ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-grid.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -6572,7 +6676,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -9706,8 +9810,8 @@ function createBrowserEvent(eventName) {
     return event;
 }
 function getViewportSize() {
-    var width = Math.max(document.documentElement.clientWidth, document.body.clientWidth, window.innerWidth || 0);
-    var height = Math.max(document.documentElement.clientHeight, document.body.clientHeight, window.innerHeight || 0);
+    var width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    var height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     return {
         width: width,
         height: height
@@ -11013,18 +11117,33 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/crud/dist/assets/css/ed-view.css":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/crud/dist/assets/css/ed-view.css ***!
+  \************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
+// Module
+exports.push([module.i, "\r\n.ed-entity-menu {\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -ms-flex-direction: column;\r\n    flex-direction: column;\r\n    padding-left: 0;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.ed-entity-item {\r\n    position: relative;\r\n    display: block;\r\n    padding: .75rem 1.25rem;\r\n    margin-bottom: -1px;\r\n    background-color: #fff;\r\n    border-bottom: 1px solid rgba(0,0,0,.125);\r\n    border-top: 1px solid rgba(0,0,0,.125);    \r\n    border-left: none;\r\n    border-right: none;\r\n    font-size: 1.2em;\r\n}\r\n\r\n.ed-entity-item:hover {\r\n    cursor: pointer;\r\n    background-color: #3498DB;\r\n    color: white;\r\n}\r\n\r\n.ed-root {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.ed-menu-description {\r\n    margin: 50px auto;\r\n    text-align: center;\r\n    font-size: 1.5em;\r\n}\r\n\r\n.ed-entity-item-caption {\r\n    font-weight: 500;\r\n    display: flex;\r\n    justify-content: space-between;\r\n}\r\n\r\n.ed-entity-item-caption::after {\r\n    content: \"\\276F\";\r\n    width: 1em;\r\n    height: 1em;\r\n    text-align: center;\r\n    -webkit-transition: all .35s;\r\n    transition: all .35s;\r\n}\r\n\r\n.ed-entity-item-descr {\r\n    font-size: 0.8em;\r\n    margin-left: 30px;\r\n    margin-top: 5px;\r\n}\r\n\r\n\r\n/* Progress Bar start */\r\n.ed-progress-bar {\r\n    display: 'none';\r\n    height: 4px;\r\n    width: 100%;\r\n    position: fixed;\r\n    top: 0;\r\n\tleft: 0;\r\n    z-index: 65000;\r\n    overflow: hidden;\r\n    background-color: #ddd;\r\n  }\r\n\r\n  .ed-progress-bar:before {\r\n    display: block;\r\n    position: absolute;\r\n    content: \"\";\r\n    left: -200px;\r\n    width: 200px;\r\n    height: 4px;\r\n    background-color: #2980b9;\r\n    animation: ed-progress-bar-loading 2s linear infinite;\r\n  }\r\n  \r\n  @keyframes ed-progress-bar-loading {\r\n      from {left: -200px; width: 30%;}\r\n      50% {width: 30%;}\r\n      70% {width: 70%;}\r\n      80% { left: 50%;}\r\n      95% {left: 120%;}\r\n      to {left: 100%;}\r\n  }\r\n/* Progress Bar end */", ""]);
+
+
 
 /***/ }),
 
 /***/ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-dialog.css":
-/*!****************************************************************************************************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-dialog.css ***!
-  \****************************************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-dialog.css ***!
+  \**************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
 exports.push([module.i, ".kdlg-modal, .kdlg-modal-background {\r\n    bottom: 0;\r\n    left: 0;\r\n    position: absolute;\r\n    right: 0;\r\n    top: 0;\r\n}\r\n\r\n.kdlg-modal-background {\r\n    background-color: rgb(10 10 10 / 50%);\r\n}\r\n\r\n.kdlg-modal {\r\n    font-family: \"Roboto\", Arial;\r\n    font-size: 16px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n\r\n    align-items: center;\r\n    display: none;\r\n    flex-direction: column;\r\n    justify-content: center;\r\n    overflow: hidden;\r\n    position: fixed;\r\n    z-index: 40;\r\n}\r\n\r\n.kdlg-modal.is-active {\r\n    display: flex;\r\n}\r\n\r\n\r\n.kdlg-modal-window, .kdlg-modal-window.size-default {\r\n    margin: 0 20px;\r\n    position: relative;\r\n    width: 100%;\r\n    display: flex;\r\n    flex-direction: column;\r\n    max-height: calc(100vh - 40px);\r\n    overflow: hidden;\r\n    -ms-overflow-y: visible;    \r\n}\r\n\r\n@media screen and (min-width: 481px), print {\r\n    .kdlg-modal-window.size-small {\r\n        margin: 0 auto;\r\n        width: 400px;\r\n    }\r\n}\r\n\r\n@media screen and (min-width: 769px), print {\r\n    .kdlg-modal-window, .kdlg-modal-window.size-default {\r\n        margin: 0 auto;\r\n        width: 640px;\r\n    }\r\n\r\n    .kdlg-modal-window.size-large, .kdlg-modal-window.size-xl {\r\n        margin: 0 20px;\r\n        width: 100%;\r\n    }\r\n}\r\n\r\n@media screen and (min-width: 1025px), print {\r\n    .kdlg-modal-window.size-large {\r\n        margin: 0 auto;\r\n        width: 900px;\r\n    }\r\n}\r\n\r\n@media screen and (min-width: 1383px), print {\r\n    .kdlg-modal-window.size-xl {\r\n        margin: 0 auto;\r\n        width: 1200px;\r\n    }\r\n}\r\n\r\n\r\n\r\n.kdlg-footer, .kdlg-header {\r\n    align-items: center;\r\n    /*background-color: #f5f5f5;*/\r\n    background-color: #fff;\r\n    display: flex;\r\n    flex-shrink: 0;\r\n    justify-content: flex-start;\r\n    padding: 20px;\r\n    position: relative;\r\n}\r\n\r\n.kdlg-footer.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kdlg-header {\r\n    border-top-left-radius: 6px;\r\n    border-top-right-radius: 6px;\r\n}\r\n\r\n.kdlg-header.has-border {\r\n    border-bottom: 1px solid #dbdbdb;\r\n}\r\n\r\n.kdlg-footer {\r\n    border-bottom-left-radius: 6px;\r\n    border-bottom-right-radius: 6px;\r\n}\r\n\r\n.kdlg-footer.has-border {\r\n    border-top: 1px solid #dbdbdb;\r\n}\r\n\r\n.kdlg-header-title {\r\n    color: #363636;\r\n    flex-grow: 1;\r\n    flex-shrink: 0;\r\n    font-size: 1.6rem;\r\n    line-height: 1;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.kdlg-modal-close {\r\n    -webkit-touch-callout: none;\r\n    -webkit-user-select: none;\r\n    -moz-user-select: none;\r\n    -ms-user-select: none;\r\n    user-select: none;\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n    background-color: rgba(10,10,10,.2);\r\n    border: none;\r\n    border-radius: 290486px;\r\n    cursor: pointer;\r\n    pointer-events: auto;\r\n    display: inline-block;\r\n    flex-grow: 0;\r\n    flex-shrink: 0;\r\n    font-size: 0;\r\n    height: 24px;\r\n    max-height: 24px;\r\n    max-width: 24px;\r\n    min-height: 24px;\r\n    min-width: 24px;\r\n    outline: 0;\r\n    position: relative;\r\n    vertical-align: top;\r\n    width: 24px;\r\n}\r\n\r\n.kdlg-modal-close::before, .kdlg-modal-close::after {\r\n    background-color: #fff;\r\n    content: \"\";\r\n    display: block;\r\n    left: 50%;\r\n    position: absolute;\r\n    top: 50%;\r\n    transform: translateX(-50%) translateY(-50%) rotate(45deg);\r\n    transform-origin: center center;\r\n}\r\n\r\n.kdlg-modal-close::before {\r\n    height: 2px;\r\n    width: 50%;\r\n}\r\n\r\n.kdlg-modal-close::after {\r\n    height: 50%;\r\n    width: 2px;\r\n}\r\n\r\n.kdlg-modal-close:focus, .kdlg-modal-close:hover {\r\n    background-color: rgba(255,1,1,.48);\r\n}\r\n\r\n\r\n.kdlg-body {\r\n    -webkit-overflow-scrolling: touch;\r\n    background-color: #fff;\r\n    flex-grow: 1;\r\n    flex-shrink: 1;\r\n    overflow: auto;\r\n    padding: 20px;\r\n    font-size: 1em;\r\n    color: #4a4a4a;\r\n}\r\n\r\n\r\n", ""]);
 
@@ -11033,13 +11152,13 @@ exports.push([module.i, ".kdlg-modal, .kdlg-modal-background {\r\n    bottom: 0;
 /***/ }),
 
 /***/ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-forms.css":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-forms.css ***!
-  \***************************************************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-forms.css ***!
+  \*************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
 exports.push([module.i, "/* BUTTONS */\r\n\r\n.kfrm-buttons {\r\n    align-items: center;\r\n    display: flex;\r\n    flex-wrap: wrap;\r\n    justify-content: flex-start;\r\n}\r\n\r\n.kfrm-buttons.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-buttons.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-buttons:last-child {\r\n    margin-bottom: -.5rem;\r\n}\r\n\r\n.kfrm-buttons .kfrm-button {\r\n    margin-bottom: .5rem;\r\n}\r\n\r\n.kfrm-button {\r\n    position: relative;\r\n    vertical-align: top;\r\n    line-height: 1.5;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1rem;\r\n    height: 2.5em;\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n\r\n\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-width: 1px;\r\n    color: #363636;\r\n    cursor: pointer;\r\n    justify-content: center;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: 1em;\r\n    padding-right: 1em;\r\n    padding-top: calc(.5em - 1px);\r\n    text-align: center;\r\n    white-space: nowrap;\r\n\r\n    -webkit-touch-callout:none;\r\n    -webkit-user-select:none;\r\n    -moz-user-select:none;\r\n    -ms-user-select:none;\r\n    user-select:none\r\n}\r\n\r\n.kfrm-button:not(:last-child) {\r\n    margin-right: .5em;\r\n}\r\n\r\n.kfrm-button.is-hovered, .kfrm-button:hover {\r\n    border-color: #b5b5b5;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused, .kfrm-button:focus {\r\n    outline: none;\r\n    border-color: #3273dc;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button.is-focused:not(:active), .kfrm-button:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-active, .kfrm-button:active {\r\n    border-color: #4a4a4a;\r\n    color: #363636;\r\n}\r\n\r\n.kfrm-button[disabled], fieldset[disabled] .kfrm-button {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    box-shadow: none;\r\n    opacity: .5;\r\n    cursor: not-allowed;\r\n}\r\n\r\n.kfrm-button.is-loading {\r\n    color: transparent!important;\r\n    pointer-events: none;\r\n}\r\n\r\n.kfrm-button.is-loading::after {\r\n    -webkit-animation:spinAround .5s infinite linear;\r\n    animation:spinAround .5s infinite linear;\r\n    border:2px solid #dbdbdb;\r\n    border-radius:290486px;\r\n    border-right-color:transparent;\r\n    border-top-color:transparent;\r\n    content:\"\";\r\n    display:block;\r\n    height:1em;\r\n    width:1em;\r\n\r\n    left: calc(50% - (1em / 2));\r\n    top: calc(50% - (1em / 2));\r\n    position: absolute!important;\r\n}\r\n\r\n@keyframes spinAround {\r\n    from {\r\n        transform:rotate(0deg);\r\n    }\r\n    to {\r\n        transform:rotate(360deg);\r\n    }\r\n}\r\n\r\n/* SIZES */\r\n\r\n.kfrm-button.size-small,\r\n.kfrm-buttons.size-small .kfrm-button:not(.size-default):not(.size-medium):not(.size-large) {\r\n    border-radius: 2px;\r\n    font-size: .75rem;\r\n}\r\n\r\n.kfrm-button.size-default\r\n.kfrm-buttons.size-default .kfrm-button:not(.size-small):not(.size-medium):not(.size-large) {\r\n    font-size: 1rem;\r\n}\r\n\r\n.kfrm-button.size-medium,\r\n.kfrm-buttons.size-medium .kfrm-button:not(.size-small):not(.size-default):not(.size-large) {\r\n    font-size: 1.25rem;\r\n}\r\n\r\n.kfrm-button.size-large\r\n.kfrm-buttons.size-large .kfrm-button:not(.size-small):not(.size-default):not(.size-medium) {\r\n    font-size: 1.5rem;\r\n}\r\n\r\n/* SIZES END */\r\n\r\n\r\n\r\n/* COLORS */\r\n\r\n/* white */\r\n.kfrm-button.is-white {\r\n    background-color: #fff;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-hovered, .kfrm-button.is-white:hover {\r\n    background-color: #f9f9f9;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused, .kfrm-button.is-white:focus {\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n.kfrm-button.is-white.is-focused:not(:active), .kfrm-button.is-white:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(150,150,150,.15);\r\n}\r\n\r\n.kfrm-button.is-white.is-active, .kfrm-button.is-white:active {\r\n    background-color: #f2f2f2;\r\n    border-color: transparent;\r\n    color: #0a0a0a;\r\n}\r\n\r\n/* dark */\r\n\r\n.kfrm-button.is-dark {\r\n    background-color: #363636e6;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-hovered, .kfrm-button.is-dark:hover {\r\n    background-color: #2f2f2f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused, .kfrm-button.is-dark:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-dark.is-focused:not(:active), .kfrm-button.is-dark:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(54,54,54,.25);\r\n}\r\n\r\n.kfrm-button.is-dark.is-active, .kfrm-button.is-dark:active {\r\n    background-color: #292929;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n/* primary */\r\n\r\n.kfrm-button.is-primary {\r\n    background-color: #00d1b2;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-hovered, .kfrm-button.is-primary:hover {\r\n    background-color: #00c4a7;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused, .kfrm-button.is-primary:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-focused:not(:active), .kfrm-button.is-primary:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(0,209,178,.25);\r\n}\r\n\r\n.kfrm-button.is-primary.is-active, .kfrm-button.is-primary:active {\r\n    background-color: #00b89c;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-primary.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* link */\r\n\r\n.kfrm-button.is-link {\r\n    background-color: #3273dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-hovered, .kfrm-button.is-link:hover {\r\n    background-color: #276cda;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused, .kfrm-button.is-link:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-focused:not(:active), .kfrm-button.is-link:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n}\r\n\r\n.kfrm-button.is-link.is-active, .kfrm-button.is-link:active {\r\n    background-color: #2366d1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-link.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* info */\r\n\r\n.kfrm-button.is-info {\r\n    background-color: #3298dc;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-hovered, .kfrm-button.is-info:hover {\r\n    background-color: #2793da;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused, .kfrm-button.is-info:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-focused:not(:active), .kfrm-button.is-info:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(50,152,220,.25);\r\n}\r\n\r\n.kfrm-button.is-info.is-active, .kfrm-button.is-info:active {\r\n    background-color: #238cd1;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-info.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* success */\r\n\r\n.kfrm-button.is-success {\r\n    background-color: #48c774;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-hovered, .kfrm-button.is-success:hover {\r\n    background-color: #3ec46d;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-focused:not(:active), .kfrm-button.is-success:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(72,199,116,.25);\r\n}\r\n\r\n.kfrm-button.is-success.is-active, .kfrm-button.is-success:active {\r\n    background-color: #3abb67;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-success.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* warning */\r\n\r\n.kfrm-button.is-warning {\r\n    background-color: #ffdd57;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-hovered, .kfrm-button.is-warning:hover {\r\n    background-color: #ffdb4a;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused, .kfrm-button.is-warning:focus {\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-focused:not(:active), .kfrm-button.is-warning:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(255,221,87,.25);\r\n}\r\n\r\n.kfrm-button.is-warning.is-active, .kfrm-button.is-warning:active {\r\n    background-color: #ffd83d;\r\n    border-color: transparent;\r\n    color: rgba(0,0,0,.7);\r\n}\r\n\r\n.kfrm-button.is-warning.is-loading::after {\r\n    border-color: transparent transparent rgba(0,0,0,.7) rgba(0,0,0,.7)!important;\r\n}\r\n\r\n/* danger */\r\n\r\n.kfrm-button.is-danger {\r\n    background-color: #f14668;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-hovered, .kfrm-button.is-danger:hover {\r\n    background-color: #f03a5f;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused, .kfrm-button.is-danger:focus {\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-focused:not(:active), .kfrm-button.is-danger:focus:not(:active) {\r\n    box-shadow: 0 0 0 0.125em rgba(241,70,104,.25);\r\n}\r\n\r\n.kfrm-button.is-danger.is-active, .kfrm-button.is-danger:active {\r\n    background-color: #ef2e55;\r\n    border-color: transparent;\r\n    color: #fff;\r\n}\r\n\r\n.kfrm-button.is-danger.is-loading::after {\r\n    border-color: transparent transparent #fff #fff!important;\r\n}\r\n\r\n/* COLORS END */\r\n\r\n\r\n/* BUTTONS END *//* COLUMNS */\r\n\r\n.kfrm-row {\r\n    margin-left: -.75rem;\r\n    margin-right: -.75rem;\r\n    margin-top: -.75rem;\r\n}\r\n\r\n.kfrm-row:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n@media screen and (min-width: 769px), print {\r\n    .kfrm-row {\r\n        display: flex;\r\n        flex-wrap: wrap;\r\n    }\r\n\r\n    .kdlg-modal-window.size-small .kfrm-row {\r\n        display: block;\r\n    }\r\n\r\n\r\n    /* 12 columns grid */\r\n    .kfrm-column.size-1 {\r\n        flex: none;\r\n        width: 8.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-2 {\r\n        flex: none;\r\n        width: 16.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-3 {\r\n        flex: none;\r\n        width: 25%;\r\n    }\r\n\r\n    .kfrm-column.size-4 {\r\n        flex: none;\r\n        width: 33.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-5 {\r\n        flex: none;\r\n        width: 41.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-6 {\r\n        flex: none;\r\n        width: 50%;\r\n    }\r\n\r\n    .kfrm-column.size-7 {\r\n        flex: none;\r\n        width: 58.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-8 {\r\n        flex: none;\r\n        width: 66.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-9 {\r\n        flex: none;\r\n        width: 75%;\r\n    }\r\n\r\n    .kfrm-column.size-10 {\r\n        flex: none;\r\n        width: 83.33333%;\r\n    }\r\n\r\n    .kfrm-column.size-11 {\r\n        flex: none;\r\n        width: 91.66667%;\r\n    }\r\n\r\n    .kfrm-column.size-12 {\r\n        flex: none;\r\n        width: 100%;\r\n    }\r\n\r\n\r\n\r\n}\r\n\r\n.kfrm-column {\r\n    display: block;\r\n    flex-basis: 0;\r\n    flex-grow: 1;\r\n    flex-shrink: 1;\r\n    padding: .75rem;\r\n}\r\n\r\n/* COLUMNS END */\r\n\r\n/* CONTROLS */\r\n\r\n.kfrm-form .errors-block {\r\n    color: red;\r\n}\r\n\r\n\r\n.kfrm-form .control {\r\n    box-sizing: border-box;\r\n    clear: both;\r\n    position: relative;\r\n    text-align: inherit;\r\n    display: inline-flex;\r\n    width: 100%;\r\n    max-width: 100%;\r\n    padding: 0 !important;\r\n}\r\n\r\n.kfrm-form .icon {\r\n    align-items: center;\r\n    display: inline-flex;\r\n    justify-content: center;\r\n    height: 1.5em;\r\n    width: 1.5em;\r\n}\r\n\r\n.kfrm-form .control.has-icons-left input, .kfrm-form .control.has-icons-left .select select {\r\n    padding-left: 2.5em;\r\n}\r\n\r\n.kfrm-form .control.has-icons-right input, .kfrm-form .control.has-icons-right .select select {\r\n    padding-right: 2.5em;\r\n}\r\n\r\n.kfrm-form .control.has-icons-left .icon.is-left {\r\n    left: 0;\r\n}\r\n\r\n.kfrm-form .control.has-icons-right .icon.is-right {\r\n    right: 0;\r\n}\r\n\r\n.kfrm-form .control .icon {\r\n    color: #dbdbdb;\r\n    height: 2.5em;\r\n    pointer-events: none;\r\n    position: absolute;\r\n    top: 0;\r\n    width: 2.5em;\r\n    z-index: 4;\r\n}\r\n\r\n.kfrm-form .control .icon.is-clickable {\r\n    pointer-events: auto;\r\n}\r\n\r\n/*\r\n.kfrm-form .control input:focus~.icon, .kfrm-form .control .select:focus~.icon {\r\n    color: #4a4a4a;\r\n}\r\n*/\r\n\r\n.kfrm-form .control .icon.is-clickable:hover {\r\n    color: #4a4a4a;\r\n    cursor: pointer;\r\n}\r\n\r\n\r\n.kfrm-form input.is-valid:not([type='checkbox']),\r\n.kfrm-form input.is-valid:not([type='checkbox']):hover {\r\n    border-color: green;\r\n}\r\n\r\n.kfrm-form input.is-invalid:not([type='checkbox']),\r\n.kfrm-form input.is-invalid:not([type='checkbox']):hover {\r\n    border-color: red;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):read-only {\r\n    background-color: #e9ecef;\r\n    opacity: 1;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    -moz-appearance: none;\r\n    -webkit-appearance: none;\r\n    align-items: center;\r\n    border: 1px solid transparent;\r\n    border-radius: 4px;\r\n    box-shadow: none;\r\n    display: inline-flex;\r\n    font-size: 1em;\r\n    height: 2.5em;\r\n    justify-content: flex-start;\r\n    line-height: 1.5;\r\n    padding-bottom: calc(.5em - 1px);\r\n    padding-left: calc(.75em - 1px);\r\n    padding-right: calc(.75em - 1px);\r\n    padding-top: calc(.5em - 1px);\r\n    position: relative;\r\n    vertical-align: top;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-select select, .kfrm-form textarea {\r\n    background-color: #fff;\r\n    border-color: #dbdbdb;\r\n    border-radius: 4px;\r\n    color: #363636;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']), .kfrm-form textarea {\r\n    box-shadow: inset 0 0.0625em 0.125em rgba(10,10,10,.05);\r\n    max-width: 100%;\r\n    width: 100%;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):hover, .kfrm-form input:not([type='checkbox']).is-hovered, .kfrm-form textarea:hover, .kfrm-form textarea.is-hovered, .kfrm-select select:hover, .kfrm-select select.is-hovered {\r\n    border-color: #b5b5b5;\r\n}\r\n\r\n.kfrm-form input:not([type='checkbox']):active, .kfrm-form input:not([type='checkbox']).is-active, .kfrm-form textarea:active, .kfrm-form textarea.is-active, .kfrm-select select:active, .kfrm-select select.is-active, \r\n.kfrm-form input:not([type='checkbox']):focus, .kfrm-form input:not([type='checkbox']).is-focused, .kfrm-form textarea:focus, .kfrm-form textarea.is-focused, .kfrm-select select:focus, .kfrm-select select.is-focused {\r\n    border-color: #3273dc;\r\n    box-shadow: 0 0 0 0.125em rgba(50,115,220,.25);\r\n    outline: 0;\r\n}\r\n\r\n\r\n.kfrm-select {\r\n    display: inline-block;\r\n    max-width: 100%;\r\n    position: relative;\r\n    vertical-align: top;\r\n    padding: 0;\r\n    width: max-content;\r\n}\r\n\r\n.kfrm-select select::-ms-expand {\r\n    display: none !important;\r\n}\r\n\r\n.kfrm-select:not(.is-multiple) {\r\n    height: 2.5em;\r\n}\r\n\r\n.kfrm-select select {\r\n    cursor: pointer;\r\n    display: block;\r\n    font-size: 1em;\r\n    max-width: 100%;\r\n    outline: 0;\r\n}\r\n\r\n.kfrm-select select:not([multiple]) {\r\n    padding-right: 2.5em;\r\n}\r\n\r\n .kfrm-select:not(.is-multiple):not(.is-loading)::after {\r\n    border: 3px solid #3273dc;\r\n    border-radius: 2px;\r\n    border-right: 0;\r\n    border-top: 0;\r\n    content: \" \";\r\n    display: block;\r\n    height: .425em;\r\n    margin-top: -.5em;\r\n    pointer-events: none;\r\n    position: absolute;\r\n    top: 50%;\r\n    transform: rotate(-45deg);\r\n    transform-origin: center;\r\n    width: .425em;\r\n    right: .7em;\r\n    z-index: 4;\r\n}\r\n\r\n\r\n.kfrm-form textarea {\r\n    display: block;\r\n    max-width: 100%;\r\n    min-width: 100%;\r\n    padding: calc(.75em - 1px);\r\n    resize: vertical;\r\n}\r\n\r\n.kfrm-form textarea:not([rows]) {\r\n    max-height: 40em;\r\n    min-height: 8em;\r\n}\r\n\r\n/* CONTROLS END */\r\n\r\n/* FORMS */\r\n.kfrm-form {\r\n    font-size: 16px;\r\n}\r\n\r\n.kfrm-form fieldset {\r\n    border: 1px solid #dbdbdb;\r\n    border-radius: 6px;\r\n    padding: 20px;\r\n}\r\n\r\n.kfrm-form fieldset > legend {\r\n    padding-inline-start: 10px;\r\n    padding-inline-end: 10px;\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-break, .kfrm-break-50 {\r\n    margin-top: 50px;\r\n}\r\n\r\n.kfrm-break-10 {\r\n    margin-top: 10px;\r\n}\r\n\r\n.kfrm-break-20 {\r\n    margin-top: 20px;\r\n}\r\n\r\n.kfrm-break-30 {\r\n    margin-top: 30px;\r\n}\r\n\r\n.kfrm-break-40 {\r\n    margin-top: 40px;\r\n}\r\n\r\n.kfrm-break-60 {\r\n    margin-top: 60px;\r\n}\r\n\r\n.kfrm-break-70 {\r\n    margin-top: 70px;\r\n}\r\n\r\n.kfrm-break-80 {\r\n    margin-top: 10px;\r\n}\r\n\r\n\r\n.kfrm-fields, .kfrm-fields.col-a {\r\n    display: grid;\r\n    grid-template-columns: auto;\r\n    grid-gap: 10px;\r\n    grid-auto-rows: auto;\r\n}\r\n\r\n.kfrm-fields:not(:last-child) {\r\n    margin-bottom: calc(1.5rem - .75rem);\r\n}\r\n\r\n.kfrm-fields > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n.kfrm-fields > label:not(.checkbox) {\r\n    font-weight: 600;\r\n}\r\n\r\n.kfrm-fields.label-above > label:not(.checkbox) {\r\n    padding: 0.5em 0 0 0;\r\n    margin-bottom: -0.5em;\r\n}\r\n\r\n.kfrm-fields.label-align-right > label:not(.checkbox) {\r\n    text-align: right;\r\n}\r\n\r\n.kfrm-fields.col-a-1 {\r\n    grid-template-columns: auto 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-a {\r\n    grid-template-columns: 1fr auto;\r\n}\r\n\r\n.kfrm-fields.col-a-a {\r\n    grid-template-columns: auto auto;\r\n}\r\n\r\n.kfrm-fields.col-1-1 {\r\n    grid-template-columns: 1fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-1-2 {\r\n    grid-template-columns: 1fr 2fr;\r\n}\r\n\r\n.kfrm-fields.col-1-3 {\r\n    grid-template-columns: 1fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-2-1 {\r\n    grid-template-columns: 2fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-3-1 {\r\n    grid-template-columns: 3fr 1fr;\r\n}\r\n\r\n.kfrm-fields.col-2-3 {\r\n    grid-template-columns: 2fr 3fr;\r\n}\r\n\r\n.kfrm-fields.col-3-2 {\r\n    grid-template-columns: 3fr 2fr;\r\n}\r\n\r\n.kfrm-fields.is-horizontal {\r\n    display: flex;\r\n    padding: 0;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-right {\r\n    justify-content: flex-end;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-center {\r\n    justify-content: center;\r\n}\r\n\r\n.kfrm-fields.is-horizontal.align-evenly {\r\n    justify-content: space-evenly;\r\n}\r\n\r\n.kfrm-fields.is-horizontal > label:not(:first-child) {\r\n    margin-left: .5rem;\r\n}\r\n\r\n/* IE */\r\n.kfrm-fields-ie {\r\n    display: flex;\r\n    flex-direction: column;\r\n    font-size: 16px;\r\n  }\r\n\r\n.kfrm-field-ie {\r\n    display: flex;\r\n    margin-bottom: 1em;\r\n}\r\n\r\n/*  \r\n  .kfrm-field-ie > * {\r\n      font-size: 16px;\r\n  }\r\n*/\r\n\r\n.kfrm-field-ie > *:nth-child(1) {\r\n    margin-right: 20px;\r\n}\r\n\r\n.kfrm-field-ie > label {\r\n    padding: .5em 0;\r\n}\r\n\r\n/*\r\n  .kfrm-field-ie > *:nth-child(2):not(.kfrm-select):not(.kfrm-fields-ie) {\r\n    padding: .5em;\r\n  }\r\n*/\r\n  .kfrm-fields-ie.col-ie-1-1 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 50%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-2 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 33.3333%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-3 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 25%;\r\n  }\r\n\r\n  .kfrm-fields-ie.col-ie-1-4 > .kfrm-field-ie > *:nth-child(1) {\r\n    flex: 0 0 20%;\r\n  }\r\n\r\n\r\n  .kfrm-fields-ie.label-align-right .kfrm-field-ie > *:nth-child(1) {\r\n    text-align: right;\r\n  }\r\n\r\n  .kfrm-fields-ie.label-above .kfrm-field-ie > *:nth-child(1):not(.checkbox) {\r\n      padding: 0.5em 0 0 0;\r\n      margin-bottom: -0.5em;\r\n  }\r\n\r\n  .kfrm-field-ie > label:not(.checkbox), .kfrm-fields-ie > label:not(.checkbox) {\r\n      font-weight: 600;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal {\r\n    display: flex;\r\n    padding: 0 !important;\r\n    flex-direction: row;\r\n  }\r\n\r\n  .kfrm-fields-ie.kfrm-fields-ie.is-horizontal > *:not(.kfrm-select) {\r\n    padding: .5em;\r\n  }\r\n\r\n  .kfrm-fields-ie.is-horizontal > *:not(:first-child) {\r\n    margin-left: 1em;\r\n  }\r\n\r\n.kfrm-fields-ie > label {\r\n    padding-left: 0 !important;\r\n    padding-right: 0 !important;\r\n}\r\n\r\n\r\n/* FORMS END */\r\n/* DATETIME STARTS */\r\n.kdtp {\r\n    border: 1px solid silver;\r\n    background-color: white;\r\n    box-shadow: 4px 8px 15px 0px rgba(0,0,0,.16);\r\n    border-radius: 8px;\r\n    overflow: hidden;    \r\n    z-index: 100000;\r\n    outline: none;\r\n    font-size: 0.7rem;\r\n}\r\n\r\n.kdtp-buttons {\r\n    margin-top: 1em;\r\n    display: flex;\r\n    flex-direction: row;\r\n    justify-content: space-between;\r\n}\r\n\r\n.kdtp-button {\r\n    height: 2.5em;\r\n    flex: 1;\r\n    background-color: #0099CC;\r\n    border: none;\r\n    color: white;\r\n    text-align: center;\r\n    text-decoration: none;\r\n    cursor: pointer;    \r\n    font-weight: 500;\r\n}\r\n\r\n.kdtp-button:focus, .kdtp-button:active {\r\n    outline: 0;\r\n}\r\n\r\n.kdtp-button-now {\r\n    border: none;\r\n    background-color: white;\r\n    color: #0099CC;\r\n}\r\n\r\n.kdtp-button:nth-child(2) {\r\n    border-top-left-radius: 8px;\r\n}\r\n\r\n.kdtp-button:not(:first-child) {\r\n    margin-left: 2px;\r\n}\r\n\r\n.kdtp-cal {\r\n    padding: 0;\r\n}\r\n\r\n.kdtp-cal * {\r\n    outline: none !important;\r\n}\r\n\r\n.kdtp-cal-body {\r\n    display: -ms-grid;\r\n    display: grid;\r\n    -ms-grid-columns: minmax(1em, 1fr) 5px minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr);\r\n    grid-template-columns: repeat(7, minmax(1em, 1fr));\r\n    grid-gap: 0.5em;\r\n    -webkit-box-sizing: border-box;\r\n\tbox-sizing: border-box;\r\n    padding: 0 12px;\r\n    -ms-grid-rows: 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr;\r\n}\r\n\r\n.kdtp-cal-body > *:nth-child(1) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(2) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(3) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(4) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(5) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(6) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(7) {\r\n    -ms-grid-row: 1;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(8) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(9) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(10) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(11) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(12) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(13) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(14) {\r\n    -ms-grid-row: 3;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(15) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(16) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(17) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(18) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(19) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(20) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(21) {\r\n    -ms-grid-row: 5;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(22) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(23) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(24) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(25) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(26) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(27) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(28) {\r\n    -ms-grid-row: 7;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(29) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(30) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(31) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(32) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(33) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(34) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(35) {\r\n    -ms-grid-row: 9;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(36) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(37) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(38) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(39) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(40) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(41) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(42) {\r\n    -ms-grid-row: 11;\r\n    -ms-grid-column: 13;\r\n}\r\n.kdtp-cal-body > *:nth-child(43) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 1;\r\n}\r\n.kdtp-cal-body > *:nth-child(44) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 3;\r\n}\r\n.kdtp-cal-body > *:nth-child(45) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 5;\r\n}\r\n.kdtp-cal-body > *:nth-child(46) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 7;\r\n}\r\n.kdtp-cal-body > *:nth-child(47) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 9;\r\n}\r\n.kdtp-cal-body > *:nth-child(48) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 11;\r\n}\r\n.kdtp-cal-body > *:nth-child(49) {\r\n    -ms-grid-row: 13;\r\n    -ms-grid-column: 13;\r\n}\r\n\r\n.kdtp-cal-header-input {\r\n    width: 100%;\r\n    width: -moz-available;          /* WebKit-based browsers will ignore this. */\r\n    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */\r\n    width: fill-available;\r\n    height: 100%;\r\n    height: -moz-available;          /* WebKit-based browsers will ignore this. */\r\n    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */\r\n    height: fill-available;\r\n\r\n    font-size: 1em;\r\n    padding: 2px 5px;\r\n    border: 1px solid silver;\r\n    outline: none;\r\n    background: #fff;\r\n    color: #262626;\r\n}\r\n\r\n.kdtp-cal-header-input.error {\r\n    border-color: red;\r\n}\r\n\r\n.kdtp-cal-header {\r\n    background-color: #0099CC;\r\n    color: white;\r\n    text-align: center;\r\n    font-size: 1.2em;\r\n    font-weight: 600;\r\n    height: 2em;\r\n    line-height: 2em;\r\n}\r\n\r\n.kdtp-cal-nav {\r\n    display: flex;\r\n    padding: 0;\r\n    margin: 0.7em 0;\r\n    line-height: 1em;\r\n}\r\n\r\n.kdtp-cal-nav-prev, .kdtp-cal-nav-next {\r\n    flex: 0 0 auto;\r\n    font-size: 3em;\r\n    font-weight: 600;\r\n    width: 1em;\r\n    color: #777777;\r\n    text-align: center;    \r\n}\r\n\r\n.kdtp-cal-nav-prev:hover, .kdtp-cal-nav-next:hover {\r\n    cursor: pointer;\r\n    color: #0099CC;\r\n}\r\n\r\n.kdtp-cal-nav-selectors {\r\n    flex: 1 1 auto;\r\n    display: flex;\r\n    margin: 0 0.5em;\r\n    font-size: 1.2em;\r\n}\r\n\r\n.kdtp-cal-nav-month {\r\n    flex: 1 1 auto;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.kdtp-cal-nav-year {\r\n    flex: 0 0 auto;\r\n}\r\n\r\n.kdtp-cal-nav-selectors select {\r\n    border: none;\r\n    color: #777777;\r\n    font-weight: 600;\r\n}\r\n\r\n.kdtp-cal-nav-selectors select:hover {\r\n    color: #0099CC;\r\n}\r\n\r\n.kdtp-cal-nav-selectors select:hover option {\r\n    color: #777777;\r\n}\r\n\r\n.kdtp-cal-weekday {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    height: 1.8em;\r\n    font-weight: 600;\r\n\tfont-size: 0.8em;\r\n    color: #262626;\r\n}\r\n\r\n.kdtp-cal-weekday.kdtp-cal-weekend {\r\n    color: #ff685d;\r\n}\r\n\r\n.kdtp-cal-day, .kdtp-cal-day-empty {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    height: 1.5em;\r\n    color: #262626;\r\n    border-radius: 4px;\r\n}\r\n\r\n.kdtp-cal-day.kdtp-cal-weekend {\r\n    color: #ff685d;\r\n    font-weight: 700;\r\n}\r\n\r\n.kdtp-cal-day:hover, .kdtp-cal-day-selected {\r\n    border: 2px solid #0099CC;\r\n    font-weight: 700;\r\n    cursor: pointer;\r\n}\r\n\r\n.kdtp-cal-day-current {\r\n    background-color: lightgray;\r\n}\r\n\r\n.kdtp-tp {\r\n    display: flex;\r\n    display:-webkit-flex;\r\n    display:-ms-flexbox;\r\n    align-items: center;\r\n    -webkit-align-items:center;\r\n    -ms-flex-align:center;\r\n    margin-top: 1em;\r\n    padding: 0 1em;\r\n}\r\n\r\n.kdtp-tp-time {\r\n    flex: 0 0 5em;\r\n    -webkit-flex: 0 0 5em;\r\n    -ms-flex: 0 0 5em;\r\n    text-align: center;\r\n    font-weight: 600;\r\n    color: #777777;\r\n    border: 2px solid #0099CC;\r\n    border-radius: 6px;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n.kdtp-tp-sliders {\r\n    flex: 1 1 auto;\r\n    -webkit-flex: 1 1 auto;\r\n    -ms-flex: 1 1 auto;\r\n}\r\n\r\n.kdtp-tp-time-row {\r\n    display:-webkit-flex;\r\n    display:-ms-flexbox;\r\n    display:flex;\r\n    -webkit-align-items:center;\r\n    -ms-flex-align:center;\r\n    align-items:center;\r\n    height: 1.5em;\r\n    background:linear-gradient(to right,#c5c5c5,#c5c5c5) left 50%/100% 1px no-repeat;\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range] {\r\n    background:0 0;\r\n    cursor:pointer;\r\n    -webkit-flex:1;\r\n    -ms-flex:1;\r\n    flex:1;\r\n    height:100%;\r\n    padding:0;\r\n    margin:0;\r\n    -webkit-appearance:none\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:hover::-webkit-slider-thumb {\r\n    border-color:#777777\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:hover::-moz-range-thumb {\r\n    border-color:#777777\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:hover::-ms-thumb {\r\n    border-color:#777777\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:focus {\r\n    outline:0\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:focus::-webkit-slider-thumb {\r\n    background:#0099CC;\r\n    border-color:#0099CC\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:focus::-moz-range-thumb {\r\n    background:#0099CC;\r\n    border-color:#0099CC\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]:focus::-ms-thumb {\r\n    background:#0099CC;\r\n    border-color:#0099CC\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-webkit-slider-thumb {\r\n    -webkit-appearance:none;\r\n    box-sizing:border-box;\r\n    height:12px;\r\n    width:12px;\r\n    border-radius:3px;\r\n    border:1px solid #c5c5c5;\r\n    background:#fff;\r\n    cursor:pointer;\r\n    transition:background .2s;\r\n    margin-top:-6px\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-moz-range-thumb {\r\n    box-sizing:border-box;\r\n    height:12px;\r\n    width:12px;\r\n    border-radius:3px;\r\n    border:1px solid #c5c5c5;\r\n    background:#fff;\r\n    cursor:pointer;\r\n    transition:background .2s\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-ms-thumb {\r\n    box-sizing:border-box;\r\n    height:12px;\r\n    width:12px;\r\n    border-radius:3px;\r\n    border:1px solid #c5c5c5;\r\n    background:#fff;\r\n    cursor:pointer;\r\n    transition:background .2s\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-webkit-slider-runnable-track {\r\n    border:none;\r\n    height:1px;\r\n    cursor:pointer;\r\n    color:transparent;\r\n    background:0 0\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-moz-range-track {\r\n    border:none;\r\n    height:1px;\r\n    cursor:pointer;\r\n    color:transparent;\r\n    background:0 0\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-ms-track {\r\n    border:none;\r\n    height:1px;\r\n    cursor:pointer;\r\n    color:transparent;\r\n    background:0 0\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-ms-fill-lower {\r\n    background:0 0\r\n}\r\n\r\n.kdtp-tp-time-row input[type=range]::-ms-fill-upper {\r\n    background:0 0\r\n}\r\n", ""]);
 
@@ -11048,24 +11167,24 @@ exports.push([module.i, "/* BUTTONS */\r\n\r\n.kfrm-buttons {\r\n    align-items
 /***/ }),
 
 /***/ "./node_modules/css-loader/dist/cjs.js?!../../easydata.js/packs/ui/dist/assets/css/easy-grid.css":
-/*!**************************************************************************************************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-grid.css ***!
-  \**************************************************************************************************************************************************************************/
+/*!************************************************************************************************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/cjs.js??ref--6!c:/projects/easydata/easydata.js/packs/ui/dist/assets/css/easy-grid.css ***!
+  \************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../../../../samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, ".keg-container * {\r\n    outline: none;    \r\n}\r\n\r\n\r\n.keg-container {\r\n    overflow: hidden;\r\n}\r\n\r\n.keg-header {\r\n    background-color: #f8f8f8;\r\n    border-bottom: 1px solid #babfc7;\r\n    overflow: hidden;\r\n\r\n}\r\n\r\n.keg-root {\r\n    font-family: \"Roboto\", Arial;\r\n    display: flex;\r\n    flex-direction: column;\r\n    border: 1px solid #babfc7;\r\n}\r\n\r\n.keg-body {\r\n/*\r\n    flex-grow: 1;\r\n    height: calc(100% - 50px);\r\n    width: 100%;\r\n*/    \r\n    overflow: hidden;\r\n\r\n    /* !!! temp */\r\n    /*height: 340px;*/\r\n}\r\n\r\n.keg-body-viewport {\r\n    overflow-x: auto;\r\n    overflow-y: auto;\r\n    height: 100%;\r\n    border: 1px solid transparent;\r\n}\r\n\r\n.keg-body-viewport:focus, .keg-body-viewport:focus-within {\r\n    border: 1px solid #838383;\r\n}\r\n\r\n.keg-header-row {\r\n    min-height: 30px;\r\n    display: flex;\r\n    font-size: 12px;\r\n    font-weight: 600;\r\n    color: rgba(0,0,0,.54);\r\n}\r\n\r\n.keg-row {\r\n    display: flex;\r\n    font-size: 12px;\r\n    background-color: #fff;\r\n    color: #181d1f;\r\n    outline: none;\r\n    border-color: #dde2eb;\r\n    border-width: 1px;\r\n    height: 26px;\r\n    align-items: center;\r\n}\r\n\r\n.keg-row:not(.keg-row-first) {\r\n    border-top-style: solid;\r\n}\r\n\r\n.keg-row:not(.keg-row-active):hover {\r\n    background-color: #fffae9;\r\n}\r\n\r\n.keg-row-odd {\r\n    background-color: #fcfcfc;\r\n}\r\n\r\n.keg-row-active {\r\n    background-color: #fff3cf;\r\n    font-weight: 600;\r\n}\r\n\r\n.keg-cell, .keg-header-cell {\r\n    display: flex;\r\n/*\r\n    flex: 1;\r\n    min-width: 150px;\r\n*/\r\n}\r\n\r\n.keg-header-cell {\r\n    position: relative;\r\n    align-items: center;\r\n    padding: 2px 15px;\r\n}\r\n\r\n.keg-header-cell-resize {\r\n    display: flex;\r\n    align-items: center;\r\n    position: absolute;\r\n    z-index: 2;\r\n    height: 100%;\r\n    width: 8px;\r\n    top: 0;\r\n    /*cursor: ew-resize;*/\r\n    right: -4px;\r\n}\r\n\r\n.keg-header-cell-resize:after {\r\n    content: \"\";\r\n    position: absolute;\r\n    z-index: 1;\r\n    display: block;\r\n    left: calc(50% - 1px);\r\n    width: 2px;\r\n    height: 50%;\r\n    top: 25%;\r\n    background-color: rgba(186,191,199,.5);    \r\n}\r\n\r\n.keg-header-cell-label {\r\n    width: 100%;\r\n    text-align: center;\r\n    word-break: break-word;\r\n    -ms-word-wrap: break-word;\r\n}\r\n\r\n.keg-cell {\r\n    padding: 0 15px;\r\n    border-right-width: 1px;\r\n    border-right: solid transparent;\r\n    align-items: center;\r\n    height: 100%;\r\n    outline: none;\r\n}\r\n\r\n.keg-cell-value {\r\n    width: 100%;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n    max-height: 100%;\r\n}\r\n\r\n/*\r\n.keg-row .keg-cell:first-child, .keg-header-row .keg-header-cell:first-child {\r\n    flex: 0 0 55px;\r\n    min-width: 55px;\r\n}\r\n*/\r\n\r\n.keg-cell-align-left, .keg-cell-value-align-left {\r\n    text-align: left;\r\n}\r\n\r\n.keg-cell-align-right, .keg-cell-value-align-right {\r\n    text-align: right;\r\n}\r\n\r\n.keg-cell-align-center, .keg-cell-value-align-center {\r\n    text-align: center;\r\n}\r\n\r\n.keg-cell-value-bool {\r\n    margin: 0 auto;\r\n    width: auto;\r\n}\r\n\r\n.keg-cell-value-true::before {\r\n    content: \"✔\";\r\n    color: #28a745;\r\n    font-size: 16px;\r\n}\r\n\r\n.keg-cell-value-false::before {\r\n    content: \"✖\";\r\n    color: #dc3545;\r\n    font-size: 16px;\r\n}\r\n\r\n.keg-addrow {\r\n    position: relative;\r\n    height: 23px;\r\n    width: 23px;\r\n}\r\n\r\n.keg-addrow a {\r\n    background: url('data:image/png;base64,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') no-repeat;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: block;\r\n}\r\n\r\n.keg-addrow a:hover {\r\n    background-position: -25px 0 !important;\r\n}\r\n\r\n/* Pagination */\r\n.keg-pagination {\r\n    display: inline-block;\r\n    padding-left: 0;\r\n    margin: 0;\r\n    border-radius: 4px;\r\n}\r\n\r\n.keg-page-item {\r\n    display: inline;\r\n}\r\n\r\n.keg-page-link {\r\n    font-size: 12px;\r\n    background-color: #fff;\r\n    border: 1px solid #ddd;\r\n    color: #428bca;\r\n    float: left;\r\n    line-height: 1.42857;\r\n    margin-left: -1px;\r\n    padding: 5px 10px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n\r\n.keg-page-link:hover, .keg-page-link:focus {\r\n    background-color: #eee;\r\n    border-color: #ddd;\r\n    color: #2a6496;\r\n    border-bottom: #ffd148 2px solid !important;\r\n}\r\n\r\n.keg-page-item.active > .keg-page-link, .keg-page-item.active > .keg-page-link:hover, .keg-page-item.active > .keg-page-link:focus {\r\n    background-color: #428bca;\r\n    border-color: #428bca;\r\n    color: #fff;\r\n    cursor: default;\r\n    z-index: 2;\r\n}\r\n\r\n.keg-page-item.disabled > .keg-page-link, .keg-page-item.disabled > .keg-page-link:hover, .keg-page-item.disabled > .keg-page-link:focus {\r\n    background-color: #fff;\r\n    border-color: #ddd;\r\n    color: #999;\r\n    cursor: not-allowed;\r\n}\r\n\r\n.keg-page-item:first-child > .keg-page-link {\r\n    border-bottom-left-radius: 3px;\r\n    border-top-left-radius: 3px;\r\n    margin-left: 0;\r\n}\r\n\r\n.keg-page-item:last-child > .keg-page-link {\r\n    border-bottom-right-radius: 3px;\r\n    border-top-right-radius: 3px;\r\n}\r\n\r\n.keg-footer {\r\n    display: flex;\r\n    /*justify-content: space-between;*/\r\n    margin-top: 5px;\r\n    flex-wrap: wrap;\r\n}\r\n\r\n.keg-page-info {\r\n    padding: 5px 10px;\r\n    font-size: 16px;\r\n    white-space: nowrap;\r\n    flex: 1 1 auto;\r\n    text-align: end;\r\n    color: rgba(0,0,0,.54);\r\n}\r\n\r\n.keg-page-info > span {\r\n    color: #212529;\r\n}", ""]);
+exports.push([module.i, ".keg-container * {\r\n    outline: none;    \r\n}\r\n\r\n\r\n.keg-container {\r\n    overflow: hidden;\r\n}\r\n\r\n.keg-header {\r\n    background-color: #f8f8f8;\r\n    border-bottom: 1px solid #babfc7;\r\n    overflow: hidden;\r\n\r\n}\r\n\r\n.keg-root {\r\n    font-family: \"Roboto\", Arial;\r\n    display: flex;\r\n    flex-direction: column;\r\n    border: 1px solid #babfc7;\r\n}\r\n\r\n.keg-body {\r\n/*\r\n    flex-grow: 1;\r\n    height: calc(100% - 50px);\r\n    width: 100%;\r\n*/    \r\n    overflow: hidden;\r\n\r\n    /* !!! temp */\r\n    /*height: 340px;*/\r\n}\r\n\r\n.keg-body-viewport {\r\n    overflow-x: auto;\r\n    overflow-y: auto;\r\n    height: 100%;\r\n    border: 1px solid transparent;\r\n}\r\n\r\n.keg-body-viewport:focus, .keg-body-viewport:focus-within {\r\n    border: 1px solid #838383;\r\n}\r\n\r\n.keg-header-row {\r\n    min-height: 30px;\r\n    display: flex;\r\n    font-size: 12px;\r\n    font-weight: 600;\r\n    color: rgba(0,0,0,.54);\r\n}\r\n\r\n.keg-row {\r\n    display: flex;\r\n    font-size: 12px;\r\n    background-color: #fff;\r\n    color: #181d1f;\r\n    outline: none;\r\n    border-color: #dde2eb;\r\n    border-width: 1px;\r\n    border-bottom-style: solid;\r\n    height: 26px;\r\n    align-items: center;\r\n}\r\n\r\n.keg-row:not(.keg-row-active):hover {\r\n    background-color: #fffae9;\r\n}\r\n\r\n.keg-row-odd {\r\n    background-color: #fcfcfc;\r\n}\r\n\r\n.keg-row-active {\r\n    background-color: #fff3cf;\r\n    font-weight: 600;\r\n}\r\n\r\n.keg-cell, .keg-header-cell {\r\n    display: flex;\r\n/*\r\n    flex: 1;\r\n    min-width: 150px;\r\n*/\r\n}\r\n\r\n.keg-header-cell {\r\n    position: relative;\r\n    align-items: center;\r\n    padding: 2px 15px;\r\n}\r\n\r\n.keg-header-cell-resize {\r\n    display: flex;\r\n    align-items: center;\r\n    position: absolute;\r\n    z-index: 2;\r\n    height: 100%;\r\n    width: 8px;\r\n    top: 0;\r\n    /*cursor: ew-resize;*/\r\n    right: -4px;\r\n}\r\n\r\n.keg-header-cell-resize:after {\r\n    content: \"\";\r\n    position: absolute;\r\n    z-index: 1;\r\n    display: block;\r\n    left: calc(50% - 1px);\r\n    width: 2px;\r\n    height: 50%;\r\n    top: 25%;\r\n    background-color: rgba(186,191,199,.5);    \r\n}\r\n\r\n.keg-header-cell-label {\r\n    width: 100%;\r\n    text-align: center;\r\n    word-break: break-word;\r\n    -ms-word-wrap: break-word;\r\n}\r\n\r\n.keg-cell {\r\n    padding: 0 15px;\r\n    border-right-width: 1px;\r\n    border-right: solid transparent;\r\n    align-items: center;\r\n    height: 100%;\r\n    outline: none;\r\n}\r\n\r\n.keg-cell-value {\r\n    width: 100%;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n    max-height: 100%;\r\n}\r\n\r\n/*\r\n.keg-row .keg-cell:first-child, .keg-header-row .keg-header-cell:first-child {\r\n    flex: 0 0 55px;\r\n    min-width: 55px;\r\n}\r\n*/\r\n\r\n.keg-cell-align-left, .keg-cell-value-align-left {\r\n    text-align: left;\r\n}\r\n\r\n.keg-cell-align-right, .keg-cell-value-align-right {\r\n    text-align: right;\r\n}\r\n\r\n.keg-cell-align-center, .keg-cell-value-align-center {\r\n    text-align: center;\r\n}\r\n\r\n.keg-cell-value-bool {\r\n    margin: 0 auto;\r\n    width: auto;\r\n}\r\n\r\n.keg-cell-value-true::before {\r\n    content: \"✔\";\r\n    color: #28a745;\r\n    font-size: 16px;\r\n}\r\n\r\n.keg-cell-value-false::before {\r\n    content: \"✖\";\r\n    color: #dc3545;\r\n    font-size: 16px;\r\n}\r\n\r\n.keg-addrow {\r\n    position: relative;\r\n    height: 23px;\r\n    width: 23px;\r\n}\r\n\r\n.keg-addrow a {\r\n    background: url('data:image/png;base64,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') no-repeat;\r\n    width: 100%;\r\n    height: 100%;\r\n    display: block;\r\n}\r\n\r\n.keg-addrow a:hover {\r\n    background-position: -25px 0 !important;\r\n}\r\n\r\n/* Pagination */\r\n.keg-pagination {\r\n    display: inline-block;\r\n    padding-left: 0;\r\n    margin: 0;\r\n    border-radius: 4px;\r\n}\r\n\r\n.keg-page-item {\r\n    display: inline;\r\n}\r\n\r\n.keg-page-link {\r\n    font-size: 12px;\r\n    background-color: #fff;\r\n    border: 1px solid #ddd;\r\n    color: #428bca;\r\n    float: left;\r\n    line-height: 1.42857;\r\n    margin-left: -1px;\r\n    padding: 5px 10px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n\r\n.keg-page-link:hover, .keg-page-link:focus {\r\n    background-color: #eee;\r\n    border-color: #ddd;\r\n    color: #2a6496;\r\n    border-bottom: #ffd148 2px solid !important;\r\n}\r\n\r\n.keg-page-item.active > .keg-page-link, .keg-page-item.active > .keg-page-link:hover, .keg-page-item.active > .keg-page-link:focus {\r\n    background-color: #428bca;\r\n    border-color: #428bca;\r\n    color: #fff;\r\n    cursor: default;\r\n    z-index: 2;\r\n}\r\n\r\n.keg-page-item.disabled > .keg-page-link, .keg-page-item.disabled > .keg-page-link:hover, .keg-page-item.disabled > .keg-page-link:focus {\r\n    background-color: #fff;\r\n    border-color: #ddd;\r\n    color: #999;\r\n    cursor: not-allowed;\r\n}\r\n\r\n.keg-page-item:first-child > .keg-page-link {\r\n    border-bottom-left-radius: 3px;\r\n    border-top-left-radius: 3px;\r\n    margin-left: 0;\r\n}\r\n\r\n.keg-page-item:last-child > .keg-page-link {\r\n    border-bottom-right-radius: 3px;\r\n    border-top-right-radius: 3px;\r\n}\r\n\r\n.keg-footer {\r\n    display: flex;\r\n    /*justify-content: space-between;*/\r\n    margin-top: 5px;\r\n    flex-wrap: wrap;\r\n}\r\n\r\n.keg-page-info {\r\n    padding: 5px 10px;\r\n    font-size: 16px;\r\n    white-space: nowrap;\r\n    flex: 1 1 auto;\r\n    text-align: end;\r\n    color: rgba(0,0,0,.54);\r\n}\r\n\r\n.keg-page-info > span {\r\n    color: #212529;\r\n}", ""]);
 
 
 
 /***/ }),
 
 /***/ "./node_modules/css-loader/dist/runtime/api.js":
-/*!**************************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/css-loader/dist/runtime/api.js ***!
-  \**************************************************************************************************/
+/*!************************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/css-loader/dist/runtime/api.js ***!
+  \************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11159,9 +11278,9 @@ function toComment(sourceMap) {
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
-/*!**************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/process/browser.js ***!
-  \**************************************************************************************/
+/*!************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/process/browser.js ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -11354,9 +11473,9 @@ process.umask = function() { return 0; };
 /***/ }),
 
 /***/ "./node_modules/style-loader/lib/addStyles.js":
-/*!*************************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/style-loader/lib/addStyles.js ***!
-  \*************************************************************************************************/
+/*!***********************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/addStyles.js ***!
+  \***********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11763,9 +11882,9 @@ function updateLink (link, options, obj) {
 /***/ }),
 
 /***/ "./node_modules/style-loader/lib/urls.js":
-/*!********************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/style-loader/lib/urls.js ***!
-  \********************************************************************************************/
+/*!******************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/style-loader/lib/urls.js ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -11863,9 +11982,9 @@ module.exports = function (css) {
 /***/ }),
 
 /***/ "./node_modules/webpack/buildin/global.js":
-/*!*********************************************************************************************!*\
-  !*** c:/projects/easydata/samples/EasyDataBasicDemo/node_modules/webpack/buildin/global.js ***!
-  \*********************************************************************************************/
+/*!*******************************************************************************************************!*\
+  !*** c:/projects/easydata/samples/EasyDataBasicDemo.NetCore31/node_modules/webpack/buildin/global.js ***!
+  \*******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -11921,6 +12040,7 @@ window.addEventListener('load', function () {
 ﻿__webpack_require__(/*! ../node_modules/@easydata/ui/dist/assets/css/easy-grid.css */ "../../easydata.js/packs/ui/dist/assets/css/easy-grid.css");
 __webpack_require__(/*! ../node_modules/@easydata/ui/dist/assets/css/easy-dialog.css */ "../../easydata.js/packs/ui/dist/assets/css/easy-dialog.css");
 __webpack_require__(/*! ../node_modules/@easydata/ui/dist/assets/css/easy-forms.css */ "../../easydata.js/packs/ui/dist/assets/css/easy-forms.css");
+__webpack_require__(/*! ../node_modules/@easydata/crud/dist/assets/css/ed-view.css */ "../../easydata.js/packs/crud/dist/assets/css/ed-view.css");
 
 /***/ }),
 

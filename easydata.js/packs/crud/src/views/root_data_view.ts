@@ -1,14 +1,18 @@
 import { i18n, MetaData } from '@easydata/core';
 import { domel } from '@easydata/ui';
+import { DataContext } from '../public_api';
 
 export class RootDataView {
 
+    private metaData: MetaData;
+
     constructor (
         private slot: HTMLElement, 
-        private metaData: MetaData, 
+        private context: DataContext, 
         private basePath: string) {
 
-        this.slot.innerHTML = `<h1>${metaData.getId()}</h1>`;
+        this.metaData = this.context.getMetaData();
+        this.slot.innerHTML = `<h1>${this.metaData.getId()}</h1>`;
         this.renderEntitySelector();
     }
 
@@ -28,6 +32,7 @@ export class RootDataView {
                         b.addChild('li', b => {
                             b.addClass('ed-entity-item')
                             .on('click', () => {
+                                this.context.startProcess();
                                 window.location.href = `${this.basePath}/${ent.id}`;
                             })
                             .addChild('div', b => {
