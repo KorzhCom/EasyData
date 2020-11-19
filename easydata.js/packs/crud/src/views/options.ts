@@ -3,5 +3,7 @@ export interface EasyDataViewOptions {
 }
 
 export interface EasyDataViewDispatcherOptions extends EasyDataViewOptions {
+    endpoint?: string,
+    basePath?: string,
     container?: HTMLElement | string;
 }

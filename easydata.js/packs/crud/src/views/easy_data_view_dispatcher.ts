@@ -1,3 +1,5 @@
+import { utils as dataUtils } from '@easydata/core';
+
 import { ProgressBar } from '../widgets/progress_bar';
 import { DataContext } from '../main/data_context';
 import { EntityDataView } from './entity_data_view';
@@ -11,9 +13,11 @@ export class EasyDataViewDispatcher {
 
     private container: HTMLElement;
 
-    constructor(private options?: EasyDataViewDispatcherOptions) {
+    private options?: EasyDataViewDispatcherOptions = { basePath: 'easydata' };
 
-        options = options || {};
+    constructor(options?: EasyDataViewDispatcherOptions) {
+    
+        this.options = dataUtils.assign(options, this.options);
 
         this.setContainer(options.container);
 
@@ -24,6 +28,7 @@ export class EasyDataViewDispatcher {
         parent.insertBefore(progressBarSlot, parent.firstElementChild);
         
         this.context = new DataContext({
+            endpoint: options.endpoint,
             onProcessStart: () => bar.show(),
             onProcessEnd: () => bar.hide()
         });
@@ -63,15 +68,15 @@ export class EasyDataViewDispatcher {
         const splitIndex = decodedUrl.lastIndexOf('/');
         const typeName = decodedUrl.substring(splitIndex + 1);
 
-        return typeName && typeName.toLocaleLowerCase() !== 'easydata'
+        return typeName && typeName.toLocaleLowerCase() !== this.options.basePath
             ? typeName
             : null;
     }
 
     private getBasePath(): string {
         const decodedUrl = decodeURIComponent(window.location.href);
-        const easyDataIndex = decodedUrl.indexOf('easydata');
-        return decodedUrl.substring(0, easyDataIndex + 'easydata'.length);
+        const easyDataIndex = decodedUrl.indexOf(this.options.basePath);
+        return decodedUrl.substring(0, easyDataIndex + this.options.basePath.length);
     }
 
     run(): Promise<void> {
@@ -87,5 +92,6 @@ export class EasyDataViewDispatcher {
                 new RootDataView(this.container, this.context, this.basePath);
             }
         })
+        .catch(error => console.error(error))
     }
 }
