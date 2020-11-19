@@ -1,7 +1,7 @@
 {
     "name": "@easydata/ui",
-    "version": "1.0.0",
-    "description": "EasyData UI widgets",
+    "version": "1.1.0",
+    "description": "EasyData.JS: DOM manipulation functions and UI widgets",
     "types": "./dist/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.ui.js",
     "module": "./dist/lib/public_api.js",
@@ -20,11 +20,14 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
-        "grid",
-        "data",
-        "filtering",
-        "ui",
-        "free"
+        "data grid",
+        "data wdigets",
+        "data dialogs",
+        "data forms",
+        "value editors",
+        "search box",
+        "calendar widget",
+        "data filtering"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
