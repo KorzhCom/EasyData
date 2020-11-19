@@ -1,7 +1,7 @@
 {
     "name": "@easydata/core",
-    "version": "1.0.0",
-    "description": "EasyData core part",
+    "version": "1.1.0",
+    "description": "EasyData.JS core functions, classes, and data structures",
     "types": "./dist/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.core.js",
     "module": "./dist/lib/public_api.js",
@@ -20,10 +20,10 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
-        "data",
         "metadata",
-        "filtering",
-        "free"
+        "data table",
+        "utilities",
+        "data filter"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
