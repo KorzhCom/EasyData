@@ -1,0 +1,88 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+/*-----------------------------------------------------*/
+
+
+.ed-entity-info {
+    float: right;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB4ElEQVRIibXWPWhVQRAF4C/Xh4hFDCGEICIiFiEI1jbyUBNBIY0gFjG2ms5KgogDKRQEbf3pLFLY+UMIRjSFYGWRRlKksBCLECQEsZAQLO5efSb33XcV36l22Zkzu7O7c6ZHBSLiIMZwBkcxiAxr+IgFzGMlIko5ekpIYQg3cQEDVZvAOp7jFj5tD5SVOIzhPaZqkEMfJpPPxe2Lf5wgIibwGHtqEJfhB6ZxrzhJTyKGk3iBvRXOb/A92fa1sdvEZcxGxK8UDaWdtyOHGZyLiPO4lIjK0MB9HOH3HUzjcAU5PI2IrTR+h88VtoOYiQhZROxXcjklaLa8kGH5qatwFsMNnE4RO+EujkXEBiZ0fgi9GG/gVA3ywmGqpm2B0QZGahrfwVIa98svcncHn5GGeumBtxHxCiLigDxlnQL0lv3k/4qicHULG5m8KnYLHzN5ye0WFjK8xmoXyL/hZRYRXzDbhQBzWG6kyW2Mq65H/RFRPOkB5VpSYA03ImKrCLCKq3imfQl4KC/ZEnk7u01cwwo7BWcyEf2r4GziuhbB2dW6uri4uNRsNj/gBPb9JfkqruBRqy6X5XEex/EAX2sQr+NJ8pndLvo7uooCyfCQvAkYlbcthQasYVn+h+ZUtC0/ARh2db08YmvqAAAAAElFTkSuQmCC);
+    height: 24px;
+    width: 24px;
+}
+
+    .ed-entity-info:hover {
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACu0lEQVRIiaWWPWgUURSFvzMsEiyChBCCSDaIRQiCtV3WnygKNoJYaGyz6VKJiFhYKAim3AQ7ixR2/hDEiGMhWNsEixRZEIsQJASxCCHHYmbevN2dXYtcWN7d9+47594zd++OGGCNZnsCmAWuGM4CY4LEsANsCNaBD5jNdLleiaEKUIBx7EdItwyjPUGdtot5i3gMbKWtTqKk4sKs4RtigQDuQQQnEHPAN9u3B1bQaG7dsXkpGCqPTewPopLYBz0AXhSVCGBmfgtJF4B3mOOB1mUKNvsSn4G/wAXgRB+eA+AesJq26plEksZtvwzgcdJldk+A62mrfhN81/ZBOIzLMjVgCXMGymfwQOJ0AFSWsvPUsQFep636YR7wFfhpG9uYfC39McSTRrNN0mi2TwK3Sy3yRcp2JCxhM5N3GOApSeOS6PcxvgZM1YBLwFi35rJBiv3nts/NzG/tge4QGqHahIYxN2rAReOQbWwuwDN/WLBgwB7YtrFdrgHTip9mXkWHRNnWM6TvOeuI0BJwbBC68XSNQp4IHColStNW/SNAo9k+BTz/H4HQcOLOnbLj8sxLP4rMdAo7hr5+ItiJ7waxDCrCDR0yKiONu7qPv5cAG2VmLldF4X2mnaNrlT5sJMB6SZnLot4RVyVRb9ldPl5PgE/Ads/50SX6I/M+SVv1X7ZXQ33FemSJvAb8qAFIegrcQDrt7HsAiLBHGs120dKjtpPww+ySSGbH4uGX5cnDWo60jWjafiNpKEikMJhAXsHsI4FJQlwv/gFiEdjsPqPRbM9hVsBD3WMjliUftkG9yD8A7oNfpK3JHvKC5CqwAkzEEgXgaKVzb9tmUfJqAQ5V/8n2B+zzwLLgd9lFWUd1dIuNza7wK9vnJTrAKysIlcy3QUwaZgWXyV5bxm0jacfmh+R1mzVJm91vE4X9AxO5SnJvFggfAAAAAElFTkSuQmCC');
+    }

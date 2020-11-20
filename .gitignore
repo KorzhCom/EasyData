@@ -355,8 +355,12 @@ easydata.js/**/docs
 package-lock.json
 dist/
 
-
 /samples/**/wwwroot/js/easydata.js
 /samples/**/wwwroot/js/easydata.js.map
 /samples/**/ts/**/*.js
 !/samples/**/ts/styles.js
+
+/playground/**/wwwroot/js/easydata.js
+/playground/**/wwwroot/js/easydata.js.map
+/playground/**/ts/**/*.js
+!/playground/**/ts/styles.js

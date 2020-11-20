@@ -20,14 +20,9 @@ link(corePath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/cor
 link(uiPath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/ui"));
 
 // -------------- demo projects --------------
-link(corePath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.Net5/node_modules/@easydata/core"));
-link(uiPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.Net5/node_modules/@easydata/ui"));
-link(crudPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.Net5/node_modules/@easydata/crud"));
-
-link(corePath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/core"));
-link(uiPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/ui"));
-link(crudPath, path.resolve(__dirname, "../../samples/EasyDataBasicDemo.NetCore31/node_modules/@easydata/crud"));
-
+link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/ui"));
+link(crudPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/crud"));
 
 function link(to, from) {
 	to = trim(to.toLowerCase());
