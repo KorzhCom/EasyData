@@ -43,7 +43,7 @@ export class RootDataView {
                             if (ent.description) {
                                 b.addChild('div', b => {
                                     b.addClass('ed-entity-item-descr')
-                                    .addText(`*&nbsp;${ent.description}`);
+                                    .addText(`${ent.description}`);
                                 });
                             }
                         });
