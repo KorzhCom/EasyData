@@ -3,10 +3,10 @@ name: EasyData.NET Pipeline
 on:
   workflow_dispatch:
     inputs:
-      is_release:
-        description: 'Determines wether build is a release'
+      release_mode:
+        description: 'Release mode ('none', 'dev', 'prod')'
         required: true
-        default: 'false'
+        default: 'none'
 
   push:
     branches: 
@@ -55,10 +55,10 @@ jobs:
         name: packs
         path: ./easydata.net/packs/**/*.nupkg
   
-  release:
-    name: Release
+  release_dev:
+    name: Development Release
     needs: [ build_and_test ]
-    if: github.event.inputs.is_release == 'true' && needs.build_and_test.result == 'success'
+    if: github.event.inputs.release_mode == 'dev' && needs.build_and_test.result == 'success'
     runs-on: windows-latest
 
     steps:        
@@ -75,4 +75,25 @@ jobs:
 
     - name: Publish packages to MyGet
       run: dotnet nuget push packs/**/*.nupkg -s https://www.myget.org/F/korzh-nuget/api/v2/package -k ${{ secrets.MYGET_ACCESS_TOKEN }}
+  
+  release_prod:
+    name: Production Release
+    needs: [ build_and_test ]
+    if: github.event.inputs.release_mode == 'prod' && needs.build_and_test.result == 'success'
+    runs-on: windows-latest
+
+    steps:        
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: packs
+        path: packs
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+
+    - name: Publish packages to MyGet
+      run: dotnet nuget push packs/**/*.nupkg -k ${{ secrets.NUGET_ACCESS_TOKEN }}
     
