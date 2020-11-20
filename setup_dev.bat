@@ -1,3 +1,6 @@
 cd easyquery.js
-call npm run installall
-call npm run build:dev
+npm run installall
+npm run build:dev
+
+cd playground
+call setup_samples
