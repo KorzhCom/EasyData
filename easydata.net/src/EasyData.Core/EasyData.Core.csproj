@@ -3,6 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>EasyData</RootNamespace>
+    <Authors>Korzh.com</Authors>
+    <Description>Basic classes of EasyData library.</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright 2020 (c) Korzh.com. All rights reserved.</Copyright>
+    <PackageTags>database crud filtering</PackageTags>
+    <Configurations>Debug;Release</Configurations>
+    <DocumentationFile>EasyData.xml</DocumentationFile>
+    <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.korzh.com/img/eq-icon64.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

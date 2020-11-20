@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <RootNamespace>EasyData.AspNetCore</RootNamespace>
+    <Authors>Korzh.com</Authors>
+    <Description>ASP.NET Core classes for EasyData library.</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright 2020 (c) Korzh.com. All rights reserved.</Copyright>
+    <PackageTags>database crud middleware filtering</PackageTags>
+    <Configurations>Debug;Release</Configurations>
+    <DocumentationFile>EasyData.AspNetCore.xml</DocumentationFile>
+    <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.korzh.com/img/eq-icon64.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
