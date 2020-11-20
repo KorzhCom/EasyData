@@ -12,7 +12,6 @@ namespace EasyDataBasicDemo.Models
     [MetaEntity(Description = "Categories of Product")]
     public class Category
     {
-
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("CategoryID")]
         public int Id { get; set; }
