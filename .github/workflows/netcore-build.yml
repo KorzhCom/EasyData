@@ -41,13 +41,13 @@ jobs:
         path: ./easydata.net/version.json
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore EasyData.Dev.sln
 
     - name: Build & Pack
       run: dotnet pack EasyData.sln -o ./easydata.net/packs --configuration Release --no-restore -p:Version=${{ fromJSON(steps.version.outputs.content).assemblyVersion }} -p:PackageVersion=${{ fromJSON(steps.version.outputs.content).packageVersion }}
 
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test EasyData.Dev.sln --no-restore --verbosity normal
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
