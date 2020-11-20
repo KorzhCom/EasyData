@@ -12,7 +12,7 @@ export class RootDataView {
         private basePath: string) {
 
         this.metaData = this.context.getMetaData();
-        this.slot.innerHTML = `<h1>${this.metaData.getId()}</h1>`;
+        this.slot.innerHTML += `<h1>${this.metaData.getId()}</h1>`;
         this.renderEntitySelector();
     }
 

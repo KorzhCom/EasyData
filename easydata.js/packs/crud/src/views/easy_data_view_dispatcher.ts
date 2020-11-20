@@ -16,8 +16,11 @@ export class EasyDataViewDispatcher {
     private options?: EasyDataViewDispatcherOptions = { basePath: 'easydata' };
 
     constructor(options?: EasyDataViewDispatcherOptions) {
-    
-        this.options = dataUtils.assign(options, this.options);
+        options = options || {};
+
+        this.options = dataUtils.assign(this.options, options);
+
+        this.options.basePath = this.pretiffyPath(this.options.basePath);
 
         this.setContainer(options.container);
 
@@ -34,6 +37,10 @@ export class EasyDataViewDispatcher {
         });
 
         this.basePath = this.getBasePath();
+    }
+
+    private pretiffyPath(path: string): string {
+        return path.replace(/^\/|\/$/g, '')
     }
 
     private setContainer(container: HTMLElement | string) {
@@ -81,7 +88,7 @@ export class EasyDataViewDispatcher {
 
     run(): Promise<void> {
         return this.context.loadMetaData()
-        .then((metaData) => {
+        .then(() => {
             const activeEntityId = this.getActiveEntityId();
             if (activeEntityId) {
                 this.context.setActiveEntity(activeEntityId);
