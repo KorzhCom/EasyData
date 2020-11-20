@@ -2,10 +2,8 @@ cd .\EasyDataBasicDemo.Net5
 
 call npm install 
 
-cd ../../easydata.js 
+cd ..\EasyDataBasicDemo.NetCore31 
 
-call npm run linkall 
-
-cd ../samples
+npm install 
 
 	
