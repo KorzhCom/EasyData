@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_mode:
-        description: 'Release mode ('none', 'dev', 'prod')'
+        description: 'Release mode (none, dev, prod)'
         required: true
         default: 'none'
 
