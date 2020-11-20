@@ -166,15 +166,15 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with: 
-        scope: '@easydata'
+        registry-url: 'https://registry.npmjs.org'
 
     - name: Publish @easydata/core
       run: npm publish packs/core --access public
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
-    - name: Publish @easydata/ui --access public
-      run: npm publish packs/ui
+    - name: Publish @easydata/ui
+      run: npm publish packs/ui --access public
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
