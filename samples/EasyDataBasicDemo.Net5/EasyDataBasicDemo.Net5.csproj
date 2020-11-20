@@ -5,23 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ts\easydata.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="EasyData.AspNetCore" Version="1.1.0-rc1" />
+    <PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.1.0-rc1" />
     <PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
     <PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\easydata.net\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\easydata.net\src\EasyData.Core\EasyData.Core.csproj" />
-    <ProjectReference Include="..\..\easydata.net\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ts\easydata.ts" />
   </ItemGroup>
 
   <ItemGroup>

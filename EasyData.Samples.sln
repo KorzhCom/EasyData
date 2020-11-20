@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.Net5", "samples\EasyDataBasicDemo.Net5\EasyDataBasicDemo.Net5.csproj", "{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.NetCore31", "samples\EasyDataBasicDemo.NetCore31\EasyDataBasicDemo.NetCore31.csproj", "{A7B1EF24-2DDF-4512-AF72-34102913BF78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7B1EF24-2DDF-4512-AF72-34102913BF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7B1EF24-2DDF-4512-AF72-34102913BF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7B1EF24-2DDF-4512-AF72-34102913BF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7B1EF24-2DDF-4512-AF72-34102913BF78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15562A42-D965-4A8E-B708-CF2E36429B26}
+	EndGlobalSection
+EndGlobal
