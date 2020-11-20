@@ -94,6 +94,6 @@ jobs:
       with:
         dotnet-version: 3.1.301
 
-    - name: Publish packages to MyGet
-      run: dotnet nuget push packs/**/*.nupkg -k ${{ secrets.NUGET_ACCESS_TOKEN }}
+    - name: Publish packages to NuGet
+      run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }}
     

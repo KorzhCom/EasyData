@@ -165,18 +165,20 @@ jobs:
 
     - name: Use Node.js
       uses: actions/setup-node@v1
+      with: 
+        scope: '@easydata'
 
     - name: Publish @easydata/core
-      run: npm publish packs/core
+      run: npm publish packs/core --access public
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
-    - name: Publish @easydata/ui
+    - name: Publish @easydata/ui --access public
       run: npm publish packs/ui
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud
+      run: npm publish packs/crud --access public
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
