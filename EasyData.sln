@@ -21,9 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.NetCore31
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.EntityFrameworkCore.Relational.Tests", "easydata.net\test\EasyData.EntityFrameworkCore.Relational.Tests\EasyData.EntityFrameworkCore.Relational.Tests.csproj", "{CEC7BE02-590B-4476-820C-D0952897B4FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo", "samples\EasyDataBasicDemo\EasyDataBasicDemo.csproj", "{265323AC-818D-409C-A811-CDB3112DD34C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.Net5", "samples\EasyDataBasicDemo.Net5\EasyDataBasicDemo.Net5.csproj", "{265323AC-818D-409C-A811-CDB3112DD34C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyData.AspNetCore.Tests", "easydata.net\test\EasyData.AspNetCore.Tests\EasyData.AspNetCore.Tests.csproj", "{7AC48CCF-EACC-4B11-A81A-EE34DDFD9302}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore.Tests", "easydata.net\test\EasyData.AspNetCore.Tests\EasyData.AspNetCore.Tests.csproj", "{7AC48CCF-EACC-4B11-A81A-EE34DDFD9302}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

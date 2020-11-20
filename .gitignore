@@ -355,12 +355,8 @@ easydata.js/**/docs
 package-lock.json
 dist/
 
-/samples/EasyDataBasicDemo/wwwroot/js/easydata.js.map
-/samples/EasyDataBasicDemo/wwwroot/js/easydata.js
-/samples/EasyDataBasicDemo.NetCore31/wwwroot/js/easydata.js
-/samples/EasyDataBasicDemo.NetCore31/wwwroot/js/easydata.js.map
 
-/samples/EasyDataBasicDemo/ts/**/*.js
-!/samples/EasyDataBasicDemo/ts/styles.js
-/samples/EasyDataBasicDemo.NetCore31/ts/**/*.js
-!/samples/EasyDataBasicDemo.NetCore31/ts/styles.js
+/samples/**/wwwroot/js/easydata.js
+/samples/**/wwwroot/js/easydata.js.map
+/samples/**/ts/**/*.js
+!/samples/**/ts/styles.js

@@ -1,4 +1,4 @@
-cd .\EasyDataBasicDemo 
+cd .\EasyDataBasicDemo.Net5 
 
 call npm install 
 
