@@ -13,6 +13,8 @@ export class RootDataView {
 
         this.metaData = this.context.getMetaData();
         this.slot.innerHTML += `<h1>${this.metaData.getId()}</h1>`;
+
+        console.log('Base bath', this.basePath);
         this.renderEntitySelector();
     }
 
@@ -33,7 +35,7 @@ export class RootDataView {
                             b.addClass('ed-entity-item')
                             .on('click', () => {
                                 this.context.startProcess();
-                                window.location.href = `${this.basePath}/${ent.id}`;
+                                window.location.href = `${this.basePath}/${decodeURIComponent(ent.id)}`;
                             })
                             .addChild('div', b => {
                                 b.addClass('ed-entity-item-caption')

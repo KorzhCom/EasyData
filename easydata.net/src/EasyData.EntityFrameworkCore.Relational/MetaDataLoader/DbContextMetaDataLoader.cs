@@ -61,7 +61,11 @@ namespace EasyData.EntityFrameworkCore
             foreach (var entityType in entityTypes) {
                 if (EntityTypeEntities.TryGetValue(entityType, out var entity)) {
                     var navigations = entityType.GetNavigations();
-                    int attrCount = entity.Attributes.Max(attr => attr.Index) + 1;
+
+                    int attrCount = entity.Attributes
+                        .Select(attr => attr.Index)
+                        .DefaultIfEmpty(0).Max() + 1;
+
                     foreach (var navigation in navigations) {
                         ProcessNavigationProperty(entity, entityType, context.Model, navigation, ref attrCount);
                     }

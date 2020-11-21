@@ -82,8 +82,8 @@ export class EasyDataViewDispatcher {
 
     private getBasePath(): string {
         const decodedUrl = decodeURIComponent(window.location.href);
-        const easyDataIndex = decodedUrl.indexOf(this.options.basePath);
-        return decodedUrl.substring(0, easyDataIndex + this.options.basePath.length);
+        const optBasePathIndex = decodedUrl.toLocaleLowerCase().indexOf(this.options.basePath);
+        return decodedUrl.substring(0, optBasePathIndex + this.options.basePath.length);
     }
 
     run(): Promise<void> {

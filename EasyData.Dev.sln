@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.EntityFrameworkCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataAspNetCoreTest01", "playground\EasyDataAspNetCoreTest01\EasyDataAspNetCoreTest01.csproj", "{6A3E57D5-CA33-4055-9D8D-69186B51F94C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDataAspNetCoreTest02", "playground\EasyDataAspNetCoreTest02\EasyDataAspNetCoreTest02.csproj", "{19E8A685-2D14-4D2A-9E68-449257156252}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{6A3E57D5-CA33-4055-9D8D-69186B51F94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A3E57D5-CA33-4055-9D8D-69186B51F94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A3E57D5-CA33-4055-9D8D-69186B51F94C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19E8A685-2D14-4D2A-9E68-449257156252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19E8A685-2D14-4D2A-9E68-449257156252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19E8A685-2D14-4D2A-9E68-449257156252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19E8A685-2D14-4D2A-9E68-449257156252}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{E3DC30EE-52B0-4CEC-959B-71A4DC01DAB7} = {CFBEA05D-5911-42F0-B647-AF9FCC95B5DA}
 		{F2686C76-54B1-4174-9EDE-58C3E80B0C56} = {CFBEA05D-5911-42F0-B647-AF9FCC95B5DA}
 		{6A3E57D5-CA33-4055-9D8D-69186B51F94C} = {15E56031-436B-4009-991A-0C0981A93F76}
+		{19E8A685-2D14-4D2A-9E68-449257156252} = {15E56031-436B-4009-991A-0C0981A93F76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {10A72635-95B3-4077-908D-02AAA9A49601}

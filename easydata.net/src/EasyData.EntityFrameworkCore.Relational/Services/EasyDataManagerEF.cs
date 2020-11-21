@@ -126,10 +126,9 @@ namespace EasyData.Services
 
         private IEntityType GetCurrentEntityType(DbContext dbContext, string entityContainer)
         {
-            var entityType = dbContext.Model.FindEntityType(dbContext
-                .GetType()
-                .Assembly.GetTypes()
-                .FirstOrDefault(t => t.Name == entityContainer));
+            var entityType = dbContext.Model.GetEntityTypes()
+                .FirstOrDefault(ent => 
+                    ent.Name.Split('.').LastOrDefault() == entityContainer);
 
             if (entityType == null) {
                 throw new ContainerNotFoundException(entityContainer);

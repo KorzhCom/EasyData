@@ -24,6 +24,10 @@ link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest0
 link(uiPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/ui"));
 link(crudPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/crud"));
 
+link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest02/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest02/node_modules/@easydata/ui"));
+link(crudPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest02/node_modules/@easydata/crud"));
+
 function link(to, from) {
 	to = trim(to.toLowerCase());
 	from = trim(from.toLowerCase());
