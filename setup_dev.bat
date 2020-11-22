@@ -1,7 +1,11 @@
 cd playground
 call setup_dev.bat
+cd ..
 
-cd easyquery.js
-npm run installall
-npm run build:dev
+cd easydata.js
+call npm run installall
+call npm run build:dev
+cd ..
+
+
 
