@@ -1,11 +1,8 @@
-rem cd .\EasyDataBasicDemo.Net5 
-rem call npm install 
+cd .\EasyDataAspNetCoreTest01 
+call npm install 
 
-rem cd ..\EasyDataBasicDemo.NetCore31 
-rem npm install 
+cd ..\EasyDataAspNetCoreTest02 
+call npm install 
 
-set easyDataJsCoreDir=..\easydata.js\packs\core 
+cd ..
 
-mkdir EasyDataAspNetCoreDemo01\node_modules\@easydata
-
-mklink /D .\EasyDataAspNetCoreDemo01\node_modules\@easydata\core ..\easydata.js\packs\core
