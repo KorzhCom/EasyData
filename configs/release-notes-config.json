@@ -1,4 +1,8 @@
 {
+    "aistant": {
+        "username": "",
+        "password": ""
+    },
     "git": {
         "projects": [
             {
