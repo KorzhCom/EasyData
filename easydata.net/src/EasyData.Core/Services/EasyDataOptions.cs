@@ -40,5 +40,12 @@ namespace EasyData.Services
         {
            
         }
+
+        /// <summary>
+        /// Gets or sets the options builder for metadata loader.
+        /// This action will be called before metadata loader creation to adjust the options passed to it
+        /// </summary>
+        /// <value>The options builder for metadata loader.</value>
+        public Action<object> MetaDataLoaderOptionsBuilder { get; set; }
     }
 }

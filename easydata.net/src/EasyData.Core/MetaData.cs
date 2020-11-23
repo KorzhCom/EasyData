@@ -50,7 +50,7 @@ namespace EasyData
         /// <value>
         /// Model's ID.
         /// </value>
-        public string ID { get; set; }
+        public string Id { get; set; }
 
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace EasyData
         /// </summary>
         public MetaData()
         {
-            ID = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
 
             EntityRoot = CreateRootEntity();
 
@@ -389,8 +389,8 @@ namespace EasyData
 
         private void CheckModelId()
         {
-            if (string.IsNullOrEmpty(ID)) {
-                ID = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(Id)) {
+                Id = Guid.NewGuid().ToString();
             }
         }
 
@@ -738,7 +738,7 @@ namespace EasyData
             CheckModelId();
 
             await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-            await writer.WriteValueAsync(ID).ConfigureAwait(false);
+            await writer.WriteValueAsync(Id).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
             await writer.WriteValueAsync(Name).ConfigureAwait(false);
@@ -844,7 +844,7 @@ namespace EasyData
                     ModelVersion = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
                     break;
                 case "id":
-                    ID = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "name":
                     Name = await reader.ReadAsStringAsync().ConfigureAwait(false);

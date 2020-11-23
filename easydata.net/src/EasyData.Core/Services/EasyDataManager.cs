@@ -65,13 +65,28 @@ namespace EasyData.Services
 
         protected readonly EasyDataOptions Options;
 
+        protected MetaData Model { get; private set; } = new MetaData();
+
+
         public EasyDataManager(IServiceProvider services, EasyDataOptions options)
         {
             Services = services;
             Options = options;
         }
 
-        public abstract Task<MetaData> GetModelAsync(string modelId);
+        public async Task<MetaData> GetModelAsync(string modelId)
+        {
+            if (Model.Id !=modelId) {
+                //TODO: Try to load model from cache
+
+                await LoadModelAsync(modelId);
+            }
+
+            return Model;
+        }
+
+
+        public abstract Task LoadModelAsync(string modelId);
 
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, string filter = null, bool isLookup = false, int? offset = null, int? fetch = null);
 
