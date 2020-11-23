@@ -12,9 +12,8 @@ export class RootDataView {
         private basePath: string) {
 
         this.metaData = this.context.getMetaData();
-        this.slot.innerHTML += `<h1>${this.metaData.getId()}</h1>`;
+        this.slot.innerHTML += `<h1>${i18n.getText('RootViewTitle')}</h1>`;
 
-        console.log('Base bath', this.basePath);
         this.renderEntitySelector();
     }
 
@@ -26,7 +25,7 @@ export class RootDataView {
                 .addClass('ed-root')
                 .addChild('div', b => b
                     .addClass('ed-menu-description')
-                    .addText(i18n.getText('EntityMenuDesc'))
+                    .addText(i18n.getText(!this.metaData.isEmpty() ? 'EntityMenuDesc' : 'ModelIsEmpty'))
                 )
                 .addChild('ul', b => {
                     b.addClass('ed-entity-menu');
