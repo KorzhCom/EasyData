@@ -78,13 +78,13 @@ namespace EasyData.EntityFrameworkCore
 
         protected string GetEntityId(IEntityType entityType)
         {
-            var entityName = GetEntityName(entityType);
+            var entityName = GetEntityNameByType(entityType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
-        protected string GetEntityName(IEntityType entityType)
+        protected string GetEntityNameByType(IEntityType entityType)
         { 
-            return entityType.Name.Split('.').Last();
+            return entityType.ClrType.Name.Split('`').First();
         }
 
 
@@ -94,7 +94,7 @@ namespace EasyData.EntityFrameworkCore
             var entity = Model.CreateEntity();
             var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
-            entity.Name = DataUtils.PrettifyName(GetEntityName(entityType));
+            entity.Name = DataUtils.PrettifyName(GetEntityNameByType(entityType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             entity.ObjType = entityType.ClrType;
@@ -252,7 +252,7 @@ namespace EasyData.EntityFrameworkCore
 
         protected virtual MetaEntityAttr CreateEntityAttribute(IEntityType entityType, IProperty property)
         {
-            var entityName = GetEntityName(entityType);
+            var entityName = GetEntityNameByType(entityType);
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
