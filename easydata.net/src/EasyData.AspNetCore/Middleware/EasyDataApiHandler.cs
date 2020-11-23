@@ -50,16 +50,16 @@ namespace EasyData.AspNetCore
         /// <param name="modelId">The model identifier.</param>
         public virtual async Task HandleGetModelAsync(string modelId)
         {
-            var model = await Manager.GetModelAsync(modelId);
-            if (model != null && !model.IsEmpty) {
-                model.ID = "EasyData";
+            try {
+                var model = await Manager.GetModelAsync(modelId);
+                model.Id = "EasyData";
                 await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
                     await WriteGetModelResponseAsync(jsonWriter, model);
                 });
             }
-            else {
+            catch (EasyDataManagerException ex) {
                 HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                await WriteErrorJsonResponseAsync(HttpContext, $"Model [{modelId}] not found");
+                await WriteErrorJsonResponseAsync(HttpContext, $"Model [{modelId}] not found. \r\nReason:" + ex.Message);
             }
         }
 

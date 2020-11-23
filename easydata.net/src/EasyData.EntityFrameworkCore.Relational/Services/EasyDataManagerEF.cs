@@ -17,22 +17,24 @@ namespace EasyData.Services
 {
     public class EasyDataManagerEF<TDbContext>: EasyDataManager where TDbContext: DbContext
     {
-
         protected readonly TDbContext DbContext;
 
-        protected MetaData Model { get; private set; }
+        protected EasyDataOptions Options { get; private set; }
 
         public EasyDataManagerEF(IServiceProvider services, EasyDataOptions options): base(services, options)
         {
             DbContext = (TDbContext)services.GetService(typeof(TDbContext)) 
                 ?? throw new ArgumentNullException($"DbContext is not registered in services: {typeof(TDbContext)}");
+
+            Options = options;
         }
 
-        public override Task<MetaData> GetModelAsync(string modelId)
+        public override Task LoadModelAsync(string modelId)
         {
-            Model = new MetaData();
-            Model.ID = modelId;
-            Model.LoadFromDbContext(DbContext);
+            Model.Id = modelId;
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
+            Options.MetaDataLoaderOptionsBuilder?.Invoke(loaderOptions);
+            Model.LoadFromDbContext(DbContext, loaderOptions);
             return Task.FromResult(Model);
         }
 
