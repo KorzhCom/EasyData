@@ -19,7 +19,9 @@ function addEasyDataCRUDTexts() {
         EntityMenuDesc: 'Click on an entity to view/edit its content',
         BackToEntities: 'Back to entities',
         SearchBtn: 'Search',
-        SearchInputPlaceholder: 'Search...'
+        SearchInputPlaceholder: 'Search...',
+        RootViewTitle: 'Entities',
+        ModelIsEmpty: 'No entity was found.'
     });
 }
 
