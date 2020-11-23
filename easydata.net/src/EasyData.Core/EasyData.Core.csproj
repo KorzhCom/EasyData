@@ -11,7 +11,7 @@
     <Configurations>Debug;Release</Configurations>
     <DocumentationFile>EasyData.xml</DocumentationFile>
     <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
-    <PackageIconUrl>https://cdn.korzh.com/img/eq-icon64.png</PackageIconUrl>
+    <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
