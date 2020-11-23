@@ -8,14 +8,14 @@ Basically, EasyData does the following two things:
 
 * Then, based on that metadata, it provides an API endpoint for all CRUD operations and renders the UI (pages and dialogs) that communicate with the API endpoint for data-management tasks.
 
-The real advantage here is that whenever you change something in your DbContext (add a new DbSet or a new property in the model class), the UI will automatically adjust to those changes.
+The real advantage here is that whenever you change something in your DbContext (add a new DbSet or a property in the model class), the UI automatically adjusts to those changes.
 
 So, as you can see, EasyData can be very useful for quick prototyping of any database-related ASP.NET Core project. In just minutes you'll have a working web app with all CRUD forms for your database.
 
 
 ## Getting started
 
-First of all, to test EasyData you can open and run our [sample project](https://github.com/korzh/EasyData/tree/master/samples). 
+First of all, to test EasyData you can open and run one of the [sample projects](https://github.com/korzh/EasyData/tree/master/samples) available in this repository. 
 
 Installing EasyData to your own project takes the following 3 simple steps:
 
@@ -32,7 +32,7 @@ using EasyData.Services;
 
     app.UseEndpoints(endpoints =>
     {
-        endpoints.MapEasyData(optionsTuner: (options) => {
+        endpoints.MapEasyData(options => {
             options.UseDbContext<AppDbContext>();
         });
 
@@ -46,21 +46,26 @@ In the middleware options we also specify the type of DbContext object that will
 ### 3. Set up a catch-all page for all CRUD operations
 
 If you're using Razor Pages, add a new page (for example `EasyData.chstml`). If it’s MVC, you'll need a controller and a view.
-This page will "catch" all URLs that begin with a certain prefix (`/easydata` in our example). So, we use a special catch-all parameter in the route definition (`"/easydata/{**entity}"`).
+This page will "catch" all URLs that begin with a certain prefix (`/easydata` by default but it's configurable). So, we use a special catch-all parameter in the route definition (`"/easydata/{**entity}"`).
 
-We also add `easydata.crud.min.js` script, which facilitates the rendering of data-management UI and handles all CRUD operations.
+We also add EasyData styles and the script file (`easydata.min.js`), which renders the data-management UI and handles all CRUD operations on the client-side.
 
 ```
 @page "/easydata/{**entity}"
 @{
     ViewData["Title"] = "EasyData";
 }
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.1.1/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
-
-    <script src="https://cdn.korzh.com/ed/1.1.0/easydata.crud.min.js" type="text/javascript"></script>
+    <script src="https://cdn.korzh.com/ed/1.1.1/easydata.min.js" type="text/javascript"></script>
+    <script>
+        window.addEventListener('load', function () {
+            new easydata.crud.EasyDataViewDispatcher().run()
+        });
+    </script>
 }
 ```
 
@@ -71,16 +76,17 @@ That’s it. Now you can run your web app, open the `/easydata` URL and enjoy CR
 
 ### 1.  Declarative approach
 
-All aspects of your CRUD UI are controlled by the data structure defined in DbContext. If you need to tune it up (e.g., to to hide a table or some fields or perhaps change their names), there are special attributes for your model classes and properties with which to do that.
+All aspects of your CRUD UI are controlled by the data structure defined in DbContext. If you need to tune it up (for example, to hide a table or some fields, or, perhaps, to change their names), there are special attributes for your model classes and properties with which to do that.
 
 ### 2. Automatic UI rendering
 
 All data forms and dialogs are rendered automatically by EasyData.JS script according to the metadata acquired from the DbContext and your annotations on model classes and their properties.
-The script can be used with any framework or library used on the client side, such as Razor Pages, MVC Views, Angular, React, Vue, etc.
+
+The script can be used with any framework or library used on the client-side, such as Razor Pages, MVC Views, Angular, React, Vue, etc.
 
 ### 3. Ad hoc data filtering
 
-In the data view mode, EasyData provides with a data-filtering functionality, which works out of the box and requires no additional setup or coding.
+In the data view mode, EasyData provides a data-filtering functionality, which works out of the box and requires no additional setup or coding.
 
 ## Questions, Suggestions?
 
