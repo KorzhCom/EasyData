@@ -63,8 +63,10 @@ namespace EasyDataBasicDemo
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapEasyData((options) => {
-                    options.UseDbContext<ApplicationDbContext>();
+                endpoints.MapEasyData(options => {
+                    options.UseDbContext<ApplicationDbContext>(loaderOptions => {
+                        loaderOptions.AddFilter(entityType => !entityType.ClrType.Name.StartsWith("Identity"));
+                    });
                 });
 
                 endpoints.MapRazorPages();

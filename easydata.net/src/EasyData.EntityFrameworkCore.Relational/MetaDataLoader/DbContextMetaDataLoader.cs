@@ -40,8 +40,7 @@ namespace EasyData.EntityFrameworkCore
         }
 
         public virtual void LoadFromDbContext(DbContext context)
-        {
- 
+        { 
             TableEntity.Clear();
 
             var entityTypes = GetEntityTypes(context.Model);
