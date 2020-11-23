@@ -2,11 +2,6 @@ name: Create release
 
 on:
   workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Version'
-        required: true
-        default: '1.0.0'
 
 jobs:
   release_notes:
@@ -20,17 +15,23 @@ jobs:
         with:
           dotnet-version: 3.1.301
 
+      - name: Read version.json
+        id: version
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./easydata.net/version.json
+
       - name: Install AistDoc
         run: dotnet tool install  Aistant.DocImport --tool-path  ./tool
 
       - name: Run AistDoc
-        run: ./tool/aistdoc changelog easydata --config:./configs/release-notes-config.json --pat:${{ secrets.GITHUB_TOKEN }} --output:./tool/releaseNotes.md --version:${{ github.event.inputs.release_version }}
+        run: ./tool/aistdoc changelog easydata --config:./configs/release-notes-config.json --pat:${{ secrets.GITHUB_TOKEN }} --output:./tool/releaseNotes.md --version:${{ fromJSON(steps.version.outputs.content).packageVersion }}
 
       - name: Create tag
         uses: tvdias/github-tagger@v0.0.1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          tag: "v${{ github.event.inputs.release_version }}"
+          tag: "v${{ fromJSON(steps.version.outputs.content).packageVersion }}"
 
       - name: Create Release
         id: create_release
@@ -39,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           tag_name: ${{ github.ref }}
-          release_name: EasyData ${{ github.event.inputs.release_version }}
+          release_name: EasyData ${{ fromJSON(steps.version.outputs.content).packageVersion }}
           body-path: ./tool/releaseNotes.md
           draft: true
           prerelease: false
