@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -9,7 +8,7 @@ namespace EasyData.EntityFrameworkCore
     using EntityFilter = Func<IEntityType, bool>;
 
     /// <summary>
-    /// Contains different options for <see cref="DbContextLoader"/>
+    /// Contains different options for <see cref="DbContextMetaDataLoader"/>
     /// </summary>
     public class DbContextMetaDataLoaderOptions
     {
@@ -21,7 +20,7 @@ namespace EasyData.EntityFrameworkCore
         private List<EntityFilter> _filters = new List<EntityFilter>();
 
         /// <summary>
-        /// Adds a filter, which will be used during model loading from <see cref="DbContext"/> 
+        /// Adds a filter, which will be used during model loading from <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
         /// </summary>
         /// <param name="filter"></param>
         public void AddFilter(EntityFilter filter)
