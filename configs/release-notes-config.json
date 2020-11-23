@@ -1,0 +1,17 @@
+{
+    "git": {
+        "projects": [
+            {
+                "id": "easydata",
+                "tag": "ed",
+                "repositories": [
+                    {
+                        "path": "./",
+                        "branch": "origin/master",
+                        "cloneIfNotExist": false
+                    }
+                ]
+            }
+        ]
+    } 
+}
