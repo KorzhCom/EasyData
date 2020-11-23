@@ -62,7 +62,7 @@ namespace EasyData
         /// Gets or sets the type of the entity.
         /// </summary>
         /// <value>The type of the entity.</value>
-        public Type ObjType { get; set; }
+        public Type ClrType { get; set; }
 
 
         /// <summary>

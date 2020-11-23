@@ -240,7 +240,7 @@ namespace EasyData.Services
 
         private FullTextSearchOptions GetFilterOptions(Type entityType, bool isLookup)
         {
-            var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ObjType == entityType);
+            var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == entityType);
             return new FullTextSearchOptions {
                 Filter = (prop) => {
                     var attr = entity?.FindAttribute(a => a.PropInfo == prop);
