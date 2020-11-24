@@ -12,6 +12,10 @@ The real advantage here is that whenever you change something in your DbContext 
 
 So, as you can see, EasyData can be very useful for quick prototyping of any database-related ASP.NET Core project. In just minutes you'll have a working web app with all CRUD forms for your database.
 
+## Quick demo
+
+![EasyData quick demo](https://cdn.korzh.com/img/easydata-demo01.gif "EasyData quick demo")
+
 
 ## Getting started
 
