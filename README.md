@@ -6,7 +6,7 @@
 
 ## About
 
-EasyData library lets you quickly build a UI for CRUD (Create, Retrieve, Update, Delete) operations in any ASP.NET Core application that uses Entity Framework Core.
+EasyData library lets you quickly build a UI for CRUD (Create, Read, Update, Delete) operations in any ASP.NET Core application that uses Entity Framework Core.
 
 Basically, EasyData does the following two things:
  
