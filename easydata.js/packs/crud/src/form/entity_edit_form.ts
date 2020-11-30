@@ -1,6 +1,6 @@
 import { 
     DataType, i18n, utils as dataUtils, 
-    MetaEntityAttr, DataRow, MetaEditorTag, 
+    MetaEntityAttr, DataRow, EditorTag, 
     MetaValueEditor, EntityAttrKind, EasyDataTable 
 } from '@easydata/core';
 
@@ -171,12 +171,12 @@ export class EntityEditForm {
                     : undefined;
     
                 const editor = getEditor(attr);
-                if (editor.tag == MetaEditorTag.Unknown) {
+                if (editor.tag == EditorTag.Unknown) {
                     if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
-                        editor.tag = MetaEditorTag.DateTime;
+                        editor.tag = EditorTag.DateTime;
                     }
                     else {
-                        editor.tag = MetaEditorTag.Edit;  
+                        editor.tag = EditorTag.Edit;  
                     }
                 }
 
@@ -354,7 +354,7 @@ export class EntityEditForm {
                 }
     
                 switch (editor.tag) {
-                    case MetaEditorTag.DateTime:
+                    case EditorTag.DateTime:
                         domel(parent)
                          .addChild('input', b => { 
     
@@ -391,7 +391,7 @@ export class EntityEditForm {
                          });
                         break;
     
-                    case MetaEditorTag.List:
+                    case EditorTag.List:
                         domel(parent)
                             .addChild('select', b => {
                                 if (readOnly)
@@ -410,7 +410,7 @@ export class EntityEditForm {
                                 }
                             });
     
-                    case MetaEditorTag.Edit:
+                    case EditorTag.Edit:
                         default:
                             domel(parent)
                                 .addChild('input', b => {

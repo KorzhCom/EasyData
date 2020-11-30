@@ -1,7 +1,7 @@
 //types
 export * from './types/data_type'
 export * from './types/entity_attr_kind'
-export * from './types/meta_editor_tag'
+export * from './types/editor_tag'
 
 //http
 export * from './http/http_method'
@@ -11,12 +11,12 @@ export * from './http/http_client'
 //meta data dto
 export * from './meta/dto/meta_data_dto'
 export * from './meta/dto/meta_entity_dto'
-export * from './meta/dto/meta_value_editor_dto'
+export * from './meta/dto/value_editor_dto'
 
 //meta data
 export * from './meta/meta_data'
 export * from './meta/meta_entity'
-export * from './meta/meta_value_editor'
+export * from './meta/value_editor'
 
 //data
 export * from './data/data_column'

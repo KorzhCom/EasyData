@@ -1,5 +1,5 @@
 import { MetaEntityDTO } from "./meta_entity_dto";
-import { MetaValueEditorDTO } from "./meta_value_editor_dto";
+import { ValueEditorDTO } from "./value_editor_dto";
 
 export interface MetaDataDTO {
     /** The id. */
@@ -9,7 +9,7 @@ export interface MetaDataDTO {
     /** The caption. */
     vers: string;
     /** List of editors. */
-    editors?: MetaValueEditorDTO[];
+    editors?: ValueEditorDTO[];
     /** Root entity. */
     entroot: MetaEntityDTO;
 }

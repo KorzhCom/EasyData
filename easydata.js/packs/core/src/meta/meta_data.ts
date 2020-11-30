@@ -1,12 +1,12 @@
 import { i18n } from '../i18n/i18n';
 import { utils } from '../utils/utils';
 
-import { MetaEditorTag } from '../types/meta_editor_tag';
+import { EditorTag } from '../types/editor_tag';
 import { DataType } from '../types/data_type';
 
 import { MetaDataDTO } from './dto/meta_data_dto';
 import { MetaEntity, MetaEntityAttr } from './meta_entity';
-import { MetaValueEditor } from './meta_value_editor';
+import { MetaValueEditor } from './value_editor';
 
 /**
  * Represents a data model
@@ -372,11 +372,11 @@ export class MetaData {
     public addDefaultValueEditors() {
         let ve: MetaValueEditor;
 
-        ve = this.addOrUpdateValueEditor('_DTE', MetaEditorTag.Edit, DataType.String);
+        ve = this.addOrUpdateValueEditor('_DTE', EditorTag.Edit, DataType.String);
         ve.defValue = '';
 
-        this.addOrUpdateValueEditor('_DPDE', MetaEditorTag.DateTime, DataType.DateTime);
-        this.addOrUpdateValueEditor('_DPTE', MetaEditorTag.DateTime, DataType.DateTime);
+        this.addOrUpdateValueEditor('_DPDE', EditorTag.DateTime, DataType.DateTime);
+        this.addOrUpdateValueEditor('_DPTE', EditorTag.DateTime, DataType.DateTime);
     }
 
      /**
@@ -386,7 +386,7 @@ export class MetaData {
      * @param resType The result type.
      * @returns The value editor.
      */
-    public addOrUpdateValueEditor(id: string, tag: MetaEditorTag, resType: DataType): MetaValueEditor {
+    public addOrUpdateValueEditor(id: string, tag: EditorTag, resType: DataType): MetaValueEditor {
         let ve = utils.findItemById(this.editors, id);
         if (!ve) {
             ve = this.createValueEditor();
