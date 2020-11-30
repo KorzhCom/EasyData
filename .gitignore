@@ -360,6 +360,11 @@ dist/
 /samples/**/ts/**/*.js
 !/samples/**/ts/styles.js
 
+
+/samples/**/*.db
+/samples/**/*.db-shm
+/samples/**/*.db-wal
+
 /playground/**/wwwroot/js/easydata.js
 /playground/**/wwwroot/js/easydata.js.map
 /playground/**/ts/**/*.js
