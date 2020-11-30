@@ -1,0 +1,43 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release_notes:
+    name: "Create release & release notes"
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch unshallow
+        run: git fetch --prune --tags --unshallow
+  
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '2.1.x'
+
+      - name: Read version.json
+        id: version
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./easydata.net/version.json
+
+      - name: Install AistDoc
+        run: dotnet tool install  Aistant.DocImport --tool-path  ./tool
+
+      - name: Run AistDoc
+        run: ./tool/aistdoc changelog easydata --config:./configs/release-notes-config.json --pat:${{ secrets.GITHUB_TOKEN }} --output:./tool/releaseNotes.md --version:${{ fromJSON(steps.version.outputs.content).packageVersion }}
+        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          tag_name: "v${{ fromJSON(steps.version.outputs.content).packageVersion }}"
+          release_name: "EasyData ${{ fromJSON(steps.version.outputs.content).packageVersion }}"
+          body_path: ./tool/releaseNotes.md
+          draft: true
+          prerelease: false

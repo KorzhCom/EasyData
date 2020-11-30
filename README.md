@@ -1,6 +1,12 @@
 # EasyData
 
-EasyData library lets you quickly build a UI for CRUD (Create, Retrieve, Update, Delete) operations in any ASP.NET Core application that uses Entity Framework Core.
+| Build .NET | Build JS | Nuget | Npm |
+|---|---|---|---|
+| [![Build status](https://github.com/KorzhCom/EasyData/workflows/EasyData.NET%20Pipeline/badge.svg?branch=master&event=push)](https://github.com/KorzhCom/EasyData/actions?query=workflow%3A%22EasyData.NET+Pipeline%22+event%3Apush+branch%3Amaster)  | [![Build status](https://github.com/KorzhCom/EasyData/workflows/EasyData.JS%20Pipeline/badge.svg?branch=master&event=push)](https://github.com/KorzhCom/EasyData/actions?query=workflow%3A%22EasyData.JS+Pipeline%22+event%3Apush+branch%3Amaster) | [![NuGet](https://img.shields.io/nuget/v/EasyData.AspNetCore.svg)](https://www.nuget.org/packages/EasyData.AspNetCore) | [![Npm](https://img.shields.io/npm/v/@easydata/crud/latest)](https://www.npmjs.com/package/@easydata/crud) |
+
+## About
+
+EasyData library lets you quickly build a UI for CRUD (Create, Read, Update, Delete) operations in any ASP.NET Core application that uses Entity Framework Core.
 
 Basically, EasyData does the following two things:
  
@@ -11,6 +17,10 @@ Basically, EasyData does the following two things:
 The real advantage here is that whenever you change something in your DbContext (add a new DbSet or a property in the model class), the UI automatically adjusts to those changes.
 
 So, as you can see, EasyData can be very useful for quick prototyping of any database-related ASP.NET Core project. In just minutes you'll have a working web app with all CRUD forms for your database.
+
+## Quick demo
+
+![EasyData quick demo](https://cdn.korzh.com/img/easydata-demo01.gif "EasyData quick demo")
 
 
 ## Getting started

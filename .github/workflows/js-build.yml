@@ -8,19 +8,19 @@ on:
         required: true
         default: 'none'
 
+  release: 
+    types: [published]
+
   push:
     branches: 
       - master
     paths: 
       - .github/workflows/js-build.yml
       - easydata.js/**
-    tags:
-      - v*    
 
   pull_request:
     branches: 
       - master
-
     paths: 
       - .github/workflows/js-build.yml
       - easydata.js/** 
@@ -132,7 +132,7 @@ jobs:
   release_prod:
     name: Production Release
     needs: [ build_and_test ]
-    if: (github.event.inputs.release_mode == 'prod' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) && needs.build_and_test.result == 'success'
+    if: (github.event.inputs.release_mode == 'prod' || github.event_name == 'release') && needs.build_and_test.result == 'success'
     runs-on: windows-latest
     
     steps: 
