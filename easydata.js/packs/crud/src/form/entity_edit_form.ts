@@ -1,7 +1,7 @@
 import { 
     DataType, i18n, utils as dataUtils, 
     MetaEntityAttr, DataRow, EditorTag, 
-    MetaValueEditor, EntityAttrKind, EasyDataTable 
+    ValueEditor, EntityAttrKind, EasyDataTable 
 } from '@easydata/core';
 
 import { 
@@ -161,8 +161,8 @@ export class EntityEditForm {
                 return 'text';
             }
     
-            const getEditor = (attr: MetaEntityAttr): MetaValueEditor => {
-                return attr.defaultEditor || new MetaValueEditor();
+            const getEditor = (attr: MetaEntityAttr): ValueEditor => {
+                return attr.defaultEditor || new ValueEditor();
             }
     
             const addFormField = (parent: HTMLElement, attr: MetaEntityAttr) => {

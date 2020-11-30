@@ -2,7 +2,7 @@ import { DataType } from '../types/data_type';
 import { EntityAttrKind } from '../types/entity_attr_kind';
 import { MetaEntityDTO, MetaEntityAttrDTO } from './dto/meta_entity_dto';
 import { MetaData } from './meta_data';
-import { MetaValueEditor } from './value_editor';
+import { ValueEditor } from './value_editor';
 
 import { utils } from '../utils/utils'
 
@@ -184,7 +184,7 @@ export class MetaEntityAttr {
     /**
      * The default editor.
      */
-    public defaultEditor: MetaValueEditor;
+    public defaultEditor: ValueEditor;
 
     /**
      * The parent

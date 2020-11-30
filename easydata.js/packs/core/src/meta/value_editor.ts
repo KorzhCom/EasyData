@@ -5,7 +5,7 @@ import { ValueEditorDTO } from './dto/value_editor_dto';
 /**
  * Represents a value editor.
  */
-export class MetaValueEditor {
+export class ValueEditor {
 
     /** The ID. */
     public id: string;
