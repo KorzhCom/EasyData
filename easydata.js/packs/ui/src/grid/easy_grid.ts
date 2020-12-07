@@ -809,7 +809,7 @@ export class EasyGrid {
 
             return domel('div')
                 .addClass(`${this.cssPrefix}-addrow`)
-                .title('Add column')
+                .title(this.options.addColumnsTitle || 'Add column')
                 .addChild('a', builder => builder
                     .attr('href', 'javascript:void(0)')
                     .on('click', (e) => {

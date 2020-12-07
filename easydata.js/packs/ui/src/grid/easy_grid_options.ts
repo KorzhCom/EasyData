@@ -18,6 +18,7 @@ export interface EasyGridOptions {
     dataTable: EasyDataTable;
 
     addColumns?: boolean;
+    addColumnsTitle?: string;
     useRowNumeration?: boolean;
     allowDragDrop?: boolean;
 

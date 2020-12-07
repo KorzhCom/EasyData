@@ -75,6 +75,7 @@ export class EntityDataView {
                         pageSize: 15,
                     },
                     addColumns: true,
+                    addColumnsTitle: i18n.getText('AddBtnTitle'),
                     showActiveRow: false,
                     onAddColumnClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this),

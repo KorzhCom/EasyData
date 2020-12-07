@@ -305,12 +305,17 @@ export class EntityEditForm {
                                                 .join(', ');
                                         } 
 
-                                        context.getEntity(selectedValue, lookupEntity.id)
+                                        if (selectedValue) {
+                                            context.getEntity(selectedValue, lookupEntity.id)
                                             .then(data => {
                                                 if (data.entity) {
                                                     updateSelectedValue(data.entity);
                                                 }
+                                            })
+                                            .catch(error => {
+                                                console.log(error);
                                             });
+                                        }
         
                                         const lookupGrid = new EasyGrid({
                                             slot: gridSlot,
