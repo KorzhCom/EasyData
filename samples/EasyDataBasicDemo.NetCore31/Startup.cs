@@ -25,8 +25,13 @@ namespace EasyDataBasicDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB")));
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(Configuration.GetConnectionString("EasyDataDBSQLite"));
+
+                // Uncomment to use demo with SQL Server express
+                // options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB"));
+            });
 
             services.AddRazorPages();
         }
@@ -69,7 +74,10 @@ namespace EasyDataBasicDemo
             using (var context = scope.ServiceProvider.GetService<AppDbContext>()) {
                 if (context.Database.EnsureCreated()) {
                     Korzh.DbUtils.DbInitializer.Create(options => {
-                        options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
+                        options.UseSqlite(config.GetConnectionString("EasyDataDBSQLite"));
+
+                        // Uncomment to use demo with SQL Server express
+                        // options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
                         options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EqDemoData.zip"));
                     })
                     .Seed();

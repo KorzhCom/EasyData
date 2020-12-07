@@ -25,7 +25,12 @@ namespace EasyDataBasicDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB")));
+            {
+                options.UseSqlite(Configuration.GetConnectionString("EasyDataDBSQLite"));
+
+                // Uncomment to use demo with SQL Server express
+                // options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB"));
+            });
 
             services.AddRazorPages();
         }
@@ -71,7 +76,11 @@ namespace EasyDataBasicDemo
                 if (context.Database.EnsureCreated())
                 {
                     DbInitializer.Create(options => {
-                        options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
+
+                        options.UseSqlite(config.GetConnectionString("EasyDataDBSQLite"));
+
+                        // Uncomment to use demo with SQL Server express
+                        // options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
                         options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EqDemoData.zip"));
                     })
                     .Seed();
