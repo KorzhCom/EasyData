@@ -2,7 +2,7 @@ import { DataType } from '../types/data_type';
 import { EntityAttrKind } from '../types/entity_attr_kind';
 import { MetaEntityDTO, MetaEntityAttrDTO } from './dto/meta_entity_dto';
 import { MetaData } from './meta_data';
-import { MetaValueEditor } from './meta_value_editor';
+import { ValueEditor } from './value_editor';
 
 import { utils } from '../utils/utils'
 
@@ -69,7 +69,7 @@ export class MetaEntity {
             this.subEntities = new Array<MetaEntity>();
             if (dto.ents) {
                 for (let i = 0; i < dto.ents.length; i++) {
-                    let newEntity = new MetaEntity(this);
+                    let newEntity = model.createEntity(this);
                     newEntity.loadFromData(model, dto.ents[i]);
                     this.subEntities.push(newEntity);
                 }
@@ -78,7 +78,7 @@ export class MetaEntity {
             this.attributes = new Array<MetaEntityAttr>();
             if (dto.attrs) {
                 for (let i = 0; i < dto.attrs.length; i++) {
-                    let newAttr = new MetaEntityAttr(this);
+                    let newAttr = model.createEntityAttr(this);
                     newAttr.loadFromData(model, dto.attrs[i]);
                     this.attributes.push(newAttr);
                 }
@@ -184,7 +184,7 @@ export class MetaEntityAttr {
     /**
      * The default editor.
      */
-    public defaultEditor: MetaValueEditor;
+    public defaultEditor: ValueEditor;
 
     /**
      * The parent

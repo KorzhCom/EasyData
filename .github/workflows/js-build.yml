@@ -17,6 +17,8 @@ on:
     paths: 
       - .github/workflows/js-build.yml
       - easydata.js/**
+    tags:
+      - v*    
 
   pull_request:
     branches: 

@@ -1,17 +1,17 @@
-import { MetaEditorTag } from '../types/meta_editor_tag';
+import { EditorTag } from '../types/editor_tag';
 import { DataType } from '../types/data_type';
-import { MetaValueEditorDTO } from './dto/meta_value_editor_dto';
+import { ValueEditorDTO } from './dto/value_editor_dto';
 
 /**
  * Represents a value editor.
  */
-export class MetaValueEditor {
+export class ValueEditor {
 
     /** The ID. */
     public id: string;
 
     /** The tag. */
-    public tag: MetaEditorTag;
+    public tag: EditorTag;
 
     /**
      * The type of the result.
@@ -46,7 +46,7 @@ export class MetaValueEditor {
     /** The default constructor. */
     constructor() {
         this.id = "";
-        this.tag = MetaEditorTag.Unknown;
+        this.tag = EditorTag.Unknown;
         this.resType = DataType.Unknown;
         this.defValue = "";
     }
@@ -55,7 +55,7 @@ export class MetaValueEditor {
      * Loads value editor from its JSON representation object.
      * @param data The JSON representation object.
      */
-    public loadFromData(data: MetaValueEditorDTO) {
+    public loadFromData(data: ValueEditorDTO) {
         if (data) {
             this.id = data.id;
             this.tag = data.tag;

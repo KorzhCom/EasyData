@@ -1,14 +1,14 @@
-import { MetaEditorTag } from '../../types/meta_editor_tag'
+import { EditorTag } from '../../types/editor_tag'
 import { DataType } from '../../types/data_type'
 
 /**
  * Value editor JSON representation object.
  */
-export interface MetaValueEditorDTO {
+export interface ValueEditorDTO {
     /** The id. */
     id: string;
     /** The tag. */
-    tag: MetaEditorTag;
+    tag: EditorTag;
     /** The default value. */
     defval: string;
     /** The result type. */
