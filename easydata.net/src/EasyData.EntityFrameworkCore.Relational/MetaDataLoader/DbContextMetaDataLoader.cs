@@ -124,7 +124,7 @@ namespace EasyData.EntityFrameworkCore
                 if (Options.SkipForeignKeys && property.IsForeignKey())
                     continue;
 
-                var entityAttr = CreateEntityAttribute(entityType, property);
+                var entityAttr = CreateEntityAttribute(entity, entityType, property);
                 if (entityAttr != null) {
                  
                     if (entityAttr.Index == int.MaxValue) {
@@ -156,7 +156,7 @@ namespace EasyData.EntityFrameworkCore
             var property = foreignKey.Properties.First();
 
             if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
-                var lookUpAttr = Model.CreateLookupEntityAttr(entity);
+                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity, EntityAttrKind.Lookup));
                 lookUpAttr.ID = DataUtils.ComposeKey(entity.Id, navigation.Name);
                 lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
 
@@ -169,7 +169,7 @@ namespace EasyData.EntityFrameworkCore
                 var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
                 var dataAttr = entity.FindAttributeById(dataAttrId);
                 if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entityType, property);
+                    dataAttr = CreateEntityAttribute(entity, entityType, property);
                     if (dataAttr == null)
                         return;
 
@@ -249,13 +249,13 @@ namespace EasyData.EntityFrameworkCore
             return entityAttr;
         }
 
-        protected virtual MetaEntityAttr CreateEntityAttribute(IEntityType entityType, IProperty property)
+        protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
             var entityName = GetEntityNameByType(entityType);
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
-            var entityAttr = Model.CreateEntityAttr();
+            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity));
             entityAttr.ID = DataUtils.ComposeKey(entityName, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;

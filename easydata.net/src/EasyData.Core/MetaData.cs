@@ -9,6 +9,57 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
+
+    public class MetaEntityAttrDescriptor
+    {
+
+        public MetaEntityAttrDescriptor(MetaEntity parent): this(parent, "")
+        {
+        
+        }
+
+        public MetaEntityAttrDescriptor(MetaEntity parent, string expr)
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent));
+
+            Parent = parent;
+            Expression = expr;
+            Caption = expr?.GetSecondPart('.');
+            Kind = EntityAttrKind.Data;
+            DataType = DataType.String;
+            Size = 100;
+        }
+
+        public MetaEntityAttrDescriptor(MetaEntity parent, EntityAttrKind kind, string expr = ""): this(parent, expr)
+        {
+            Kind = kind;
+        }
+
+        public MetaEntity Parent { get; private set; }
+
+        public string Caption { get; set; }
+
+        public string Expression { get; set; }
+
+        public DataType DataType { get; set; }
+
+        public EntityAttrKind Kind { get; set; }
+
+        public int Size { get; set; }
+
+        public bool IsVirtual {
+            get {
+
+                return Kind == EntityAttrKind.Virtual;
+            }
+            set {
+                Kind = value ? EntityAttrKind.Virtual : EntityAttrKind.Data;
+            } 
+        }
+        
+    }
+
     /// <summary>
     /// Represents different options used during meta data loading or saving 
     /// </summary>
@@ -195,28 +246,6 @@ namespace EasyData
             return new MetaEntity(this);
         }
 
-
-        /// <summary>
-        /// Creates the entity attribute. Used for creating entity attributes while building the model
-        /// </summary>
-        /// <param name="parentEntity">The parent entity.</param>
-        /// <param name="isVirtual">if set to <c>true</c> the new attribute will be a virtual one.</param>
-        /// <returns>EntityAttr.</returns>
-        public virtual MetaEntityAttr CreateEntityAttr(MetaEntity parentEntity = null, bool isVirtual = false)
-        {
-            return new MetaEntityAttr(parentEntity, isVirtual);
-        }
-
-        /// <summary>
-        /// Creates the entity attribute. Used for creating entity attributes while building the model
-        /// </summary>
-        /// <param name="parentEntity">The parent entity.</param>
-        /// <returns></returns>
-        public virtual MetaEntityAttr CreateLookupEntityAttr(MetaEntity parentEntity)
-        {
-            return new MetaEntityAttr(parentEntity, EntityAttrKind.Lookup);
-        }
-
         /// <summary>
         /// Creates the entity.
         /// </summary>
@@ -225,6 +254,32 @@ namespace EasyData
         {
             return new MetaEntity(parentEntity ?? EntityRoot);
         }
+
+
+        /// <summary>
+        /// Creates the entity attribute. Used for creating entity attributes while building the model
+        /// </summary>
+        /// <param name="desc">The descriptor</param>
+        /// <returns></returns>
+        public MetaEntityAttr CreateEntityAttr(MetaEntityAttrDescriptor desc)
+        {
+            if (desc == null)
+                throw new ArgumentNullException(nameof(desc));
+
+            var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
+            attr.Expr = desc.Expression;
+            attr.Caption = desc.Caption;
+            attr.DataType = desc.DataType;
+            attr.Size = desc.Size;
+
+            return attr;
+        }
+
+        protected virtual MetaEntityAttr CreateEntityAttrCore(MetaEntity parent, EntityAttrKind kind)
+        {
+            return new MetaEntityAttr(parent, kind);
+        }
+
 
         protected internal void TryRunWithMainSyncContext(Action action)
         {
@@ -340,48 +395,16 @@ namespace EasyData
             return ent;
         }
 
-        /// <summary>
-        /// Adds a new attribute to the model.
-        /// </summary>
-        /// <param name="entity">The parent entity.</param>
-        /// <param name="expression">The attribute's expression.</param>
-        /// <param name="caption">The attribute's caption.</param>
-        /// <param name="dataType">The type of the data.</param>
-        /// <param name="size">The size (if necessary).</param>
-        /// <returns>EntityAttr.</returns>
-        public MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, int size = 100)
-        {
-            return AddEntityAttr(entity, expression, caption, dataType, false, size);
-        }
 
         /// <summary>
         /// Adds a new attribute to the model.
         /// </summary>
-        /// <param name="entity">The parent entity.</param>
-        /// <param name="expression">The attribute's expression.</param>
-        /// <param name="caption">The attribute's caption.</param>
-        /// <param name="dataType">The type of the data.</param>
-        /// <param name="isVirtual">The type of the data.</param>
-        /// <param name="size">The size (if necessary).</param>
+        /// <param name="desc">The descriptor.</param>
         /// <returns>EntityAttr.</returns>
-        public virtual MetaEntityAttr AddEntityAttr(MetaEntity entity, string expression, string caption = null, DataType dataType = DataType.String, bool isVirtual = false, int size = 100)
+        public virtual MetaEntityAttr AddEntityAttr(MetaEntityAttrDescriptor desc)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            var attr = CreateEntityAttr(entity, isVirtual);
-
-            attr.Expr = expression;
-            if (string.IsNullOrEmpty(caption)) {
-                caption = expression.GetSecondPart('.');
-            }
-            attr.Caption = caption;
-
-            attr.DataType = dataType;
-            attr.Size = size;
-
-            entity.Attributes.Add(attr);
-
+            var attr = CreateEntityAttr(desc);
+            attr.Entity.Attributes.Add(attr);
             return attr;
         }
 

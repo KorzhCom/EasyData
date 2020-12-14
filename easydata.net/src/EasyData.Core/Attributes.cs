@@ -741,7 +741,7 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
-                var attr = Model.CreateEntityAttr(_entity);
+                var attr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(_entity));
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
                 Add(attr);
             }
