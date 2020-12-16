@@ -27,7 +27,7 @@ namespace EasyData
             Expression = expr;
             Caption = expr?.GetSecondPart('.');
             Kind = EntityAttrKind.Data;
-            DataType = DataType.String;
+            DataType = DataType.Unknown;
             Size = 100;
         }
 
@@ -415,7 +415,30 @@ namespace EasyData
         {
             var attr = CreateEntityAttr(desc);
             attr.Entity.Attributes.Add(attr);
+            AssignEntityAttrID(attr);
             return attr;
+        }
+
+        /// <summary>
+        /// Assigns the default ID for entity attribute.
+        /// </summary>
+        /// <param name="attr">The EntityAttr object.</param>
+        public virtual void AssignEntityAttrID(MetaEntityAttr attr)
+        {
+            string id = "";
+            if (attr.IsVirtual) {
+                id = "VEA_" + GetNextEntityAttrID().ToString();
+            }
+            else {
+                string baseID = attr.Expr.ToIdentifier();
+                id = baseID;
+                int N = 1;
+                while (EntityRoot.FindAttributeById(id) != null) {
+                    N++;
+                    id = baseID + N.ToString();
+                }
+            }
+            attr.ID = id;
         }
 
         #endregion //Entities and attributes
