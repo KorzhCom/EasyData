@@ -241,18 +241,18 @@ namespace EasyData
         /// This method can be overriden in descendant classes to retrun the object of appropriate class (e.g. DbEntity).
         /// </summary>
         /// <returns>Entity object.</returns>
-        public virtual MetaEntity CreateRootEntity()
+        public MetaEntity CreateRootEntity()
         {
-            return new MetaEntity(this);
+            return CreateRootEntityCore();
         }
 
         /// <summary>
         /// Creates the entity.
         /// </summary>
         /// <returns></returns>
-        public virtual MetaEntity CreateEntity(MetaEntity parentEntity = null)
+        public MetaEntity CreateEntity(MetaEntity parentEntity = null)
         {
-            return new MetaEntity(parentEntity ?? EntityRoot);
+            return CreateEntityCore(parentEntity ?? EntityRoot);
         }
 
 
@@ -273,6 +273,16 @@ namespace EasyData
             attr.Size = desc.Size;
 
             return attr;
+        }
+
+        protected virtual MetaEntity CreateEntityCore(MetaEntity parent)
+        {
+            return new MetaEntity(parent);
+        }
+
+        protected virtual MetaEntity CreateRootEntityCore()
+        {
+            return new MetaEntity(this);
         }
 
         protected virtual MetaEntityAttr CreateEntityAttrCore(MetaEntity parent, EntityAttrKind kind)
