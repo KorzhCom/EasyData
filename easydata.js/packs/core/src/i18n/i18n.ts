@@ -30,7 +30,7 @@ export namespace i18n {
         englishName?: string;
         displayName?: string;
         texts?: TextResources;
-        settings?: LocaleSettings; //if the settings is not specified - we will use the default one.
+        settings?: LocaleSettings; //if the settings is not specified - we will use the default.
     }
     
     export interface LocaleInfoItem {
@@ -63,18 +63,6 @@ export namespace i18n {
         [localeId: string]: LocaleInfo
     }
 
-    let allLocales: LocalesDict = {
-        'en-US': {
-            localeId : 'en-US',
-            englishName: 'English',
-            displayName: 'English',
-            texts: defaultTexts,
-            settings: englishUSLocaleSettings
-        }
-    }
-
-    //let currentLocale = undefined; //default
-
     let defaultLocale: LocaleInfo = {
         localeId: 'en-US',
         englishName: 'English',
@@ -83,7 +71,11 @@ export namespace i18n {
         settings: englishUSLocaleSettings
     };
 
-    let currentLocale = defaultLocale;
+    let allLocales: LocalesDict = {
+        'en-US': defaultLocale
+    }
+
+    let currentLocale : LocaleInfo;
     
     type LocaleMapper = (info: LocaleInfo) => void;
 
@@ -150,11 +142,18 @@ export namespace i18n {
      * @param localeId The locale.
      */
     export function setCurrentLocale(localeId : string) : void {
-        const newLocale = allLocales[localeId]; 
-        if (!newLocale) {
-            throw `Locale ${localeId} is not installed`;
+        const newLocale = allLocales[localeId];
+        if (newLocale) {          
+            utils.assignDeep(currentLocale, newLocale);
         }
-        currentLocale = newLocale;
+        else {
+            currentLocale = {
+                englishName: localeId,
+                displayName: localeId,
+                texts: defaultTexts
+            };
+        }
+        currentLocale.localeId = localeId;
     }
 
     /**
@@ -173,31 +172,14 @@ export namespace i18n {
 
         let resText : string | TextResources = '';
         if (args && args.length) {
-            let notFound = false;
             const argLength = args.length;
             for (let i = 0; i < argLength; i++) {
                 resText = textsObj[args[i]];
-                if (!resText) {
-                    notFound = true;
-                    break;
-                }
-                else {
+                if (typeof resText === 'object') {
                     textsObj = resText;
                 }
-            }
-
-            //remove after refactoring. 
-            //The texts object in locale must be merged with the default texts.
-            //So if we don't have some key - we don't have a string at all.
-            if (notFound) {
-                for (let i = 0; i < argLength; i++) {
-                    resText = defaultTexts[args[i]];
-                    if (!resText) {
-                        return null;
-                    }
-                    else {
-                        textsObj = resText;
-                    }
+                else {
+                    break; 
                 }
             }
         }
@@ -264,14 +246,17 @@ export namespace i18n {
      * If not specified - the function will update the settings for the current locale
      */
     export function updateLocaleSettings(settingsToUpdate: LocaleSettings) : void {
-        utils.assignDeep(currentLocale.settings, settingsToUpdate);
+        if (!currentLocale.settings) {
+            currentLocale.settings = utils.assignDeep({}, englishUSLocaleSettings);
+        }
+        currentLocale.settings = utils.assignDeep(currentLocale.settings, settingsToUpdate);
     }
 
     /**
      * Updates the texts for the current locale
      * @param texts A plain JS object that contains textual resources
      */
-    export function updateLocaleTexts(texts: any) {
+    export function updateLocaleTexts(texts: TextResources) {
         if (typeof texts !== 'object') {
             console.error('Wrong parameter type in updateLocaleTexts function call.' +
                     'The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead');
@@ -280,6 +265,15 @@ export namespace i18n {
         mapInfo({localeId: currentLocale.localeId, texts: texts});
 
         utils.assignDeep(currentLocale.texts, texts);
+    }
+
+    export function updateDefaultTexts(texts: TextResources)
+    {
+        for (let localeId in allLocales) {
+            let locale = allLocales[localeId];
+            locale.texts = utils.assignDeep({}, texts, locale.texts);
+        }
+        currentLocale.texts = utils.assignDeep({}, texts, currentLocale.texts);
     }
 
     /**
@@ -291,13 +285,20 @@ export namespace i18n {
     export function updateLocaleInfo(localeId: string, localeData: LocaleInfo) : void {
         mapInfo(localeData);
 
-        if (!localeData.localeId) {
-            localeData.localeId = localeId;
-        }
+        let localeInfoToUpdate = currentLocale;
 
-        let localeInfoToUpdate = allLocales[localeId] || defaultLocale;
+        if (localeId) {
+            if (!localeData.localeId) {
+                localeData.localeId = localeId;
+            }
+    
+            localeInfoToUpdate = allLocales[localeId];
+            if (!localeInfoToUpdate) {
+                localeInfoToUpdate = utils.assignDeep({}, defaultLocale);
+                allLocales[localeId] = localeInfoToUpdate;
+            }    
+        }
         utils.assignDeep(localeInfoToUpdate, localeData);
-        allLocales[localeId] = localeInfoToUpdate;   
     }
 
     /**
@@ -313,20 +314,55 @@ export namespace i18n {
     /**
      * Overwrites some locale settings (date/time formats) with the formats used in browser's current language
      */
-    export function loadSystemLocaleSettings() {
+    function determineSettingsByLocale(localeId : string) : void {
+        const now = new Date(2020, 5, 7, 19, 34, 56, 88);
+        
+        const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+
+        const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
+        const dateStr = now.toLocaleDateString(localeId, dateOptions);
+        const timeStr = now.toLocaleTimeString(localeId, timeOptions);
+
+        let dateFormat = dateStr
+            .replace('07', 'dd')
+            .replace('7', 'd')
+            .replace('06', 'MM')
+            .replace('6', 'M')
+            .replace('2020', 'yyyy')
+            .replace('20', 'yy');
+
+        let timeFormat = timeStr
+            .replace('19', 'HH')
+            .replace('07', 'hh')
+            .replace('7', 'h')
+            .replace('34', 'mm')
+            .replace('56', 'ss');                   
+
+        if (!currentLocale.settings) {
+            currentLocale.settings = {};
+        }
+
+        const localeSettings = {
+            shortDateFormat: dateFormat,
+            editDateFormat: dateFormat,
+            shortTimeFormat: timeFormat    
+        };
+
+        updateLocaleSettings(localeSettings);
+    }
+
+    function loadBrowserLocaleSettings() : void {
         const lang = typeof navigator === 'object' ? navigator.language : undefined;
 
-        const now = new Date('2020-11-21');
-        
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric' }
-        const nowStr = now.toLocaleDateString(lang, options);
+        determineSettingsByLocale(lang);
+    }
 
-        let format = nowStr
-                        .replace('21', 'dd')
-                        .replace('11', 'MM')
-                        .replace('2020', 'yyyy');
-
-        currentLocale.settings.shortDateFormat = format;
-        currentLocale.settings.editDateFormat = format;
+    export function resetLocales() {
+        if (!currentLocale) {
+            currentLocale = utils.assignDeep({}, defaultLocale);
+            loadBrowserLocaleSettings();
+        }
     }
 }
+
