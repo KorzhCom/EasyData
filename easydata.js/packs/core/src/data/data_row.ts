@@ -28,5 +28,24 @@ export class DataRow {
 
         return this.values[index];
     }
+
+    public setValue(colIdOrIndex: number | string, value: any): any {
+
+        let index: number;
+        if (typeof colIdOrIndex === "string") {
+            index = this.columns.getIndex(colIdOrIndex);
+            if (index === undefined) {
+                throw new RangeError(`No column with id '${colIdOrIndex}'`);
+            }
+        }
+        else {
+            index = colIdOrIndex;
+        }
+
+        if (index >= this.values.length)
+            throw new RangeError("Out of range: " + index);
+
+        this.values[index] = value;
+    }
     
 }
