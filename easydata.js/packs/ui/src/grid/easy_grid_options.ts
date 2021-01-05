@@ -1,4 +1,4 @@
-import { EasyDataTable } from '@easydata/core';
+import { EasyDataTable, TotalsCalculator } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -7,7 +7,7 @@ import {
     PageChangedEvent,
     RowClickEvent,
     ActiveRowChangedEvent
-} from "./easy_grid_events";
+} from './easy_grid_events';
 
 import { GridColumn } from './easy_grid_columns';
 import { GridCellRenderer } from './easy_grid_cell_renderer';
@@ -16,6 +16,11 @@ export interface EasyGridOptions {
     slot: HTMLElement | string;
 
     dataTable: EasyDataTable;
+
+    totals?: {
+        calc: boolean;
+        calculator: TotalsCalculator
+    }
 
     addColumns?: boolean;
     addColumnsTitle?: string;

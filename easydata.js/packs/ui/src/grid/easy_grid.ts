@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n 
+    DataRow, utils, i18n, DataColumn 
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -70,6 +70,10 @@ export class EasyGrid {
         syncGridColumns: true,
         useRowNumeration: true,
         allowDragDrop: false,
+        totals: {
+            calc: false,
+            calculator: null
+        },
         paging: {
             enabled: true,
             pageSize: 30
@@ -291,7 +295,7 @@ export class EasyGrid {
     }
 
     protected updateHeight() {
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
             if (this.options.viewportRowsCount) {
                 const firstRow = this.bodyCellContainerDiv.firstElementChild;
                 const rowHeight = firstRow ? (firstRow as HTMLElement).offsetHeight : DEFAULT_ROW_HEIGHT;
@@ -432,16 +436,39 @@ export class EasyGrid {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
                 .then((rows) => {
+                    
                     this.hideProgress();
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
                     this.bodyCellContainerDiv.innerHTML = '';
 
-                    rows.forEach((row, index) => {
-                        let tr = this.renderRow(row, index);
-                        this.bodyCellContainerDiv.appendChild(tr);
-                    });
+                    this.prevRowTotals = null;
 
-                    const containerWidth = this.columns.getItems().map(column => column.width).reduce((sum, current) => {return sum + current});
+                    if (rows.length) {
+                        const calcTotals = this.calcTotals();
+                        const keyCols = this.getTotalsKeyCols();
+     
+                        rows.forEach((row, index) => {
+
+                            if (calcTotals)
+                                this.updateTotalsState(keyCols, row);
+
+                            const tr = this.renderRow(row, index);
+                            this.bodyCellContainerDiv.appendChild(tr);
+
+                        });
+    
+                        if (calcTotals) {    
+                            
+                            // TO DO: render here last rows 
+                            if (this.pagination.page * this.pagination.pageSize >= this.pagination.total) {
+                                const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
+                                this.updateTotalsState(keyCols, row, true);
+                            }
+                        }
+                    }
+
+                    const containerWidth = this.columns.getItems()
+                    .map(column => column.width).reduce((sum, current) => {return sum + current});
                     domel(this.bodyCellContainerDiv)
                         .setStyle('width', `${containerWidth}px`)
 
@@ -457,6 +484,85 @@ export class EasyGrid {
         })
 
         this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
+    }
+
+    private calcTotals(): boolean {
+        return this.options.totals.calc && this.dataTable.columns.getItems()
+            .filter(col => col.isAggr).length > 0;
+    }
+
+    private prevRowTotals: DataRow = null;
+
+    private getTotalsKeyCols() {
+        const keyCols = this.dataTable.columns.getItems()
+            .filter(col => !col.isAggr);
+        keyCols.pop();
+
+        return keyCols;
+    } 
+
+    private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
+        if (this.prevRowTotals) {
+            let changeLevel = -1;
+            for(let i = 0; i < keyCols.length; i++) {
+                const col = keyCols[i];
+                if (this.prevRowTotals.getValue(col.id) !== newRow.getValue(col.id)) {
+                    changeLevel = i;
+                    break;
+                }
+            }
+
+            if (changeLevel != -1) {
+                for(let i = keyCols.length; i > changeLevel; i--) {
+                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.asArray());
+                    const tr = this.renderTotalsRow(i, row);
+                    this.bodyCellContainerDiv.appendChild(tr);
+                }
+                
+                if (isLast) {
+                    const tr = this.renderTotalsRow(0, newRow);
+                    this.bodyCellContainerDiv.appendChild(tr);
+                }
+            }
+        }
+
+        this.prevRowTotals = newRow;
+    }
+
+    private renderTotalsRow(level: number, row: DataRow): HTMLElement {
+        const rowBuilder = domel('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-totals`)
+                 // for test purpose
+                .setStyle('background-color', '#33DCFF')
+                .data('totals-level', `${level}`)
+                .attr('tabindex', '-1');
+
+        const rowElement = rowBuilder.toDOM();
+        rowElement.innerHTML = 'Calculating...';
+        
+        const totals = this.options.totals.calculator.getTotals();
+        totals.fillTotals(level, row)
+            .then(() => {
+                // for test purpose
+                rowBuilder.setStyle('background-color', '#33FF54');
+
+                rowElement.innerHTML = '';
+
+                this.columns.getItems().forEach((column) => {
+                    if (!column.isVisible) {
+                        return;
+                    }
+        
+                    const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+                    const val = column.isRowNum ? ' ' : row.getValue(colIndex);
+        
+                    rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+                });
+            })
+            .catch((error) => console.error(error));
+        
+        return rowElement;
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {

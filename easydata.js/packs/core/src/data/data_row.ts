@@ -6,6 +6,10 @@ export class DataRow {
         private columns: DataColumnList, 
         private values: any[]) {}
 
+    public asArray(): any[] {
+        return this.values;
+    }
+
     public size(): number {
         return this.values.length;
     }

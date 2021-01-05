@@ -6,6 +6,7 @@ export interface DataColumnDescriptor {
     id: string;
     type?: DataType;
     label: string;
+    isAggr?: boolean;
 }
 
 export class DataColumn {
@@ -13,6 +14,8 @@ export class DataColumn {
     public readonly type: DataType;
 
     public readonly id: string;
+
+    public readonly isAggr: boolean;
 
     public label: string;
 
@@ -29,6 +32,7 @@ export class DataColumn {
         this.id = desc.id;
         this.type = utils.getIfDefined(desc.type, DataType.String);
         this.label = desc.label;
+        this.isAggr = desc.isAggr || false;
     }
 }
 
