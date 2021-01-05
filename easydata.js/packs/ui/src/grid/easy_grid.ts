@@ -518,12 +518,12 @@ export class EasyGrid {
                     const tr = this.renderTotalsRow(i, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
-                
-                if (isLast) {
-                    const tr = this.renderTotalsRow(0, newRow);
-                    this.bodyCellContainerDiv.appendChild(tr);
-                }
             }
+        }
+
+        if (isLast) {
+            const tr = this.renderTotalsRow(0, newRow);
+            this.bodyCellContainerDiv.appendChild(tr);
         }
 
         this.prevRowTotals = newRow;
