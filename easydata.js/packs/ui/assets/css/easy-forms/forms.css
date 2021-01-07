@@ -217,5 +217,7 @@
     padding-right: 0 !important;
 }
 
-
+.kfrm-field > label {
+    padding-right: 0.5em;
+}
 /* FORMS END */
