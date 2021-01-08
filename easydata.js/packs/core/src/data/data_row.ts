@@ -6,8 +6,8 @@ export class DataRow {
         private columns: DataColumnList, 
         private values: any[]) {}
 
-    public asArray(): any[] {
-        return this.values;
+    public toArray(): any[] {
+        return Array.from(this.values);
     }
 
     public size(): number {

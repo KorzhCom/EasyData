@@ -457,13 +457,9 @@ export class EasyGrid {
 
                         });
     
-                        if (calcTotals) {    
-                            
-                            // TO DO: render here last rows 
-                            if (this.pagination.page * this.pagination.pageSize >= this.pagination.total) {
-                                const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
-                                this.updateTotalsState(keyCols, row, true);
-                            }
+                        if (calcTotals && this.isLastPage()) {    
+                            const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
+                            this.updateTotalsState(keyCols, row, true);
                         }
                     }
 
@@ -484,6 +480,10 @@ export class EasyGrid {
         })
 
         this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
+    }
+
+    private isLastPage() {
+        return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
 
     private calcTotals(): boolean {
@@ -514,7 +514,7 @@ export class EasyGrid {
 
             if (changeLevel != -1) {
                 for(let i = keyCols.length; i > changeLevel; i--) {
-                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.asArray());
+                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(i, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
@@ -535,27 +535,42 @@ export class EasyGrid {
                 .addClass(`${this.cssPrefix}-row-totals`)
                  // for test purpose
                 .setStyle('background-color', '#33DCFF')
+                .setStyle('font-weight', 'bold')
                 .data('totals-level', `${level}`)
                 .attr('tabindex', '-1');
 
         const rowElement = rowBuilder.toDOM();
-        rowElement.innerHTML = 'Calculating...';
+        this.columns.getItems().forEach((column, index) => {
+            if (!column.isVisible) {
+                return;
+            }
+
+            const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+            let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+            if (colIndex == this.dataTable.columns.count - 1) {
+                val = 'Calculating...'
+            }
+
+            rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+        });
         
         const totals = this.options.totals.calculator.getTotals();
         totals.fillTotals(level, row)
             .then(() => {
                 // for test purpose
                 rowBuilder.setStyle('background-color', '#33FF54');
-
                 rowElement.innerHTML = '';
 
-                this.columns.getItems().forEach((column) => {
+                this.columns.getItems().forEach((column, index) => {
                     if (!column.isVisible) {
                         return;
                     }
         
                     const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-                    const val = column.isRowNum ? ' ' : row.getValue(colIndex);
+                    let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+                    if (!column.isRowNum && column.dataColumn.isAggr) {
+                        val = row.getValue(colIndex);
+                    }
         
                     rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
                 });
@@ -563,6 +578,10 @@ export class EasyGrid {
             .catch((error) => console.error(error));
         
         return rowElement;
+    }
+
+    private getTotalsTitle(level: number) {
+        return (level) ? 'Sub totals: ' : 'Grand totals: ';
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
