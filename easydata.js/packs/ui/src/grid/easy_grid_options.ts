@@ -18,7 +18,7 @@ export interface EasyGridOptions {
     dataTable: EasyDataTable;
 
     totals?: {
-        calc: boolean;
+        enabled: boolean;
         calculator: TotalsCalculator
     }
 

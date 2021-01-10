@@ -71,7 +71,7 @@ export class EasyGrid {
         useRowNumeration: true,
         allowDragDrop: false,
         totals: {
-            calc: false,
+            enabled: false,
             calculator: null
         },
         paging: {
@@ -435,9 +435,9 @@ export class EasyGrid {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => {
-                    
+                .then((rows) => {                    
                     this.hideProgress();
+
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
                     this.bodyCellContainerDiv.innerHTML = '';
 
@@ -448,7 +448,6 @@ export class EasyGrid {
                         const keyCols = this.getTotalsKeyCols();
      
                         rows.forEach((row, index) => {
-
                             if (calcTotals)
                                 this.updateTotalsState(keyCols, row);
 
@@ -487,7 +486,7 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals.calc && this.dataTable.columns.getItems()
+        return this.options.totals.enabled && this.dataTable.columns.getItems()
             .filter(col => col.isAggr).length > 0;
     }
 
