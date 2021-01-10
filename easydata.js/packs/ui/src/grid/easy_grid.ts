@@ -71,7 +71,8 @@ export class EasyGrid {
         useRowNumeration: true,
         allowDragDrop: false,
         totals: {
-            enabled: false,
+            calcGrandTotals: false,
+            calcSubTotals: false,
             calculator: null
         },
         paging: {
@@ -385,11 +386,11 @@ export class EasyGrid {
 
         let colDiv = colBuilder.toDOM(); 
 
-        let resizeBuilder = domel('div', colDiv)
+        domel('div', colDiv)
             .addClass(`${this.cssPrefix}-header-cell-resize`)
 
         if (!column.isRowNum) {
-            let valBuilder = domel('div', colDiv)
+            domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
         }
@@ -485,7 +486,8 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals.enabled && this.dataTable.columns.getItems()
+        return this.options.totals && (this.options.totals.calcGrandTotals || this.options.totals.calcSubTotals)
+         && this.dataTable.columns.getItems()
             .filter(col => col.isAggr).length > 0;
     }
 
@@ -500,7 +502,7 @@ export class EasyGrid {
     } 
 
     private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals) {
+        if (this.prevRowTotals && this.options.totals.calcSubTotals) {
             let changeLevel = -1;
             for(let i = 0; i < keyCols.length; i++) {
                 const col = keyCols[i];
@@ -519,7 +521,7 @@ export class EasyGrid {
             }
         }
 
-        if (isLast) {
+        if (isLast && this.options.totals.calcGrandTotals) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
