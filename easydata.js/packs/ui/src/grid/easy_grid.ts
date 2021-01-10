@@ -453,7 +453,6 @@ export class EasyGrid {
 
                             const tr = this.renderRow(row, index);
                             this.bodyCellContainerDiv.appendChild(tr);
-
                         });
     
                         if (calcTotals && this.isLastPage()) {    
@@ -532,9 +531,7 @@ export class EasyGrid {
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-totals`)
-                 // for test purpose
-                .setStyle('background-color', '#33DCFF')
-                .setStyle('font-weight', 'bold')
+                .addClass(`${this.cssPrefix}-totals-lv${level}`)
                 .data('totals-level', `${level}`)
                 .attr('tabindex', '-1');
 
@@ -556,8 +553,6 @@ export class EasyGrid {
         const totals = this.options.totals.calculator.getTotals();
         totals.fillTotals(level, row)
             .then(() => {
-                // for test purpose
-                rowBuilder.setStyle('background-color', '#33FF54');
                 rowElement.innerHTML = '';
 
                 this.columns.getItems().forEach((column, index) => {
