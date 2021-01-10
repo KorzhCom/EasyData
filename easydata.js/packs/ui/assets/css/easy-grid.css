@@ -65,7 +65,7 @@
     align-items: center;
 }
 
-.keg-row:not(.keg-row-active):hover {
+.keg-row:not(.keg-row-active):not(.keg-row-totals):hover {
     background-color: #fffae9;
 }
 

@@ -601,8 +601,11 @@ export class EasyGrid {
         }
     }
 
-    public ensureRowVisibility(index: number) {
-        const row = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${index + 1})`);
+    public ensureRowVisibility(rowOrIndex: HTMLElement | number) {
+        const row = typeof rowOrIndex === 'number'
+            ? this.getDataRow(rowOrIndex)
+            : rowOrIndex;
+
         if (row) { 
             let rowRect = row.getBoundingClientRect();
             const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
@@ -1037,12 +1040,23 @@ export class EasyGrid {
             const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`) as NodeListOf<HTMLElement>;
             rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`)});
 
-            const activeRow = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${this.activeRowIndex + 1})`);
-                if (activeRow) {
-                    activeRow.classList.add(`${this.cssPrefix}-row-active`);
-                    this.ensureRowVisibility(this.activeRowIndex);
-                }
+            const activeRow = this.getActiveRow();
+            if (activeRow) {
+                activeRow.classList.add(`${this.cssPrefix}-row-active`);
+                this.ensureRowVisibility(this.activeRowIndex);
+            }
         }
+    }
+
+    private getActiveRow(): HTMLElement {
+        return this.getDataRow(this.activeRowIndex);
+    }
+
+    private getDataRow(index: number): HTMLElement {
+        const rows = Array.from(this.bodyCellContainerDiv.querySelectorAll<HTMLElement>(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));
+        if (index >= 0 && index < rows.length)
+            return rows[index];
+        return null;
     }
 
     public focus() {
