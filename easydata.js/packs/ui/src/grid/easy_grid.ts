@@ -71,7 +71,8 @@ export class EasyGrid {
         useRowNumeration: true,
         allowDragDrop: false,
         totals: {
-            calc: false,
+            calcGrandTotals: false,
+            calcSubTotals: false,
             calculator: null
         },
         paging: {
@@ -385,11 +386,11 @@ export class EasyGrid {
 
         let colDiv = colBuilder.toDOM(); 
 
-        let resizeBuilder = domel('div', colDiv)
+        domel('div', colDiv)
             .addClass(`${this.cssPrefix}-header-cell-resize`)
 
         if (!column.isRowNum) {
-            let valBuilder = domel('div', colDiv)
+            domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
         }
@@ -435,9 +436,9 @@ export class EasyGrid {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => {
-                    
+                .then((rows) => {                    
                     this.hideProgress();
+
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
                     this.bodyCellContainerDiv.innerHTML = '';
 
@@ -448,13 +449,11 @@ export class EasyGrid {
                         const keyCols = this.getTotalsKeyCols();
      
                         rows.forEach((row, index) => {
-
                             if (calcTotals)
                                 this.updateTotalsState(keyCols, row);
 
                             const tr = this.renderRow(row, index);
                             this.bodyCellContainerDiv.appendChild(tr);
-
                         });
     
                         if (calcTotals && this.isLastPage()) {    
@@ -487,7 +486,8 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals.calc && this.dataTable.columns.getItems()
+        return this.options.totals && (this.options.totals.calcGrandTotals || this.options.totals.calcSubTotals)
+         && this.dataTable.columns.getItems()
             .filter(col => col.isAggr).length > 0;
     }
 
@@ -502,7 +502,7 @@ export class EasyGrid {
     } 
 
     private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals) {
+        if (this.prevRowTotals && this.options.totals.calcSubTotals) {
             let changeLevel = -1;
             for(let i = 0; i < keyCols.length; i++) {
                 const col = keyCols[i];
@@ -521,7 +521,7 @@ export class EasyGrid {
             }
         }
 
-        if (isLast) {
+        if (isLast && this.options.totals.calcGrandTotals) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -533,9 +533,7 @@ export class EasyGrid {
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-totals`)
-                 // for test purpose
-                .setStyle('background-color', '#33DCFF')
-                .setStyle('font-weight', 'bold')
+                .addClass(`${this.cssPrefix}-totals-lv${level}`)
                 .data('totals-level', `${level}`)
                 .attr('tabindex', '-1');
 
@@ -557,8 +555,6 @@ export class EasyGrid {
         const totals = this.options.totals.calculator.getTotals();
         totals.fillTotals(level, row)
             .then(() => {
-                // for test purpose
-                rowBuilder.setStyle('background-color', '#33FF54');
                 rowElement.innerHTML = '';
 
                 this.columns.getItems().forEach((column, index) => {
@@ -607,8 +603,11 @@ export class EasyGrid {
         }
     }
 
-    public ensureRowVisibility(index: number) {
-        const row = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${index + 1})`);
+    public ensureRowVisibility(rowOrIndex: HTMLElement | number) {
+        const row = typeof rowOrIndex === 'number'
+            ? this.getDataRow(rowOrIndex)
+            : rowOrIndex;
+
         if (row) { 
             let rowRect = row.getBoundingClientRect();
             const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
@@ -1043,12 +1042,23 @@ export class EasyGrid {
             const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`) as NodeListOf<HTMLElement>;
             rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`)});
 
-            const activeRow = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${this.activeRowIndex + 1})`);
-                if (activeRow) {
-                    activeRow.classList.add(`${this.cssPrefix}-row-active`);
-                    this.ensureRowVisibility(this.activeRowIndex);
-                }
+            const activeRow = this.getActiveRow();
+            if (activeRow) {
+                activeRow.classList.add(`${this.cssPrefix}-row-active`);
+                this.ensureRowVisibility(this.activeRowIndex);
+            }
         }
+    }
+
+    private getActiveRow(): HTMLElement {
+        return this.getDataRow(this.activeRowIndex);
+    }
+
+    private getDataRow(index: number): HTMLElement {
+        const rows = Array.from(this.bodyCellContainerDiv.querySelectorAll<HTMLElement>(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));
+        if (index >= 0 && index < rows.length)
+            return rows[index];
+        return null;
     }
 
     public focus() {
