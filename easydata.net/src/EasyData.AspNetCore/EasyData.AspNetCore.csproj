@@ -6,10 +6,12 @@
     <Authors>Korzh.com</Authors>
     <Description>ASP.NET Core classes for EasyData library.</Description>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2020 (c) Korzh.com. All rights reserved.</Copyright>
+    <Copyright>Copyright 2020 - $([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
     <PackageTags>database crud middleware filtering</PackageTags>
     <Configurations>Debug;Release</Configurations>
     <DocumentationFile>EasyData.AspNetCore.xml</DocumentationFile>
+    <PackageId>EasyData.AspNetCore</PackageId>
+    <PackageVersion>1.2.0-beta1</PackageVersion>
     <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

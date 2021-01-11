@@ -6,10 +6,12 @@
     <Authors>Korzh.com</Authors>
     <Description>Basic classes of EasyData library.</Description>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2020 (c) Korzh.com. All rights reserved.</Copyright>
+    <Copyright>Copyright $([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
     <PackageTags>database crud filtering</PackageTags>
     <Configurations>Debug;Release</Configurations>
     <DocumentationFile>EasyData.xml</DocumentationFile>
+    <PackageId>EasyData.Core</PackageId>
+    <PackageVersion>1.2.0-beta1</PackageVersion>
     <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
