@@ -10,11 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>Korzh.EasyQuery</_Parameter1>
-    </AssemblyAttribute>
+    <InternalsVisibleTo Include="Korzh.EasyQuery" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
