@@ -3,18 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp2.0;netstandard2.1;netcoreapp3.0</TargetFrameworks>
     <RootNamespace>EasyData.EntityFrameworkCore</RootNamespace>
-    <Authors>Korzh.com</Authors>
     <Description>Entity Framework Core classes for EasyData library.</Description>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2020 - $([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
-    <PackageTags>database crud middleware filtering</PackageTags>
-    <Configurations>Debug;Release</Configurations>
     <DocumentationFile>EasyData.EntityFrameworkCore.Relational.xml</DocumentationFile>
     <PackageId>EasyData.EntityFrameworkCore.Relational</PackageId>
-    <PackageVersion>1.2.0-beta1</PackageVersion>
-    <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
-    <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>    
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>database crud middleware filtering</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,39 +4,6 @@
         <name>EasyData.EntityFrameworkCore.Relational</name>
     </assembly>
     <members>
-        <member name="T:EasyData.EntityFrameworkCore.EntityFrameworkCore2Extensions">
-            <summary>
-            Defines some extensions which unify meta-data functions used in EF Core 2 with EF Core 3 API.
-            </summary>
-        </member>
-        <member name="M:EasyData.EntityFrameworkCore.EntityFrameworkCore2Extensions.GetTableName(Microsoft.EntityFrameworkCore.Metadata.IEntityType)">
-            <summary>
-            Gets the table name for the specified IEntityType.
-            </summary>
-            <param name="entityType">Type of the entity.</param>
-            <returns>System.String.</returns>
-        </member>
-        <member name="M:EasyData.EntityFrameworkCore.EntityFrameworkCore2Extensions.GetSchema(Microsoft.EntityFrameworkCore.Metadata.IEntityType)">
-            <summary>
-            Gets the schema name for the specified IEntityType
-            </summary>
-            <param name="entityType">Type of the entity.</param>
-            <returns>System.String.</returns>
-        </member>
-        <member name="M:EasyData.EntityFrameworkCore.EntityFrameworkCore2Extensions.GetColumnName(Microsoft.EntityFrameworkCore.Metadata.IProperty)">
-            <summary>
-            Gets the column name for the specified IProperty.
-            </summary>
-            <param name="property">The property.</param>
-            <returns>System.String.</returns>
-        </member>
-        <member name="M:EasyData.EntityFrameworkCore.EntityFrameworkCore2Extensions.GetDefaultSchema(Microsoft.EntityFrameworkCore.Metadata.IModel)">
-            <summary>
-            Gets the default schema for the specified IModel
-            </summary>
-            <param name="model">The model.</param>
-            <returns>System.String.</returns>
-        </member>
         <member name="M:EasyData.EntityFrameworkCore.MetaDataEfCoreExtensions.LoadFromDbContext(EasyData.MetaData,Microsoft.EntityFrameworkCore.DbContext)">
             <summary>
             Loads the model from a database context.
