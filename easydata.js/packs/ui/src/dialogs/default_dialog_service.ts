@@ -49,9 +49,11 @@ export class DefaultDialogService implements DialogService {
     public openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): void;
     public openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): Promise<string> | void {
 
-        const template = `<div id="${cssPrefix}-dialog-form">
-            <label for="name" id="${cssPrefix}-dialog-form-content">${content}</label>
-            <input type="text" name="name" id="${cssPrefix}-dialog-form-input"" />
+        const template = `<div id="${cssPrefix}-dialog-form" class="kfrm-form">
+            <div class="kfrm-fields label-above">
+                <label for="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-content">${content}</label>
+                <input type="text" name="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-input" />
+            </div>
         </div>`;
 
         const options: DialogOptions = {
