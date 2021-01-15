@@ -41,14 +41,14 @@ jobs:
       with:
         dotnet-version: '3.1.x'
 
-    - name: Read version.json
-      id: version
-      uses: juliangruber/read-file-action@v1
+    - name: Read version.json to env
+      uses: antifree/json-to-variables@v1
       with:
-        path: ./easydata.net/version.json
+        filename: ./easydata.net/version.json
+        prefix: ed 
 
     - name: Setup version in Build.props
-      run: ./tools/SetVersionInCsproj.ps1 ./easydata.net/src/Directory.Build.props ${{ fromJSON(steps.version.outputs.content).packageVersion }} ${{ fromJSON(steps.version.outputs.content).assemblyVersion }} 
+      run: ./tools/SetVersionInCsproj.ps1 ./easydata.net/src/Directory.Build.props ${{ env.ed_packageVersion }} ${{ env.ed_assemblyVersion }} 
       shell: powershell
 
     - name: Install dependencies
