@@ -42,7 +42,7 @@ jobs:
         dotnet-version: '3.1.x'
 
     - name: Read version.json to env
-      uses: antifree/json-to-variables@v1
+      uses: antifree/json-to-variables@v1.0.0
       with:
         filename: ./easydata.net/version.json
         prefix: ed 
