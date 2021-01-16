@@ -449,7 +449,7 @@ export class EntityEditForm {
                     continue;
             }
             else {
-                if (!attr.showOnAdd)
+                if (!attr.showOnCreate)
                     continue;
             }
             

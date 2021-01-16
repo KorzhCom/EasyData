@@ -17,6 +17,7 @@ namespace EasyDataBasicDemo.Models
         [Column("CategoryID")]
         public int Id { get; set; }
   
+        [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
         public string CategoryName { get; set; }
 
         [MetaEntityAttr(Editable = false)]

@@ -64,8 +64,8 @@ export interface MetaEntityAttrDTO {
     /** Show On View */
     sov?: boolean;
 
-    /** Show On Add */
-    soa?: boolean;
+    /** Show On Create */
+    soc?: boolean;
 
     /** Show On Edit */
     soe?: boolean;
