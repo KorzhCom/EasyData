@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
+    /// <summary>
+    /// Represents attribute's kind
+    /// </summary>
     public enum EntityAttrKind
     { 
         Data = 0,
@@ -95,6 +98,10 @@ namespace EasyData
 
         internal string _lookupDataAttrId = null;
         private MetaEntityAttr _lookupDataAttr = null;
+        /// <summary>
+        /// Gets or sets the data attribute in the lookup entity (where the actual values will be saved to).
+        /// </summary>
+        /// <value>The lookup data attribute.</value>
         public MetaEntityAttr LookupDataAttribute
         {
             get {
@@ -164,7 +171,23 @@ namespace EasyData
         /// <summary>
         /// Gets ot sets a value indicating wether Attribute is visible
         /// </summary>
+        [Obsolete("Use ShowOnView instead")]
         public bool IsVisible { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible in a view mode (in grid)
+        /// </summary>
+        public bool ShowOnView { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible during the edit
+        /// </summary>
+        public bool ShowOnEdit { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible during the creation
+        /// </summary>
+        public bool ShowOnCreate { get; set; } = true;
 
         private ValueEditor _defaultEditor = null;
         /// <summary>
@@ -446,7 +469,10 @@ namespace EasyData
             IsPrimaryKey = attr.IsPrimaryKey;
             IsForeignKey = attr.IsForeignKey;
             IsEditable = attr.IsEditable;
-            IsVisible = attr.IsVisible;
+            ShowInLookup = attr.ShowInLookup;
+            ShowOnView = attr.ShowOnView;
+            ShowOnEdit = attr.ShowOnEdit;
+            ShowOnCreate = attr.ShowOnCreate;
         }
 
         /// <summary>
@@ -511,8 +537,14 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ied").ConfigureAwait(false);
             await writer.WriteValueAsync(IsEditable).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ivis").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsVisible).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("sov").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnView).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soe").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnEdit).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soc").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnCreate).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
             await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
@@ -618,6 +650,15 @@ namespace EasyData
                     break;
                 case "ifk":
                     IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "sov":
+                    ShowOnView = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soe":
+                    ShowOnEdit = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soc":
+                    ShowOnCreate = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "sil":
                     ShowInLookup = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
