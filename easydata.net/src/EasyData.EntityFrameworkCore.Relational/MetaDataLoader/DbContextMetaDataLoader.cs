@@ -162,8 +162,8 @@ namespace EasyData.EntityFrameworkCore
 
                 lookUpAttr.PropInfo = navigation.PropertyInfo;
 
-                lookUpAttr = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
-                if (lookUpAttr is null)
+                var enabled = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
+                if (!enabled)
                     return;
 
                 var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
@@ -218,12 +218,12 @@ namespace EasyData.EntityFrameworkCore
 
         }
 
-        private MetaEntityAttr ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
+        private bool ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
         {
             var annotation = (MetaEntityAttrAttribute)prop.GetCustomAttribute(typeof(MetaEntityAttrAttribute));
             if (annotation != null) {
                 if (!annotation.Enabled)
-                    return null;
+                    return false;
 
                 if (!string.IsNullOrEmpty(annotation.DisplayName)) {
                     entityAttr.Caption = annotation.DisplayName;
@@ -244,7 +244,7 @@ namespace EasyData.EntityFrameworkCore
                 }
             }
 
-            return entityAttr;
+            return true;
         }
 
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
@@ -275,7 +275,9 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Caption = DataUtils.PrettifyName(entityAttr.Caption);
                 }
 
-                entityAttr = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
+                var enabled = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
+                if (!enabled)
+                    return null;
             }
 
             if (entityAttr.DataType == DataType.Blob) {
