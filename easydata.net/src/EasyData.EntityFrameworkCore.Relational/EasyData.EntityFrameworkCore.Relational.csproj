@@ -24,7 +24,7 @@
     <Compile Remove="EfCore2Extensions.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0'">
-    <Compile Remove="EfCore2Extensions.cs" />
+    <Compile Remove="Extensions\EfCore2Extensions.cs" />
   </ItemGroup>
   
   <ItemGroup>
