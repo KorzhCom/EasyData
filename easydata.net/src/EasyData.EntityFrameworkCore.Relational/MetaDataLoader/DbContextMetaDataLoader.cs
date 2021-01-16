@@ -233,13 +233,11 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Description = annotation.Description;
                 }
 
+                entityAttr.IsEditable = annotation.Editable;
                 entityAttr.ShowInLookup = annotation.ShowInLookup;
-
-                if (entityAttr.IsEditable)
-                    entityAttr.IsEditable = annotation.Editable;
-
-                if (entityAttr.IsVisible)
-                    entityAttr.IsVisible = annotation.Visible;
+                entityAttr.ShowOnView = annotation.ShowOnView;
+                entityAttr.ShowOnEdit = annotation.ShowOnEdit;
+                entityAttr.ShowOnCreate = annotation.ShowOnCreate;
 
                 if (annotation.Index != int.MaxValue) {
                     entityAttr.Index = annotation.Index;
@@ -268,13 +266,8 @@ namespace EasyData.EntityFrameworkCore
 
             entityAttr.IsNullable = property.IsNullable;
 
-            if (entityAttr.DataType == DataType.Blob) {
-                entityAttr.IsEditable = entityAttr.IsVisible = false;
-            }
-
             var propInfo = property.PropertyInfo;
-            if (propInfo != null) {
-         
+            if (propInfo != null) {         
                 if (propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
                     entityAttr.Caption = displayAttr.Name;
                 }
@@ -283,6 +276,13 @@ namespace EasyData.EntityFrameworkCore
                 }
 
                 entityAttr = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
+            }
+
+            if (entityAttr.DataType == DataType.Blob) {
+                entityAttr.IsEditable = false;
+                entityAttr.ShowOnView = false;
+                entityAttr.ShowOnEdit = false;
+                entityAttr.ShowOnCreate = false;
             }
 
             return entityAttr;
