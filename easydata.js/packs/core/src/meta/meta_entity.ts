@@ -164,9 +164,9 @@ export class MetaEntityAttr {
     public showOnView: boolean;
 
     /**
-     * The value indicating wether the attribute is shown add page.
+     * The value indicating wether the attribute is shown create page.
      */
-    public showOnAdd: boolean;
+    public showOnCreate: boolean;
 
     /**
     * The value indicating wether the attribute is shown edit page.
@@ -217,7 +217,7 @@ export class MetaEntityAttr {
         this.isNullable = true;
         this.showOnView = true;
         this.isEditable = true;
-        this.showOnAdd = true;
+        this.showOnCreate = true;
         this.showOnEdit = true;
         this.showInLookup = false;
         this.lookupAttr = "";
@@ -250,7 +250,7 @@ export class MetaEntityAttr {
             this.isNullable = utils.getIfDefined(dto.nul, this.isNullable);
             this.isEditable = utils.getIfDefined(dto.ied, this.isEditable);
             this.showOnView = utils.getIfDefined(dto.ivis || dto.sov, this.showOnView);
-            this.showOnAdd = utils.getIfDefined(dto.soa, this.showOnAdd);
+            this.showOnCreate = utils.getIfDefined(dto.soc, this.showOnCreate);
             this.showOnEdit = utils.getIfDefined(dto.soe, this.showOnEdit);
             this.showInLookup = utils.getIfDefined(dto.sil, this.showInLookup);
 
