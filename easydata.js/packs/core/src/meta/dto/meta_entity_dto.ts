@@ -61,6 +61,15 @@ export interface MetaEntityAttrDTO {
     /** Is editable */
     ied?: boolean;
 
+    /** Show On View */
+    sov?: boolean;
+
+    /** Show On Add */
+    soa?: boolean;
+
+    /** Show On Edit */
+    soe?: boolean;
+
     /** Is visible */
     ivis?: boolean;
 }

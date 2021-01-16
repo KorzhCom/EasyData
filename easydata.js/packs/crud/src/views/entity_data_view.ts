@@ -51,7 +51,7 @@ export class EntityDataView {
         if (column.dataColumn) {
             const attr = this.context.getMetaData().getAttributeById(column.dataColumn.id);
             if (attr) {
-                column.isVisible = attr.isVisible;
+                column.isVisible = attr.showOnView;
             }
         }
     }

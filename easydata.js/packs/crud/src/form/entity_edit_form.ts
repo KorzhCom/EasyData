@@ -444,6 +444,15 @@ export class EntityEditForm {
             if (attr.isForeignKey)
                 continue;
 
+            if (params.isEditForm) {
+                if (!attr.showOnEdit)
+                    continue;
+            }
+            else {
+                if (!attr.showOnAdd)
+                    continue;
+            }
+            
             addFormField(fb.toDOM(), attr)
         }
 
