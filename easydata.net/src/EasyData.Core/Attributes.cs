@@ -181,6 +181,15 @@ namespace EasyData
             }
         }
 
+        /// <summary>
+        /// Sets default editor without adding it to model.
+        /// </summary>
+        public void SetDefaultEditorWithoutChecking(ValueEditor editor)
+        {
+            _defaultEditor = editor;
+        }
+
+
         internal string _lookupAttrId = null;
         private MetaEntityAttr _lookupAttr = null;
 
@@ -591,7 +600,8 @@ namespace EasyData
                         .Value.IntToDataType();
                     break;
                 case "edtr":
-                    DefaultEditor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    var editor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    SetDefaultEditorWithoutChecking(editor);
                     break;
                 case "kind":
                     Kind = (EntityAttrKind)await reader.ReadAsInt32Async().ConfigureAwait(false);
