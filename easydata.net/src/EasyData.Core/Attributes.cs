@@ -470,6 +470,9 @@ namespace EasyData
             IsForeignKey = attr.IsForeignKey;
             IsEditable = attr.IsEditable;
             ShowInLookup = attr.ShowInLookup;
+            ShowOnView = attr.ShowOnView;
+            ShowOnEdit = attr.ShowOnEdit;
+            ShowOnCreate = attr.ShowOnCreate;
         }
 
         /// <summary>
@@ -534,8 +537,14 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ied").ConfigureAwait(false);
             await writer.WriteValueAsync(IsEditable).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ivis").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsVisible).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("sov").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnView).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soe").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnEdit).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soc").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnCreate).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
             await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
@@ -641,6 +650,15 @@ namespace EasyData
                     break;
                 case "ifk":
                     IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "sov":
+                    ShowOnView = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soe":
+                    ShowOnEdit = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soc":
+                    ShowOnCreate = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "sil":
                     ShowInLookup = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
