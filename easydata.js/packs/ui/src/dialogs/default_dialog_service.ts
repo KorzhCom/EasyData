@@ -1,8 +1,8 @@
 import { i18n } from '@easydata/core';
 
-import { DialogService, DialogOptions } from "./dialog_service";
+import { DialogService, DialogOptions } from './dialog_service';
 
-import { domel } from "../utils/dom_elem_builder";
+import { domel } from '../utils/dom_elem_builder';
 
 
 const cssPrefix = "kdlg";
@@ -60,6 +60,7 @@ export class DefaultDialogService implements DialogService {
             title: title,
             closable: true,
             cancelable: true,
+            sumbitOnEnter: true,
             body: template,
             arrangeParents: false,
             beforeOpen: () => {
@@ -67,6 +68,7 @@ export class DefaultDialogService implements DialogService {
                 if (defVal) {
                     input.value = defVal;
                 }
+                input.focus();
             }
         }
 
@@ -111,6 +113,8 @@ export class DefaultDialogService implements DialogService {
             if (options.arrangeParents) {
                 this.arrangeParents(false);
             }
+
+            this.focusOnParentDialog();
     
             document.body.removeChild(builder.show().toDOM());
 
@@ -137,6 +141,7 @@ export class DefaultDialogService implements DialogService {
 
         const builder = 
             domel('div', document.body)
+                .attr('tab-index', '-1')
                 .addClass('kdlg-modal', 'is-active')
                 .addChild('div', b => b
                     .addClass('kdlg-modal-background')
@@ -194,6 +199,8 @@ export class DefaultDialogService implements DialogService {
                     })
             );
 
+        builder.toDOM().focus();
+
         if (options.beforeOpen) {
             options.beforeOpen();
         }
@@ -217,6 +224,20 @@ export class DefaultDialogService implements DialogService {
         if (options.arrangeParents) {
             this.arrangeParents(true);
         }
+
+        if (options.sumbitOnEnter) {
+            const keydownHandler = (ev: KeyboardEvent) => {
+                if (ev.keyCode == 13) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    submitHandler();
+                    return false;
+                }
+
+                return true;
+            }
+            builder.on('keydown', ev => keydownHandler(ev as KeyboardEvent));
+        }
     }
 
     private arrangeParents(turnOn: boolean) {
@@ -234,6 +255,14 @@ export class DefaultDialogService implements DialogService {
                     .removeStyle('margin-top')
                     .removeStyle('margin-left');
             }
+        }
+    }
+
+    private focusOnParentDialog() {
+        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal-window');
+        const focusIndex = windowDivs.length - 2;
+        if (focusIndex >= 0) {
+            windowDivs[focusIndex].focus();
         }
     }
 }

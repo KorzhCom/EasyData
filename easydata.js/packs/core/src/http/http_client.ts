@@ -68,7 +68,8 @@ export class HttpClient {
             method: method,
             url: url,
             headers: { ... this.defaultHeaders, ...options.headers || {} },
-            queryParams: options.queryParams || {}
+            queryParams: options.queryParams || {},
+            data: data
         };
 
         if (contentType)

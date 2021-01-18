@@ -168,6 +168,7 @@ export class EntityDataView {
             title: i18n.getText('EditDlgCaption')
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
+            sumbitOnEnter: true,
             onSubmit: () => {
                 const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
                 const keys = keyAttrs.map(attr => row.getValue(attr.id));
