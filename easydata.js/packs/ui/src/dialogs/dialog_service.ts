@@ -3,7 +3,7 @@ export interface DialogOptions {
     body: string | HTMLElement;
     closable?: boolean;
     cancelable?: boolean;
-    sumbitOnEnter?: boolean;
+    submitOnEnter?: boolean;
     width?: number | string;
     height?: number | string;
     arrangeParents?: boolean;

@@ -338,7 +338,6 @@ export class EntityEditForm {
                                                 .replace('{entity}', lookupEntity.caption),
                                             body: slot,
                                             arrangeParents: true,
-                                            sumbitOnEnter: true,
                                             beforeOpen: () => {
                                                 const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
                                                 new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, 

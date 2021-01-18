@@ -60,7 +60,7 @@ export class DefaultDialogService implements DialogService {
             title: title,
             closable: true,
             cancelable: true,
-            sumbitOnEnter: true,
+            submitOnEnter: true,
             body: template,
             arrangeParents: false,
             beforeOpen: () => {
@@ -113,8 +113,6 @@ export class DefaultDialogService implements DialogService {
             if (options.arrangeParents) {
                 this.arrangeParents(false);
             }
-
-            this.focusOnParentDialog();
     
             document.body.removeChild(builder.show().toDOM());
 
@@ -133,10 +131,11 @@ export class DefaultDialogService implements DialogService {
 
         const submitHandler = () => {
             if (options.onSubmit && options.onSubmit() === false) {
-                return;
+                return false;
             }
 
             destroy();
+            return true;
         }
 
         const builder = 
@@ -225,18 +224,20 @@ export class DefaultDialogService implements DialogService {
             this.arrangeParents(true);
         }
 
-        if (options.sumbitOnEnter) {
+        if (options.submitOnEnter) {
             const keydownHandler = (ev: KeyboardEvent) => {
-                if (ev.keyCode == 13) {
+                if (ev.keyCode == 13 && this.isActiveDialog(builder.toDOM())) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    submitHandler();
-                    return false;
+                    if (submitHandler()) {
+                        window.removeEventListener('keydown', keydownHandler, false);
+                        return false;
+                    }
                 }
 
                 return true;
             }
-            builder.on('keydown', ev => keydownHandler(ev as KeyboardEvent));
+            window.addEventListener('keydown', keydownHandler, false);
         }
     }
 
@@ -258,11 +259,8 @@ export class DefaultDialogService implements DialogService {
         }
     }
 
-    private focusOnParentDialog() {
-        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal-window');
-        const focusIndex = windowDivs.length - 2;
-        if (focusIndex >= 0) {
-            windowDivs[focusIndex].focus();
-        }
+    private isActiveDialog(el: HTMLElement): boolean {
+        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal');
+        return windowDivs[windowDivs.length - 1] === el;
     }
 }
