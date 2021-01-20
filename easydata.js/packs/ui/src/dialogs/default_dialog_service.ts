@@ -1,9 +1,8 @@
-import { i18n } from '@easydata/core';
+import { i18n, utils } from '@easydata/core';
 
-import { DialogService, DialogOptions } from './dialog_service';
+import { DialogService, DialogOptions, Dialog } from './dialog_service';
 
 import { domel } from '../utils/dom_elem_builder';
-
 
 const cssPrefix = "kdlg";
 
@@ -18,6 +17,7 @@ export class DefaultDialogService implements DialogService {
         const options: DialogOptions = {
             title: title,
             closable: false,
+            submitable: true,
             cancelable: true,
             body: template
         }
@@ -58,6 +58,7 @@ export class DefaultDialogService implements DialogService {
 
         const options: DialogOptions = {
             title: title,
+            submitable: true,
             closable: true,
             cancelable: true,
             submitOnEnter: true,
@@ -108,143 +109,173 @@ export class DefaultDialogService implements DialogService {
     }
 
     public open(options: DialogOptions) {
+        const dlg = new DefaultDialog(options);
+        dlg.open();
+        return dlg;
+    }
 
-        const destroy = () => {
-            if (options.arrangeParents) {
-                this.arrangeParents(false);
-            }
-    
-            document.body.removeChild(builder.show().toDOM());
+}
 
-            if (options.onDestroy) {
-                options.onDestroy();
-            }
-        }
+export class DefaultDialog implements Dialog {
 
-        const cancelHandler = () => {
-            if (options.onCancel) {
-                options.onCancel();
-            }
+    private slot: HTMLElement;
 
-            destroy();
-        } 
+    constructor(private options: DialogOptions) {
 
-        const submitHandler = () => {
-            if (options.onSubmit && options.onSubmit() === false) {
-                return false;
-            }
-
-            destroy();
-            return true;
-        }
-
-        const builder = 
+        const id = utils.generateId('dlg');
+        this.slot = 
             domel('div', document.body)
-                .attr('tab-index', '-1')
-                .addClass('kdlg-modal', 'is-active')
-                .addChild('div', b => b
-                    .addClass('kdlg-modal-background')
-                )
-                .addChild('div', b => b
-                    .addClass('kdlg-modal-window')
-                    //.addClass(browserUtils.getMobileCssClass())
-                    .addChild('header', b => {
-                        b
+            .attr('tab-index', '-1')
+            .data('dialog-id', id)
+            .addClass('kdlg-modal', 'is-active')
+            .addChild('div', b => b
+                .addClass('kdlg-modal-background')
+            )
+            .addChild('div', b => b
+                .addClass('kdlg-modal-window')
+                .addChild('header', b => {
+                    b
                         .addClass('kdlg-header')
                         .addChild('p', b => b
                             .addClass('kdlg-header-title')
                             .addText(options.title)
                         );
 
-                        if (options.closable !== false)
-                            b.addChild('button', b => b
-                                .addClass('kdlg-modal-close')
-                                .on('click', () => {
-                                    cancelHandler();
-                                })
-                            );
-                    })
-                    .addChild('section', b => { 
-                        b
+                    if (options.closable !== false)
+                        b.addChild('button', b => b
+                            .addClass('kdlg-modal-close')
+                            .on('click', () => {
+                                this.cancelHandler();
+                            })
+                        );
+                })
+                .addChild('section', b => {
+                    b
                         .addClass('kdlg-body')
 
-                        if (typeof options.body === 'string') {
-                            b.addHtml(options.body)
-                        } 
-                        else {
-                            b.addChildElement(options.body);
-                        }
-                    })
-                    .addChild('footer', b => {
-                        b
-                        .addClass('kdlg-footer', 'align-right')
-                        .addChild('button', b => b
+                    if (typeof options.body === 'string') {
+                        b.addHtml(options.body)
+                    }
+                    else {
+                        b.addChildElement(options.body);
+                    }
+                })
+                .addChild('footer', b => {
+                        b.addClass('kdlg-footer', 'align-right');
+
+                        if (options.submitable === false)
+                            return;
+
+                        b.addChild('button', b => b
                             .addClass('kfrm-button', 'is-info')
                             .addText(i18n.getText('ButtonOK'))
                             .on('click', (e) => {
-                                submitHandler();
+                                this.submitHandler();
                             })
                         )
 
                         if (options.cancelable !== false)
-                            b
-                            .addChild('button', builder => builder
+                            b.addChild('button', builder => builder
                                 .addClass('kfrm-button')
                                 .addText(i18n.getText('ButtonCancel'))
                                 .on('click', (e) => {
-                                    cancelHandler();
+                                    this.cancelHandler();
                                 })
                             )
                     })
-            );
+                
+            )
+            .toDOM();
+    }
 
-        builder.toDOM().focus();
-
-        if (options.beforeOpen) {
-            options.beforeOpen();
+    public open() {
+        if (this.options.beforeOpen) {
+            this.options.beforeOpen();
         }
 
-        builder.show();
+        domel(this.slot).show();
 
-        const windowDiv = builder.toDOM()
-            .querySelector<HTMLElement>('.kdlg-modal-window');
-            
-        if (options.height) {
-            windowDiv.style.height = typeof options.height === 'string' 
-                ? options.height 
-                : `${options.height}px`;
-        }
-        if (options.width) {
-            windowDiv.style.width = typeof options.width === 'string' 
-                ? options.width 
-                : `${options.width}px`;
-        }
-
-        if (options.arrangeParents) {
+        if (this.options.arrangeParents) {
             this.arrangeParents(true);
         }
 
-        if (options.submitOnEnter) {
-            const keydownHandler = (ev: KeyboardEvent) => {
-                if (ev.keyCode == 13 && this.isActiveDialog(builder.toDOM())) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    if (submitHandler()) {
-                        window.removeEventListener('keydown', keydownHandler, false);
-                        return false;
-                    }
-                }
+        const windowDiv = this.slot
+            .querySelector<HTMLElement>('.kdlg-modal-window');
 
-                return true;
-            }
-            window.addEventListener('keydown', keydownHandler, false);
+        if (this.options.height) {
+            windowDiv.style.height = typeof this.options.height === 'string'
+                ? this.options.height
+                : `${this.options.height}px`;
         }
+        if (this.options.width) {
+            windowDiv.style.width = typeof this.options.width === 'string'
+                ? this.options.width
+                : `${this.options.width}px`;
+        }
+    }
+
+    public submit() {
+        this.submitHandler();
+    }
+    public cancel() {
+        this.cancelHandler();
+    }
+
+    protected destroy() {
+        if (this.options.arrangeParents) {
+            this.arrangeParents(false);
+        }
+
+        document.body.removeChild(this.slot);
+
+        if (this.options.submitOnEnter) {
+            window.removeEventListener('keydown', this.keydownHandler, false);
+        }
+
+        if (this.options.onDestroy) {
+            this.options.onDestroy();
+        }
+    }
+
+    private submitHandler = (): boolean => {
+        if (this.options.onSubmit && this.options.onSubmit() === false) {
+            return false;
+        }
+
+        this.destroy();
+        return true;
+    }
+
+    private cancelHandler = () => {
+        if (this.options.onCancel) {
+            this.options.onCancel();
+        }
+
+        this.destroy();
+    }
+
+    private keydownHandler = (ev: KeyboardEvent) => {
+        if (ev.keyCode == 13 && this.isActiveDialog()) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            if (this.submitHandler()) {
+                window.removeEventListener('keydown', this.keydownHandler, false);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private isActiveDialog(): boolean {
+        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal');
+        return windowDivs[windowDivs.length - 1] === this.slot;
     }
 
     private arrangeParents(turnOn: boolean) {
         const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal-window');
 
-        for (let i = 0; i < windowDivs.length - 1; i++ ) {
+        for (let i = 0; i < windowDivs.length - 1; i++) {
             if (turnOn) {
                 const offset = i == 0 ? 20 : i * 40 + 20;
                 domel(windowDivs[i])
@@ -259,8 +290,4 @@ export class DefaultDialogService implements DialogService {
         }
     }
 
-    private isActiveDialog(el: HTMLElement): boolean {
-        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal');
-        return windowDivs[windowDivs.length - 1] === el;
-    }
 }

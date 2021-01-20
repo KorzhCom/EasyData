@@ -1,6 +1,7 @@
 export interface DialogOptions {
     title: string;
     body: string | HTMLElement;
+    submitable?: boolean;
     closable?: boolean;
     cancelable?: boolean;
     submitOnEnter?: boolean;
@@ -13,6 +14,11 @@ export interface DialogOptions {
     onDestroy?: () => void;
 }
 
+export interface Dialog {
+    submit(): void;
+    cancel(): void;
+}
+
 export interface DialogService {
     openConfirm(title?: string, content?: string): Promise<boolean>;
     openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): void;
@@ -22,5 +28,5 @@ export interface DialogService {
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): void;
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): Promise<string> | void;
 
-    open(options: DialogOptions);
+    open(options: DialogOptions): Dialog;
 }
