@@ -174,6 +174,9 @@ namespace EasyData
             DataType.Float,
             DataType.Currency,
             DataType.BCD,
+            DataType.Date,
+            DataType.Time,
+            DataType.DateTime,
             DataType.Autoinc,
             DataType.Memo,
             DataType.FixedChar
