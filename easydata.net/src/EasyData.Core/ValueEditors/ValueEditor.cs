@@ -277,7 +277,7 @@ namespace EasyData
         /// <param name="model">The model.</param>
         public void CheckInModel(MetaData model)
         {
-            if (model.Editors.IndexByID(this.Id) < 0) {
+            if (model.Editors.IndexById(this.Id) < 0) {
                 model.Editors.Add(this);
             }
         }
@@ -406,7 +406,7 @@ namespace EasyData
         /// </summary>
         /// <param name="editorId">ID of operator.</param>
         /// <returns>Operator index in the list or -1 if operator with specified ID was not found</returns>
-        public int IndexByID(string editorId)
+        public int IndexById(string editorId)
         {
             for (int result = 0; result < Count; result++)
                 if (this[result].Id == editorId)
@@ -419,9 +419,9 @@ namespace EasyData
         /// </summary>
         /// <param name="editorId">ID of operator.</param>
         /// <returns>Operator object or null if operator with specified ID was not found.</returns>
-        public ValueEditor FindByID(string editorId)
+        public ValueEditor FindById(string editorId)
         {
-            int index = IndexByID(editorId);
+            int index = IndexById(editorId);
             if (index >= 0)
                 return this[index];
             return null;
@@ -444,7 +444,7 @@ namespace EasyData
 
             string result = baseId + num.ToString("D2");
 
-            while (IndexByID(result) >= 0)
+            while (IndexById(result) >= 0)
             {
                 num++;
                 result = baseId + num.ToString("D2");
@@ -495,7 +495,7 @@ namespace EasyData
                 var editor = await ValueEditor.ReadFromJsonAsync(reader)
                     .ConfigureAwait(false);
 
-                if (this.FindByID(editor.Id) == null)
+                if (this.FindById(editor.Id) == null)
                 {
                     this.Add(editor);
                 }

@@ -632,7 +632,7 @@ namespace EasyData
                         .Value.IntToDataType();
                     break;
                 case "edtr":
-                    var editor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    var editor = Model.Editors.FindById(await reader.ReadAsStringAsync().ConfigureAwait(false));
                     SetDefaultEditorWithoutChecking(editor);
                     break;
                 case "kind":
