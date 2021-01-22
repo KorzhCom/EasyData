@@ -72,7 +72,6 @@ export class EasyGrid {
         allowDragDrop: false,
         totals: {
             calcGrandTotals: false,
-            calcSubTotals: false,
             calculator: null
         },
         paging: {
@@ -486,9 +485,18 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals && (this.options.totals.calcGrandTotals || this.options.totals.calcSubTotals)
+        return this.options.totals && (this.options.totals.calcGrandTotals 
+            || this.calcSubTotalsCols())
          && this.dataTable.columns.getItems()
             .filter(col => col.isAggr).length > 0;
+    }
+
+    private calcSubTotalsCols(): boolean {
+        return this.options.totals.cols && Object.values(this.options.totals.cols)
+            .map(val => val.calcSubTotals)
+            .reduce((prev, value) => {
+                return prev || value;
+            }, false)
     }
 
     private prevRowTotals: DataRow = null;
@@ -502,7 +510,7 @@ export class EasyGrid {
     } 
 
     private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals && this.options.totals.calcSubTotals) {
+        if (this.prevRowTotals && this.calcSubTotalsCols()) {
             let changeLevel = -1;
             for(let i = 0; i < keyCols.length; i++) {
                 const col = keyCols[i];
@@ -513,7 +521,11 @@ export class EasyGrid {
             }
 
             if (changeLevel != -1) {
+                const totalsOpts = this.options.totals;
                 for(let i = keyCols.length; i > changeLevel; i--) {
+                    const col = keyCols[i - 1];
+                    if (totalsOpts.cols && totalsOpts.cols[col.id].calcSubTotals === false)
+                        continue;
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(i, row);
                     this.bodyCellContainerDiv.appendChild(tr);

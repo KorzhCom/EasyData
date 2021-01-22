@@ -19,11 +19,13 @@ export interface EasyGridOptions {
 
     totals?: {
         calcGrandTotals?: boolean;
-        calcSubTotals?: boolean;
-        groupColumns?: number // not used now
+        cols?: {
+            [id: string]: {
+                calcSubTotals?: boolean
+            }
+        }
         calculator: TotalsCalculator
-    }
-
+    },
     addColumns?: boolean;
     addColumnsTitle?: string;
     useRowNumeration?: boolean;
