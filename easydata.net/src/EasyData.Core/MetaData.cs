@@ -438,7 +438,7 @@ namespace EasyData
                     id = baseID + N.ToString();
                 }
             }
-            attr.ID = id;
+            attr.Id = id;
         }
 
         #endregion //Entities and attributes
