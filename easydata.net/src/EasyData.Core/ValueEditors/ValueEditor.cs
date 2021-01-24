@@ -168,12 +168,10 @@ namespace EasyData
         /// <param name="id">Value Editor ID.</param>
         public ValueEditor(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                this.Id = this.IDBase + GetNextID();
+            if (string.IsNullOrEmpty(id)) {
+                Id = IdBase + GetNextID();
             }
-            else
-            {
+            else {
                 this.Id = id;
             }
         }
@@ -197,7 +195,7 @@ namespace EasyData
         /// Gets the base part of identifier.
         /// </summary>
         /// <value>The identifier base.</value>
-        public virtual string IDBase
+        public virtual string IdBase
         {
             get {
                 return this.GetType().Name;

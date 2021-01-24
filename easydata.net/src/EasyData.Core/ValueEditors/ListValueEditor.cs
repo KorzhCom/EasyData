@@ -132,7 +132,7 @@ namespace EasyData
         /// Gets the base part of identifier.
         /// </summary>
         /// <value>The identifier base.</value>
-        public override string IDBase => "CLVE";
+        public override string IdBase => "CLVE";
 
         /// <summary>
         /// Gets the value editor's tag.
