@@ -506,9 +506,9 @@ namespace EasyData
 
     /// <summary>
     /// Represents the list of value editors which belongs to some DataModel object.
-    /// Implements the <see cref="Korzh.EasyQuery.ValueEditorList" />
+    /// Implements the <see cref="EasyData.ValueEditorList" />
     /// </summary>
-    /// <seealso cref="Korzh.EasyQuery.ValueEditorList" />
+    /// <seealso cref="EasyData.ValueEditorList" />
     public class ValueEditorStore : ValueEditorList
     {
         /// <summary>
