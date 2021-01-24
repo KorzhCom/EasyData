@@ -335,26 +335,26 @@ namespace EasyData
         /// <summary>
         /// Number of virtual attributes
         /// </summary>
-        protected internal int _maxEntAttrID = 0;
+        protected internal int _maxEntAttrId = 0;
 
         /// <summary>
         /// Gets the next free number for building virtual entity attribute ID.
         /// </summary>
         /// <returns></returns>
-        protected int GetNextEntityAttrID()
+        protected int GetNextEntityAttrId()
         {
-            return ++_maxEntAttrID;
+            return ++_maxEntAttrId;
         }
 
         /// <summary>
         /// Gets the attribute by its ID.
         /// </summary>
-        /// <param name="attrID">The attribute ID.</param>
+        /// <param name="attrId">The attribute ID.</param>
         /// <param name="useNullAttr">if set to <c>true</c> NullAttribute will be returned if we can not find the attribute with specified ID.</param>
         /// <returns></returns>
-        public virtual MetaEntityAttr GetAttributeByID(string attrID, bool useNullAttr)
+        public virtual MetaEntityAttr GetAttributeById(string attrId, bool useNullAttr)
         {
-            var result = EntityRoot.FindAttributeById(attrID);
+            var result = EntityRoot.FindAttributeById(attrId);
             return result;
         }
 
@@ -427,7 +427,7 @@ namespace EasyData
         {
             string id = "";
             if (attr.IsVirtual) {
-                id = "VEA_" + GetNextEntityAttrID().ToString();
+                id = "VEA_" + GetNextEntityAttrId().ToString();
             }
             else {
                 string baseID = attr.Expr.ToIdentifier();
@@ -827,7 +827,7 @@ namespace EasyData
 
             if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
                 await writer.WritePropertyNameAsync("maxAttrId").ConfigureAwait(false);
-                await writer.WriteValueAsync(_maxEntAttrID).ConfigureAwait(false);
+                await writer.WriteValueAsync(_maxEntAttrId).ConfigureAwait(false);
 
                 await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
                 await EntityRoot.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
@@ -912,7 +912,7 @@ namespace EasyData
                     CustomInfo = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "maxAttrId":
-                    _maxEntAttrID = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    _maxEntAttrId = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
                     break;
                 case "editors":
                     await reader.ReadAsync().ConfigureAwait(false); //reading StartArray token

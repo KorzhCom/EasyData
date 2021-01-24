@@ -123,7 +123,7 @@ namespace EasyData
                     CheckModel();
                     _lookupDataAttr = string.IsNullOrEmpty(_lookupDataAttrId)
                         ? null
-                        : Model.GetAttributeByID(_lookupDataAttrId, false);
+                        : Model.GetAttributeById(_lookupDataAttrId, false);
 
                 }
 
@@ -144,7 +144,7 @@ namespace EasyData
                     CheckModel();
                     _dataAttr = string.IsNullOrEmpty(_dataAttrId) 
                         ? null 
-                        : Model.GetAttributeByID(_dataAttrId, false);
+                        : Model.GetAttributeById(_dataAttrId, false);
 
                 }
 
@@ -239,7 +239,7 @@ namespace EasyData
                     CheckModel();
                     _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) 
                         ? null 
-                        : Model.GetAttributeByID(_lookupAttrId, false);
+                        : Model.GetAttributeById(_lookupAttrId, false);
 
                 }
 
