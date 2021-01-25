@@ -440,6 +440,7 @@ export namespace utils {
     }
 
     // ------------- date/time functions -------------------
+    // TO DO: improve to process all datetime cases
     export function strToDateTime(value: string, format: string): Date {
 
         if (!value || value.length == 0)
@@ -488,6 +489,8 @@ export namespace utils {
         }
     }
 
+    const DT_FORMAT_RGEX = /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|m{1,2}|s{1,3}/g;
+
     /**
      * Returns string representation of the date/time value according to the custom format (second parameter) 
      * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
@@ -506,20 +509,36 @@ export namespace utils {
         const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
         const isPm = hour > 11;
 
-        return format.replace('yyyy', year.toString())
-                    .replace('MMMM', i18n.getLongMonthName(month))
-                    .replace('MMM', i18n.getShortMonthName(month))
-                    .replace('MM', (month < 10) ? '0' + month : month.toString())
-                    .replace('M', month.toString())
-                    .replace('dd', (day < 10) ? '0' + day : day.toString())
-                    .replace('d', day.toString())
-                    .replace('HH', (hour < 10) ? '0' + hour : hour.toString())
-                    .replace('H', hour.toString())
-                    .replace('hh', (hour12 < 10) ? '0' + hour12 : hour12.toString())
-                    .replace('h', hour12.toString())
-                    .replace('tt', isPm ? 'PM' : 'AM')
-                    .replace('mm', (minute < 10) ? '0' + minute : minute.toString())
-                    .replace('ss', (second < 10) ? '0' + second : second.toString());
+        const matches = {
+            yyyy: year.toString(),
+            MMMM: i18n.getLongMonthName(month),
+            MMM: i18n.getShortMonthName(month),
+            MM: (month < 10) ? '0' + month : month.toString(),
+            M: month.toString(),
+            dd: (day < 10) ? '0' + day : day.toString(),
+            d: day.toString(),
+            HH: (hour < 10) ? '0' + hour : hour.toString(),
+            H: hour.toString(),
+            hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
+            h: hour12.toString(),
+            tt: isPm ? 'PM' : 'AM',
+            mm: (minute < 10) ? '0' + minute : minute.toString(),
+            ss: (second < 10) ? '0' + second : second.toString()
+        }
+
+        return format.replace(DT_FORMAT_RGEX, (match, $1) => {
+            return $1 || matches[match];
+        });
+    }
+
+    /**
+    * Converts a numeric value to the string taking into the account the decimal separator
+    * @param value - the number to convert 
+    * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
+    */
+    export function numberToStr(number: Number, decimalSeparator?: string) {
+        decimalSeparator = decimalSeparator || i18n.getLocaleSettings().decimalSeparator;
+        return number.toString().replace('.', decimalSeparator);
     }
 
 

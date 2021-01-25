@@ -1,3 +1,4 @@
+import { DataType } from '../types/data_type';
 import { utils } from '../utils/utils';
 
 /**
@@ -337,7 +338,8 @@ export namespace i18n {
             .replace('07', 'hh')
             .replace('7', 'h')
             .replace('34', 'mm')
-            .replace('56', 'ss');                   
+            .replace('56', 'ss')
+            .replace('PM', 'tt');                   
 
         if (!currentLocale.settings) {
             currentLocale.settings = {};
@@ -364,5 +366,27 @@ export namespace i18n {
             loadBrowserLocaleSettings();
         }
     }
+
+    export function dateTimeToStr(dateTime: Date, dataType: DataType): string {
+        const localeSettings = getLocaleSettings();
+        let format: string;
+        switch (dataType) {
+            case DataType.Date:
+                format = localeSettings.shortDateFormat;
+                break;
+            case DataType.Time:
+                format = localeSettings.shortTimeFormat;
+                break;
+            default:
+                format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
+                break;
+        }
+        return utils.dateTimeToStr(dateTime, format);
+    }
+
+    export function numberToStr(number: Number): string {
+        const localeSettings = getLocaleSettings();
+        return utils.numberToStr(number, localeSettings.decimalSeparator);
+    }    
 }
 

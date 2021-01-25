@@ -59,15 +59,9 @@ export class EntityDataView {
     private renderGrid() {
         this.context.getEntities()
             .then(result => {
-
-                console.log("Result", result);
-
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
-
-                console.log(gridSlot);
-
                 this.grid = new EasyGrid({
                     slot: gridSlot,
                     dataTable: result,

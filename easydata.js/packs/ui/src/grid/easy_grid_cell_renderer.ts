@@ -51,20 +51,21 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
 
     if (isDate) {
         const locale = i18n.getCurrentLocale();
+        const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
         switch (column.type) {
             case DataType.Date:
                 strValue = value.toLocaleDateString(locale);
                 break;
             case DataType.Time:
-                strValue = value.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric', second: 'numeric' });
+                strValue = value.toLocaleTimeString(locale, timeOptions);
                 break;
             case DataType.DateTime:
-                strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric', second: 'numeric' })}`;
+                strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, timeOptions)}`;
                 break;
         }
     }
 
-    let builder = domel('div', cellElement)
+    const builder = domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(strValue)
         .title(strValue);
