@@ -188,6 +188,10 @@ export class DefaultDialog implements Dialog {
             .toDOM();
     }
 
+    public getRootElement() {
+        return this.slot;
+    }
+
     public open() {
         if (this.options.beforeOpen) {
             this.options.beforeOpen();
@@ -212,13 +216,32 @@ export class DefaultDialog implements Dialog {
                 ? this.options.width
                 : `${this.options.width}px`;
         }
+
+        if (this.options.submitOnEnter) {
+            window.addEventListener('keydown', this.keydownHandler, false);
+        }
     }
 
     public submit() {
         this.submitHandler();
     }
+
     public cancel() {
         this.cancelHandler();
+    }
+
+    public close() {
+        this.destroy();
+    }
+
+    public disableButtons() {
+        const buttons = this.slot.querySelectorAll<HTMLButtonElement>('button');
+        buttons.forEach(button => button.disabled = true);
+    }
+
+    public enableButtons() {
+        const buttons = this.slot.querySelectorAll<HTMLButtonElement>('button');
+        buttons.forEach(button => button.disabled = false);
     }
 
     protected destroy() {

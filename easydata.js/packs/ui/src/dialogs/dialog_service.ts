@@ -17,6 +17,10 @@ export interface DialogOptions {
 export interface Dialog {
     submit(): void;
     cancel(): void;
+    close(): void;
+    getRootElement(): HTMLElement;
+    disableButtons();
+    enableButtons();
 }
 
 export interface DialogService {
