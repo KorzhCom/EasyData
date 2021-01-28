@@ -176,11 +176,11 @@ namespace EasyData
 
         private string _defaultText = "";
 
-        private static Regex macroRegex = new Regex("\\$\\{(.*)\\}");
+        private static Regex _macroRegex = new Regex("\\$\\{\\{(.*)\\}\\}");
 
         private void ResetDefaultText()
         {
-            MatchCollection macroMatches = macroRegex.Matches(defaultValue);
+            MatchCollection macroMatches = _macroRegex.Matches(defaultValue);
             if (macroMatches.Count > 0)
             {
                 _defaultText = macroMatches[0].Groups[1].Value;
