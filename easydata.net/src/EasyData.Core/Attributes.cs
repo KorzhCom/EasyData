@@ -278,7 +278,7 @@ namespace EasyData
                 }
             }
 
-            if (result != null && result is DateTimeValueEditor) {
+            if (result is DateTimeValueEditor) {
                 ((DateTimeValueEditor)result).SubType = type.Value;
             }
 
