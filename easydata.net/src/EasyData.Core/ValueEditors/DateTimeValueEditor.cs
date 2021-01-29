@@ -33,8 +33,7 @@ namespace EasyData
         /// Gets or sets the type of data (Date, Time or DateTime).
         /// </summary>
         /// <value></value>
-        public DataType SubType
-        {
+        public DataType SubType {
             get { return _subType; }
             set {
                 _subType = value;
@@ -129,12 +128,10 @@ namespace EasyData
         /// <returns></returns>
         protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
         {
-            if (propName == "subType")
-            {
+            if (propName == "subType") {
                 SubType = (DataType)await reader.ReadAsInt32Async().ConfigureAwait(false);
             }
-            else
-            {
+            else {
                 await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
             }
         }
@@ -153,11 +150,11 @@ namespace EasyData
             await writer.WriteValueAsync(SubType).ConfigureAwait(false);
         }
 
-        private string defaultValue = "${{Today}}";
+        private string _defaultValue = "${{Today}}";
 
         private void RecalcDefValue()
         {
-            defaultValue = "${{Today}}";
+            _defaultValue = "${{Today}}";
             ResetDefaultText();
         }
 
@@ -167,42 +164,34 @@ namespace EasyData
         /// <value>The default value</value>
         public override string DefaultValue
         {
-            get { return defaultValue; }
+            get { return _defaultValue; }
             set {
-                defaultValue = value;
+                _defaultValue = value;
                 ResetDefaultText();
             }
         }
-
-        private string _defaultText = "";
-
-        private static Regex _macroRegex = new Regex("\\$\\{\\{(.*)\\}\\}");
-
-        private void ResetDefaultText()
-        {
-            MatchCollection macroMatches = _macroRegex.Matches(defaultValue);
-            if (macroMatches.Count > 0)
-            {
-                _defaultText = macroMatches[0].Groups[1].Value;
-            }
-            else if (defaultValue != "")
-            {
-                DateTime dt = DataUtils.InternalFormatToDateTime(defaultValue, SubType);
-                _defaultText = DataUtils.DateTimeToUserFormat(dt, SubType);
-            }
-            else
-                _defaultText = string.Empty;
-        }
-
 
         /// <summary>
         /// Gets or sets the default text.
         /// </summary>
         /// <value>The default text.</value>
-        public override string DefaultText
+        public override string DefaultText { get; set; } = "";
+
+        private static Regex _macroRegex = new Regex("\\$\\{\\{(.*)\\}\\}");
+
+        private void ResetDefaultText()
         {
-            get { return _defaultText; }
-            set { }
+            MatchCollection macroMatches = _macroRegex.Matches(_defaultValue);
+            if (macroMatches.Count > 0) {
+                DefaultText = macroMatches[0].Groups[1].Value;
+            }
+            else if (_defaultValue != "") {
+                DateTime dt = DataUtils.InternalFormatToDateTime(_defaultValue, SubType);
+                DefaultText = DataUtils.DateTimeToUserFormat(dt, SubType);
+            }
+            else {
+                DefaultText = string.Empty;
+            }
         }
 
     }
