@@ -297,3 +297,10 @@
 .keg-totals-lv5 {
     background-color: #D0F8C0;
 }
+
+.keg-sortable-helper {
+    background-color: white;
+    padding: 3px 20px;
+    border: 2px solid #fb9c2f;
+    border-radius: 4px;
+}
