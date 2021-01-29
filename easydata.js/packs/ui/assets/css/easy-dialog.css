@@ -186,3 +186,36 @@
 }
 
 
+/** alerts start **/
+
+.kdlg-alert {
+    padding: 20px;
+    background-color: #e2f5ff;
+    color: #004aef;
+}
+
+.kdlg-alert.success {
+    color: #0c7905;
+    background-color: #efffe6;
+}
+
+.kdlg-alert.warning {
+    color: #e49e02;
+    background-color: #fff7e5;
+}
+
+.kdlg-alert.error {
+    color: red;
+    background-color: #ffe2e2;
+}
+
+.kdlg-alert-closebtn {
+    margin-left: 15px;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/** alerts end **/
