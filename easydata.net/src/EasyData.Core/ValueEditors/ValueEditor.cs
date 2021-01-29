@@ -110,7 +110,7 @@ namespace EasyData
     /// The simplest type of value editor is "EDIT" which represents one edit field where user can type necessary value.
     /// Other type of value editor is "LIST" - it allows to select necessary value from some list of available values.
     /// </remarks>
-    public class ValueEditor
+    public abstract class ValueEditor
     {
         internal static IList<IValueEditorCreator> Creators = new List<IValueEditorCreator>();
         /// <summary>
@@ -125,14 +125,14 @@ namespace EasyData
         }
 
 
-        private static int maxID = 0;
+        private static int _maxID = 0;
         /// <summary>
         /// Gets the next value editor identifier.
         /// </summary>
         /// <returns>System.Int32.</returns>
         protected static int GetNextID()
         {
-            return ++maxID;
+            return ++_maxID;
         }
 
         /// <summary>
@@ -143,11 +143,9 @@ namespace EasyData
         public static ValueEditor Create(string tag)
         {
             //running backwards to process newer creators first
-            for (var i = Creators.Count - 1; i >= 0; i--)
-            {
+            for (var i = Creators.Count - 1; i >= 0; i--) {
                 var editor = Creators[i].Create(tag);
-                if (editor != null)
-                {
+                if (editor != null) {
                     return editor;
                 }
             }
@@ -158,8 +156,9 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueEditor"/> class.
         /// </summary>
-        public ValueEditor() : this(null)
+        public ValueEditor()
         {
+            Id = IdBase + GetNextID();
         }
 
         /// <summary>
@@ -169,11 +168,9 @@ namespace EasyData
         public ValueEditor(string id)
         {
             if (string.IsNullOrEmpty(id)) {
-                Id = IdBase + GetNextID();
+                throw new ArgumentNullException("id");                
             }
-            else {
-                this.Id = id;
-            }
+            Id = id;
         }
 
         /// <summary>
@@ -198,7 +195,7 @@ namespace EasyData
         public virtual string IdBase
         {
             get {
-                return this.GetType().Name;
+                return GetType().Name;
             }
         }
 
@@ -215,10 +212,7 @@ namespace EasyData
         /// Gets the name of the value editor type.
         /// </summary>
         /// <value>The name of the value editor type.</value>
-        public virtual string Tag
-        {
-            get { return ""; }
-        }
+        public abstract string Tag { get; }
 
         /// <summary>
         /// Gets the XML definition of value editor.
@@ -237,37 +231,19 @@ namespace EasyData
         /// Gets or sets the default value.
         /// </summary>
         /// <value>The default value</value>
-        public virtual string DefaultValue
-        {
-            get { return ""; }
-            set { }
-        }
+        public abstract string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets the default text.
         /// </summary>
         /// <value>The default text.</value>
-        public virtual string DefaultText
-        {
-            get { return ""; }
-            set { }
-        }
-
-        private DataType resultType = DataType.Unknown;
+        public abstract string DefaultText { get; set; }
 
         /// <summary>
         /// Gets or sets the data type of edited values
         /// </summary>
         /// <value>The data type of edited values.</value>
-        public virtual DataType ResultType
-        {
-            get {
-                return resultType;
-            }
-            set {
-                resultType = value;
-            }
-        }
+        public virtual DataType ResultType { get; set; } = DataType.Unknown;
 
         /// <summary>
         /// Check current editor in model and adds it into Editors list if necessary.
@@ -352,9 +328,7 @@ namespace EasyData
         /// <returns></returns>
         public async Task ReadContentFromJsonAsync(JsonReader reader)
         {
-
-            if (reader.TokenType != JsonToken.StartObject)
-            {
+            if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
@@ -377,8 +351,7 @@ namespace EasyData
         /// <returns></returns>
         protected virtual async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
         {
-            switch (propName)
-            {
+            switch (propName) {
                 case "id":
                     Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
@@ -450,7 +423,6 @@ namespace EasyData
 
             return result;
         }
-
 
         #region JSON serialization
 
