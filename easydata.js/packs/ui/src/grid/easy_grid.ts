@@ -404,7 +404,7 @@ export class EasyGrid {
 
                     const attrLabel = document.createElement('div');
                     attrLabel.innerText = column.label;
-                    dragImage.classList.add('ui-sortable-helper');
+                    dragImage.classList.add(`${this.cssPrefix}-sortable-helper`);
                     
                     dragImage.appendChild(attrLabel);
                 },
