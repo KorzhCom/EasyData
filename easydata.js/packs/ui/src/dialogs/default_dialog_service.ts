@@ -119,6 +119,10 @@ export class DefaultDialogService implements DialogService {
 export class DefaultDialog implements Dialog {
 
     private slot: HTMLElement;
+    private window: HTMLElement;
+    private header: HTMLElement;
+    private body: HTMLElement;
+    private footer: HTMLElement;
 
     constructor(private options: DialogOptions) {
 
@@ -131,15 +135,16 @@ export class DefaultDialog implements Dialog {
             .addChild('div', b => b
                 .addClass('kdlg-modal-background')
             )
-            .addChild('div', b => b
+            .addChild('div', b => this.window = b
                 .addClass('kdlg-modal-window')
                 .addChild('header', b => {
-                    b
+                    this.header = b
                         .addClass('kdlg-header')
                         .addChild('p', b => b
                             .addClass('kdlg-header-title')
                             .addText(options.title)
-                        );
+                        )
+                        .toDOM();
 
                     if (options.closable !== false)
                         b.addChild('button', b => b
@@ -149,9 +154,10 @@ export class DefaultDialog implements Dialog {
                             })
                         );
                 })
-                .addChild('section', b => {
-                    b
+                .addChild('section', b =>  { 
+                    this.body = b
                         .addClass('kdlg-body')
+                        .toDOM();
 
                     if (typeof options.body === 'string') {
                         b.addHtml(options.body)
@@ -161,7 +167,9 @@ export class DefaultDialog implements Dialog {
                     }
                 })
                 .addChild('footer', b => {
-                        b.addClass('kdlg-footer', 'align-right');
+                        this.footer = b
+                            .addClass('kdlg-footer', 'align-right')
+                            .toDOM();
 
                         if (options.submitable === false)
                             return;
@@ -182,8 +190,8 @@ export class DefaultDialog implements Dialog {
                                     this.cancelHandler();
                                 })
                             )
-                    })
-                
+                })
+                .toDOM()                
             )
             .toDOM();
     }
@@ -243,6 +251,24 @@ export class DefaultDialog implements Dialog {
         const buttons = this.slot.querySelectorAll<HTMLButtonElement>('button');
         buttons.forEach(button => button.disabled = false);
     }
+
+    public showAlert(text: string, reason: string = '') {
+        let alert = domel('div')
+            .addClass(`kdlg-alert ${reason}`)
+            .addChild('span', b => b
+                .addClass('kdlg-alert-closebtn')
+                .text('×')
+                .on('click', (ev) => {
+                    const alert = (ev.target as HTMLElement).parentElement;
+                    alert.parentElement.removeChild(alert)
+                })
+            )
+            .addText(text)
+            .toDOM();
+
+        this.window.insertBefore(alert, this.footer);
+    }
+
 
     protected destroy() {
         if (this.options.arrangeParents) {
