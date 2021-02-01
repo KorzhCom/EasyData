@@ -188,6 +188,11 @@
 
 /** alerts start **/
 
+.kdlg-alert-container {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
 .kdlg-alert {
     padding: 20px;
     background-color: #e2f5ff;

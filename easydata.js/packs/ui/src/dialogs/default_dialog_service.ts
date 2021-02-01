@@ -119,10 +119,11 @@ export class DefaultDialogService implements DialogService {
 export class DefaultDialog implements Dialog {
 
     private slot: HTMLElement;
-    private window: HTMLElement;
-    private header: HTMLElement;
-    private body: HTMLElement;
-    private footer: HTMLElement;
+    private windowElement: HTMLElement;
+    private headerElement: HTMLElement;
+    private bodyElement: HTMLElement;
+    private footerElement: HTMLElement;
+    private alertElement: HTMLElement;
 
     constructor(private options: DialogOptions) {
 
@@ -135,10 +136,10 @@ export class DefaultDialog implements Dialog {
             .addChild('div', b => b
                 .addClass('kdlg-modal-background')
             )
-            .addChild('div', b => this.window = b
+            .addChild('div', b => this.windowElement = b
                 .addClass('kdlg-modal-window')
                 .addChild('header', b => {
-                    this.header = b
+                    this.headerElement = b
                         .addClass('kdlg-header')
                         .addChild('p', b => b
                             .addClass('kdlg-header-title')
@@ -155,7 +156,7 @@ export class DefaultDialog implements Dialog {
                         );
                 })
                 .addChild('section', b =>  { 
-                    this.body = b
+                    this.bodyElement = b
                         .addClass('kdlg-body')
                         .toDOM();
 
@@ -166,8 +167,12 @@ export class DefaultDialog implements Dialog {
                         b.addChildElement(options.body);
                     }
                 })
+                .addChild('div', b => this.alertElement = b
+                    .addClass('kdlg-alert-container')
+                    .toDOM()
+                )
                 .addChild('footer', b => {
-                        this.footer = b
+                        this.footerElement = b
                             .addClass('kdlg-footer', 'align-right')
                             .toDOM();
 
@@ -252,9 +257,9 @@ export class DefaultDialog implements Dialog {
         buttons.forEach(button => button.disabled = false);
     }
 
-    public showAlert(text: string, reason: string = '') {
+    public showAlert(text: string, reason?: string, replace?: boolean) {
         let alert = domel('div')
-            .addClass(`kdlg-alert ${reason}`)
+            .addClass(`kdlg-alert ${reason || ''}`)
             .addChild('span', b => b
                 .addClass('kdlg-alert-closebtn')
                 .text('×')
@@ -266,9 +271,16 @@ export class DefaultDialog implements Dialog {
             .addText(text)
             .toDOM();
 
-        this.window.insertBefore(alert, this.footer);
+        if (replace === true) {
+            this.clearAlert();
+        }
+
+        this.alertElement.appendChild(alert);
     }
 
+    public clearAlert() {
+        this.alertElement.innerHTML = '';
+    }
 
     protected destroy() {
         if (this.options.arrangeParents) {

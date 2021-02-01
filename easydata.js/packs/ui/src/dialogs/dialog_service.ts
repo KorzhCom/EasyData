@@ -21,7 +21,8 @@ export interface Dialog {
     getRootElement(): HTMLElement;
     disableButtons();
     enableButtons();
-    showAlert(text: string, reason: string);
+    showAlert(text: string, reason?: string, replace?: boolean);
+    clearAlert();
 }
 
 export interface DialogService {
