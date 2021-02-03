@@ -206,6 +206,11 @@ export class MetaEntityAttr {
      */
     public userData?: string;
 
+    /**
+     * The display format for the attribute
+     */
+    public displayFormat?: string;
+
     /** The default constructor. */
     constructor(entity: MetaEntity) {
         this.id = "";
@@ -255,6 +260,8 @@ export class MetaEntityAttr {
             this.showInLookup = utils.getIfDefined(dto.sil, this.showInLookup);
 
             this.kind = dto.kind;
+
+            this.displayFormat = dto.dfmt;
 
             if (dto.udata)
                 this.userData = dto.udata;

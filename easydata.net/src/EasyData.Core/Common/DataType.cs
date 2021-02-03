@@ -196,6 +196,16 @@ namespace EasyData
             DataType.Autoinc
         });
 
+
+        /// <summary>
+        /// The list which represents all float data types
+        /// </summary>
+        static public readonly DataTypeList FloatDataTypes = new DataTypeList(new DataType[] {
+            DataType.Float,
+            DataType.Currency,
+            DataType.BCD
+        });
+
         /// <summary>
         /// The list which represents all integer-like data types (numeric and boolean)
         /// </summary>
