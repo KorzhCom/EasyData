@@ -72,4 +72,7 @@ export interface MetaEntityAttrDTO {
 
     /** Is visible */
     ivis?: boolean;
+
+    /** Display format */
+    dfmt?: string;
 }

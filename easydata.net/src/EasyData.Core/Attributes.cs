@@ -293,6 +293,11 @@ namespace EasyData
 
         public EntityAttrKind Kind { get; internal set; }
 
+        /// <summary>
+        /// The display format for the attribute.
+        /// </summary>
+        public string DisplayFormat { get; set; }
+
 
         /// <summary>
         /// Checks the Model property and raises an exception if it's null.
@@ -562,6 +567,11 @@ namespace EasyData
             await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
             await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
 
+            if (!string.IsNullOrEmpty(DisplayFormat)) {
+                await writer.WritePropertyNameAsync("dfmt").ConfigureAwait(false);
+                await writer.WriteValueAsync(DisplayFormat).ConfigureAwait(false);
+            }
+
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
                 await writer.WriteValueAsync(LookupAttr.Id).ConfigureAwait(false);
@@ -636,6 +646,9 @@ namespace EasyData
             {
                 case "id":
                     Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "dfmt":
+                    DisplayFormat = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "cptn":
                     Caption = await reader.ReadAsStringAsync().ConfigureAwait(false);
