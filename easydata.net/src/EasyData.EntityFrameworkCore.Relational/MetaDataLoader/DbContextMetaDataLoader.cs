@@ -233,6 +233,7 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Description = annotation.Description;
                 }
 
+                entityAttr.DisplayFormat = annotation.DisplayFormat;
                 entityAttr.IsEditable = annotation.Editable;
                 entityAttr.ShowInLookup = annotation.ShowInLookup;
                 entityAttr.ShowOnView = annotation.ShowOnView;

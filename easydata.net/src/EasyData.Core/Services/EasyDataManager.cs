@@ -7,6 +7,20 @@ using System.Threading.Tasks;
 namespace EasyData.Services
 {
 
+    public class EasyDataColDesc 
+    {
+        public string Id { get; set; }
+
+        public string Label { get; set; }
+
+        public DataType Type { get; set; }
+
+        public string AttrId { get; set; }
+        public string DisplayFormat { get; set; }
+        
+
+    }
+
     public class EasyDataCol
     {
         public readonly string id;
@@ -15,11 +29,17 @@ namespace EasyData.Services
 
         public readonly DataType type;
 
-        public EasyDataCol(string id, string label, DataType type)
+        public readonly string orginAttrId;
+
+        public readonly string dfmt;
+
+        public EasyDataCol(EasyDataColDesc desc)
         {
-            this.id = id;
-            this.label = label;
-            this.type = type;
+            id = desc.Id;
+            orginAttrId = desc.AttrId;
+            label = desc.Label;
+            type = desc.Type;
+            dfmt = desc.DisplayFormat;
         }
     }
 

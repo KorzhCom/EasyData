@@ -11,6 +11,8 @@ namespace EasyData.EntityFrameworkCore
 
         public string DisplayName { get; set; }
 
+        public string DisplayFormat { get; set; }
+
         public string Description { get; set; }
 
         [Obsolete("Use ShowOnView instead")]

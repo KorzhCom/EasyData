@@ -50,10 +50,15 @@ namespace EasyData.Services
 
             var props = entityType.GetProperties();
             foreach (var prop in props) {
-                result.cols.Add(new EasyDataCol(
-                    DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name),
-                    DataUtils.PrettifyName(prop.Name),
-                    DataUtils.GetDataTypeBySystemType(prop.ClrType)));
+                var attrId = DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name);
+                var attr = Model.FindEntityAttr(attrId);
+                result.cols.Add(new EasyDataCol(new EasyDataColDesc {
+                    Id =  attrId,
+                    Label = DataUtils.PrettifyName(prop.Name),
+                    AttrId = attr?.Id,
+                    DisplayFormat = attr?.DisplayFormat,
+                    Type = attr != null ? attr.DataType :DataUtils.GetDataTypeBySystemType(prop.ClrType)
+                }));
             }
 
             foreach (var entity in entities) {
@@ -249,7 +254,7 @@ namespace EasyData.Services
                     if (attr == null)
                         return false;
 
-                    if (!attr.IsVisible)
+                    if (!attr.IsVisible || !attr.ShowOnView)
                         return false;
 
                     if (isLookup && !attr.ShowInLookup && !attr.IsPrimaryKey)
