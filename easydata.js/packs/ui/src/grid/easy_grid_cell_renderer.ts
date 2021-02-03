@@ -1,11 +1,11 @@
-import { i18n } from '@easydata/core';
-import { DataType } from '@easydata/core';
+import { i18n, DataType } from '@easydata/core';
 
 import { GridColumn, GridColumnAlign } from './easy_grid_columns';
 import { domel } from '../utils/dom_elem_builder';
 import { EasyGridOptions } from './easy_grid_options';
 
 const cssPrefix = "keg";
+const DFMT_REGEX = /{0:(.*?)}/g;
 
 export enum CellRendererType {
     STRING = 1,
@@ -30,7 +30,15 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
     let strValue = (value || '').toString();
 
     if(typeof value == 'number') {
-        strValue = value.toLocaleString();
+        if (column.dataColumn && column.dataColumn.displayFormat
+            && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+            strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                return i18n.numberToStr(value, $1);
+            });
+        }
+        else {
+            strValue = value.toLocaleString();
+        }
     }
 
     let builder = domel('div', cellElement)
@@ -44,24 +52,31 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
 
 }
 
-
 const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
     const isDate = Object.prototype.toString.call(value) === '[object Date]';
     let strValue = (value || '').toString();
 
     if (isDate) {
-        const locale = i18n.getCurrentLocale();
-        const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
-        switch (column.type) {
-            case DataType.Date:
-                strValue = value.toLocaleDateString(locale);
-                break;
-            case DataType.Time:
-                strValue = value.toLocaleTimeString(locale, timeOptions);
-                break;
-            case DataType.DateTime:
-                strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, timeOptions)}`;
-                break;
+        if (column.dataColumn && column.dataColumn.displayFormat 
+            && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+            strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                return i18n.dateTimeToStr(value, column.type, $1);
+            });
+        }
+        else {
+            const locale = i18n.getCurrentLocale();
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            switch (column.type) {
+                case DataType.Date:
+                    strValue = value.toLocaleDateString(locale);
+                    break;
+                case DataType.Time:
+                    strValue = value.toLocaleTimeString(locale, timeOptions);
+                    break;
+                case DataType.DateTime:
+                    strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, timeOptions)}`;
+                    break;
+            }
         }
     }
 

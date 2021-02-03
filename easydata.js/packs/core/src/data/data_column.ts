@@ -7,6 +7,7 @@ export interface DataColumnDescriptor {
     type?: DataType;
     label: string;
     isAggr?: boolean;
+    dfmt?: string;
 }
 
 export class DataColumn {
@@ -20,6 +21,8 @@ export class DataColumn {
     public readonly originAttrId?: string;
 
     public label: string;
+
+    public displayFormat?: string;
 
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
@@ -36,6 +39,7 @@ export class DataColumn {
         this.label = desc.label;
         this.originAttrId = desc.originAttrId;
         this.isAggr = desc.isAggr || false;
+        this.displayFormat = desc.dfmt;
     }
 }
 

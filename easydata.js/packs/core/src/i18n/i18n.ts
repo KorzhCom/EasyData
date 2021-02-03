@@ -17,6 +17,7 @@ export namespace i18n {
         shortWeekDayNames?: string[];
         longWeekDayNames?: string[];
         decimalSeparator?: string;
+        currency?: string;
     }
     
     export interface TextResources {
@@ -57,7 +58,8 @@ export namespace i18n {
                             'July', 'August', 'September', 'October', 'November', 'December' ],
         shortWeekDayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
         longWeekDayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        decimalSeparator:'.'
+        decimalSeparator:'.',
+        currency: 'USD'
     }
 
     interface LocalesDict {
@@ -367,7 +369,23 @@ export namespace i18n {
         }
     }
 
-    export function dateTimeToStr(dateTime: Date, dataType: DataType): string {
+    export function dateTimeToStr(dateTime: Date, dataType: DataType, format?: string): string {
+        if (format) {
+            if (format == "d") {
+                format = buildShortDateTimeFormat(dataType);
+            }
+            else if (format == "D") {
+                format = buildLongDateTimeFormat(dataType);
+            }
+        }
+        else {
+            format = buildShortDateTimeFormat(dataType);
+        }
+
+        return utils.dateTimeToStr(dateTime, format);
+    }
+
+    function buildShortDateTimeFormat(dataType: DataType): string {
         const localeSettings = getLocaleSettings();
         let format: string;
         switch (dataType) {
@@ -381,12 +399,65 @@ export namespace i18n {
                 format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
                 break;
         }
-        return utils.dateTimeToStr(dateTime, format);
+
+        return format;
     }
 
-    export function numberToStr(number: Number): string {
+    function buildLongDateTimeFormat(dataType: DataType) {
+        const localeSettings = getLocaleSettings();
+        let format: string;
+        switch (dataType) {
+            case DataType.Date:
+                format = localeSettings.longDateFormat;
+                break;
+            case DataType.Time:
+                format = localeSettings.longTimeFormat;
+                break;
+            default:
+                format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                break;
+        }
+
+        return format;
+    }
+
+    export function numberToStr(number: Number, format?: string): string {
+        if (format) {
+            const locale = getCurrentLocale();
+            return number.toLocaleString(locale, getNumberFromatOptions(format));
+        }
+
         const localeSettings = getLocaleSettings();
         return utils.numberToStr(number, localeSettings.decimalSeparator);
     }    
+
+    function getNumberFromatOptions(format: string): Intl.NumberFormatOptions {
+        const localeSettings = getLocaleSettings();
+        const type = format[0].toUpperCase();
+        const digits = (format.length > 1) 
+            ? Number.parseInt(format.slice(1))
+            : type == 'D' ? 1 : 2;
+            
+        switch (type) {
+            case 'D':
+                return {
+                    style: 'decimal',
+                    useGrouping: false,
+                    minimumIntegerDigits: digits
+                }
+            case 'C': 
+                return {
+                    style: 'currency',
+                    currency: localeSettings.currency,
+                    currencyDisplay: 'code',
+                    minimumFractionDigits: digits
+                }
+            default: 
+                return {
+                    style: 'decimal',
+                    minimumFractionDigits: digits
+                }
+        }
+    }
 }
 
