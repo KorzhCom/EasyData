@@ -372,10 +372,16 @@ export namespace i18n {
     export function dateTimeToStr(dateTime: Date, dataType: DataType, format?: string): string {
         if (format) {
             if (format == "d") {
-                format = buildShortDateTimeFormat(dataType);
+                format = buildShortDateTimeFormat(DataType.Date);
             }
             else if (format == "D") {
-                format = buildLongDateTimeFormat(dataType);
+                format = buildLongDateTimeFormat(DataType.Date);
+            }
+            else if (format == "f") {
+                format = buildShortDateTimeFormat(DataType.DateTime);
+            }
+            else if (format == "F") {
+                format = buildLongDateTimeFormat(DataType.DateTime);
             }
         }
         else {
@@ -449,7 +455,6 @@ export namespace i18n {
                 return {
                     style: 'currency',
                     currency: localeSettings.currency,
-                    currencyDisplay: 'code',
                     minimumFractionDigits: digits
                 }
             default: 
