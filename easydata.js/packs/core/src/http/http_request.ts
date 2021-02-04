@@ -81,7 +81,7 @@ export class HttpRequest {
             return;
 
         let url = this.url;
-        if (this.queryParams && Object.keys(this.queryParams)) {
+        if (this.queryParams && Object.keys(this.queryParams).length > 0) {
             url += encodeURI('?' + Object.keys(this.queryParams)
                 .map(param => param + '=' + this.queryParams[param])
                 .join('&'));
