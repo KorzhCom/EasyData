@@ -111,6 +111,7 @@ namespace EasyData
 
         internal string _lookupDataAttrId = null;
         private MetaEntityAttr _lookupDataAttr = null;
+
         /// <summary>
         /// Gets or sets the data attribute in the lookup entity (where the actual values will be saved to).
         /// </summary>
@@ -302,7 +303,7 @@ namespace EasyData
         /// <summary>
         /// Checks the Model property and raises an exception if it's null.
         /// </summary>
-        /// <exception cref="DataModel.Error">
+        /// <exception cref="MetaDataException">
         /// Entity is not specified for attribute:  + {attribute ID}
         /// or
         /// Model is not specified for entity:  + {entity ID}
@@ -338,7 +339,7 @@ namespace EasyData
         public virtual void OnModelAssignment() {}
 
         /// <summary>
-        /// Gets or sets the entityAttr attribute caption.
+        /// Gets or sets the attribute's caption.
         /// </summary>
         /// <value>Caption text</value>
         /// <remarks> Caption is the public representation of entityAttr.
@@ -347,6 +348,17 @@ namespace EasyData
         /// but "CName" - is bad.
         /// </remarks>
         public string Caption { get; set; }
+
+
+        /// <summary>
+        /// Gets the full name of the attribute (including the name of the parent entity).
+        /// </summary>
+        /// <param name="separator">The separator (space by default).</param>
+        /// <returns>System.String.</returns>
+        public string GetFullCaption(string separator = " ")
+        {
+            return Entity.GetFullName(separator) + separator + Caption;
+        }
 
         /// <summary>
         /// Gets or sets the description of entity attribute.
