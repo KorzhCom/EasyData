@@ -1,6 +1,6 @@
 import { i18n, utils } from '@easydata/core';
 
-import { DialogService, DialogOptions, Dialog } from './dialog_service';
+import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, PorgressDialog } from './dialog_service';
 
 import { domel } from '../utils/dom_elem_builder';
 
@@ -114,16 +114,22 @@ export class DefaultDialogService implements DialogService {
         return dlg;
     }
 
+    public openProgress(options: ProgressDialogOptions) {
+        const dlg = new DefaultProgressDialog(options);
+        dlg.open();
+        return dlg;
+    }
+
 }
 
 export class DefaultDialog implements Dialog {
 
-    private slot: HTMLElement;
-    private windowElement: HTMLElement;
-    private headerElement: HTMLElement;
-    private bodyElement: HTMLElement;
-    private footerElement: HTMLElement;
-    private alertElement: HTMLElement;
+    protected slot: HTMLElement;
+    protected windowElement: HTMLElement;
+    protected headerElement: HTMLElement;
+    protected bodyElement: HTMLElement;
+    protected footerElement: HTMLElement;
+    protected alertElement: HTMLElement;
 
     constructor(private options: DialogOptions) {
 
@@ -132,24 +138,24 @@ export class DefaultDialog implements Dialog {
             domel('div', document.body)
             .attr('tab-index', '-1')
             .data('dialog-id', id)
-            .addClass('kdlg-modal', 'is-active')
+            .addClass(`${cssPrefix}-modal`, 'is-active')
             .addChild('div', b => b
                 .addClass('kdlg-modal-background')
             )
             .addChild('div', b => this.windowElement = b
-                .addClass('kdlg-modal-window')
+                .addClass(`${cssPrefix}-modal-window`)
                 .addChild('header', b => {
                     this.headerElement = b
-                        .addClass('kdlg-header')
+                        .addClass(`${cssPrefix}-header`)
                         .addChild('p', b => b
-                            .addClass('kdlg-header-title')
+                            .addClass(`${cssPrefix}-header-title`)
                             .addText(options.title)
                         )
                         .toDOM();
 
                     if (options.closable !== false)
                         b.addChild('button', b => b
-                            .addClass('kdlg-modal-close')
+                            .addClass(`${cssPrefix}-modal-close`)
                             .on('click', () => {
                                 this.cancelHandler();
                             })
@@ -157,7 +163,7 @@ export class DefaultDialog implements Dialog {
                 })
                 .addChild('section', b =>  { 
                     this.bodyElement = b
-                        .addClass('kdlg-body')
+                        .addClass(`${cssPrefix}-body`)
                         .toDOM();
 
                     if (typeof options.body === 'string') {
@@ -168,12 +174,12 @@ export class DefaultDialog implements Dialog {
                     }
                 })
                 .addChild('div', b => this.alertElement = b
-                    .addClass('kdlg-alert-container')
+                    .addClass(`${cssPrefix}-alert-container`)
                     .toDOM()
                 )
                 .addChild('footer', b => {
                         this.footerElement = b
-                            .addClass('kdlg-footer', 'align-right')
+                            .addClass(`${cssPrefix}-footer`, 'align-right')
                             .toDOM();
 
                         if (options.submitable === false)
@@ -217,7 +223,7 @@ export class DefaultDialog implements Dialog {
         }
 
         const windowDiv = this.slot
-            .querySelector<HTMLElement>('.kdlg-modal-window');
+            .querySelector<HTMLElement>(`.${cssPrefix}-modal-window`);
 
         if (this.options.height) {
             windowDiv.style.height = typeof this.options.height === 'string'
@@ -259,9 +265,9 @@ export class DefaultDialog implements Dialog {
 
     public showAlert(text: string, reason?: string, replace?: boolean) {
         let alert = domel('div')
-            .addClass(`kdlg-alert ${reason || ''}`)
+            .addClass(`${cssPrefix}-alert ${reason || ''}`)
             .addChild('span', b => b
-                .addClass('kdlg-alert-closebtn')
+                .addClass(`${cssPrefix}-alert-closebtn`)
                 .text('×')
                 .on('click', (ev) => {
                     const alert = (ev.target as HTMLElement).parentElement;
@@ -351,4 +357,77 @@ export class DefaultDialog implements Dialog {
         }
     }
 
+}
+
+
+export class DefaultProgressDialog extends DefaultDialog implements PorgressDialog {
+
+    protected contentElement: HTMLElement;
+    protected progressElement: HTMLElement;
+
+    constructor(options: ProgressDialogOptions) {
+        let contentElement: HTMLDivElement;
+        let progressElement: HTMLDivElement;
+        const body = domel('div')
+            .addChild('div', b => contentElement = b
+                .text(options.content || '')
+                .toDOM()
+            )
+            .addChild('div', b => { b
+                .addClass(`${cssPrefix}-progress-line`)
+                .addChild('div', b => { 
+                    progressElement = b
+                    .addClass('fill')
+                    .toDOM();
+
+                    if (options.determinated) {
+                        b.setStyle('width', '0%')
+                    }
+                    else {
+                        b.addClass('indeterminate');
+                    }
+                })
+            })
+            .toDOM();
+
+        super({
+            title: options.title,
+            body: body,
+            beforeOpen: options.beforeOpen,
+            onSubmit: options.onSubmit,
+            width: options.width,
+            height: options.height,
+            submitable: false,
+            cancelable: false,
+            closable: false
+        });
+
+        this.contentElement = contentElement;
+        this.progressElement = progressElement;
+    }
+
+    updateContent(content: string) {
+        this.contentElement.innerText = content;
+    }
+
+    updateProgress(progress: number) {
+        progress = this.in01(progress);
+        this.progressElement.style.width = `${progress * 100}%`;
+        if (progress === 1) {
+            // postpone for 0.5s for smooth closing
+            setTimeout(() => {
+                this.submit();
+            }, 500)
+        }
+    }
+
+    private in01(num: number) {
+        if (num > 1)
+            return 1;
+        
+        if (num < 0)
+            return 0;
+
+        return num;
+    }
 }
