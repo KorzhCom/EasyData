@@ -200,7 +200,7 @@ export class EasyDataTable {
                 const value = getValue(column.id);
                 const index = this.columns.getIndex(column.id);
                 values[index] = (dateIdx.indexOf(index) >= 0)
-                    ? new Date(value)
+                    ? value ? new Date(value) : value
                     : value;
             });    
         }
@@ -215,7 +215,9 @@ export class EasyDataTable {
             const dateIdx = this._columns.getDateColumnIndexes();
             if (dateIdx.length > 0) {
                 for(const idx of dateIdx) {
-                    rowOrValue[idx] = new Date(rowOrValue[idx]);
+                    if (rowOrValue[idx]) {
+                        rowOrValue[idx] = new Date(rowOrValue[idx]);
+                    }
                 }
             }
 
