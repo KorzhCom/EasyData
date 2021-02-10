@@ -41,11 +41,6 @@ export namespace i18n {
         displayName?: string;
     }    
 
-    const defaultTexts: TextResources = {
-        ButtonOK: 'OK',
-        ButtonCancel: 'Cancel'
-    };
-
     let englishUSLocaleSettings: LocaleSettings = {
         shortDateFormat: 'MM/dd/yyyy',
         longDateFormat: 'dd MMM, yyyy',
@@ -70,7 +65,10 @@ export namespace i18n {
         localeId: 'en-US',
         englishName: 'English',
         displayName: 'English',
-        texts: defaultTexts,
+        texts: {
+            ButtonOK: 'OK',
+            ButtonCancel: 'Cancel'
+        },
         settings: englishUSLocaleSettings
     };
 
@@ -150,11 +148,9 @@ export namespace i18n {
             utils.assignDeep(currentLocale, newLocale);
         }
         else {
-            currentLocale = {
-                englishName: localeId,
-                displayName: localeId,
-                texts: defaultTexts
-            };
+            currentLocale.englishName = localeId;
+            currentLocale.displayName = localeId;
+            currentLocale.texts = utils.assignDeep({}, defaultLocale.texts);
         }
         currentLocale.localeId = localeId;
     }
