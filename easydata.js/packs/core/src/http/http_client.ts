@@ -63,7 +63,6 @@ export class HttpClient {
             : window["XDomainRequest"]; //IE support
 
         const xhr: XMLHttpRequest = new XHR();
-
         const desc: HttpRequestDescriptor = {
             method: method,
             url: url,
@@ -96,6 +95,9 @@ export class HttpClient {
 
         return new HttpActionResult<T>(request, new Promise<T>((resolve, reject) => {
         
+            if (options.responseType)
+                xhr.responseType = options.responseType;
+
             xhr.onreadystatechange = () => {
 
                 if (xhr.readyState != 4) {
@@ -104,9 +106,11 @@ export class HttpClient {
 
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const responseObj = 
-                    (responseContentType.indexOf('application/json') == 0)
-                        ? JSON.parse(xhr.responseText)
-                        : xhr.responseText;
+                    (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
+                        ? xhr.response
+                        : (responseContentType.indexOf('application/json') == 0)
+                            ? JSON.parse(xhr.responseText)
+                            : xhr.responseText;
       
                 const status = xhr.status;
                 if (status >= 300 || status < 200) {

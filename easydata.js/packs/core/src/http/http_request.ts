@@ -12,6 +12,7 @@ export interface HttpRequestOptions {
     headers?: HttpHeaders;
     contentType?: string;
     dataType?: string; 
+    responseType?: XMLHttpRequestResponseType;
     queryParams?: QueryParams; 
 }
 
