@@ -91,12 +91,28 @@ namespace EasyData
         }
     }
 
+    public interface IEasyDataResultSet {
+        /// <summary>
+        /// Gets columns
+        /// </summary>
+        IReadOnlyList<EasyDataCol> Cols { get; }
 
-    public class EasyDataResultSet
+        /// <summary>
+        /// Gets rows.
+        /// </summary>
+        IEnumerable<EasyDataRow> Rows { get; }
+    }
+
+
+    public class EasyDataResultSet: IEasyDataResultSet
     {
         [JsonProperty("cols")]
-        public virtual List<EasyDataCol> Cols { get; } = new List<EasyDataCol>();
+        public List<EasyDataCol> Cols { get; } = new List<EasyDataCol>();
         [JsonProperty("rows")]
-        public virtual List<EasyDataRow> Rows { get; } = new List<EasyDataRow>();
+        public List<EasyDataRow> Rows { get; } = new List<EasyDataRow>();
+
+        IReadOnlyList<EasyDataCol> IEasyDataResultSet.Cols => Cols;
+
+        IEnumerable<EasyDataRow> IEasyDataResultSet.Rows => Rows;
     }
 }
