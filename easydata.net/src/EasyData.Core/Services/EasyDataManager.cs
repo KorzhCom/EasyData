@@ -7,58 +7,6 @@ using System.Threading.Tasks;
 namespace EasyData.Services
 {
 
-    public class EasyDataColDesc 
-    {
-        public string Id { get; set; }
-
-        public string Label { get; set; }
-
-        public DataType Type { get; set; }
-
-        public string AttrId { get; set; }
-        public string DisplayFormat { get; set; }
-        
-
-    }
-
-    public class EasyDataCol
-    {
-        public readonly string id;
-
-        public readonly string label;
-
-        public readonly DataType type;
-
-        public readonly string orginAttrId;
-
-        public readonly string dfmt;
-
-        public EasyDataCol(EasyDataColDesc desc)
-        {
-            id = desc.Id;
-            orginAttrId = desc.AttrId;
-            label = desc.Label;
-            type = desc.Type;
-            dfmt = desc.DisplayFormat;
-        }
-    }
-
-    public class EasyDataRow : List<object>
-    {
-        public EasyDataRow(IEnumerable<object> collection) : base(collection)
-        {
-        }
-    }
-
-
-    public class EasyDataResultSet
-    {
-
-        public List<EasyDataCol> cols { get;  } = new List<EasyDataCol>();
-
-        public List<EasyDataRow> rows { get; } = new List<EasyDataRow>();
-    }
- 
     public class EasyDataManagerException: Exception
     {
         public EasyDataManagerException(string message) : base(message)
