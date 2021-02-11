@@ -7,7 +7,7 @@
 }
 
 .kdlg-modal-background {
-    background-color: rgb(10 10 10 / 50%);
+    background-color: rgba(10,10,10,0.5);
 }
 
 .kdlg-modal {
@@ -22,7 +22,7 @@
     justify-content: center;
     overflow: hidden;
     position: fixed;
-    z-index: 40;
+    z-index: 9999999999;
 }
 
 .kdlg-modal.is-active {
@@ -101,6 +101,7 @@
 }
 
 .kdlg-footer {
+    min-height: 10px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
 }
@@ -185,3 +186,75 @@
 }
 
 
+/** alerts start **/
+
+.kdlg-alert-container {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.kdlg-alert {
+    padding: 20px;
+    background-color: #e2f5ff;
+    color: #004aef;
+}
+
+.kdlg-alert.success {
+    color: #0c7905;
+    background-color: #efffe6;
+}
+
+.kdlg-alert.warning {
+    color: #e49e02;
+    background-color: #fff7e5;
+}
+
+.kdlg-alert.error {
+    color: red;
+    background-color: #ffe2e2;
+}
+
+.kdlg-alert-closebtn {
+    margin-left: 15px;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/** alerts end **/
+
+
+/** progress starts **/
+.kdlg-progress-line {
+    width: 100%;
+    overflow: hidden;
+    background-color: #e0e0e0;
+    padding: 3px;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+.kdlg-progress-line .fill {
+    display: block;
+    height: 22px;
+    background-color: #659cef;
+    border-radius: 3px;
+    transition: width 500ms ease-in-out;
+}
+
+.kdlg-progress-line .fill.indeterminate  {
+    position: relative;
+    left: -200px;
+    width: 200px;
+    animation: kdlg-progress-line-loading 2s linear infinite;
+    transition: none;
+}
+
+  @keyframes kdlg-progress-line-loading {
+      from { left: -200px; }
+      to {  left: 120%;}
+  }
+
+/** progress ends **/

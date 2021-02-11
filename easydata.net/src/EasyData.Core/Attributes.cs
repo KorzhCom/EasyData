@@ -11,10 +11,26 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
+    /// <summary>
+    /// Represents an attribute's kind
+    /// </summary>
     public enum EntityAttrKind
-    { 
+    {
+        /// <summary>
+        /// The data attribute represents a field in some database table
+        /// </summary>
         Data = 0,
+
+        /// <summary>
+        /// The virtual or calculated attribute does not has a direct representations in a database.
+        /// It is defined as a calculation of few data attributes (fields)
+        /// </summary>
         Virtual = 1,
+
+        /// <summary>
+        /// The lookup attribute represents the connection between two entities.
+        /// It usually correspond to a navigation property in a model class.
+        /// </summary>
         Lookup = 2
     }
 
@@ -40,7 +56,7 @@ namespace EasyData
         /// ID represents internal entityAttr attribute id which is not shown to user 
         /// but is used for storing data model in external files.
         /// </remarks>
-        public string ID { get; set; }
+        public string Id { get; set; }
 
         /// <summary>Gets or sets a value indicating whether this attribute is nullable.</summary>
         /// <value>
@@ -95,6 +111,11 @@ namespace EasyData
 
         internal string _lookupDataAttrId = null;
         private MetaEntityAttr _lookupDataAttr = null;
+
+        /// <summary>
+        /// Gets or sets the data attribute in the lookup entity (where the actual values will be saved to).
+        /// </summary>
+        /// <value>The lookup data attribute.</value>
         public MetaEntityAttr LookupDataAttribute
         {
             get {
@@ -103,7 +124,7 @@ namespace EasyData
                     CheckModel();
                     _lookupDataAttr = string.IsNullOrEmpty(_lookupDataAttrId)
                         ? null
-                        : Model.GetAttributeByID(_lookupDataAttrId, false);
+                        : Model.GetAttributeById(_lookupDataAttrId, false);
 
                 }
 
@@ -111,7 +132,7 @@ namespace EasyData
             }
             set {
                 _lookupDataAttr = value;
-                _lookupDataAttrId = value?.ID;
+                _lookupDataAttrId = value?.Id;
             }
         }
 
@@ -124,7 +145,7 @@ namespace EasyData
                     CheckModel();
                     _dataAttr = string.IsNullOrEmpty(_dataAttrId) 
                         ? null 
-                        : Model.GetAttributeByID(_dataAttrId, false);
+                        : Model.GetAttributeById(_dataAttrId, false);
 
                 }
 
@@ -132,7 +153,7 @@ namespace EasyData
             }
             set {
                 _dataAttr = value;
-                _dataAttrId = value?.ID;
+                _dataAttrId = value?.Id;
             }
         }
 
@@ -164,7 +185,23 @@ namespace EasyData
         /// <summary>
         /// Gets ot sets a value indicating wether Attribute is visible
         /// </summary>
+        [Obsolete("Use ShowOnView instead")]
         public bool IsVisible { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible in a view mode (in grid)
+        /// </summary>
+        public bool ShowOnView { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible during the edit
+        /// </summary>
+        public bool ShowOnEdit { get; set; } = true;
+
+        /// <summary>
+        /// Gets ot sets a value indicating wether Attribute is visible during the creation
+        /// </summary>
+        public bool ShowOnCreate { get; set; } = true;
 
         private ValueEditor _defaultEditor = null;
         /// <summary>
@@ -181,6 +218,15 @@ namespace EasyData
             }
         }
 
+        /// <summary>
+        /// Sets default editor without adding it to model.
+        /// </summary>
+        public void SetDefaultEditorWithoutChecking(ValueEditor editor)
+        {
+            _defaultEditor = editor;
+        }
+
+
         internal string _lookupAttrId = null;
         private MetaEntityAttr _lookupAttr = null;
 
@@ -194,7 +240,7 @@ namespace EasyData
                     CheckModel();
                     _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) 
                         ? null 
-                        : Model.GetAttributeByID(_lookupAttrId, false);
+                        : Model.GetAttributeById(_lookupAttrId, false);
 
                 }
 
@@ -204,8 +250,8 @@ namespace EasyData
             set {
                 _lookupAttr = value;
                 if (value != null) {
-                    _lookupAttrId = value.ID;
-                    _lookupAttr._lookupAttrId = ID;
+                    _lookupAttrId = value.Id;
+                    _lookupAttr._lookupAttrId = Id;
                 }
                 else
                     _lookupAttrId = null;
@@ -233,7 +279,7 @@ namespace EasyData
                 }
             }
 
-            if (result != null && result is DateTimeValueEditor) {
+            if (result is DateTimeValueEditor) {
                 ((DateTimeValueEditor)result).SubType = type.Value;
             }
 
@@ -248,11 +294,16 @@ namespace EasyData
 
         public EntityAttrKind Kind { get; internal set; }
 
+        /// <summary>
+        /// The display format for the attribute.
+        /// </summary>
+        public string DisplayFormat { get; set; }
+
 
         /// <summary>
         /// Checks the Model property and raises an exception if it's null.
         /// </summary>
-        /// <exception cref="DataModel.Error">
+        /// <exception cref="MetaDataException">
         /// Entity is not specified for attribute:  + {attribute ID}
         /// or
         /// Model is not specified for entity:  + {entity ID}
@@ -260,7 +311,7 @@ namespace EasyData
         protected void CheckModel()
         {
             if (Entity == null) {
-                throw new MetaDataException("Entity is not specified for attribute: " + this.ID);
+                throw new MetaDataException("Entity is not specified for attribute: " + this.Id);
             }
 
             if (Model == null) {
@@ -288,7 +339,7 @@ namespace EasyData
         public virtual void OnModelAssignment() {}
 
         /// <summary>
-        /// Gets or sets the entityAttr attribute caption.
+        /// Gets or sets the attribute's caption.
         /// </summary>
         /// <value>Caption text</value>
         /// <remarks> Caption is the public representation of entityAttr.
@@ -297,6 +348,17 @@ namespace EasyData
         /// but "CName" - is bad.
         /// </remarks>
         public string Caption { get; set; }
+
+
+        /// <summary>
+        /// Gets the full name of the attribute (including the name of the parent entity).
+        /// </summary>
+        /// <param name="separator">The separator (space by default).</param>
+        /// <returns>System.String.</returns>
+        public string GetFullCaption(string separator = " ")
+        {
+            return Entity.GetFullName(separator) + separator + Caption;
+        }
 
         /// <summary>
         /// Gets or sets the description of entity attribute.
@@ -427,7 +489,7 @@ namespace EasyData
             DataType = attr.DataType;
             Description = attr.Description;
             Expr = attr.Expr;
-            ID = attr.ID;
+            Id = attr.Id;
             Kind = attr.Kind;
             _lookupAttrId = attr._lookupAttrId;
             _defaultEditor = attr.DefaultEditor;
@@ -437,7 +499,10 @@ namespace EasyData
             IsPrimaryKey = attr.IsPrimaryKey;
             IsForeignKey = attr.IsForeignKey;
             IsEditable = attr.IsEditable;
-            IsVisible = attr.IsVisible;
+            ShowInLookup = attr.ShowInLookup;
+            ShowOnView = attr.ShowOnView;
+            ShowOnEdit = attr.ShowOnEdit;
+            ShowOnCreate = attr.ShowOnCreate;
         }
 
         /// <summary>
@@ -476,7 +541,7 @@ namespace EasyData
         protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options)
         {
             await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-            await writer.WriteValueAsync(ID).ConfigureAwait(false);
+            await writer.WriteValueAsync(Id).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("cptn").ConfigureAwait(false);
             await writer.WriteValueAsync(Caption).ConfigureAwait(false);
@@ -502,20 +567,31 @@ namespace EasyData
             await writer.WritePropertyNameAsync("ied").ConfigureAwait(false);
             await writer.WriteValueAsync(IsEditable).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ivis").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsVisible).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("sov").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnView).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soe").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnEdit).ConfigureAwait(false);
+
+            await writer.WritePropertyNameAsync("soc").ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnCreate).ConfigureAwait(false);
 
             await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
             await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
 
+            if (!string.IsNullOrEmpty(DisplayFormat)) {
+                await writer.WritePropertyNameAsync("dfmt").ConfigureAwait(false);
+                await writer.WriteValueAsync(DisplayFormat).ConfigureAwait(false);
+            }
+
             if (LookupAttr != null) {
                 await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(LookupAttr.ID).ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupAttr.Id).ConfigureAwait(false);
             }
 
             if (DataAttr != null) {
                 await writer.WritePropertyNameAsync("dattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(DataAttr.ID).ConfigureAwait(false);
+                await writer.WriteValueAsync(DataAttr.Id).ConfigureAwait(false);
             }
 
             if (LookupEntity != null) {
@@ -525,7 +601,7 @@ namespace EasyData
 
             if (LookupDataAttribute != null) {
                 await writer.WritePropertyNameAsync("ldattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(LookupDataAttribute.ID).ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupDataAttribute.Id).ConfigureAwait(false);
             }
 
             if (DefaultEditor != null) {
@@ -581,7 +657,10 @@ namespace EasyData
             switch (propName)
             {
                 case "id":
-                    ID = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    break;
+                case "dfmt":
+                    DisplayFormat = await reader.ReadAsStringAsync().ConfigureAwait(false);
                     break;
                 case "cptn":
                     Caption = await reader.ReadAsStringAsync().ConfigureAwait(false);
@@ -591,7 +670,8 @@ namespace EasyData
                         .Value.IntToDataType();
                     break;
                 case "edtr":
-                    DefaultEditor = Model.Editors.FindByID(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    var editor = Model.Editors.FindById(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    SetDefaultEditorWithoutChecking(editor);
                     break;
                 case "kind":
                     Kind = (EntityAttrKind)await reader.ReadAsInt32Async().ConfigureAwait(false);
@@ -608,6 +688,15 @@ namespace EasyData
                     break;
                 case "ifk":
                     IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "sov":
+                    ShowOnView = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soe":
+                    ShowOnEdit = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    break;
+                case "soc":
+                    ShowOnCreate = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
                     break;
                 case "sil":
                     ShowInLookup = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
@@ -741,7 +830,7 @@ namespace EasyData
             while ((await reader.ReadAsync().ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
-                var attr = Model.CreateEntityAttr(_entity);
+                var attr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(_entity));
                 await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
                 Add(attr);
             }

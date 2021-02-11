@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using EasyData.EntityFrameworkCore;
+
 namespace EasyDataBasicDemo.Models
 {
     [DisplayColumn("Name")]
@@ -27,6 +29,7 @@ namespace EasyDataBasicDemo.Models
 
         public string QuantityPerUnit { get; set; }
 
+        [MetaEntityAttr(DisplayFormat = "{0:C2}")]
         public decimal? UnitPrice { get; set; }
 
         public short? UnitsInStock { get; set; }

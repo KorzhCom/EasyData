@@ -187,7 +187,6 @@ export class EasyDataTable {
     }
 
     protected createRow(dataOrRow?: DataRow | any): DataRow {
-
         const dateIdx = this._columns.getDateColumnIndexes();
         const values: any[] = new Array(this._columns.count);
 
@@ -200,7 +199,7 @@ export class EasyDataTable {
                 const value = getValue(column.id);
                 const index = this.columns.getIndex(column.id);
                 values[index] = (dateIdx.indexOf(index) >= 0)
-                    ? new Date(value)
+                    ? (value ? new Date(value) : value)
                     : value;
             });    
         }
@@ -209,13 +208,14 @@ export class EasyDataTable {
     }
 
     public addRow(rowOrValue: any[] | DataRow) : DataRow {
-
         let newRow: DataRow;
         if (Array.isArray(rowOrValue)) {
             const dateIdx = this._columns.getDateColumnIndexes();
             if (dateIdx.length > 0) {
                 for(const idx of dateIdx) {
-                    rowOrValue[idx] = new Date(rowOrValue[idx]);
+                    if (rowOrValue[idx]) {
+                        rowOrValue[idx] = new Date(rowOrValue[idx]);
+                    }
                 }
             }
 
@@ -238,6 +238,7 @@ export class EasyDataTable {
         
         return newRow;
     }
+
     protected createChunk(index?: number): CachedChunk {
         if (typeof index == 'undefined') {
             index = this.getLastChunkIndex() + 1;

@@ -1,9 +1,8 @@
-import { i18n } from '@easydata/core';
+import { i18n, utils } from '@easydata/core';
 
-import { DialogService, DialogOptions } from "./dialog_service";
+import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, PorgressDialog } from './dialog_service';
 
-import { domel } from "../utils/dom_elem_builder";
-
+import { domel } from '../utils/dom_elem_builder';
 
 const cssPrefix = "kdlg";
 
@@ -18,6 +17,7 @@ export class DefaultDialogService implements DialogService {
         const options: DialogOptions = {
             title: title,
             closable: false,
+            submitable: true,
             cancelable: true,
             body: template
         }
@@ -49,15 +49,19 @@ export class DefaultDialogService implements DialogService {
     public openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): void;
     public openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): Promise<string> | void {
 
-        const template = `<div id="${cssPrefix}-dialog-form">
-            <label for="name" id="${cssPrefix}-dialog-form-content">${content}</label>
-            <input type="text" name="name" id="${cssPrefix}-dialog-form-input"" />
+        const template = `<div id="${cssPrefix}-dialog-form" class="kfrm-form">
+            <div class="kfrm-fields label-above">
+                <label for="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-content">${content}</label>
+                <input type="text" name="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-input" />
+            </div>
         </div>`;
 
         const options: DialogOptions = {
             title: title,
+            submitable: true,
             closable: true,
             cancelable: true,
+            submitOnEnter: true,
             body: template,
             arrangeParents: false,
             beforeOpen: () => {
@@ -65,6 +69,7 @@ export class DefaultDialogService implements DialogService {
                 if (defVal) {
                     input.value = defVal;
                 }
+                input.focus();
             }
         }
 
@@ -104,123 +109,240 @@ export class DefaultDialogService implements DialogService {
     }
 
     public open(options: DialogOptions) {
+        const dlg = new DefaultDialog(options);
+        dlg.open();
+        return dlg;
+    }
 
-        const destroy = () => {
-            if (options.arrangeParents) {
-                this.arrangeParents(false);
-            }
-    
-            document.body.removeChild(builder.show().toDOM());
+    public openProgress(options: ProgressDialogOptions) {
+        const dlg = new DefaultProgressDialog(options);
+        dlg.open();
+        return dlg;
+    }
 
-            if (options.onDestroy) {
-                options.onDestroy();
-            }
-        }
+}
 
-        const cancelHandler = () => {
-            if (options.onCancel) {
-                options.onCancel();
-            }
+export class DefaultDialog implements Dialog {
 
-            destroy();
-        } 
+    protected slot: HTMLElement;
+    protected windowElement: HTMLElement;
+    protected headerElement: HTMLElement;
+    protected bodyElement: HTMLElement;
+    protected footerElement: HTMLElement;
+    protected alertElement: HTMLElement;
 
-        const submitHandler = () => {
-            if (options.onSubmit && options.onSubmit() === false) {
-                return;
-            }
+    constructor(private options: DialogOptions) {
 
-            destroy();
-        }
-
-        const builder = 
+        const id = utils.generateId('dlg');
+        this.slot = 
             domel('div', document.body)
-                .addClass('kdlg-modal', 'is-active')
-                .addChild('div', b => b
-                    .addClass('kdlg-modal-background')
-                )
-                .addChild('div', b => b
-                    .addClass('kdlg-modal-window')
-                    //.addClass(browserUtils.getMobileCssClass())
-                    .addChild('header', b => {
-                        b
-                        .addClass('kdlg-header')
+            .attr('tab-index', '-1')
+            .data('dialog-id', id)
+            .addClass(`${cssPrefix}-modal`, 'is-active')
+            .addChild('div', b => b
+                .addClass('kdlg-modal-background')
+            )
+            .addChild('div', b => this.windowElement = b
+                .addClass(`${cssPrefix}-modal-window`)
+                .addChild('header', b => {
+                    this.headerElement = b
+                        .addClass(`${cssPrefix}-header`)
                         .addChild('p', b => b
-                            .addClass('kdlg-header-title')
+                            .addClass(`${cssPrefix}-header-title`)
                             .addText(options.title)
+                        )
+                        .toDOM();
+
+                    if (options.closable !== false)
+                        b.addChild('button', b => b
+                            .addClass(`${cssPrefix}-modal-close`)
+                            .on('click', () => {
+                                this.cancelHandler();
+                            })
                         );
+                })
+                .addChild('section', b =>  { 
+                    this.bodyElement = b
+                        .addClass(`${cssPrefix}-body`)
+                        .toDOM();
 
-                        if (options.closable !== false)
-                            b.addChild('button', b => b
-                                .addClass('kdlg-modal-close')
-                                .on('click', () => {
-                                    cancelHandler();
-                                })
-                            );
-                    })
-                    .addChild('section', b => { 
-                        b
-                        .addClass('kdlg-body')
+                    if (typeof options.body === 'string') {
+                        b.addHtml(options.body)
+                    }
+                    else {
+                        b.addChildElement(options.body);
+                    }
+                })
+                .addChild('div', b => this.alertElement = b
+                    .addClass(`${cssPrefix}-alert-container`)
+                    .toDOM()
+                )
+                .addChild('footer', b => {
+                        this.footerElement = b
+                            .addClass(`${cssPrefix}-footer`, 'align-right')
+                            .toDOM();
 
-                        if (typeof options.body === 'string') {
-                            b.addHtml(options.body)
-                        } 
-                        else {
-                            b.addChildElement(options.body);
-                        }
-                    })
-                    .addChild('footer', b => {
-                        b
-                        .addClass('kdlg-footer', 'align-right')
-                        .addChild('button', b => b
+                        if (options.submitable === false)
+                            return;
+
+                        b.addChild('button', b => b
                             .addClass('kfrm-button', 'is-info')
                             .addText(i18n.getText('ButtonOK'))
                             .on('click', (e) => {
-                                submitHandler();
+                                this.submitHandler();
                             })
                         )
 
                         if (options.cancelable !== false)
-                            b
-                            .addChild('button', builder => builder
+                            b.addChild('button', builder => builder
                                 .addClass('kfrm-button')
                                 .addText(i18n.getText('ButtonCancel'))
                                 .on('click', (e) => {
-                                    cancelHandler();
+                                    this.cancelHandler();
                                 })
                             )
-                    })
-            );
+                })
+                .toDOM()                
+            )
+            .toDOM();
+    }
 
-        if (options.beforeOpen) {
-            options.beforeOpen();
+    public getRootElement() {
+        return this.slot;
+    }
+
+    public open() {
+        if (this.options.beforeOpen) {
+            this.options.beforeOpen();
         }
 
-        builder.show();
+        domel(this.slot).show();
 
-        const windowDiv = builder.toDOM()
-            .querySelector<HTMLElement>('.kdlg-modal-window');
-            
-        if (options.height) {
-            windowDiv.style.height = typeof options.height === 'string' 
-                ? options.height 
-                : `${options.height}px`;
-        }
-        if (options.width) {
-            windowDiv.style.width = typeof options.width === 'string' 
-                ? options.width 
-                : `${options.width}px`;
-        }
-
-        if (options.arrangeParents) {
+        if (this.options.arrangeParents) {
             this.arrangeParents(true);
         }
+
+        const windowDiv = this.slot
+            .querySelector<HTMLElement>(`.${cssPrefix}-modal-window`);
+
+        if (this.options.height) {
+            windowDiv.style.height = typeof this.options.height === 'string'
+                ? this.options.height
+                : `${this.options.height}px`;
+        }
+        if (this.options.width) {
+            windowDiv.style.width = typeof this.options.width === 'string'
+                ? this.options.width
+                : `${this.options.width}px`;
+        }
+
+        if (this.options.submitOnEnter) {
+            window.addEventListener('keydown', this.keydownHandler, false);
+        }
+    }
+
+    public submit() {
+        this.submitHandler();
+    }
+
+    public cancel() {
+        this.cancelHandler();
+    }
+
+    public close() {
+        this.destroy();
+    }
+
+    public disableButtons() {
+        const buttons = this.slot.querySelectorAll<HTMLButtonElement>('button');
+        buttons.forEach(button => button.disabled = true);
+    }
+
+    public enableButtons() {
+        const buttons = this.slot.querySelectorAll<HTMLButtonElement>('button');
+        buttons.forEach(button => button.disabled = false);
+    }
+
+    public showAlert(text: string, reason?: string, replace?: boolean) {
+        let alert = domel('div')
+            .addClass(`${cssPrefix}-alert ${reason || ''}`)
+            .addChild('span', b => b
+                .addClass(`${cssPrefix}-alert-closebtn`)
+                .text('×')
+                .on('click', (ev) => {
+                    const alert = (ev.target as HTMLElement).parentElement;
+                    alert.parentElement.removeChild(alert)
+                })
+            )
+            .addText(text)
+            .toDOM();
+
+        if (replace === true) {
+            this.clearAlert();
+        }
+
+        this.alertElement.appendChild(alert);
+    }
+
+    public clearAlert() {
+        this.alertElement.innerHTML = '';
+    }
+
+    protected destroy() {
+        if (this.options.arrangeParents) {
+            this.arrangeParents(false);
+        }
+
+        document.body.removeChild(this.slot);
+
+        if (this.options.submitOnEnter) {
+            window.removeEventListener('keydown', this.keydownHandler, false);
+        }
+
+        if (this.options.onDestroy) {
+            this.options.onDestroy();
+        }
+    }
+
+    private submitHandler = (): boolean => {
+        if (this.options.onSubmit && this.options.onSubmit() === false) {
+            return false;
+        }
+
+        this.destroy();
+        return true;
+    }
+
+    private cancelHandler = () => {
+        if (this.options.onCancel) {
+            this.options.onCancel();
+        }
+
+        this.destroy();
+    }
+
+    private keydownHandler = (ev: KeyboardEvent) => {
+        if (ev.keyCode == 13 && this.isActiveDialog()) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            if (this.submitHandler()) {
+                window.removeEventListener('keydown', this.keydownHandler, false);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private isActiveDialog(): boolean {
+        const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal');
+        return windowDivs[windowDivs.length - 1] === this.slot;
     }
 
     private arrangeParents(turnOn: boolean) {
         const windowDivs = document.documentElement.querySelectorAll<HTMLElement>('.kdlg-modal-window');
 
-        for (let i = 0; i < windowDivs.length - 1; i++ ) {
+        for (let i = 0; i < windowDivs.length - 1; i++) {
             if (turnOn) {
                 const offset = i == 0 ? 20 : i * 40 + 20;
                 domel(windowDivs[i])
@@ -233,5 +355,79 @@ export class DefaultDialogService implements DialogService {
                     .removeStyle('margin-left');
             }
         }
+    }
+
+}
+
+
+export class DefaultProgressDialog extends DefaultDialog implements PorgressDialog {
+
+    protected contentElement: HTMLElement;
+    protected progressElement: HTMLElement;
+
+    constructor(options: ProgressDialogOptions) {
+        let contentElement: HTMLDivElement;
+        let progressElement: HTMLDivElement;
+        const body = domel('div')
+            .addChild('div', b => contentElement = b
+                .text(options.content || '')
+                .toDOM()
+            )
+            .addChild('div', b => { b
+                .addClass(`${cssPrefix}-progress-line`)
+                .addChild('div', b => { 
+                    progressElement = b
+                    .addClass('fill')
+                    .toDOM();
+
+                    if (options.determinated) {
+                        b.setStyle('width', '0%')
+                    }
+                    else {
+                        b.addClass('indeterminate');
+                    }
+                })
+            })
+            .toDOM();
+
+        super({
+            title: options.title,
+            body: body,
+            beforeOpen: options.beforeOpen,
+            onSubmit: options.onSubmit,
+            width: options.width,
+            height: options.height,
+            submitable: false,
+            cancelable: false,
+            closable: false
+        });
+
+        this.contentElement = contentElement;
+        this.progressElement = progressElement;
+    }
+
+    updateContent(content: string) {
+        this.contentElement.innerText = content;
+    }
+
+    updateProgress(progress: number) {
+        progress = this.in01(progress);
+        this.progressElement.style.width = `${progress * 100}%`;
+        if (progress === 1) {
+            // postpone for 0.5s for smooth closing
+            setTimeout(() => {
+                this.submit();
+            }, 500)
+        }
+    }
+
+    private in01(num: number) {
+        if (num > 1)
+            return 1;
+        
+        if (num < 0)
+            return 0;
+
+        return num;
     }
 }

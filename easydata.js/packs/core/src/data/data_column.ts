@@ -1,11 +1,13 @@
-import { EasyGuid } from "../utils/easy_guid";
-import { DataType } from "../types/data_type";
-import { utils } from "../utils/utils";
+import { DataType } from '../types/data_type';
+import { utils } from '../utils/utils';
 
 export interface DataColumnDescriptor {
     id: string;
+    originAttrId?: string;
     type?: DataType;
     label: string;
+    isAggr?: boolean;
+    dfmt?: string;
 }
 
 export class DataColumn {
@@ -14,7 +16,13 @@ export class DataColumn {
 
     public readonly id: string;
 
+    public readonly isAggr: boolean;
+
+    public readonly originAttrId?: string;
+
     public label: string;
+
+    public displayFormat?: string;
 
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
@@ -29,6 +37,9 @@ export class DataColumn {
         this.id = desc.id;
         this.type = utils.getIfDefined(desc.type, DataType.String);
         this.label = desc.label;
+        this.originAttrId = desc.originAttrId;
+        this.isAggr = desc.isAggr || false;
+        this.displayFormat = desc.dfmt;
     }
 }
 

@@ -186,7 +186,7 @@ namespace EasyData
 
         public MetaEntityAttr FindAttributeById(string id)
         {
-            return FindAttribute(attr => attr.ID == id);
+            return FindAttribute(attr => attr.Id == id);
         }
 
         public MetaEntityAttr FindAttributeByCaption(string caption)

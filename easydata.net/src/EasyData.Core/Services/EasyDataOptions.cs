@@ -33,7 +33,7 @@ namespace EasyData.Services
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EasyQueryOptions"/> class.
+        /// Initializes a new instance of the <see cref="EasyDataOptions"/> class.
         /// </summary>
         /// <param name="services">The DI services.</param>
         public EasyDataOptions(IServiceProvider services)

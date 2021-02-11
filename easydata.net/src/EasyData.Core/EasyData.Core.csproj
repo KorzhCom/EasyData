@@ -3,24 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>EasyData</RootNamespace>
-    <Authors>Korzh.com</Authors>
     <Description>Basic classes of EasyData library.</Description>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2020 (c) Korzh.com. All rights reserved.</Copyright>
+    <DocumentationFile>EasyData.Core.xml</DocumentationFile>
+    <PackageId>EasyData.Core</PackageId>
     <PackageTags>database crud filtering</PackageTags>
-    <Configurations>Debug;Release</Configurations>
-    <DocumentationFile>EasyData.xml</DocumentationFile>
-    <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
-    <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>Korzh.EasyQuery</_Parameter1>
-    </AssemblyAttribute>
+    <InternalsVisibleTo Include="Korzh.EasyQuery" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />

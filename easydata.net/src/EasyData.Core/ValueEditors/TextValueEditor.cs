@@ -21,7 +21,7 @@ namespace EasyData
         /// Gets the base part of identifier.
         /// </summary>
         /// <value>The identifier base.</value>
-        public override string IDBase => "TVE";
+        public override string IdBase => "TVE";
 
 
         /// <summary>

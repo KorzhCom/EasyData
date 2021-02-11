@@ -30,7 +30,12 @@ let confBundles = {
     optimization: {
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
-            sourceMap: true
+            sourceMap: true,
+			terserOptions: {
+				compress: {
+					pure_funcs: ['console.log', 'console.info', 'console.debug']
+				}
+			}
         })]
     },
 	plugins: [

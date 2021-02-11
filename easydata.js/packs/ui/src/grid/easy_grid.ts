@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n 
+    DataRow, utils, i18n, DataColumn 
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -70,6 +70,10 @@ export class EasyGrid {
         syncGridColumns: true,
         useRowNumeration: true,
         allowDragDrop: false,
+        totals: {
+            calcGrandTotals: false,
+            calculator: null
+        },
         paging: {
             enabled: true,
             pageSize: 30
@@ -291,7 +295,7 @@ export class EasyGrid {
     }
 
     protected updateHeight() {
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
             if (this.options.viewportRowsCount) {
                 const firstRow = this.bodyCellContainerDiv.firstElementChild;
                 const rowHeight = firstRow ? (firstRow as HTMLElement).offsetHeight : DEFAULT_ROW_HEIGHT;
@@ -381,11 +385,11 @@ export class EasyGrid {
 
         let colDiv = colBuilder.toDOM(); 
 
-        let resizeBuilder = domel('div', colDiv)
+        domel('div', colDiv)
             .addClass(`${this.cssPrefix}-header-cell-resize`)
 
         if (!column.isRowNum) {
-            let valBuilder = domel('div', colDiv)
+            domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
         }
@@ -400,7 +404,7 @@ export class EasyGrid {
 
                     const attrLabel = document.createElement('div');
                     attrLabel.innerText = column.label;
-                    dragImage.classList.add('ui-sortable-helper');
+                    dragImage.classList.add(`${this.cssPrefix}-sortable-helper`);
                     
                     dragImage.appendChild(attrLabel);
                 },
@@ -431,17 +435,34 @@ export class EasyGrid {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => {
+                .then((rows) => {                    
                     this.hideProgress();
+
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
                     this.bodyCellContainerDiv.innerHTML = '';
 
-                    rows.forEach((row, index) => {
-                        let tr = this.renderRow(row, index);
-                        this.bodyCellContainerDiv.appendChild(tr);
-                    });
+                    this.prevRowTotals = null;
 
-                    const containerWidth = this.columns.getItems().map(column => column.width).reduce((sum, current) => {return sum + current});
+                    if (rows.length) {
+                        const calcTotals = this.calcTotals();
+                        const keyCols = this.getTotalsKeyCols();
+     
+                        rows.forEach((row, index) => {
+                            if (calcTotals)
+                                this.updateTotalsState(keyCols, row);
+
+                            const tr = this.renderRow(row, index);
+                            this.bodyCellContainerDiv.appendChild(tr);
+                        });
+    
+                        if (calcTotals && this.isLastPage()) {    
+                            const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
+                            this.updateTotalsState(keyCols, row, true);
+                        }
+                    }
+
+                    const containerWidth = this.columns.getItems()
+                    .map(column => column.width).reduce((sum, current) => {return sum + current});
                     domel(this.bodyCellContainerDiv)
                         .setStyle('width', `${containerWidth}px`)
 
@@ -457,6 +478,118 @@ export class EasyGrid {
         })
 
         this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
+    }
+
+    private isLastPage() {
+        return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
+    }
+
+    private calcTotals(): boolean {
+        return this.options.totals && (this.options.totals.calcGrandTotals 
+            || this.calcSubTotalsCols())
+         && this.dataTable.columns.getItems()
+            .filter(col => col.isAggr).length > 0;
+    }
+
+    private calcSubTotalsCols(): boolean {
+        return this.options.totals.cols && Object.values(this.options.totals.cols)
+            .map(val => val.calcSubTotals)
+            .reduce((prev, value) => {
+                return prev || value;
+            }, false)
+    }
+
+    private prevRowTotals: DataRow = null;
+
+    private getTotalsKeyCols() {
+        const keyCols = this.dataTable.columns.getItems()
+            .filter(col => !col.isAggr);
+        keyCols.pop();
+
+        return keyCols;
+    } 
+
+    private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
+        if (this.prevRowTotals && this.calcSubTotalsCols()) {
+            let changeLevel = -1;
+            for(let i = 0; i < keyCols.length; i++) {
+                const col = keyCols[i];
+                if (this.prevRowTotals.getValue(col.id) !== newRow.getValue(col.id)) {
+                    changeLevel = i;
+                    break;
+                }
+            }
+
+            if (changeLevel != -1) {
+                const totalsOpts = this.options.totals;
+                for(let i = keyCols.length; i > changeLevel; i--) {
+                    const col = keyCols[i - 1];
+                    if (totalsOpts.cols && totalsOpts.cols[col.id].calcSubTotals === false)
+                        continue;
+                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
+                    const tr = this.renderTotalsRow(i, row);
+                    this.bodyCellContainerDiv.appendChild(tr);
+                }
+            }
+        }
+
+        if (isLast && this.options.totals.calcGrandTotals) {
+            const tr = this.renderTotalsRow(0, newRow);
+            this.bodyCellContainerDiv.appendChild(tr);
+        }
+
+        this.prevRowTotals = newRow;
+    }
+
+    private renderTotalsRow(level: number, row: DataRow): HTMLElement {
+        const rowBuilder = domel('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-totals`)
+                .addClass(`${this.cssPrefix}-totals-lv${level}`)
+                .data('totals-level', `${level}`)
+                .attr('tabindex', '-1');
+
+        const rowElement = rowBuilder.toDOM();
+        this.columns.getItems().forEach((column, index) => {
+            if (!column.isVisible) {
+                return;
+            }
+
+            const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+            let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+            if (colIndex == this.dataTable.columns.count - 1) {
+                val = 'Calculating...'
+            }
+
+            rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+        });
+        
+        const totals = this.options.totals.calculator.getTotals();
+        totals.fillTotals(level, row)
+            .then(() => {
+                rowElement.innerHTML = '';
+
+                this.columns.getItems().forEach((column, index) => {
+                    if (!column.isVisible) {
+                        return;
+                    }
+        
+                    const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+                    let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+                    if (!column.isRowNum && column.dataColumn.isAggr) {
+                        val = row.getValue(colIndex);
+                    }
+        
+                    rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+                });
+            })
+            .catch((error) => console.error(error));
+        
+        return rowElement;
+    }
+
+    private getTotalsTitle(level: number) {
+        return (level) ? 'Sub totals: ' : 'Grand totals: ';
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
@@ -482,8 +615,11 @@ export class EasyGrid {
         }
     }
 
-    public ensureRowVisibility(index: number) {
-        const row = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${index + 1})`);
+    public ensureRowVisibility(rowOrIndex: HTMLElement | number) {
+        const row = typeof rowOrIndex === 'number'
+            ? this.getDataRow(rowOrIndex)
+            : rowOrIndex;
+
         if (row) { 
             let rowRect = row.getBoundingClientRect();
             const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
@@ -918,12 +1054,23 @@ export class EasyGrid {
             const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`) as NodeListOf<HTMLElement>;
             rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`)});
 
-            const activeRow = this.bodyCellContainerDiv.querySelector(`.${this.cssPrefix}-row:nth-child(${this.activeRowIndex + 1})`);
-                if (activeRow) {
-                    activeRow.classList.add(`${this.cssPrefix}-row-active`);
-                    this.ensureRowVisibility(this.activeRowIndex);
-                }
+            const activeRow = this.getActiveRow();
+            if (activeRow) {
+                activeRow.classList.add(`${this.cssPrefix}-row-active`);
+                this.ensureRowVisibility(this.activeRowIndex);
+            }
         }
+    }
+
+    private getActiveRow(): HTMLElement {
+        return this.getDataRow(this.activeRowIndex);
+    }
+
+    private getDataRow(index: number): HTMLElement {
+        const rows = Array.from(this.bodyCellContainerDiv.querySelectorAll<HTMLElement>(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));
+        if (index >= 0 && index < rows.length)
+            return rows[index];
+        return null;
     }
 
     public focus() {

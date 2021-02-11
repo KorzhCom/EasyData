@@ -2,7 +2,7 @@ import { i18n } from '@easydata/core';
 
 
 function addEasyDataCRUDTexts() {
-    i18n.updateLocaleTexts({
+    i18n.updateDefaultTexts({
         RequiredError: 'Value is required.',
         NumberError: 'Value should be a number',
         IntNumberError: 'Value should be an integer number',

@@ -90,11 +90,11 @@ jobs:
         name: browser
         path: browser
 
-    - name: Read version.json
-      id: version
-      uses: juliangruber/read-file-action@v1
+    - name: Read version.json to env
+      uses: antifree/json-to-variables@v1.0.0
       with:
-        path: ./easydata.js/version.json
+        filename: ./easydata.js/version.json
+        prefix: ed
 
     - name: Publish to CDN
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
@@ -103,7 +103,7 @@ jobs:
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
         local-dir: './browser/'
-        server-dir: 'cdn.korzh.com/ed/${{ fromJSON(steps.version.outputs.content).baseVersion }}/'
+        server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v2
@@ -146,11 +146,11 @@ jobs:
         name: browser
         path: browser
 
-    - name: Read version.json
-      id: version
-      uses: juliangruber/read-file-action@v1
+    - name: Read version.json to env
+      uses: antifree/json-to-variables@v1.0.0
       with:
-        path: ./easydata.js/version.json
+        filename: ./easydata.js/version.json
+        prefix: ed
 
     - name: Publish to CDN
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
@@ -159,7 +159,7 @@ jobs:
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
         local-dir: './browser/'
-        server-dir: 'cdn.korzh.com/ed/${{ fromJSON(steps.version.outputs.content).baseVersion }}/'
+        server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v2

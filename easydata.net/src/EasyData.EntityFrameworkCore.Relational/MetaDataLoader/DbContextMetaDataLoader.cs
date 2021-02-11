@@ -124,7 +124,7 @@ namespace EasyData.EntityFrameworkCore
                 if (Options.SkipForeignKeys && property.IsForeignKey())
                     continue;
 
-                var entityAttr = CreateEntityAttribute(entityType, property);
+                var entityAttr = CreateEntityAttribute(entity, entityType, property);
                 if (entityAttr != null) {
                  
                     if (entityAttr.Index == int.MaxValue) {
@@ -156,20 +156,20 @@ namespace EasyData.EntityFrameworkCore
             var property = foreignKey.Properties.First();
 
             if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
-                var lookUpAttr = Model.CreateLookupEntityAttr(entity);
-                lookUpAttr.ID = DataUtils.ComposeKey(entity.Id, navigation.Name);
+                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity, EntityAttrKind.Lookup));
+                lookUpAttr.Id = DataUtils.ComposeKey(entity.Id, navigation.Name);
                 lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
 
                 lookUpAttr.PropInfo = navigation.PropertyInfo;
 
-                lookUpAttr = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
-                if (lookUpAttr is null)
+                var enabled = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
+                if (!enabled)
                     return;
 
                 var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
                 var dataAttr = entity.FindAttributeById(dataAttrId);
                 if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entityType, property);
+                    dataAttr = CreateEntityAttribute(entity, entityType, property);
                     if (dataAttr == null)
                         return;
 
@@ -218,12 +218,12 @@ namespace EasyData.EntityFrameworkCore
 
         }
 
-        private MetaEntityAttr ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
+        private bool ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
         {
             var annotation = (MetaEntityAttrAttribute)prop.GetCustomAttribute(typeof(MetaEntityAttrAttribute));
             if (annotation != null) {
                 if (!annotation.Enabled)
-                    return null;
+                    return false;
 
                 if (!string.IsNullOrEmpty(annotation.DisplayName)) {
                     entityAttr.Caption = annotation.DisplayName;
@@ -233,30 +233,29 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Description = annotation.Description;
                 }
 
+                entityAttr.DisplayFormat = annotation.DisplayFormat;
+                entityAttr.IsEditable = annotation.Editable;
                 entityAttr.ShowInLookup = annotation.ShowInLookup;
-
-                if (entityAttr.IsEditable)
-                    entityAttr.IsEditable = annotation.Editable;
-
-                if (entityAttr.IsVisible)
-                    entityAttr.IsVisible = annotation.Visible;
+                entityAttr.ShowOnView = annotation.ShowOnView;
+                entityAttr.ShowOnEdit = annotation.ShowOnEdit;
+                entityAttr.ShowOnCreate = annotation.ShowOnCreate;
 
                 if (annotation.Index != int.MaxValue) {
                     entityAttr.Index = annotation.Index;
                 }
             }
 
-            return entityAttr;
+            return true;
         }
 
-        protected virtual MetaEntityAttr CreateEntityAttribute(IEntityType entityType, IProperty property)
+        protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
             var entityName = GetEntityNameByType(entityType);
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
-            var entityAttr = Model.CreateEntityAttr();
-            entityAttr.ID = DataUtils.ComposeKey(entityName, propertyName);
+            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity));
+            entityAttr.Id = DataUtils.ComposeKey(entityName, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
@@ -268,13 +267,8 @@ namespace EasyData.EntityFrameworkCore
 
             entityAttr.IsNullable = property.IsNullable;
 
-            if (entityAttr.DataType == DataType.Blob) {
-                entityAttr.IsEditable = entityAttr.IsVisible = false;
-            }
-
             var propInfo = property.PropertyInfo;
-            if (propInfo != null) {
-         
+            if (propInfo != null) {         
                 if (propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
                     entityAttr.Caption = displayAttr.Name;
                 }
@@ -282,7 +276,16 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Caption = DataUtils.PrettifyName(entityAttr.Caption);
                 }
 
-                entityAttr = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
+                var enabled = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
+                if (!enabled)
+                    return null;
+            }
+
+            if (entityAttr.DataType == DataType.Blob) {
+                entityAttr.IsEditable = false;
+                entityAttr.ShowOnView = false;
+                entityAttr.ShowOnEdit = false;
+                entityAttr.ShowOnCreate = false;
             }
 
             return entityAttr;
