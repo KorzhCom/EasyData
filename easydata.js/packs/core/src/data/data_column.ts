@@ -1,6 +1,19 @@
 import { DataType } from '../types/data_type';
 import { utils } from '../utils/utils';
 
+export enum ColumnAlignment 
+{
+    None = 0,
+    Left,
+    Center,
+    Right
+}
+
+export interface DataColumnStyle 
+{
+    alignment?: ColumnAlignment; 
+}
+
 export interface DataColumnDescriptor {
     id: string;
     originAttrId?: string;
@@ -8,6 +21,7 @@ export interface DataColumnDescriptor {
     label: string;
     isAggr?: boolean;
     dfmt?: string;
+    style?: DataColumnStyle;
 }
 
 export class DataColumn {
@@ -23,6 +37,8 @@ export class DataColumn {
     public label: string;
 
     public displayFormat?: string;
+
+    public style?: DataColumnStyle;
 
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
@@ -40,6 +56,7 @@ export class DataColumn {
         this.originAttrId = desc.originAttrId;
         this.isAggr = desc.isAggr || false;
         this.displayFormat = desc.dfmt;
+        this.style = desc.style || {};
     }
 }
 
