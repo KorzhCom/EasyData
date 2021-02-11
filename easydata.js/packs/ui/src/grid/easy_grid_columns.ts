@@ -1,6 +1,7 @@
 import { 
     utils, DataColumn, 
-    DataColumnList, DataType
+    DataColumnList, DataType,
+    ColumnAlignment
 } from '@easydata/core';
 
 import { EasyGrid } from './easy_grid';
@@ -23,6 +24,18 @@ export enum GridColumnAlign {
     RIGHT
 }
 
+function MapAlignment(alignment: ColumnAlignment): GridColumnAlign {
+    switch(alignment) {
+        case ColumnAlignment.Left:
+            return GridColumnAlign.LEFT;
+        case ColumnAlignment.Center:
+            return GridColumnAlign.CENTER;
+        case ColumnAlignment.Right:
+            return GridColumnAlign.RIGHT;
+        default:
+            return GridColumnAlign.NONE;
+    }
+}
 export class GridColumn {
     private _label : string = null;
     private grid: EasyGrid;
@@ -44,6 +57,9 @@ export class GridColumn {
         this.grid = grid;
 
         if (column) {
+            if (column.style.alignment) {
+                this.align = MapAlignment(column.style.alignment);
+            }
             const coltype : DataType = column.type;
             const cellType = this.grid.cellRendererStore.getCellType(coltype);
             switch (cellType) { 
