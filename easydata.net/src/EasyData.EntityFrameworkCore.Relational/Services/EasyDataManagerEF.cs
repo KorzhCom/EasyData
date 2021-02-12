@@ -52,7 +52,7 @@ namespace EasyData.Services
             foreach (var prop in props) {
                 var attrId = DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name);
                 var attr = Model.FindEntityAttr(attrId);
-                result.cols.Add(new EasyDataCol(new EasyDataColDesc {
+                result.Cols.Add(new EasyDataCol(new EasyDataColDesc {
                     Id =  attrId,
                     Label = DataUtils.PrettifyName(prop.Name),
                     AttrId = attr?.Id,
@@ -62,7 +62,7 @@ namespace EasyData.Services
             }
 
             foreach (var entity in entities) {
-                result.rows.Add(new EasyDataRow(props.Select(prop => prop.PropertyInfo.GetValue(entity)).ToList()));
+                result.Rows.Add(new EasyDataRow(props.Select(prop => prop.PropertyInfo.GetValue(entity)).ToList()));
             }
 
             return result;
