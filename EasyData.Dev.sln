@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataAspNetCoreTest01", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataAspNetCoreTest02", "playground\EasyDataAspNetCoreTest02\EasyDataAspNetCoreTest02.csproj", "{19E8A685-2D14-4D2A-9E68-449257156252}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Export", "easydata.net\src\EasyData.Export\EasyData.Export.csproj", "{93FB4677-2707-4787-8FD7-68438AE4A8BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Exporters", "easydata.net\src\EasyData.Exporters\EasyData.Exporters.csproj", "{93FB4677-2707-4787-8FD7-68438AE4A8BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

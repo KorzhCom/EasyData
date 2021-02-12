@@ -1,0 +1,432 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EasyData.Exporters</name>
+    </assembly>
+    <members>
+        <member name="T:EasyData.Export.Csv.CsvDataExporter">
+            <summary>
+            An implementation of <see cref="T:EasyData.Export.IDataExporter"/> interface, that performs exporting of the data stream to CSV format
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.GetDefaultSettings(System.Globalization.CultureInfo)">
+            <summary>
+            Gets default settings
+            </summary>
+            <param name="culture">The culture info</param>
+            <returns></returns>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Exports the specified data to the stream.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Exports the specified data to the stream with the specified formats.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Csv.CsvDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)"/> method.
+            </summary>
+            <param name="data">The data reader.</param>
+            <param name="stream">The stream.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Csv.CsvDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)" /> method.
+            </summary>
+            <param name="data">The data reader.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.GetContentType">
+            <summary>
+            Gets the MIME content type of the exporting format.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExporter.GetFormattedValue(System.Object,EasyData.DataType,EasyData.Export.Csv.CsvDataExportSettings,System.String)">
+            <summary>
+            Converts string into CVS format.
+            </summary>
+            <param name="val">The original string</param>
+            <param name="dataType">The data type</param>
+            <param name="settings">Different settings of result HTML file.</param>
+            <param name="displayFormat">The display format.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="T:EasyData.Export.Csv.CsvDataExportSettings">
+            <summary>
+            Represents csv format used during exporting operations
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Csv.CsvDataExportSettings.Default">
+            <summary>
+            Returns the default instance of <see cref="T:EasyData.Export.Csv.CsvDataExportSettings"/>.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExportSettings.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:EasyData.Export.Csv.CsvDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExportSettings.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EasyData.Export.Csv.CsvDataExportSettings"/> class.
+            </summary>
+            <param name="locale">The locale name.</param>
+        </member>
+        <member name="M:EasyData.Export.Csv.CsvDataExportSettings.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EasyData.Export.Csv.CsvDataExportSettings"/> class.
+            </summary>
+            <param name="culture">The culture info.</param>
+        </member>
+        <member name="P:EasyData.Export.Csv.CsvDataExportSettings.Separator">
+            <summary>
+            Sets the separator.
+            </summary>
+            <value>
+            simple: ' or ;
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Csv.CsvDataExportSettings.CommentCharacter">
+            <summary>
+            Sets the commanet characetr.
+            </summary>
+            /// <value>
+            simple: # or ;
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Csv.CsvDataExportSettings.QuoteAlways">
+            <summary>
+            Gets or sets a value indicating whether we should always put quotes around field values.
+            If it's false - quotes will be added only if it's necessary.
+            </summary>
+            <value><c>true</c> if all fields must be quoted; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:EasyData.Export.Excel.ExcelHtmlDataExporter">
+            <summary>
+            An implementation of <see cref="T:EasyData.Export.IDataExporter"/> interface, that performs exporting of the data stream to Excel's html format
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.GetDefaultSettings(System.Globalization.CultureInfo)">
+            <summary>
+            Gets default settings
+            </summary>
+            <param name="culture">The culture info</param>
+            <returns></returns>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExporter.DefaultSettings">
+            <summary>
+            The default settings.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Exports the specified data to the stream.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Exports the specified data to the stream with the specified formats.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Excel.ExcelHtmlDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)"/> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Excel.ExcelHtmlDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)" /> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.GetContentType">
+            <summary>
+            Gets the MIME content type of the exporting format.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExporter.GetFormattedValue(System.Object,EasyData.DataType,EasyData.Export.Excel.ExcelHtmlDataExportSettings,System.String)">
+            <summary>
+            Converts string into HTML format.
+            </summary>
+            <param name="val">The original string</param>
+            <param name="dataType">The data type</param>
+            <param name="settings">Different settings of result HTML file.</param>
+            <param name="displayFormat">The display format.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="T:EasyData.Export.Excel.ExcelHtmlDataExportSettings">
+            <summary>
+            Represents different settings used during exporting to Excel-HTML
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.Default">
+            <summary>
+            Returns the default instance of <see cref="T:EasyData.Export.Excel.ExcelHtmlDataExportSettings"/>.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExportSettings.#ctor">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Excel.ExcelHtmlDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelHtmlDataExportSettings.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Excel.ExcelHtmlDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.FontSize">
+            <summary>
+            Sets the size of the font.
+            </summary>
+            <value>
+            The size of the font.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.FontFamily">
+            <summary>
+            Sets the font family.
+            </summary>
+            <value>
+            The font family.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.TableBgColor">
+            <summary>
+            the color of the table debug.
+            </summary>
+            <value>
+            for example: #ffffff
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.ThicknessOfBorder">
+            <summary>
+            sets the thickness of border.
+            </summary>
+            <value>
+            The thickness of border.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.TableBorderColor">
+            <summary>
+            sets the color of the table border.
+            </summary>
+            <value>
+            for example: #000000
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.HeaderBgColor">
+            <summary>
+            Gets or sets the color of the header bg.
+            </summary>
+            <value>
+            The color of the header bg.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.HeaderFgColor">
+            <summary>
+            Gets or sets the color of the header fg.
+            </summary>
+            <value>
+            The color of the header fg.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.HeaderFontWeight">
+            <summary>
+            Gets or sets the header font weight.
+            </summary>
+            <value>
+            The header font weight.
+            </value>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelHtmlDataExportSettings.FixHtmlTags">
+            <summary>
+            Gets or sets a value indicating whether HTML tags (such as p, ol, ul, li, etc) must be converted to plain text during the export.
+            </summary>
+            <value>
+                <see langword="true"/> if HTML tags will be replaced to plain text; otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="T:EasyData.Export.Excel.ExcelDataExporter">
+            <summary>
+            An implementation of <see cref="T:EasyData.Export.IDataExporter"/> interface, that performs exporting of the data stream to PDF format
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.GetContentType">
+            <summary>
+            Gets the MIME content type of the exporting format.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.GetDefaultSettings(System.Globalization.CultureInfo)">
+            <summary>
+            Gets default settings
+            </summary>
+            <param name="culture">The culture info</param>
+            <returns></returns>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelDataExporter.DefaultSettings">
+            <summary>
+            The default settings.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Exports the specified data to the stream.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Exports the specified data to the stream with the specified formats.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Excel.ExcelDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)"/> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Excel.ExcelDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)" /> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="T:EasyData.Export.Excel.ExcelDataExportSettings">
+            <summary>
+            Represents different settings used during exporting to EXCEL
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Excel.ExcelDataExportSettings.Default">
+            <summary>
+            Returns the default instance of <see cref="T:EasyData.Export.Excel.ExcelDataExportSettings"/>.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExportSettings.#ctor">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Excel.ExcelDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Excel.ExcelDataExportSettings.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Excel.ExcelDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="T:EasyData.Export.Pdf.PdfDataExporter">
+            <summary>
+            An implementation of <see cref="T:EasyData.Export.IDataExporter"/> interface, that performs exporting of the data stream to PDF format
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.GetContentType">
+            <summary>
+            Gets the MIME content type of the exporting format.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.GetDefaultSettings(System.Globalization.CultureInfo)">
+            <summary>
+            Gets default settings
+            </summary>
+            <param name="culture">The culture info</param>
+            <returns></returns>
+        </member>
+        <member name="P:EasyData.Export.Pdf.PdfDataExporter.DefaultSettings">
+            <summary>
+            The default settings.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Exports the specified data to the stream.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Exports the specified data to the stream with the specified formats.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)"/> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)" /> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ApplyStyles(MigraDoc.DocumentObjectModel.Document,EasyData.Export.Pdf.PdfDataExportSettings)">
+            <summary>
+            Apply styles for pdf document
+            </summary>
+            <param name="document"></param>
+            <param name="settings"></param>
+        </member>
+        <member name="T:EasyData.Export.Pdf.PdfDataExportSettings">
+            <summary>
+            Represents different settings used during exporting to PDF
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Pdf.PdfDataExportSettings.Default">
+            <summary>
+            Returns the default instance of <see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/>.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExportSettings.#ctor">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExportSettings.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

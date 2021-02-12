@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>EasyData.Export</RootNamespace>
+    <RootNamespace>EasyData.Exporters</RootNamespace>
     <Description>Export classes of EasyData library. Supports exporting into CSV, XLSX and PDF</Description>
-    <DocumentationFile>EasyData.Export.xml</DocumentationFile>
+    <DocumentationFile>EasyData.Exporters.xml</DocumentationFile>
     <PackageId>EasyData.Export</PackageId>
     <PackageTags>database export csv excel pdf</PackageTags>
   </PropertyGroup>
