@@ -524,7 +524,8 @@ export class EasyGrid {
                 const totalsOpts = this.options.totals;
                 for(let i = keyCols.length; i > changeLevel; i--) {
                     const col = keyCols[i - 1];
-                    if (totalsOpts.cols && totalsOpts.cols[col.id].calcSubTotals === false)
+                    const totalColOpts = totalsOpts.cols ? totalsOpts.cols[col.id] : null;  
+                    if (!totalColOpts || !totalColOpts.calcSubTotals)
                         continue;
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(i, row);
