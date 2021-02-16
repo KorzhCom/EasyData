@@ -7,7 +7,7 @@
 
     <Authors>Korzh.com</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2017-$([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
+    <Copyright>Copyright 2020-$([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
