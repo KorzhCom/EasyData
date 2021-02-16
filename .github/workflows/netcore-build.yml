@@ -106,5 +106,5 @@ jobs:
         dotnet-version: '5.0.x'
 
     - name: Publish packages to NuGet
-      run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }}
+      run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }} --skip-duplicate
     
