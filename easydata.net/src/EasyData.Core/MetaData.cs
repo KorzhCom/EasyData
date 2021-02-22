@@ -658,7 +658,7 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Saves the model to a JSON file.
+        /// Loads the metadata from a JSON file.
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="options"></param>
@@ -669,6 +669,10 @@ namespace EasyData
                 .GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Loads the metadata from a JSON file as an asynchronous operation.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
         public async Task LoadFromJsonFileAsync(string filePath)
         {
             await LoadFromJsonFileAsync(filePath, DefaultRWOptions).ConfigureAwait(false);
