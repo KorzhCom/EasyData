@@ -20,7 +20,12 @@ export class EasyDataViewDispatcher {
 
         this.options = dataUtils.assign(this.options, options);
 
-        this.options.basePath = this.pretiffyPath(this.options.basePath);
+        this.options.basePath = (!this.options.rootEntity)
+            ? this.pretiffyPath(this.options.basePath)
+            : this.pretiffyPath(window.location.pathname);
+
+        if (this.options.rootEntity)
+            this.options.showBackToEntities = false;
 
         this.setContainer(options.container);
 
@@ -71,6 +76,9 @@ export class EasyDataViewDispatcher {
     }
 
     private getActiveEntityId(): string | null {
+        if (this.options.rootEntity) 
+            return this.options.rootEntity;
+
         const decodedUrl = decodeURIComponent(window.location.href);
         const splitIndex = decodedUrl.lastIndexOf('/');
         const typeName = decodedUrl.substring(splitIndex + 1);

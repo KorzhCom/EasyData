@@ -5,5 +5,6 @@ export interface EasyDataViewOptions {
 export interface EasyDataViewDispatcherOptions extends EasyDataViewOptions {
     endpoint?: string,
     basePath?: string,
+    rootEntity?: string,
     container?: HTMLElement | string;
 }
