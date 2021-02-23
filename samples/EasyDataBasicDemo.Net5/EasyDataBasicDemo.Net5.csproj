@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EasyData.AspNetCore" Version="1.1.1" />
-    <PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.1.1" />
+    <PackageReference Include="EasyData.AspNetCore" Version="1.2.0-*" />
+    <PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.2.0-*" />
     <PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
     <PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
     <PackageReference Include="Korzh.DbUtils.Sqlite" Version="1.4.1" />
