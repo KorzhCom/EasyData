@@ -7,7 +7,9 @@ using System.Reflection;
 
 using Exp = System.Linq.Expressions.Expression;
 
-namespace EasyData.EntityFrameworkCore.Relational.Services
+using EasyData.EntityFrameworkCore;
+
+namespace EasyData.Services
 {
 
     /// <summary>

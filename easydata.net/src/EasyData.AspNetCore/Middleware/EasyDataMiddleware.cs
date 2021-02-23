@@ -43,16 +43,13 @@ namespace EasyData.AspNetCore
 
         private static readonly Endpoint[] _routing =
             {
-                new Endpoint(DataAction.GetModel, @"^/models/([^/]+?)?$", "GET"),
-                new Endpoint(DataAction.GetEntities, @"^/models/([^/]+?)/crud/([^/]+?)/?$", "GET"),
-                new Endpoint(DataAction.GetEntity, @"^/models/([^/]+?)/crud/([^/]+?)/([^/]+?)?$", "GET"),
-                new Endpoint(DataAction.CreateEntity, @"^/models/([^/]+?)/crud/([^/]+?)/?$", "POST"),
-                new Endpoint(DataAction.UpdateEntity,@"^/models/([^/]+?)/crud/([^/]+?)/([^/]+?)?$", "PUT"),
-                new Endpoint(DataAction.DeleteEntity, @"^/models/([^/]+?)/crud/([^/]+?)/([^/]+?)?$", "DELETE")
+                new Endpoint(DataAction.GetModel, @"^/models/([^/]+?)$", "GET"),
+                new Endpoint(DataAction.GetEntities, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "POST"),
+                new Endpoint(DataAction.GetEntity, @"^/models/([^/]+?)/crud/([^/]+?)/fetch/([^/]+?)$", "GET"),
+                new Endpoint(DataAction.CreateEntity, @"^/models/([^/]+?)/crud/([^/]+?)/create$", "POST"),
+                new Endpoint(DataAction.UpdateEntity,@"^/models/([^/]+?)/crud/([^/]+?)/update/([^/]+?)$", "POST"),
+                new Endpoint(DataAction.DeleteEntity, @"^/models/([^/]+?)/crud/([^/]+?)/delete/([^/]+?)$", "POST")
             };
-
-
-        private static Encoding _utf8NoBom = new UTF8Encoding(false);
 
         public EasyDataMiddleware(RequestDelegate next, EasyDataOptions options)
         {

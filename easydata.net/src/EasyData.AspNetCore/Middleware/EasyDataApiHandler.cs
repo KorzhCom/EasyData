@@ -83,37 +83,60 @@ namespace EasyData.AspNetCore
 
             bool isLookup = false;
 
-            string filter = null;
+            IEnumerable<EasyFilter> filters = null;
 
             bool needTotal = false;
-            var queryParams = HttpContext.Request.Query;
-            if (queryParams.TryGetValue("offset", out var value)) {
-                offset = int.Parse(value);
+
+            JObject requestParams;
+            using (var requestReader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
+            using (var jsonReader = new JsonTextReader(requestReader))
+            {
+                requestParams = await JObject.LoadAsync(jsonReader);
             }
-            if (queryParams.TryGetValue("limit", out value)) {
-                fetch = int.Parse(value);
+
+            if (requestParams.TryGetValue("offset", out var value)) {
+                offset = value.ToObject<int?>();
             }
-            if (queryParams.TryGetValue("needTotal", out value)) {
-                needTotal = bool.Parse(value);
+            if (requestParams.TryGetValue("limit", out value)) {
+                fetch = value.ToObject<int?>();
             }
-            if (queryParams.TryGetValue("filter", out value)) {
-                filter = value;
+            if (requestParams.TryGetValue("needTotal", out value) && value.HasValues) {
+                needTotal = value.ToObject<bool>();
             }
-            if (queryParams.TryGetValue("lookup", out value)) {
-                isLookup = bool.Parse(value);
+            if (requestParams.TryGetValue("lookup", out value) && value.HasValues) {
+                isLookup = value.ToObject<bool>();
+            }
+            if (requestParams.TryGetValue("filters", out value) && value.HasValues) {
+                filters = await GetFiltersAsync(modelId, (JArray)value);
             }
 
             long? total = null;
             if (needTotal) {
-                total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer, filter, isLookup);
+                total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer, filters, isLookup);
             }
 
-            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filter, isLookup, offset, fetch);
+            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filters, isLookup, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async jsonWriter => {
                 await WriteGetEntitiesResponseAsync(jsonWriter, result, total);
             });
         }
 
+        private async Task<IEnumerable<EasyFilter>> GetFiltersAsync(string modelId, JArray jarr)
+        {
+            var result = new List<EasyFilter>();
+            foreach (var filterJson in jarr)
+            {
+                var filterClass = filterJson.Value<string>("class");
+                var filter = Options.ResolveFilter(filterClass, await Manager.GetModelAsync(modelId));
+                if (filter != null) {
+                    await filter.ReadFromJsonAsync(filterJson.CreateReader());
+                    result.Add(filter);
+                }
+            }
+
+            return result;
+        }
+         
         protected virtual async Task WriteGetEntitiesResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total)
         {
             if (total.HasValue) {

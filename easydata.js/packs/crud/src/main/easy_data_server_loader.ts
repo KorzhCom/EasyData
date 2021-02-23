@@ -18,7 +18,7 @@ export class EasyDataServerLoader implements DataLoader {
 
         this.context.startProcess();
         const http = this.context.getHttpClient();
-        return http.get(url, { queryParams: params as any})
+        return http.post(url, params)
             .then((result) => {
 
                 const dataTable = new EasyDataTable({
