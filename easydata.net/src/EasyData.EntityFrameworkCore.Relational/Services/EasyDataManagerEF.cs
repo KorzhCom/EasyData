@@ -19,14 +19,12 @@ namespace EasyData.Services
     {
         protected readonly TDbContext DbContext;
 
-        protected EasyDataOptions Options { get; private set; }
 
         public EasyDataManagerEF(IServiceProvider services, EasyDataOptions options): base(services, options)
         {
             DbContext = (TDbContext)services.GetService(typeof(TDbContext)) 
                 ?? throw new ArgumentNullException($"DbContext is not registered in services: {typeof(TDbContext)}");
 
-            Options = options;
         }
 
         public override Task LoadModelAsync(string modelId)
@@ -254,7 +252,9 @@ namespace EasyData.Services
                     if (attr == null)
                         return false;
 
+#pragma warning disable CS0618 // Type or member is obsolete
                     if (!attr.IsVisible || !attr.ShowOnView)
+#pragma warning restore CS0618 // Type or member is obsolete
                         return false;
 
                     if (isLookup && !attr.ShowInLookup && !attr.IsPrimaryKey)

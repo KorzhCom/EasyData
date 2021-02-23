@@ -25,8 +25,10 @@ namespace EasyData
 
         protected MetaData _model { get; set; }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Korzh.EasyQuery.Entity"/> class.</summary>
-        /// <param name="parent">The parent entity.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Korzh.EasyData.MetaEntity"/> class.
+        /// </summary>
+        /// <param name="model">The mofrl.</param>
         protected internal MetaEntity(MetaData model)
         {
             _model = model;

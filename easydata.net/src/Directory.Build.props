@@ -11,5 +11,8 @@
     <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <NoWarn>CS1591,CS1574</NoWarn>
+
   </PropertyGroup>
 </Project>

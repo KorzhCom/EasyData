@@ -149,8 +149,13 @@ namespace EasyData.EntityFrameworkCore
             INavigation navigation, ref int attrCounter)
         {
             // do not process collections for now
+#if NET5_0
+            if (navigation.IsCollection)
+                return;
+#else
             if (navigation.IsCollection())
                 return;
+#endif
 
             var foreignKey = navigation.ForeignKey;
             var property = foreignKey.Properties.First();
@@ -303,6 +308,6 @@ namespace EasyData.EntityFrameworkCore
             return true;
         }
 
-        #endregion
+#endregion
     }
 }
