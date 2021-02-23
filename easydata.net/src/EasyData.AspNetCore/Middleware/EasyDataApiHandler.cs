@@ -100,10 +100,10 @@ namespace EasyData.AspNetCore
             if (requestParams.TryGetValue("limit", out value)) {
                 fetch = value.ToObject<int?>();
             }
-            if (requestParams.TryGetValue("needTotal", out value) && value.HasValues) {
+            if (requestParams.TryGetValue("needTotal", out value)) {
                 needTotal = value.ToObject<bool>();
             }
-            if (requestParams.TryGetValue("lookup", out value) && value.HasValues) {
+            if (requestParams.TryGetValue("lookup", out value)) {
                 isLookup = value.ToObject<bool>();
             }
             if (requestParams.TryGetValue("filters", out value) && value.HasValues) {
