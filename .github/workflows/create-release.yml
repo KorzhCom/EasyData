@@ -13,7 +13,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.301
+          dotnet-version: 2.1.25
 
       - name: Read version.json to env
         uses: antifree/json-to-variables@v1.0.0
