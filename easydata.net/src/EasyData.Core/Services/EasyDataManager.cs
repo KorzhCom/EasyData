@@ -7,38 +7,6 @@ using System.Threading.Tasks;
 namespace EasyData.Services
 {
 
-    public class EasyDataCol
-    {
-        public readonly string id;
-
-        public readonly string label;
-
-        public readonly DataType type;
-
-        public EasyDataCol(string id, string label, DataType type)
-        {
-            this.id = id;
-            this.label = label;
-            this.type = type;
-        }
-    }
-
-    public class EasyDataRow : List<object>
-    {
-        public EasyDataRow(IEnumerable<object> collection) : base(collection)
-        {
-        }
-    }
-
-
-    public class EasyDataResultSet
-    {
-
-        public List<EasyDataCol> cols { get;  } = new List<EasyDataCol>();
-
-        public List<EasyDataRow> rows { get; } = new List<EasyDataRow>();
-    }
- 
     public class EasyDataManagerException: Exception
     {
         public EasyDataManagerException(string message) : base(message)
@@ -88,9 +56,9 @@ namespace EasyData.Services
 
         public abstract Task LoadModelAsync(string modelId);
 
-        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, string filter = null, bool isLookup = false, int? offset = null, int? fetch = null);
+        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null);
 
-        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, string filter = null, bool isLookup = false);
+        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false);
 
         public abstract Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr);
 

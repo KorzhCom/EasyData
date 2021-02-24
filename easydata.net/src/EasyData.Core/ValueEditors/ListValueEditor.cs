@@ -16,6 +16,12 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="ListValueEditor"/> class.
         /// </summary>
+        public ListValueEditor() : base()
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListValueEditor"/> class.
+        /// </summary>
         /// <param name="id">ID of the list value editor</param>
         public ListValueEditor(string id) : base(id)
         { }
@@ -100,7 +106,7 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomListValueEditor"/> class.
         /// </summary>
-        internal CustomListValueEditor() : this("", "")
+        internal CustomListValueEditor() : base()
         {
         }
 
@@ -117,10 +123,23 @@ namespace EasyData
         }
 
         /// <summary>
+        /// Gets or sets the default value.
+        /// </summary>
+        /// <value>The default value</value>
+        public override string DefaultValue { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the default text.
+        /// </summary>
+        /// <value>The default text.</value>
+        public override string DefaultText { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the list.
         /// </summary>
         /// <value>The name of the list.</value>
-        public string ListName { get; set; }
+        public string ListName { get; set; } = "";
 
         /// <summary>
         /// Gets the full name of the value editor class type.
@@ -132,7 +151,7 @@ namespace EasyData
         /// Gets the base part of identifier.
         /// </summary>
         /// <value>The identifier base.</value>
-        public override string IDBase => "CLVE";
+        public override string IdBase => "CLVE";
 
         /// <summary>
         /// Gets the value editor's tag.
@@ -316,8 +335,9 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstListValueEditor"/> class.
         /// </summary>
-        internal ConstListValueEditor() : this("")
+        internal ConstListValueEditor() : base()
         {
+            _values = CreateValueList();
         }
 
         /// <summary>

@@ -32,22 +32,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
-
-    - name: Read version.json
-      id: version
-      uses: juliangruber/read-file-action@v1
+        dotnet-version: '5.0.x'
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
       with:
-        path: ./easydata.net/version.json
+        dotnet-version: '3.1.x'
+
+    - name: Read version.json to env
+      uses: antifree/json-to-variables@v1.0.0
+      with:
+        filename: ./easydata.net/version.json
+        prefix: ed 
+
+    - name: Setup version in Build.props
+      run: ./tools/SetVersionInCsproj.ps1 ./easydata.net/src/Directory.Build.props ${{ env.ed_packageVersion }} ${{ env.ed_assemblyVersion }} 
+      shell: powershell
 
     - name: Install dependencies
       run: dotnet restore EasyData.Dev.sln
 
     - name: Build & Pack
-      run: dotnet pack EasyData.sln -o ./easydata.net/packs --configuration Release --no-restore -p:Version=${{ fromJSON(steps.version.outputs.content).assemblyVersion }} -p:PackageVersion=${{ fromJSON(steps.version.outputs.content).packageVersion }}
+      run: dotnet pack EasyData.sln -o ./easydata.net/packs --configuration Release --no-restore
 
     - name: Test
       run: dotnet test EasyData.Dev.sln --no-restore --verbosity normal
@@ -71,10 +79,10 @@ jobs:
         name: packs
         path: packs
 
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: '5.0.x'
 
     - name: Publish packages to MyGet
       run: dotnet nuget push packs/**/*.nupkg -s https://www.myget.org/F/korzh-nuget/api/v2/package -k ${{ secrets.MYGET_ACCESS_TOKEN }}
@@ -92,11 +100,11 @@ jobs:
         name: packs
         path: packs
 
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: '5.0.x'
 
     - name: Publish packages to NuGet
-      run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }}
+      run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }} --skip-duplicate
     

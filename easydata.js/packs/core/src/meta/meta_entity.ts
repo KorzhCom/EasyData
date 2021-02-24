@@ -159,9 +159,19 @@ export class MetaEntityAttr {
     public isEditable: boolean;
 
     /**
-     * The value indicating wether the attribute is visible.
+     * The value indicating wether the attribute is shown on view page.
      */
-    public isVisible: boolean;
+    public showOnView: boolean;
+
+    /**
+     * The value indicating wether the attribute is shown create page.
+     */
+    public showOnCreate: boolean;
+
+    /**
+    * The value indicating wether the attribute is shown edit page.
+    */
+    public showOnEdit: boolean;
 
     /**
      * The value indicating wether the attribute can be null key.
@@ -196,6 +206,11 @@ export class MetaEntityAttr {
      */
     public userData?: string;
 
+    /**
+     * The display format for the attribute
+     */
+    public displayFormat?: string;
+
     /** The default constructor. */
     constructor(entity: MetaEntity) {
         this.id = "";
@@ -205,8 +220,10 @@ export class MetaEntityAttr {
         this.isPrimaryKey = false;
         this.isForeignKey = false;
         this.isNullable = true;
-        this.isVisible = true;
+        this.showOnView = true;
         this.isEditable = true;
+        this.showOnCreate = true;
+        this.showOnEdit = true;
         this.showInLookup = false;
         this.lookupAttr = "";
         this.expr = "";
@@ -237,10 +254,14 @@ export class MetaEntityAttr {
 
             this.isNullable = utils.getIfDefined(dto.nul, this.isNullable);
             this.isEditable = utils.getIfDefined(dto.ied, this.isEditable);
-            this.isVisible = utils.getIfDefined(dto.ivis, this.isVisible);
+            this.showOnView = utils.getIfDefined(dto.ivis || dto.sov, this.showOnView);
+            this.showOnCreate = utils.getIfDefined(dto.soc, this.showOnCreate);
+            this.showOnEdit = utils.getIfDefined(dto.soe, this.showOnEdit);
             this.showInLookup = utils.getIfDefined(dto.sil, this.showInLookup);
 
             this.kind = dto.kind;
+
+            this.displayFormat = dto.dfmt;
 
             if (dto.udata)
                 this.userData = dto.udata;

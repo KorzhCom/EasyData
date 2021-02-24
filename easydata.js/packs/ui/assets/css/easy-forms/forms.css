@@ -13,6 +13,9 @@
     padding-inline-start: 10px;
     padding-inline-end: 10px;
     font-weight: 600;
+    width: auto;
+    font-size: 16px;
+    margin-bottom: 0;
 }
 
 .kfrm-break, .kfrm-break-50 {
@@ -61,6 +64,11 @@
 
 .kfrm-fields > label {
     padding: .5em 0;
+}
+
+fieldset .kfrm-fields > label {
+    padding: 0;
+    margin: 0;
 }
 
 .kfrm-fields > label:not(.checkbox) {
@@ -217,5 +225,7 @@
     padding-right: 0 !important;
 }
 
-
+.kfrm-field > label {
+    padding-right: 0.5em;
+}
 /* FORMS END */

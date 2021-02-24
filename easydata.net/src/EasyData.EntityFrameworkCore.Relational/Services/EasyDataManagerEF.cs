@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
-using EasyData.EntityFrameworkCore.Relational.Services;
 
 namespace EasyData.Services
 {
@@ -19,14 +18,12 @@ namespace EasyData.Services
     {
         protected readonly TDbContext DbContext;
 
-        protected EasyDataOptions Options { get; private set; }
 
         public EasyDataManagerEF(IServiceProvider services, EasyDataOptions options): base(services, options)
         {
             DbContext = (TDbContext)services.GetService(typeof(TDbContext)) 
                 ?? throw new ArgumentNullException($"DbContext is not registered in services: {typeof(TDbContext)}");
 
-            Options = options;
         }
 
         public override Task LoadModelAsync(string modelId)
@@ -38,39 +35,49 @@ namespace EasyData.Services
             return Task.FromResult(Model);
         }
 
-        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, 
-            string filter = null, bool isLookup = false, int? offset = null, int? fetch = null)
+        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null)
         {
+            if (filters == null)
+                filters = Enumerable.Empty<EasyFilter>();
+
             await GetModelAsync(modelId);
 
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, filter, isLookup, offset, fetch);
+            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup, offset, fetch);
 
             var result = new EasyDataResultSet();
 
             var props = entityType.GetProperties();
             foreach (var prop in props) {
-                result.cols.Add(new EasyDataCol(
-                    DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name),
-                    DataUtils.PrettifyName(prop.Name),
-                    DataUtils.GetDataTypeBySystemType(prop.ClrType)));
+                var attrId = DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name);
+                var attr = Model.FindEntityAttr(attrId);
+                result.Cols.Add(new EasyDataCol(new EasyDataColDesc {
+                    Id =  attrId,
+                    Label = DataUtils.PrettifyName(prop.Name),
+                    AttrId = attr?.Id,
+                    DisplayFormat = attr?.DisplayFormat,
+                    Type = attr != null ? attr.DataType :DataUtils.GetDataTypeBySystemType(prop.ClrType)
+                }));
             }
 
             foreach (var entity in entities) {
-                result.rows.Add(new EasyDataRow(props.Select(prop => prop.PropertyInfo.GetValue(entity)).ToList()));
+                result.Rows.Add(new EasyDataRow(props.Select(prop => prop.PropertyInfo.GetValue(entity)).ToList()));
             }
 
             return result;
 
         }
 
-        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, 
-            string filter = null, bool isLookup = false)
+        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer,
+            IEnumerable<EasyFilter> filters = null, bool isLookup = false)
         {
+            if (filters == null)
+                filters = Enumerable.Empty<EasyFilter>();
+
             await GetModelAsync(modelId);
 
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filter, isLookup);
+            return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup);
         }
 
         public override async Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr)
@@ -183,28 +190,27 @@ namespace EasyData.Services
             return (object)((dynamic)task).Result;
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, string filter = null, bool isLookup = false,
-            int? offset = null, int? fetch = null)
+        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, IEnumerable<EasyFilter> filters, bool isLookup, int? offset, int? fetch)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
                        .Single(m => m.Name == "ListAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, filter, isLookup, offset, fetch });
+                       .Invoke(this, new object[] { dbContext, filters, isLookup, offset, fetch });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
         }
 
-        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, string filter = null, bool isLookup = false)
+        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, IEnumerable<EasyFilter> filters, bool isLookup)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
                        .Single(m => m.Name == "CountAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, filter, isLookup });
+                       .Invoke(this, new object[] { dbContext, filters, isLookup });
 
             await task.ConfigureAwait(false);
             return (long)((dynamic)task).Result;
@@ -215,13 +221,16 @@ namespace EasyData.Services
             return await dbContext.Set<T>().FindAsync(keys.ToArray());
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, string filter, bool isLookup,
+        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup,
             int? offset, int? fetch) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
-            if (!string.IsNullOrWhiteSpace(filter)) {
-                query = query.FullTextSearchQuery(filter, GetFilterOptions(typeof(T), isLookup));
+            var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
+            foreach (var filter in filters)
+            {
+                query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
             }
+
             if (offset.HasValue) {
                 query = query.Skip(offset.Value);
             }
@@ -231,34 +240,15 @@ namespace EasyData.Services
             return await query.Cast<object>().ToListAsync();
         }
 
-        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, string filter, bool isLookup) where T : class
+        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
-            if (!string.IsNullOrWhiteSpace(filter)) {
-                query = query.FullTextSearchQuery(filter, GetFilterOptions(typeof(T), isLookup));
+            var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
+            foreach (var filter in filters)
+            {
+                query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
             }
             return await query.LongCountAsync();
-        }
-
-        private FullTextSearchOptions GetFilterOptions(Type entityType, bool isLookup)
-        {
-            var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == entityType);
-            return new FullTextSearchOptions {
-                Filter = (prop) => {
-                    var attr = entity?.FindAttribute(a => a.PropInfo == prop);
-                    if (attr == null)
-                        return false;
-
-                    if (!attr.IsVisible)
-                        return false;
-
-                    if (isLookup && !attr.ShowInLookup && !attr.IsPrimaryKey)
-                        return false;
-
-                    return true;
-                },
-                Depth = 0
-            };
         }
     }
 }

@@ -22,5 +22,21 @@ namespace EasyData
                 return s;
             }
         }
+
+        /// <summary>
+        /// Converts any string to an identifier (changes all symbols like '.' ';' '?' etc to '_')
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>The result identifier</returns>
+        public static string ToIdentifier(this string s)
+        {
+            var sb = new StringBuilder(s);
+            for (int i = 0; i < sb.Length; i++) {
+                if (!char.IsLetterOrDigit(sb[i])) sb[i] = '_';
+            }
+
+            return sb.ToString();
+        }
+
     }
 }

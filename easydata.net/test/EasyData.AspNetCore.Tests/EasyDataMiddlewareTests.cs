@@ -62,7 +62,7 @@ namespace EasyData.AspNetCore.Tests
         public async Task EasyData_GetEntities(string endpoint, string entity, int count)
         {
             var client = _host.GetTestClient();
-            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}?needTotal=true");
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/fetch", new StringContent("{ \"needTotal\": true }"));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -89,7 +89,7 @@ namespace EasyData.AspNetCore.Tests
         public async Task EasyData_GetEntity(string endpoint, string entity, string entityId)
         {
             var client = _host.GetTestClient();
-            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}/{entityId}");
+            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}/fetch/{entityId}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
       
@@ -109,7 +109,7 @@ namespace EasyData.AspNetCore.Tests
         {
             var client = _host.GetTestClient();
             var content = new StringContent(data.ToString());
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}", content);
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/create", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -185,7 +185,7 @@ namespace EasyData.AspNetCore.Tests
         {
             var client = _host.GetTestClient();
             var content = new StringContent(data.ToString());
-            var response = await client.PutAsync($"{endpoint}/models/__default/crud/{entity}/{data["Id"]}", content);
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/update/{data["Id"]}", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -252,7 +252,7 @@ namespace EasyData.AspNetCore.Tests
         public async Task EasyData_DeleteEntity(string endpoint, string entity, string entityId)
         {
             var client = _host.GetTestClient();
-            var response = await client.DeleteAsync($"{endpoint}/models/__default/crud/{entity}/{entityId}");
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/delete/{entityId}", new StringContent(""));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 

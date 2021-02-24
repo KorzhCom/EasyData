@@ -65,7 +65,7 @@
     align-items: center;
 }
 
-.keg-row:not(.keg-row-active):hover {
+.keg-row:not(.keg-row-active):not(.keg-row-totals):hover {
     background-color: #fffae9;
 }
 
@@ -75,7 +75,6 @@
 
 .keg-row-active {
     background-color: #fff3cf;
-    font-weight: 600;
 }
 
 .keg-cell, .keg-header-cell {
@@ -269,4 +268,39 @@
 
 .keg-page-info > span {
     color: #212529;
+}
+
+.keg-row-totals {
+    font-weight: bold;
+}
+
+.keg-totals-lv0 {
+    background-color: #ACE1AF;
+}
+
+.keg-totals-lv1 {
+    background-color: #D0F0C0;
+}
+
+.keg-totals-lv2 {
+    background-color: #D0F2C0;
+}
+
+.keg-totals-lv3 {
+    background-color: #D0F4C0;
+}
+
+.keg-totals-lv4 {
+    background-color: #D0F6C0;
+}
+
+.keg-totals-lv5 {
+    background-color: #D0F8C0;
+}
+
+.keg-sortable-helper {
+    background-color: white;
+    padding: 3px 20px;
+    border: 2px solid #fb9c2f;
+    border-radius: 4px;
 }

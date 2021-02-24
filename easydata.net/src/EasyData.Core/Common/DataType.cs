@@ -174,6 +174,9 @@ namespace EasyData
             DataType.Float,
             DataType.Currency,
             DataType.BCD,
+            DataType.Date,
+            DataType.Time,
+            DataType.DateTime,
             DataType.Autoinc,
             DataType.Memo,
             DataType.FixedChar
@@ -191,6 +194,16 @@ namespace EasyData
             DataType.Currency,
             DataType.BCD,
             DataType.Autoinc
+        });
+
+
+        /// <summary>
+        /// The list which represents all float data types
+        /// </summary>
+        static public readonly DataTypeList FloatDataTypes = new DataTypeList(new DataType[] {
+            DataType.Float,
+            DataType.Currency,
+            DataType.BCD
         });
 
         /// <summary>

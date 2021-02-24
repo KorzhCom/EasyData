@@ -1,8 +1,10 @@
 export interface DialogOptions {
     title: string;
     body: string | HTMLElement;
+    submitable?: boolean;
     closable?: boolean;
     cancelable?: boolean;
+    submitOnEnter?: boolean;
     width?: number | string;
     height?: number | string;
     arrangeParents?: boolean;
@@ -10,6 +12,32 @@ export interface DialogOptions {
     onSubmit?: () => boolean | void;
     onCancel?: () => void;
     onDestroy?: () => void;
+}
+
+export interface ProgressDialogOptions {
+    title: string,
+    content?: string,
+    determinated?: boolean;
+    beforeOpen?: () => void;
+    onSubmit?: () => void;
+    width?: number | string;
+    height?: number | string;
+};
+
+export interface Dialog {
+    submit(): void;
+    cancel(): void;
+    close(): void;
+    getRootElement(): HTMLElement;
+    disableButtons();
+    enableButtons();
+    showAlert(text: string, reason?: string, replace?: boolean);
+    clearAlert();
+}
+
+export interface PorgressDialog extends Dialog {
+    updateContent(content: string);
+    updateProgress(progress: number);
 }
 
 export interface DialogService {
@@ -21,5 +49,7 @@ export interface DialogService {
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): void;
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): Promise<string> | void;
 
-    open(options: DialogOptions);
+    openProgress(options: ProgressDialogOptions): PorgressDialog;
+
+    open(options: DialogOptions): Dialog;
 }

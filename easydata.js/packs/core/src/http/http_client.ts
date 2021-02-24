@@ -1,35 +1,7 @@
 import { utils } from '../utils/utils'
+import { HttpActionResult } from './http_action_result';
 import { HttpMethod } from './http_method';
-import { HttpHeaders, HttpRequest, HttpRequestOptions } from './http_request';
-
-export class HttpActionResult<T> {
-
-    constructor(private request: HttpRequest, private promise: Promise<T>) {
-
-    }
-
-    public getPromise() {
-        return this.promise;
-    }
-
-    public getRequest() {
-        return this.request;
-    }
-
-    public then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, 
-                                                onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2> {
-        return this.promise.then(onfulfilled, onrejected);
-    }
-
-    public catch<TResult = never>(onrejected?: (reason: any) => TResult | PromiseLike<TResult>): Promise<T | TResult> {
-        return this.promise.catch(onrejected);
-    }
-
-    public finally(onfinally?: () => void): Promise<T> {
-        return this.promise.finally(onfinally);
-    }
-
-}
+import { HttpHeaders, HttpRequest, HttpRequestDescriptor, HttpRequestOptions } from './http_request';
 
 export class HttpResponseError extends Error {
     constructor(public status: number, message: string) {
@@ -48,7 +20,14 @@ export class HttpClient {
         this.customPayload = undefined;
     }
 
+    /**
+     * This option is deprecated and will be removed in future updates.
+     * Use 'onRequest' instead.
+     * @deprecated
+     */
     public beforeEachRequest?: (request: HttpRequest) => void;
+
+    public onRequest?: (request: HttpRequest) => void;
 
     public get<T = any>(url: string, options?: HttpRequestOptions): HttpActionResult<T> {
         return this.send<T>(HttpMethod.Get, url, null, options);
@@ -71,54 +50,54 @@ export class HttpClient {
         options = options || {};
 
         const dataType = options.dataType || 'json';
-        const contentType = options.contentType || (dataType !== 'form-data') ? 'application/json' : null;
+        const contentType = options.contentType || (dataType !== 'form-data') 
+            ? 'application/json' 
+            : null;
 
         if (data && dataType != 'form-data' && this.customPayload) {
             data.data = utils.assignDeep(data.data || {}, this.customPayload);
         }
 
-        let XDomainRequest: any = window["XDomainRequest"];
-        let XHR = ("onload" in new XMLHttpRequest()) ? XMLHttpRequest : XDomainRequest; //IE support
-        let xhr: XMLHttpRequest = new XHR();
+        const XHR = ('onload' in new XMLHttpRequest()) 
+            ? XMLHttpRequest 
+            : window["XDomainRequest"]; //IE support
 
-
-        if (options.queryParams && Object.keys(options.queryParams)) {
-            url += encodeURI('?' + Object.keys(options.queryParams)
-                .map(name => name + '=' + options.queryParams[name])
-                .join('&'));
-        }
-
-        xhr.open(method, url, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-        for(let header in this.defaultHeaders) {
-            xhr.setRequestHeader(header, this.defaultHeaders[header]);
-        }
-
-        if (options.headers) {
-            for(let header in options.headers) {
-                xhr.setRequestHeader(header, options.headers[header]);
-            }
-        }
+        const xhr: XMLHttpRequest = new XHR();
+        const desc: HttpRequestDescriptor = {
+            method: method,
+            url: url,
+            headers: { ... this.defaultHeaders, ...options.headers || {} },
+            queryParams: options.queryParams || {},
+            data: data
+        };
 
         if (contentType)
-            xhr.setRequestHeader('Content-Type', contentType);
+            desc.headers['Content-Type'] = contentType;
 
-        const request = new HttpRequest(xhr, data);
+        const request = new HttpRequest(xhr, desc);
 
         if (this.beforeEachRequest) {
+            console.warn(`HttpClient: 'beforeEachRequest' is deprecated and will be removed in future updates.
+            Use 'onRequest' instead`);
             this.beforeEachRequest(request);
         }
-    
-        let dataToSend;
-        if (data && typeof data!== "string" && dataType == 'json') {
-            dataToSend = JSON.stringify(request.getData());
-        } else {
-            dataToSend = request.getData();
+
+        if (this.onRequest) {
+            this.onRequest(request);
         }
     
+        const dataToSend = (request.data && typeof request.data !== 'string'
+         && dataType == 'json')
+            ? JSON.stringify(request.data)
+            : request.data;
+      
+        request.open();
+
         return new HttpActionResult<T>(request, new Promise<T>((resolve, reject) => {
-                
+        
+            if (options.responseType)
+                xhr.responseType = options.responseType;
+
             xhr.onreadystatechange = () => {
 
                 if (xhr.readyState != 4) {
@@ -127,11 +106,13 @@ export class HttpClient {
 
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const responseObj = 
-                    (responseContentType.indexOf('application/json') == 0)
-                        ? JSON.parse(xhr.responseText)
-                        :xhr.responseText;
+                    (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
+                        ? xhr.response
+                        : (responseContentType.indexOf('application/json') == 0)
+                            ? JSON.parse(xhr.responseText)
+                            : xhr.responseText;
       
-                const status = parseInt(xhr.status.toString());
+                const status = xhr.status;
                 if (status >= 300 || status < 200) {
                     const message = responseObj.message ||
                         (status == 404 

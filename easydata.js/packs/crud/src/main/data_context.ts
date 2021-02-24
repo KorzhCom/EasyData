@@ -151,7 +151,7 @@ export class DataContext {
             entityId: entityId || this.activeEntity.id });
         
         this.startProcess();
-        return this.http.put(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
     }
 
     public deleteEntity(id: string, entityId?: string) {
@@ -159,7 +159,7 @@ export class DataContext {
             entityId: entityId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.delete(url).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, null).getPromise().finally(() => this.endProcess());
     }
 
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
@@ -221,10 +221,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}'));
-        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
-        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}'));
-        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
-        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/{id}'));
+        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
+        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch/{id}'));
+        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
+        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update/{id}'));
+        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete/{id}'));
     }
 }

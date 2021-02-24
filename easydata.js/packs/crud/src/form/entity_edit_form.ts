@@ -313,7 +313,7 @@ export class EntityEditForm {
                                                 }
                                             })
                                             .catch(error => {
-                                                console.log(error);
+                                                console.error(error);
                                             });
                                         }
         
@@ -444,6 +444,15 @@ export class EntityEditForm {
             if (attr.isForeignKey)
                 continue;
 
+            if (params.isEditForm) {
+                if (!attr.showOnEdit)
+                    continue;
+            }
+            else {
+                if (!attr.showOnCreate)
+                    continue;
+            }
+            
             addFormField(fb.toDOM(), attr)
         }
 

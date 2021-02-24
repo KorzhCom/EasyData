@@ -46,11 +46,14 @@ export class TextDataFilter implements DataFilter {
             return this.applyInMemoryFilter();
         }
         else {
+            const filters = [
+                { class: "__substring", value: this.filterValue }
+            ]
             return this.loader.loadChunk({ 
                 offset: 0, 
                 limit: this.sourceTable.chunkSize, 
                 needTotal: true, 
-                filter: this.filterValue,
+                filters: filters,
                 entityId: this.entityId,
                 lookup: this.isLookup
             } as any)
@@ -60,7 +63,7 @@ export class TextDataFilter implements DataFilter {
                     chunkSize: this.sourceTable.chunkSize,
                     loader: {
                         loadChunk: (params) => this.loader
-                            .loadChunk({ ...params, filter: this.filterValue, entityId: this.entityId, lookup: this.isLookup } as any)
+                            .loadChunk({ ...params, filters: filters, entityId: this.entityId, lookup: this.isLookup } as any)
                     }
                 });
 

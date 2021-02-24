@@ -26,3 +26,9 @@ export * from './dialogs/default_dialog_service'
 export * from './dialogs/dialog_service'
 
 import './i18n/text_resources'
+
+import { DefaultDialogService } from './dialogs/default_dialog_service'
+
+// export dialogs to use outside of context as global
+const dialogs = new DefaultDialogService();
+export { dialogs };

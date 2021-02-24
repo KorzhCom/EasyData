@@ -1,0 +1,46 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release_notes:
+    name: "Create release & release notes"
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+
+      - name: Read version.json to env
+        uses: antifree/json-to-variables@v1.0.0
+        with:
+          filename: ./easydata.net/version.json
+          prefix: ed
+
+      - name: Install AistDoc
+        run: dotnet tool install  Aistant.DocImport --tool-path  ./tool
+
+      - name: Run AistDoc
+        run: ./tool/aistdoc changelog easydata --config:./configs/release-notes-config.json --pat:${{ secrets.GITHUB_TOKEN }} --output:./tool/releaseNotes.md --version:${{ env.ed_packageVersion }}
+
+      - name: Create tag
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "v${{ env.ed_packageVersion }}"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: EasyData ${{ env.ed_packageVersion }}
+          body-path: ./tool/releaseNotes.md
+          draft: true
+          prerelease: false

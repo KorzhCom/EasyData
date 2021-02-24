@@ -14,6 +14,7 @@ namespace EasyData.Services
                 easyDataOptions.MetaDataLoaderOptionsBuilder = (options) => loaderOptionsBuilder(options as DbContextMetaDataLoaderOptions);
             }
             easyDataOptions.UseManager<EasyDataManagerEF<TDbContext>>();
+            easyDataOptions.RegisterFilter<SubstringFilter>(SubstringFilter.Class);
         }
     }
 }

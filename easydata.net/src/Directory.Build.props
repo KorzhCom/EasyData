@@ -1,0 +1,18 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>1.2.0-beta1</Version>
+    <AssemblyVersion>1.2.0.1</AssemblyVersion>
+    <Configurations>Debug;Release</Configurations>
+
+    <Authors>Korzh.com</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright 2020-$([System.DateTime]::Now.Year) (c) Korzh.com. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/KorzhCom/EasyData</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <NoWarn>CS1591,CS1574</NoWarn>
+
+  </PropertyGroup>
+</Project>

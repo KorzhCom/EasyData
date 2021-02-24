@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EasyData.Services
 {
@@ -33,7 +32,7 @@ namespace EasyData.Services
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EasyQueryOptions"/> class.
+        /// Initializes a new instance of the <see cref="EasyDataOptions"/> class.
         /// </summary>
         /// <param name="services">The DI services.</param>
         public EasyDataOptions(IServiceProvider services)
@@ -47,5 +46,29 @@ namespace EasyData.Services
         /// </summary>
         /// <value>The options builder for metadata loader.</value>
         public Action<object> MetaDataLoaderOptionsBuilder { get; set; }
+
+        public EasyFilter ResolveFilter(string filterClass, MetaData model)
+        {
+            if (!_filterClasses.TryGetValue(filterClass, out var filterType))
+                return null;
+
+            return (EasyFilter)Activator.CreateInstance(filterType, model);
+        }
+
+        private readonly Dictionary<string, Type> _filterClasses = new Dictionary<string, Type>();
+
+        public void RegisterFilter(string filterClass, Type filterType)
+        {
+            if (!typeof(EasyFilter).IsAssignableFrom(filterType))
+                throw new ArgumentException($"Filter type should be inherited form '{typeof(EasyFilter)}'");
+
+            _filterClasses[filterClass] = filterType;
+        }
+
+        public void RegisterFilter<TFilter>(string filterClass) where TFilter: EasyFilter
+        {
+            _filterClasses[filterClass] = typeof(TFilter);
+        }
+        
     }
 }
