@@ -5,14 +5,13 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyData.Export.Html
+namespace EasyData.Export
 {
     /// <summary>
     /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to HTML format
     /// </summary>
     public class HtmlDataExporter : IDataExporter
     {
-
         /// <summary>
         /// Gets default settings
         /// </summary>

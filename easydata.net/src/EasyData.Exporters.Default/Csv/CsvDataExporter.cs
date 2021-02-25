@@ -4,9 +4,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyData.Export.Csv
+namespace EasyData.Export
 {
-
     /// <summary>
     /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to CSV format
     /// </summary>

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-using EasyData.Export.Html;
-
-namespace EasyData.Export.Excel
+namespace EasyData.Export
 {
     /// <summary>
     /// Represents different settings used during exporting to Excel-HTML
@@ -19,8 +17,7 @@ namespace EasyData.Export.Excel
         /// Initializes a new instance of the<see cref="ExcelHtmlDataExportSettings"/> class.
         /// </summary>
         public ExcelHtmlDataExportSettings() : base() 
-        {
-        
+        {        
         }
 
         /// <summary>
@@ -28,7 +25,6 @@ namespace EasyData.Export.Excel
         /// </summary>
         public ExcelHtmlDataExportSettings(CultureInfo culture) : base(culture)
         {
-
         }
     }
 }

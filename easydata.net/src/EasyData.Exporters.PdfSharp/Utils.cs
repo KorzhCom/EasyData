@@ -8,7 +8,6 @@ namespace EasyData.Export
 {
     internal static class Utils
     {
-
         private static Regex _formatRegex = new Regex("{0:(.*?)}", RegexOptions.Singleline);
 
         public static string GetDateFormat(DataType dataType, IDataExportSettings settings, string displayFormat)
@@ -32,6 +31,7 @@ namespace EasyData.Export
 
             return BuildShortDateTimeFormat(settings.Culture, dataType);
         }
+
         public static string GetFormattedValue(object val, DataType dataType, IDataExportSettings settings, string displayFormat)
         {
             if (val == null) {

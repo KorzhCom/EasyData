@@ -1,15 +1,13 @@
 ﻿using System.Globalization;
 
-using EasyData.Export.Html;
 
-namespace EasyData.Export.Excel
+namespace EasyData.Export
 {
     /// <summary>
     /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to Excel's html format
     /// </summary>
     public class ExcelHtmlDataExporter : HtmlDataExporter
     {
-
         /// <summary>
         /// Gets default settings
         /// </summary>
