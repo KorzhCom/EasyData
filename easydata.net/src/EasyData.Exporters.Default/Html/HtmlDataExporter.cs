@@ -20,13 +20,13 @@ namespace EasyData.Export.Html
         /// <returns></returns>
         public IDataExportSettings GetDefaultSettings(CultureInfo culture = null)
         {
-            return new HtmlDataExoportSettings(culture);
+            return new HtmlDataExportSettings(culture);
         }
 
         /// <summary>
         /// The default settings.
         /// </summary>
-        public IDataExportSettings DefaultSettings => HtmlDataExoportSettings.Default;
+        public IDataExportSettings DefaultSettings => HtmlDataExportSettings.Default;
 
         /// <summary>
         /// Exports the specified data to the stream.
@@ -35,7 +35,7 @@ namespace EasyData.Export.Html
         /// <param name="stream">The stream.</param>
         public void Export(IEasyDataResultSet data, Stream stream)
         {
-            Export(data, stream, HtmlDataExoportSettings.Default);
+            Export(data, stream, HtmlDataExportSettings.Default);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace EasyData.Export.Html
         /// <returns>Task.</returns>
         public Task ExportAsync(IEasyDataResultSet data, Stream stream)
         {
-            return ExportAsync(data, stream, HtmlDataExoportSettings.Default);
+            return ExportAsync(data, stream, HtmlDataExportSettings.Default);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace EasyData.Export.Html
         /// <param name="settings">Different settings of result HTML file.</param>
         /// <param name="displayFormat">The display format.</param>
         /// <returns>System.String.</returns>
-        protected string GetFormattedValue(object val, DataType dataType, HtmlDataExoportSettings settings, string displayFormat)
+        protected string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
         {
             var result = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
 
@@ -223,12 +223,12 @@ namespace EasyData.Export.Html
             return sb.ToString();
         }
 
-        private static HtmlDataExoportSettings MapSettings(IDataExportSettings settings)
+        private static HtmlDataExportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is HtmlDataExoportSettings)
-                return settings as HtmlDataExoportSettings;
+            if (settings is HtmlDataExportSettings)
+                return settings as HtmlDataExportSettings;
 
-            var result = HtmlDataExoportSettings.Default;
+            var result = HtmlDataExportSettings.Default;
             result.Title = settings.Title;
             result.Description = settings.Description;
             result.ShowDatasetInfo = settings.ShowDatasetInfo;

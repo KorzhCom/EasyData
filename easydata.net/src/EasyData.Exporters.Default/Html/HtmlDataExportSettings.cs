@@ -6,17 +6,17 @@ namespace EasyData.Export.Html
     /// <summary>
     /// Represents different settings used during exporting to HTML
     /// </summary>
-    public class HtmlDataExoportSettings : BasicDataExportSettings
+    public class HtmlDataExportSettings : BasicDataExportSettings
     {
         /// <summary>
-        /// Returns the default instance of <see cref="HtmlDataExoportSettings"/>.
+        /// Returns the default instance of <see cref="HtmlDataExportSettings"/>.
         /// </summary>
-        public new static HtmlDataExoportSettings Default => new HtmlDataExoportSettings();
+        public new static HtmlDataExportSettings Default => new HtmlDataExportSettings();
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="HtmlDataExoportSettings"/> class.
+        /// Initializes a new instance of the<see cref="HtmlDataExportSettings"/> class.
         /// </summary>
-        public HtmlDataExoportSettings() : base() 
+        public HtmlDataExportSettings() : base() 
         {
             ShowColumnNames = true;
             FixHtmlTags = true;
@@ -31,9 +31,9 @@ namespace EasyData.Export.Html
         }
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="HtmlDataExoportSettings"/> class.
+        /// Initializes a new instance of the<see cref="HtmlDataExportSettings"/> class.
         /// </summary>
-        public HtmlDataExoportSettings(CultureInfo culture) : base(culture)
+        public HtmlDataExportSettings(CultureInfo culture) : base(culture)
         {
             ShowColumnNames = true;
             FixHtmlTags = true;

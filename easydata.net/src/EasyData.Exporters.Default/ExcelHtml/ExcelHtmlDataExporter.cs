@@ -17,13 +17,13 @@ namespace EasyData.Export.Excel
         /// <returns></returns>
         public new IDataExportSettings GetDefaultSettings(CultureInfo culture = null)
         {
-            return new HtmlDataExoportSettings(culture);
+            return new HtmlDataExportSettings(culture);
         }
 
         /// <summary>
         /// The default settings.
         /// </summary>
-        public new IDataExportSettings DefaultSettings => ExcelHtmlDataExoportSettings.Default;
+        public new IDataExportSettings DefaultSettings => ExcelHtmlDataExportSettings.Default;
 
         /// <summary>
         /// Gets the MIME content type of the exporting format.
