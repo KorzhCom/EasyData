@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>EasyData.Exporters.PdfSharp</PackageId>
+    <DocumentationFile>EasyData.Exporters.PdfSharp.xml</DocumentationFile>
+    <Description>
+      Export classes of EasyData library. Supports exporting into PDF format via PdfSharp library.
+    </Description>
+    <PackageTags>database export pdf</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
+  </ItemGroup>
+  
+</Project>
