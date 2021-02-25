@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace EasyData.Export.Html
 {
     /// <summary>
-    /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to Excel's html format
+    /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to HTML format
     /// </summary>
     public class HtmlDataExporter : IDataExporter
     {
