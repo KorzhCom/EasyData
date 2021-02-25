@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace EasyData.Export.Pdf
+namespace EasyData.Export
 {
     /// <summary>
     /// Represents different settings used during exporting to PDF
