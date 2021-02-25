@@ -102,26 +102,28 @@ export class HttpClient {
 
                 if (xhr.readyState != 4) {
                     return;
-                } 
-
+                }
+                
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
+                const status = xhr.status;
+                if (status >= 300 || status < 200) {
+                    const responseObj = (responseContentType.indexOf('application/json') == 0)
+                        ? JSON.parse(xhr.responseText)
+                        : xhr.responseText;
+                    const message = responseObj.message ||
+                        (status == 404
+                            ? `No such endpoint: ${url}`
+                            : responseObj);
+                    reject(new HttpResponseError(status, message));
+                    return;
+                }
+
                 const responseObj = 
                     (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
                         ? xhr.response
                         : (responseContentType.indexOf('application/json') == 0)
                             ? JSON.parse(xhr.responseText)
                             : xhr.responseText;
-      
-                const status = xhr.status;
-                if (status >= 300 || status < 200) {
-                    const message = responseObj.message ||
-                        (status == 404 
-                            ? `No such endpoint: ${url}`
-                            : responseObj);
-
-                    reject(new HttpResponseError(status, message));    
-                    return;
-                }
 
                 resolve(responseObj);
             }
