@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Globalization;
 
-namespace EasyData.Export.Excel
+namespace EasyData.Export.Html
 {
     /// <summary>
     /// Represents different settings used during exporting to Excel-HTML
     /// </summary>
-    [Obsolete("ExcelHtmlDataExporter and its options are deprecated. Use ExcelDataExporter instead")]
-    public class ExcelHtmlDataExportSettings : BasicDataExportSettings
+    public class HtmlDataExoportSettings : BasicDataExportSettings
     {
         /// <summary>
-        /// Returns the default instance of <see cref="ExcelHtmlDataExportSettings"/>.
+        /// Returns the default instance of <see cref="HtmlDataExoportSettings"/>.
         /// </summary>
-        public new static ExcelHtmlDataExportSettings Default => new ExcelHtmlDataExportSettings();
+        public new static HtmlDataExoportSettings Default => new HtmlDataExoportSettings();
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="ExcelHtmlDataExportSettings"/> class.
+        /// Initializes a new instance of the<see cref="HtmlDataExoportSettings"/> class.
         /// </summary>
-        public ExcelHtmlDataExportSettings() : base() 
+        public HtmlDataExoportSettings() : base() 
         {
             ShowColumnNames = true;
             FixHtmlTags = true;
@@ -32,9 +31,9 @@ namespace EasyData.Export.Excel
         }
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="ExcelHtmlDataExportSettings"/> class.
+        /// Initializes a new instance of the<see cref="HtmlDataExoportSettings"/> class.
         /// </summary>
-        public ExcelHtmlDataExportSettings(CultureInfo culture) : base(culture)
+        public HtmlDataExoportSettings(CultureInfo culture) : base(culture)
         {
             ShowColumnNames = true;
             FixHtmlTags = true;

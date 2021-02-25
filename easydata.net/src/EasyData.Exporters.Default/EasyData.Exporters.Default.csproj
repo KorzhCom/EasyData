@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>EasyData.Exporters.Default</PackageId>
+    <DocumentationFile>EasyData.Exporters.Default.xml</DocumentationFile>
+    <Description>
+      Default Export classes of EasyData library. Supports exporting into CSV, HTML and Excel-HTML formats
+    </Description>
+    <PackageTags>database export csv html excel-html</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
+  </ItemGroup>
+
+</Project>

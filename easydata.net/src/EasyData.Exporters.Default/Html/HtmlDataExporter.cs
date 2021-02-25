@@ -5,13 +5,12 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyData.Export.Excel
+namespace EasyData.Export.Html
 {
     /// <summary>
     /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to Excel's html format
     /// </summary>
-    [Obsolete("ExcelHtmlDataExporter and its options are deprecated. Use ExcelDataExporter instead")]
-    public class ExcelHtmlDataExporter : IDataExporter
+    public class HtmlDataExporter : IDataExporter
     {
 
         /// <summary>
@@ -21,13 +20,13 @@ namespace EasyData.Export.Excel
         /// <returns></returns>
         public IDataExportSettings GetDefaultSettings(CultureInfo culture = null)
         {
-            return new ExcelHtmlDataExportSettings(culture);
+            return new HtmlDataExoportSettings(culture);
         }
 
         /// <summary>
         /// The default settings.
         /// </summary>
-        public IDataExportSettings DefaultSettings => ExcelHtmlDataExportSettings.Default;
+        public IDataExportSettings DefaultSettings => HtmlDataExoportSettings.Default;
 
         /// <summary>
         /// Exports the specified data to the stream.
@@ -36,7 +35,7 @@ namespace EasyData.Export.Excel
         /// <param name="stream">The stream.</param>
         public void Export(IEasyDataResultSet data, Stream stream)
         {
-            Export(data, stream, ExcelHtmlDataExportSettings.Default);
+            Export(data, stream, HtmlDataExoportSettings.Default);
         }
 
         /// <summary>
@@ -51,18 +50,18 @@ namespace EasyData.Export.Excel
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="ExcelHtmlDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
+        /// Asynchronical version of <see cref="HtmlDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
         /// <returns>Task.</returns>
         public Task ExportAsync(IEasyDataResultSet data, Stream stream)
         {
-            return ExportAsync(data, stream, ExcelHtmlDataExportSettings.Default);
+            return ExportAsync(data, stream, HtmlDataExoportSettings.Default);
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="ExcelHtmlDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
+        /// Asynchronical version of <see cref="HtmlDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
@@ -186,7 +185,7 @@ namespace EasyData.Export.Excel
         /// <returns>System.String.</returns>
         public string GetContentType()
         {
-            return "application/vnd.ms-excel";
+            return "text/html";
         }
 
 
@@ -198,7 +197,7 @@ namespace EasyData.Export.Excel
         /// <param name="settings">Different settings of result HTML file.</param>
         /// <param name="displayFormat">The display format.</param>
         /// <returns>System.String.</returns>
-        protected string GetFormattedValue(object val, DataType dataType, ExcelHtmlDataExportSettings settings, string displayFormat)
+        protected string GetFormattedValue(object val, DataType dataType, HtmlDataExoportSettings settings, string displayFormat)
         {
             var result = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
 
@@ -224,12 +223,12 @@ namespace EasyData.Export.Excel
             return sb.ToString();
         }
 
-        private static ExcelHtmlDataExportSettings MapSettings(IDataExportSettings settings)
+        private static HtmlDataExoportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is ExcelHtmlDataExportSettings)
-                return settings as ExcelHtmlDataExportSettings;
+            if (settings is HtmlDataExoportSettings)
+                return settings as HtmlDataExoportSettings;
 
-            var result = ExcelHtmlDataExportSettings.Default;
+            var result = HtmlDataExoportSettings.Default;
             result.Title = settings.Title;
             result.Description = settings.Description;
             result.ShowDatasetInfo = settings.ShowDatasetInfo;

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EasyData.Exporters.PdfSharp</name>
+    </assembly>
+    <members>
+        <member name="T:EasyData.Export.Pdf.PdfDataExporter">
+            <summary>
+            An implementation of <see cref="T:EasyData.Export.IDataExporter"/> interface, that performs exporting of the data stream to PDF format
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.GetContentType">
+            <summary>
+            Gets the MIME content type of the exporting format.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.GetDefaultSettings(System.Globalization.CultureInfo)">
+            <summary>
+            Gets default settings
+            </summary>
+            <param name="culture">The culture info</param>
+            <returns></returns>
+        </member>
+        <member name="P:EasyData.Export.Pdf.PdfDataExporter.DefaultSettings">
+            <summary>
+            The default settings.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Exports the specified data to the stream.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Exports the specified data to the stream with the specified formats.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream)"/> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ExportAsync(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)">
+            <summary>
+            Asynchronical version of <see cref="M:EasyData.Export.Pdf.PdfDataExporter.Export(EasyData.IEasyDataResultSet,System.IO.Stream,EasyData.Export.IDataExportSettings)" /> method.
+            </summary>
+            <param name="data">The fetched data.</param>
+            <param name="stream">The stream.</param>
+            <param name="settings">The settings.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExporter.ApplyStyles(MigraDoc.DocumentObjectModel.Document,EasyData.Export.Pdf.PdfDataExportSettings)">
+            <summary>
+            Apply styles for pdf document
+            </summary>
+            <param name="document"></param>
+            <param name="settings"></param>
+        </member>
+        <member name="T:EasyData.Export.Pdf.PdfDataExportSettings">
+            <summary>
+            Represents different settings used during exporting to PDF
+            </summary>
+        </member>
+        <member name="P:EasyData.Export.Pdf.PdfDataExportSettings.Default">
+            <summary>
+            Returns the default instance of <see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/>.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExportSettings.#ctor">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/> class.
+            </summary>
+        </member>
+        <member name="M:EasyData.Export.Pdf.PdfDataExportSettings.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Initializes a new instance of the<see cref="T:EasyData.Export.Pdf.PdfDataExportSettings"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

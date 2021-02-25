@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>EasyData.Export</RootNamespace>
-    <Description>Export classes of EasyData library. Supports exporting into CSV, XLSX and PDF</Description>
-    <DocumentationFile>EasyData.Exporters.xml</DocumentationFile>
+    <EnableApiCheck>false</EnableApiCheck>
     <PackageId>EasyData.Exporters</PackageId>
+    <PackageDescription>
+      Metapackage with all Export classes of EasyData library. Supports exporting into CSV, XLSX and PDF
+    </PackageDescription>
     <PackageTags>database export csv excel pdf</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.95.4" />
-    <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
+    <ProjectReference Include="..\EasyData.Exporters.ClosedXML\EasyData.Exporters.ClosedXML.csproj" />
+    <ProjectReference Include="..\EasyData.Exporters.Default\EasyData.Exporters.Default.csproj" />
+    <ProjectReference Include="..\EasyData.Exporters.PdfSharp\EasyData.Exporters.PdfSharp.csproj" />
   </ItemGroup>
 
 </Project>

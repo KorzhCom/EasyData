@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>EasyData.Exporters.ClosedXML</PackageId>
+    <DocumentationFile>EasyData.Exporters.ClosedXML.xml</DocumentationFile>
+    <Description>
+      Export classes of EasyData library. Supports exporting into XLSX format via CLosedXML library.
+    </Description>
+    <PackageTags>database export excel xlsx</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
+  </ItemGroup>
+
+</Project>
