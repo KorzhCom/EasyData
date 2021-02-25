@@ -5,7 +5,8 @@
     <PackageId>EasyData.Exporters.PdfSharp</PackageId>
     <DocumentationFile>EasyData.Exporters.PdfSharp.xml</DocumentationFile>
     <Description>
-      Export classes of EasyData library. Supports exporting into PDF format via PdfSharp library.
+      This package contains an exporter (an implementation of EasyData's IDataExporter interface) for PDF format.
+      The exporting is performed via PdfSharp library.
     </Description>
     <PackageTags>database export pdf</PackageTags>
   </PropertyGroup>

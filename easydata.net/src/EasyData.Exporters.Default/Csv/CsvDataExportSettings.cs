@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace EasyData.Export.Csv
+namespace EasyData.Export
 {
     /// <summary>
     /// Represents csv format used during exporting operations

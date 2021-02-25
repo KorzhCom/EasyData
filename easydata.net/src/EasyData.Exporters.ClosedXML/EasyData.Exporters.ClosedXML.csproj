@@ -5,7 +5,8 @@
     <PackageId>EasyData.Exporters.ClosedXML</PackageId>
     <DocumentationFile>EasyData.Exporters.ClosedXML.xml</DocumentationFile>
     <Description>
-      Export classes of EasyData library. Supports exporting into XLSX format via CLosedXML library.
+      This package contains an exporter (an implementation of EasyData's IDataExporter interface) for Excel (.xlsx) format.
+      The exporting is performed via CLosedXML library.
     </Description>
     <PackageTags>database export excel xlsx</PackageTags>
   </PropertyGroup>

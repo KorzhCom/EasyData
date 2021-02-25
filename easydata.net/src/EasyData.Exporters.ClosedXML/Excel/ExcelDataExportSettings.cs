@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace EasyData.Export.Excel
+namespace EasyData.Export
 {
     /// <summary>
     /// Represents different settings used during exporting to EXCEL
@@ -20,7 +20,6 @@ namespace EasyData.Export.Excel
         /// </summary>
         public ExcelDataExportSettings() : base()
         {
-
         }
 
         /// <summary>
@@ -28,8 +27,6 @@ namespace EasyData.Export.Excel
         /// </summary>
         public ExcelDataExportSettings(CultureInfo culture) : base(culture)
         {
-
         }
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace EasyData.Export.Html
+namespace EasyData.Export
 {
     /// <summary>
     /// Represents different settings used during exporting to HTML

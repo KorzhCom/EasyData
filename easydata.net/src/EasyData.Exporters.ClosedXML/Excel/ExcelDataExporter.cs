@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 using ClosedXML.Excel;
 
-namespace EasyData.Export.Excel
+namespace EasyData.Export
 {
-
     /// <summary>
     /// An implementation of <see cref="IDataExporter"/> interface, that performs exporting of the data stream to PDF format
     /// </summary>
