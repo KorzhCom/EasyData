@@ -369,9 +369,4 @@ dist/
 /playground/**/wwwroot/js/easydata.js.map
 /playground/**/ts/**/*.js
 !/playground/**/ts/styles.js
-/easydata.net/src/EasyData.AspNetCore/EasyData.AspNetCore.xml
-/easydata.net/src/EasyData.Core/EasyData.xml
-/easydata.net/src/EasyData.EntityFrameworkCore.Relational/EasyData.AspNetCore.xml
-/easydata.net/src/EasyData.Core/EasyData.Core.xml
-/easydata.net/src/EasyData.EntityFrameworkCore.Relational/EasyData.EntityFrameworkCore.Relational.xml
-/easydata.net/src/EasyData.Exporters/EasyData.Exporters.xml
+/easydata.net/src/**/EasyData*.xml
