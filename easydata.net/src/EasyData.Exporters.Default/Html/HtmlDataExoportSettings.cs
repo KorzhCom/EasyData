@@ -4,7 +4,7 @@ using System.Globalization;
 namespace EasyData.Export.Html
 {
     /// <summary>
-    /// Represents different settings used during exporting to Excel-HTML
+    /// Represents different settings used during exporting to HTML
     /// </summary>
     public class HtmlDataExoportSettings : BasicDataExportSettings
     {
