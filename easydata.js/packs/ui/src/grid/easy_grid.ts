@@ -485,10 +485,10 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals && (this.options.totals.calcGrandTotals 
-            || this.calcSubTotalsCols())
-         && this.dataTable.columns.getItems()
-            .filter(col => col.isAggr).length > 0;
+        return this.options.totals 
+            && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
+            && this.dataTable.columns.getItems()
+                .filter(col => col.isAggr).length > 0;
     }
 
     private calcSubTotalsCols(): boolean {
