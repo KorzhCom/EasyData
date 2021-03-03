@@ -7,7 +7,6 @@ namespace EasyData
 {
     public class DataUtils
     {
-
         public static string PrettifyName(string name)
         {
 
