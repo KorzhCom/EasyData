@@ -250,6 +250,5 @@ namespace EasyData
             }
             return dt.ToString(format, System.Globalization.DateTimeFormatInfo.CurrentInfo);
         }
-
     }
 }
