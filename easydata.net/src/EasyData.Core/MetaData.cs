@@ -8,14 +8,10 @@ using Newtonsoft.Json;
 
 namespace EasyData
 {
-
-
     public class MetaEntityAttrDescriptor
     {
-
         public MetaEntityAttrDescriptor(MetaEntity parent): this(parent, "")
-        {
-        
+        {        
         }
 
         public MetaEntityAttrDescriptor(MetaEntity parent, string expr)
