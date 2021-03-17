@@ -66,7 +66,7 @@ export class EasyDataViewDispatcher {
                 }
                 else {
                     throw Error('Unrecognized container parameter ' + 
-                    '(Must be id, class or HTMLElement): ' + container);
+                    '(Must be an element ID, a class name or HTMLElement object itself): ' + container);
                 }
             }
         }
