@@ -22,15 +22,8 @@
 }
 
 .keg-body {
-/*
-    flex-grow: 1;
-    height: calc(100% - 50px);
-    width: 100%;
-*/    
     overflow: hidden;
-
-    /* !!! temp */
-    /*height: 340px;*/
+    flex: 1;
 }
 
 .keg-body-viewport {
@@ -303,4 +296,13 @@
     padding: 3px 20px;
     border: 2px solid #fb9c2f;
     border-radius: 4px;
+}
+
+
+.eqjs-chart-main, .eqjs-chart-content, .keg-container, .keg-root {
+    height: 100%;
+}
+
+.eqjs-chart-content canvas {
+    max-height: 100%;
 }
