@@ -316,9 +316,9 @@ export class EasyGrid {
                 return;
             }
             else if (this.containerInitialHeight > 0) {
-                const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
-                domel(this.bodyDiv)
-                    .setStyle('height', `${bodyHeight}px`);
+                // const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
+                // domel(this.bodyDiv)
+                //     .setStyle('height', `${bodyHeight}px`);
 
             }
             resolve();
