@@ -455,8 +455,8 @@ export class EasyGrid {
                             this.bodyCellContainerDiv.appendChild(tr);
                         });
     
-                        const showGrantTotalsOnEachPage = this.options.totals && this.options.totals.showGrantTotalsOnEachPage;
-                        if (calcTotals && (this.isLastPage() || showGrantTotalsOnEachPage)) {
+                        const showGrandTotalsOnEachPage = this.options.totals && this.options.totals.showGrandTotalsOnEachPage;
+                        if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
                             this.updateTotalsState(keyCols, row, true);
                         }

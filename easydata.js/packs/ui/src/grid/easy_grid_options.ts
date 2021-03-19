@@ -18,7 +18,7 @@ export interface EasyGridOptions {
     dataTable: EasyDataTable;
 
     totals?: {
-        showGrantTotalsOnEachPage?: boolean;
+        showGrandTotalsOnEachPage?: boolean;
         calcGrandTotals?: boolean;
         cols?: {
             [id: string]: {
