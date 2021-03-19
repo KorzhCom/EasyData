@@ -21,8 +21,6 @@ export namespace i18n {
     }
     
     export interface TextResources {
-        ButtonOK?: string;
-        ButtonCancel?: string;
         [propName: string]: string | TextResources;
     }
     
