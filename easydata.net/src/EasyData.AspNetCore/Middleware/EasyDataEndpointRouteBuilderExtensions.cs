@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -29,11 +30,18 @@ namespace Microsoft.AspNetCore.Builder
 
             var pattern = RoutePatternFactory.Parse(options.Endpoint + "/{**slug}");
 
-            var pipeline = builder.CreateApplicationBuilder()
-                    .UseMiddleware<EasyDataMiddleware<THandler>>(options)
-                    .Build();
+            var app = builder.CreateApplicationBuilder();
+            app.UseMiddleware<EasyDataMiddleware<THandler>>(options);
 
-            return builder.Map(pattern, pipeline)
+            // return 404 if the request was not processed by EasyDataMiddleware 
+            // to prevent the exception on reaching the end of pipeline
+            app.Run(context =>
+            {
+                context.Response.StatusCode = 404;
+                return Task.CompletedTask;
+            });
+
+            return builder.Map(pattern, app.Build())
                           .WithDisplayName("EasyData API");
         }
     }
