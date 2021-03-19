@@ -314,9 +314,9 @@ export namespace i18n {
     function determineSettingsByLocale(localeId : string) : void {
         const now = new Date(2020, 5, 7, 19, 34, 56, 88);
         
-        const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+        const dateOptions : Intl.DateTimeFormatOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
 
-        const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+        const timeOptions : Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
 
         const dateStr = now.toLocaleDateString(localeId, dateOptions);
         const timeStr = now.toLocaleTimeString(localeId, timeOptions);
