@@ -51,9 +51,9 @@ namespace EasyDataBasicDemo
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapEasyData((options) => {
+                    options.Endpoint = "/api/easy-crud";
                     options.UseDbContext<AppDbContext>();
                 });
 
