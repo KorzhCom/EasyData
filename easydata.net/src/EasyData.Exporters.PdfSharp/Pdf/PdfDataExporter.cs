@@ -172,12 +172,14 @@ namespace EasyData.Export
                 return true;
             }).ToList();
 
-            foreach (var row in rows) {
 
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            {
                 var pdfRow = table.AddRow();
                 pdfRow.TopPadding = 1.5;
 
-                for (int i = 0; i < row.Count; i++) {
+                for (int i = 0; i < row.Count; i++)
+                {
 
                     if (ignoredCols.Contains(i))
                         continue;
@@ -191,12 +193,28 @@ namespace EasyData.Export
                     pdfRow.Cells[i].VerticalAlignment = VerticalAlignment.Center;
                     pdfRow.Cells[i].Format.Alignment = MapAlignment(col.Style.Alignment);
                     pdfRow.Cells[i].Format.FirstLineIndent = 1;
+                    pdfRow.Cells[i].Format.Font.Bold = isExtra;
                     pdfRow.Cells[i].AddParagraph(s);
 
                     table.SetEdge(0, 1, colsCount, 1,
                          Edge.Box, BorderStyle.Single, 0.75);
                 }
+
+                return Task.CompletedTask;
             }
+
+            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+
+            foreach (var row in rows) {
+
+                if (mappedSettings.BeforeRowAdded != null)
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+
+                await WriteRowAsync(row);
+            }
+
+            if (mappedSettings.BeforeRowAdded != null)
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
 
             // rendering pdf
             var pdfRenderer = new PdfDocumentRenderer(true);

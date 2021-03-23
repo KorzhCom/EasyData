@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace EasyData.Export
 {
@@ -31,6 +32,8 @@ namespace EasyData.Export
         /// </summary>
         Func<EasyDataRow, bool> RowFilter { get; set; }
 
+        Func<EasyDataRow, Func<EasyDataRow, Task>, Task> BeforeRowAdded { get; set; }
+
         /// <summary>
         /// The title
         /// </summary>
@@ -50,5 +53,9 @@ namespace EasyData.Export
         /// Gets or sets value indicating whether the exporter shoud preserve the formatting in the original value
         /// </summary>
         bool PreserveFormatting { get; set; }
+
+        bool IncludeGrandTotals { get; set; }
+
+        bool IncludeSubTotals { get; set;}
     }
 }

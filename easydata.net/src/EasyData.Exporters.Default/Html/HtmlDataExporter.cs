@@ -92,6 +92,10 @@ namespace EasyData.Export
                             + $"        font: bold {mappedSettings.FontSize + 4}pt {mappedSettings.FontFamily}"
                             + "}").ConfigureAwait(false);
 
+            await writer.WriteLineAsync("    .eq-extra-row {"
+                            + $"        font-weight: bold"
+                            + "}").ConfigureAwait(false);
+
             await writer.WriteLineAsync("    .eq-desc {"
                             + $"        font: {mappedSettings.FontSize + 1}pt {mappedSettings.FontFamily}"
                             + "}").ConfigureAwait(false);
@@ -146,14 +150,13 @@ namespace EasyData.Export
 
             await writer.WriteLineAsync("<tbody>");
             int a = 0;
-            foreach (var row in data.Rows) {
-                await writer.WriteLineAsync("<tr>").ConfigureAwait(false);
 
-                var add = settings?.RowFilter?.Invoke(row);
-                if (add.HasValue && !add.Value)
-                    continue;
+            async Task RenderRowAsync(EasyDataRow row, bool isExtra = false)
+            {
+                await writer.WriteLineAsync($"<tr {(isExtra ? "class=\"eq-extra-row\"" : "")}>").ConfigureAwait(false);
 
-                for (int i = 0; i < row.Count; i++) {
+                for (int i = 0; i < row.Count; i++)
+                {
 
                     if (ignoredCols.Contains(i))
                         continue;
@@ -161,16 +164,37 @@ namespace EasyData.Export
                     string dfmt = data.Cols[i].DisplayFormat;
                     DataType type = data.Cols[i].Type;
                     string s = GetFormattedValue(row[i], type, mappedSettings, dfmt);
-                    if (mappedSettings.FixHtmlTags) {
+                    if (mappedSettings.FixHtmlTags)
+                    {
                         s = FixHtmlTags(s);
                     }
                     await writer.WriteLineAsync(string.Format("<td>{0}</td>", s)).ConfigureAwait(false);
                 }
 
                 await writer.WriteLineAsync("</tr>").ConfigureAwait(false);
+            }
+
+            Func<EasyDataRow, Task> RenderExtraRowAsync = (extraRow) => RenderRowAsync(extraRow, true);
+
+
+            foreach (var row in data.Rows) {
+
+                var add = settings?.RowFilter?.Invoke(row);
+                if (add.HasValue && !add.Value)
+                    continue;
+
+                if (mappedSettings.BeforeRowAdded != null)
+                    await mappedSettings.BeforeRowAdded(row, RenderExtraRowAsync);
+
+                await RenderRowAsync(row);
+
                 a++;
 
             }
+
+            if (mappedSettings.BeforeRowAdded != null)
+                await mappedSettings.BeforeRowAdded(null, RenderExtraRowAsync);
+
             await writer.WriteLineAsync("</tbody>").ConfigureAwait(false);
             await writer.WriteLineAsync("</table>").ConfigureAwait(false);
             await writer.WriteLineAsync("</body>").ConfigureAwait(false);
