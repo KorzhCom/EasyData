@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -109,15 +110,11 @@ namespace EasyData.Export
             }
 
 
-            foreach (var row in data.Rows) {
+            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false) {
                 var rowContent = new StringBuilder();
 
-                var add = settings?.RowFilter?.Invoke(row);
-                if (add.HasValue && !add.Value)
-                    continue;
-
-                for (int i = 0; i < row.Count; i++) {
-
+                for (int i = 0; i < row.Count; i++)
+                {
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -129,8 +126,26 @@ namespace EasyData.Export
                 }
 
                 await writer.WriteLineAsync(rowContent.ToString()).ConfigureAwait(false);
+            }
+
+            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+
+
+            foreach (var row in data.Rows) {
+
+                var add = settings?.RowFilter?.Invoke(row);
+                if (add.HasValue && !add.Value)
+                    continue;
+
+                if (mappedSettings.BeforeRowAdded != null)
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+
+                await WriteRowAsync(row, false);
 
             }
+
+            if (mappedSettings.BeforeRowAdded != null)
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
 
             await writer.FlushAsync().ConfigureAwait(false);
 
@@ -186,6 +201,7 @@ namespace EasyData.Export
             result.ShowColumnNames = settings.ShowColumnNames;
             result.RowFilter = settings.RowFilter;
             result.ColumnFilter = settings.ColumnFilter;
+            result.BeforeRowAdded = settings.BeforeRowAdded;
 
             return result;
         }

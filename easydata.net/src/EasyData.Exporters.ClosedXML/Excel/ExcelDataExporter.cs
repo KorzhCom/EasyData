@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -125,15 +126,16 @@ namespace EasyData.Export
                 }
                 cellNum++;
             }
+
+
             var endHeaderNum = cellNum;
             var endCellLetter = startLetter;
-            foreach (var row in data.Rows) {
-                var add = settings?.RowFilter?.Invoke(row);
-                if (add.HasValue && !add.Value)
-                    continue;
 
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            {
                 var rowCellLetter = startLetter;
-                for (int i = 0; i < row.Count; i++) {
+                for (int i = 0; i < row.Count; i++)
+                {
 
                     if (ignoredCols.Contains(i))
                         continue;
@@ -142,13 +144,34 @@ namespace EasyData.Export
                     var type = data.Cols[i].Type;
 
                     ws.Cell($"{rowCellLetter}{cellNum}").Value = row[i] ?? "";
-                    
+                    if (isExtra)
+                        ws.Cell($"{rowCellLetter}{cellNum}").Style.Font.Bold = true;
                     rowCellLetter++;
                 }
+
                 endCellLetter = --rowCellLetter;
 
                 cellNum++;
+
+                return Task.CompletedTask;
             }
+
+            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+
+            foreach (var row in data.Rows) {
+                var add = settings?.RowFilter?.Invoke(row);
+                if (add.HasValue && !add.Value)
+                    continue;
+
+                if (mappedSettings.BeforeRowAdded != null)
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+
+                await WriteRowAsync(row);
+            }
+
+            if (mappedSettings.BeforeRowAdded != null)
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+
             cellNum--;
 
             // Setup formats
@@ -264,6 +287,7 @@ namespace EasyData.Export
             result.ShowColumnNames = settings.ShowColumnNames;
             result.RowFilter = settings.RowFilter;
             result.ColumnFilter = settings.ColumnFilter;
+            result.BeforeRowAdded = settings.BeforeRowAdded;
 
             return result;
         }
