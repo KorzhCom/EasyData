@@ -316,9 +316,9 @@ export class EasyGrid {
                 return;
             }
             else if (this.containerInitialHeight > 0) {
-                const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
-                domel(this.bodyDiv)
-                    .setStyle('height', `${bodyHeight}px`);
+                // const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
+                // domel(this.bodyDiv)
+                //     .setStyle('height', `${bodyHeight}px`);
 
             }
             resolve();
@@ -455,7 +455,8 @@ export class EasyGrid {
                             this.bodyCellContainerDiv.appendChild(tr);
                         });
     
-                        if (calcTotals && this.isLastPage()) {    
+                        const showGrandTotalsOnEachPage = this.options.totals && this.options.totals.showGrandTotalsOnEachPage;
+                        if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
                             this.updateTotalsState(keyCols, row, true);
                         }
@@ -485,10 +486,10 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals && (this.options.totals.calcGrandTotals 
-            || this.calcSubTotalsCols())
-         && this.dataTable.columns.getItems()
-            .filter(col => col.isAggr).length > 0;
+        return this.options.totals 
+            && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
+            && this.dataTable.columns.getItems()
+                .filter(col => col.isAggr).length > 0;
     }
 
     private calcSubTotalsCols(): boolean {

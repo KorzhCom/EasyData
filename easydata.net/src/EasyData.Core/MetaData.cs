@@ -8,14 +8,10 @@ using Newtonsoft.Json;
 
 namespace EasyData
 {
-
-
     public class MetaEntityAttrDescriptor
     {
-
         public MetaEntityAttrDescriptor(MetaEntity parent): this(parent, "")
-        {
-        
+        {        
         }
 
         public MetaEntityAttrDescriptor(MetaEntity parent, string expr)
@@ -92,7 +88,7 @@ namespace EasyData
         /// <summary>
         /// Read-only constant that represent the latest format version of data model definition JSON files
         /// </summary>
-        static public readonly int LastJsonFormatVersion = 3;
+        static public readonly int LastJsonFormatVersion = 4;
 
 
         /// <summary>

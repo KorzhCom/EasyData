@@ -415,8 +415,7 @@ namespace EasyData
 
             string result = baseId + num.ToString("D2");
 
-            while (IndexById(result) >= 0)
-            {
+            while (IndexById(result) >= 0) {
                 num++;
                 result = baseId + num.ToString("D2");
             }

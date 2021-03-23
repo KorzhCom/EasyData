@@ -32,7 +32,7 @@
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
     "peerDependencies": {
-        "@easydata/core": "1.0.0"
+        "@easydata/core": "^1.2.0"
     },
     "devDependencies": {
         "@types/jasmine": "^3.3.12",

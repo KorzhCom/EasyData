@@ -206,7 +206,7 @@ namespace EasyData.Export
         /// Gets the MIME content type of the exporting format.
         /// </summary>
         /// <returns>System.String.</returns>
-        public string GetContentType()
+        public virtual string GetContentType()
         {
             return "text/html";
         }
