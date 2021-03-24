@@ -39,8 +39,7 @@ namespace EasyData.Export
         /// <param name="stream">The stream.</param>
         /// <param name="settings">The settings.</param>
         public void Export(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
-        {
-          
+        {          
             ExportAsync(data, stream, settings).GetAwaiter().GetResult();
         }
 
@@ -91,12 +90,10 @@ namespace EasyData.Export
             var ignoredCols = GetIgnoredColumns(data, settings);
 
             //creating header 
-            if (mappedSettings.ShowColumnNames)
-            {
+            if (mappedSettings.ShowColumnNames) {
                 var val = new StringBuilder();
 
-                for (int i = 0; i < data.Cols.Count; i++)
-                {
+                for (int i = 0; i < data.Cols.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -110,7 +107,8 @@ namespace EasyData.Export
             }
 
 
-            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false) {
+            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            {
                 var rowContent = new StringBuilder();
 
                 for (int i = 0; i < row.Count; i++)
@@ -132,7 +130,6 @@ namespace EasyData.Export
 
 
             foreach (var row in data.Rows) {
-
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
                     continue;
@@ -144,11 +141,11 @@ namespace EasyData.Export
 
             }
 
-            if (mappedSettings.BeforeRowAdded != null)
+            if (mappedSettings.BeforeRowAdded != null) {
                 await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+            }
 
             await writer.FlushAsync().ConfigureAwait(false);
-
         }
 
         /// <summary>
@@ -190,8 +187,9 @@ namespace EasyData.Export
 
         private CsvDataExportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is CsvDataExportSettings)
+            if (settings is CsvDataExportSettings) {
                 return settings as CsvDataExportSettings;
+            }
 
             var result = CsvDataExportSettings.Default;
             result.Title = settings.Title;
