@@ -25,8 +25,8 @@ function writePackageJson(pack) {
 	packageJson.version = version;
 
 	packs.map(pack => {
-		if (packageJson.peerDependencies && packageJson.peerDependencies[`@easyquery/${pack}`]) {
-			packageJson.peerDependencies[`@easyquery/${pack}`] = version;
+		if (packageJson.peerDependencies && packageJson.peerDependencies[`@easydata/${pack}`]) {
+			packageJson.peerDependencies[`@easydata/${pack}`] = `^${version}`;
 		}
 		return pack;
 	});
