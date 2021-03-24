@@ -114,7 +114,6 @@ namespace EasyData.Export
 
             // filling cols
             if (settings.ShowColumnNames) {
-
                 var colCellLetter = startLetter;
                 for (int i = 0; i < data.Cols.Count; i++) {
                     if (ignoredCols.Contains(i))
@@ -134,9 +133,7 @@ namespace EasyData.Export
             Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
             {
                 var rowCellLetter = startLetter;
-                for (int i = 0; i < row.Count; i++)
-                {
-
+                for (int i = 0; i < row.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -229,8 +226,7 @@ namespace EasyData.Export
 
             ws.Columns(2, 2 + (int)(endCellLetter - startLetter)).AdjustToContents();
 
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
+            using (MemoryStream memoryStream = new MemoryStream()) {
                 wb.SaveAs(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -254,8 +250,7 @@ namespace EasyData.Export
 
         private static XLDataType MapDataType(DataType type)
         {
-            switch (type)
-            {
+            switch (type) {
                 case DataType.Bool:
                     return XLDataType.Boolean;
                 case DataType.Date:
@@ -276,8 +271,9 @@ namespace EasyData.Export
 
         private ExcelDataExportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is ExcelDataExportSettings)
+            if (settings is ExcelDataExportSettings) {
                 return settings as ExcelDataExportSettings;
+            }
 
             var result = ExcelDataExportSettings.Default;
             result.Title = settings.Title;

@@ -93,9 +93,8 @@ namespace EasyData.Export
 
             var section = document.AddSection();
 
-            if (settings.ShowDatasetInfo)
-            {
-                // TO DO: render paragrap with info here
+            if (settings.ShowDatasetInfo) {
+                // TODO: render paragrap with info here
                 if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Center;
@@ -126,8 +125,7 @@ namespace EasyData.Export
             //ignored columns
             var ignoredCols = GetIgnoredColumns(data, settings);
             int colsCount = 0;
-            for (int i = 0; i < data.Cols.Count; i++)
-            {
+            for (int i = 0; i < data.Cols.Count; i++) {
                 if (ignoredCols.Contains(i))
                     continue;
 
@@ -137,9 +135,7 @@ namespace EasyData.Export
             }
 
             // filling rows
-            if (settings.ShowColumnNames)
-            {
-
+            if (settings.ShowColumnNames) {
                 var row = table.AddRow();
                 row.HeadingFormat = true;
                 row.Format.Alignment = ParagraphAlignment.Center;
@@ -162,9 +158,7 @@ namespace EasyData.Export
             }
 
             // filling rows
-            var rows = data.Rows.Where(row =>
-            {
-
+            var rows = data.Rows.Where(row => {
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
                     return false;
@@ -178,11 +172,8 @@ namespace EasyData.Export
                 var pdfRow = table.AddRow();
                 pdfRow.TopPadding = 1.5;
 
-                for (int i = 0; i < row.Count; i++)
-                {
-
-                    if (ignoredCols.Contains(i))
-                        continue;
+                for (int i = 0; i < row.Count; i++) {
+                    if (ignoredCols.Contains(i)) continue;
 
                     var col = data.Cols[i];
                     var dfmt = col.DisplayFormat;
@@ -206,23 +197,22 @@ namespace EasyData.Export
             Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
 
             foreach (var row in rows) {
-
                 if (mappedSettings.BeforeRowAdded != null)
                     await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
 
                 await WriteRowAsync(row);
             }
 
-            if (mappedSettings.BeforeRowAdded != null)
+            if (mappedSettings.BeforeRowAdded != null) {
                 await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+            }
 
             // rendering pdf
             var pdfRenderer = new PdfDocumentRenderer(true);
             pdfRenderer.Document = document;
             pdfRenderer.RenderDocument();
 
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
+            using (MemoryStream memoryStream = new MemoryStream()) {
                 pdfRenderer.PdfDocument.Save(memoryStream, false);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -280,8 +270,9 @@ namespace EasyData.Export
 
         private static PdfDataExportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is PdfDataExportSettings)
+            if (settings is PdfDataExportSettings) {
                 return settings as PdfDataExportSettings;
+            }
 
             var result = PdfDataExportSettings.Default;
             result.Title = settings.Title;
