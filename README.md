@@ -65,6 +65,7 @@ We also add EasyData styles and the script file (`easydata.min.js`), which rende
 @{
     ViewData["Title"] = "EasyData";
 }
+
 <link rel="stylesheet" href="https://cdn.korzh.com/ed/1.2.3/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
