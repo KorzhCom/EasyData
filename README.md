@@ -60,7 +60,7 @@ This page will "catch" all URLs that begin with a certain prefix (`/easydata` by
 
 We also add EasyData styles and the script file (`easydata.min.js`), which renders the data-management UI and handles all CRUD operations on the client-side.
 
-```
+```razor
 @page "/easydata/{**entity}"
 @{
     ViewData["Title"] = "EasyData";
@@ -110,7 +110,7 @@ You can do it using `MetaEntity` and `MetaEntityAttr` annotations that can be sp
 
 Here is an example of how to hide the table defined by the `Customer` model class:
 
-```
+```c#
 [MetaEntity(false)]
 public class Customer
 {
@@ -120,7 +120,7 @@ public class Customer
 
 The same approach (but with `MetaEntityAttr` attribute now) we can use to hide some property (field):
 
-```
+```c#
 public class User
 {
     [MetaEntityAttr(false)]
@@ -132,18 +132,19 @@ Both these annotations also have other properties that allow you to adjust the w
 
 For example, the following line:
 
-```
+```c#
 [MetaEntity(DisplayName = “Client”, DisplayNamePlural = “Clients”, Description = “List of clients”]
 public class Customer
 {
-    .     .     .     .     .
+ .   .   .   .
+}
 ```
 will set the display names and the description for the `Customers` table.
 
 
 Here is another example, now for a property in some model class:
 
-```
+```c#
 public class BlogPost 
 {
     [MetaEntityAttr(DisplayName = “Created”, Editable = false, ShowOnView = true, ShowInLookup = false)]
@@ -161,7 +162,7 @@ The default EasyData API endpoint is `/api/easydata/` but it’s very easy to ch
 
 Server-side configuration:
 
-```
+```c#
 app.UseEndpoints(endpoints => {
     endpoints.MapEasyData(options => {
         options.Endpoint = "/api/super-easy-crud";
@@ -173,11 +174,11 @@ app.UseEndpoints(endpoints => {
 
 On the client-side we can pass some options (including the endpoint) to the dispatcher’s constructor:
 
-```
+```html
     <script>
         window.addEventListener('load', function () {
             new easydata.crud.EasyDataViewDispatcher({
-                endpoint: ‘/api/super-easy-crud’
+                endpoint: '/api/super-easy-crud'
             }).run()
         });
     </script>
@@ -189,7 +190,7 @@ Sometimes you don't need CRUD for all entities in your database but only for a f
 
 Especially for this case, there is `rootEntity` option in `EasyDataViewDispatcher` class. If it's set, EasyData will no show the default root page with the list of entities but will render the view page for the specified entity (table) instead.
 
-```
+```html
 <script>
     window.addEventListener('load', function () {
         new easydata.crud.EasyDataViewDispatcher({
@@ -206,38 +207,37 @@ Beloew you will find a few examples of using display formats.
 
 This one tells EasyData to use the default "Long Date" format for OrderDate values: 
 
-```
+```c#
 [MetaEntityAttr(DisplayFormat = "{0:D}")]
 public DateTime? OrderDate { get; set; }
 ```
 
 Here we use a custom format for date values:
-```
+```c#
 [MetaEntityAttr(DisplayFormat = "{0:yyyy-MMM-dd}")]
 public DateTime? OrderDate { get; set; }
 ```
 
 Here we make it to use a currency format with 2 decimal digits
-```
+```c#
  [MetaEntityAttr(DisplayFormat = "{0:C2}")]
  public decimal Freight { get; set; }
 ```
 
 With this format EasyData will show only digits (no grouping by thousands) and will add leading 0-s up to 8 digits totally (if necessary)
-```
+```c#
  [MetaEntityAttr(DisplayFormat = "{0:D8}")]
- public integer Amount{ get; set; }
+ public int Amount { get; set; }
 ```
 
 ## FAQ
 
-> __Q:__ What versions of .NET and ASP.NET do EasyQuery supports?    
+> __Q:__ **What versions of .NET and ASP.NET do EasyQuery supports?**  
 > __A:__ Currently we support .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
 
-> __Q:__ I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?    
+> __Q:__ **I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?**   
 > __A:__ Not yet. You can add a new [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that to make it happen faster.
 
-
-> __Q:__ I have a question regarding EasyData. Where to send it?    
+> __Q:__ **I have a question regarding EasyData. Where to send it?**  
 > __A:__ Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
 However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain on our spare time.
