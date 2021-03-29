@@ -60,17 +60,18 @@ This page will "catch" all URLs that begin with a certain prefix (`/easydata` by
 
 We also add EasyData styles and the script file (`easydata.min.js`), which renders the data-management UI and handles all CRUD operations on the client-side.
 
-```
+```razor
 @page "/easydata/{**entity}"
 @{
     ViewData["Title"] = "EasyData";
 }
-<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.2.2/easydata.min.css" />
+
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.2.3/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
-    <script src="https://cdn.korzh.com/ed/1.2.2/easydata.min.js" type="text/javascript"></script>
+    <script src="https://cdn.korzh.com/ed/1.2.3/easydata.min.js" type="text/javascript"></script>
     <script>
         window.addEventListener('load', function () {
             new easydata.crud.EasyDataViewDispatcher().run()
@@ -98,7 +99,146 @@ The script can be used with any framework or library used on the client-side, su
 
 In the data view mode, EasyData provides a data-filtering functionality, which works out of the box and requires no additional setup or coding.
 
-## Questions, Suggestions?
+## Advanced tasks
 
-Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
+Sometimes you may need to make some adjustments to the default behavior of EasyData. Here we listed the solutions for the most common problems.
+
+### Filtering entities (tables) and their attributes (fields)
+
+By default, EasyData works with all entities (tables) defined in your DbContext. As well as with all fields in those tables. 
+However, very often you need to hide some tables or fields from your end-users.
+You can do it using `MetaEntity` and `MetaEntityAttr` annotations that can be specified for model classes and properties correspondingly. 
+
+Here is an example of how to hide the table defined by the `Customer` model class:
+
+```c#
+[MetaEntity(false)]
+public class Customer
+{
+ .   .   .   .
+}
+```
+
+The same approach (but with `MetaEntityAttr` attribute now) we can use to hide some property (field):
+
+```c#
+public class User
+{
+    [MetaEntityAttr(false)]
+    public string PasswordHash { get; set; }
+}
+```
+
+Both these annotations also have other properties that allow you to adjust the way your tables and fields are represented in the CRUD UI.
+
+For example, the following line:
+
+```c#
+[MetaEntity(DisplayName = "Client", DisplayNamePlural = "Clients", Description = "List of clients")]
+public class Customer
+{
+ .   .   .   .
+}
+```
+will set the display names and the description for the `Customers` table.
+
+
+Here is another example, now for a property in some model class:
+
+```c#
+public class BlogPost 
+{
+    [MetaEntityAttr(DisplayName = "Created", Editable = false, ShowOnView = true, ShowInLookup = false)]
+    public DateTime DateCreated { get; set;}
+    .    .    .    .    .
+}
+```
+Here we change the default display name for this field, make it non-editable (since this value is set on record creation and it can’t be changed later), and tell EasyData to show this field in the main view (with data table) but hide it in lookup dialogs.
+
+`MetaEntityAttr` annotation also has `ShowOnCreate` and `ShowOnEdit` properties that allow you to show/hide the field from the "Create Record" or "Edit Record" dialog, respectively.
+
+### Changing the default endpoint
+
+The default EasyData API endpoint is `/api/easydata/` but it’s very easy to change it to any possible path. 
+
+Server-side configuration:
+
+```c#
+app.UseEndpoints(endpoints => {
+    endpoints.MapEasyData(options => {
+        options.Endpoint = "/api/super-easy-crud";
+        options.UseDbContext<ApplicationDbContext>();
+    });
+     .     .     .     .     .
+});
+```
+
+On the client-side we can pass some options (including the endpoint) to the dispatcher’s constructor:
+
+```html
+    <script>
+        window.addEventListener('load', function () {
+            new easydata.crud.EasyDataViewDispatcher({
+                endpoint: '/api/super-easy-crud'
+            }).run()
+        });
+    </script>
+```
+
+### One entity CRUD page
+
+Sometimes you don't need CRUD for all entities in your database but only for a few of them (or even only one). So, you don't need to show that root page with entity selection. You just can start with a data table view for one particular entity. 
+
+Especially for this case, there is `rootEntity` option in `EasyDataViewDispatcher` class. If it's set, EasyData will no show the default root page with the list of entities but will render the view page for the specified entity (table) instead.
+
+```html
+<script>
+    window.addEventListener('load', function () {
+        new easydata.crud.EasyDataViewDispatcher({
+            rootEntity: 'Order'
+        }).run()
+    });
+</script>
+```
+### Display Formats
+
+It’s also possible to set the display format for each entity attribute (table field). The format looks like `{0:XX}` where `XX` here is a format string that has the same meaning as in [string.Format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/composite-formatting#format-string-component) function. 
+
+Beloew you will find a few examples of using display formats.
+
+This one tells EasyData to use the default "Long Date" format for OrderDate values: 
+
+```c#
+[MetaEntityAttr(DisplayFormat = "{0:D}")]
+public DateTime? OrderDate { get; set; }
+```
+
+Here we use a custom format for date values:
+```c#
+[MetaEntityAttr(DisplayFormat = "{0:yyyy-MMM-dd}")]
+public DateTime? OrderDate { get; set; }
+```
+
+Here we make it to use a currency format with 2 decimal digits
+```c#
+ [MetaEntityAttr(DisplayFormat = "{0:C2}")]
+ public decimal Freight { get; set; }
+```
+
+With this format EasyData will show only digits (no grouping by thousands) and will add leading 0-s up to 8 digits totally (if necessary)
+```c#
+ [MetaEntityAttr(DisplayFormat = "{0:D8}")]
+ public int Amount { get; set; }
+```
+
+## FAQ
+
+__Q:__ **What versions of .NET and ASP.NET do EasyQuery supports?**  
+__A:__ Currently we support .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
+
+__Q:__ **I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?**   
+__A:__ Not yet. You can add a new [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that to make it happen faster.
+
+__Q:__ **I have a question regarding EasyData. Where to send it?**  
+__A:__ Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
 However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain on our spare time.
