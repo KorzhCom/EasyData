@@ -233,12 +233,15 @@ With this format EasyData will show only digits (no grouping by thousands) and w
 
 ## FAQ
 
-__Q:__ **What versions of .NET and ASP.NET do EasyQuery supports?**  
-__A:__ Currently we support .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
+__Q:__ **What versions of .NET and ASP.NET (Core) does EasyQuery support?**
 
-__Q:__ **I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?**   
+__A:__ Currently, EasyData supports .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
+
+__Q:__ **I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?**
+
 __A:__ Not yet. You can add a new [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that to make it happen faster.
 
-__Q:__ **I have a question regarding EasyData. Where to send it?**  
+__Q:__ **I have a question regarding EasyData. Where to send it?**
+
 __A:__ Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
-However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain on our spare time.
+However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain in our spare time.
