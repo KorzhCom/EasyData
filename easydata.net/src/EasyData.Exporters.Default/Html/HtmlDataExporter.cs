@@ -155,9 +155,7 @@ namespace EasyData.Export
             {
                 await writer.WriteLineAsync($"<tr {(isExtra ? "class=\"eq-extra-row\"" : "")}>").ConfigureAwait(false);
 
-                for (int i = 0; i < row.Count; i++)
-                {
-
+                for (int i = 0; i < row.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -178,7 +176,6 @@ namespace EasyData.Export
 
 
             foreach (var row in data.Rows) {
-
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
                     continue;
@@ -189,11 +186,11 @@ namespace EasyData.Export
                 await RenderRowAsync(row);
 
                 a++;
-
             }
 
-            if (mappedSettings.BeforeRowAdded != null)
+            if (mappedSettings.BeforeRowAdded != null) {
                 await mappedSettings.BeforeRowAdded(null, RenderExtraRowAsync);
+            }
 
             await writer.WriteLineAsync("</tbody>").ConfigureAwait(false);
             await writer.WriteLineAsync("</table>").ConfigureAwait(false);
@@ -248,8 +245,9 @@ namespace EasyData.Export
 
         private static HtmlDataExportSettings MapSettings(IDataExportSettings settings)
         {
-            if (settings is HtmlDataExportSettings)
+            if (settings is HtmlDataExportSettings) {
                 return settings as HtmlDataExportSettings;
+            }
 
             var result = HtmlDataExportSettings.Default;
             result.Title = settings.Title;

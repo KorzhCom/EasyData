@@ -1,6 +1,6 @@
 {
 	"name": "EasyData.JS",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"description": "",
 	"scripts": {
 		"installall": "cd packs/core && npm install && cd ../ui && npm install && cd ../crud && npm install && cd ../.. && npm run linkall",
