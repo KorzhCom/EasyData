@@ -372,6 +372,42 @@ namespace EasyData
     /// </summary>
     public class ValueEditorList : Collection<ValueEditor>
     {
+        private readonly Dictionary<string, int> _idSearchIndex = new Dictionary<string, int>();
+
+        private void AddOrUpdateInCache(ValueEditor editor, int index)
+        {
+            _idSearchIndex[editor.Id] = index;
+        }
+
+        private void RemoveFromCache(ValueEditor editor)
+        {
+            _idSearchIndex.Remove(editor.Id);
+        }
+
+        protected override void InsertItem(int index, ValueEditor item)
+        {
+            base.InsertItem(index, item);
+            AddOrUpdateInCache(item, index);
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            RemoveFromCache(this[index]);
+            base.RemoveItem(index);
+        }
+
+        protected override void ClearItems()
+        {
+            _idSearchIndex.Clear();
+            base.ClearItems();
+        }
+
+        public new void Add(ValueEditor editor) 
+        {
+            base.Add(editor);
+            AddOrUpdateInCache(editor, Count - 1);
+        }
+
         /// <summary>
         /// Find valueeditor index by ID.
         /// </summary>
@@ -379,9 +415,10 @@ namespace EasyData
         /// <returns>Operator index in the list or -1 if operator with specified ID was not found</returns>
         public int IndexById(string editorId)
         {
-            for (int result = 0; result < Count; result++)
-                if (this[result].Id == editorId)
-                    return result;
+            if (_idSearchIndex.TryGetValue(editorId, out var index))  {
+                return index;
+            }
+           
             return -1;
         }
 
@@ -395,6 +432,7 @@ namespace EasyData
             int index = IndexById(editorId);
             if (index >= 0)
                 return this[index];
+
             return null;
         }
 

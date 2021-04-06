@@ -499,11 +499,10 @@ namespace EasyData
         /// <returns>Task</returns>
         public async Task SaveToJsonFileAsync(string filePath, BitOptions options)
         {
-            using (var streamWriter = new StreamWriter(filePath)) {
-                using (var jsonWriter = new JsonTextWriter(streamWriter)) {
-                    jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
-                    await WriteToJsonAsync(jsonWriter, options).ConfigureAwait(false);
-                }
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
+                           FileShare.None, 4096, true))
+            {
+                await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
             }
         }
 
@@ -683,7 +682,8 @@ namespace EasyData
         public async Task LoadFromJsonFileAsync(string filePath, BitOptions options)
         {
             FilePath = filePath;
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, 
+                FileShare.Read, 4096, true)) {
                 await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
             }
         }
