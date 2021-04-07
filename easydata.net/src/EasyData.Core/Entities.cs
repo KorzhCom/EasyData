@@ -19,8 +19,8 @@ namespace EasyData
         protected internal MetaEntity(MetaEntity parent)
         {
             Parent = parent;
-            Attributes = new MetaEntityAttrStore(this);
-            SubEntities = new MetaEntityStore(this);
+            Attributes = CreateEntityAttrStore();
+            SubEntities = CreateEntityStore();
         }
 
         protected MetaData _model { get; set; }
@@ -32,8 +32,18 @@ namespace EasyData
         protected internal MetaEntity(MetaData model)
         {
             _model = model;
-            Attributes = new MetaEntityAttrStore(this);
-            SubEntities = new MetaEntityStore(this);
+            Attributes = CreateEntityAttrStore();
+            SubEntities = CreateEntityStore();
+        }
+
+        protected virtual MetaEntityStore CreateEntityStore()
+        { 
+            return new MetaEntityStore(this);
+        }
+
+        protected virtual MetaEntityAttrStore CreateEntityAttrStore()
+        {
+            return new MetaEntityAttrStore(this);
         }
 
         /// <summary>
