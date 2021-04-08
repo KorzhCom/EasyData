@@ -56,7 +56,7 @@ namespace EasyData
         /// ID represents internal entityAttr attribute id which is not shown to user 
         /// but is used for storing data model in external files.
         /// </remarks>
-        public string Id { get; set; }
+        public string Id { get; set; } 
 
         /// <summary>Gets or sets a value indicating whether this attribute is nullable.</summary>
         /// <value>
@@ -372,30 +372,19 @@ namespace EasyData
         /// </summary>
         public bool IsVirtual => Kind == EntityAttrKind.Virtual;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Attribute"/> class.
-        /// </summary>
-        public MetaEntityAttr() : this(null, false)
+     
+        protected internal MetaEntityAttr() : this(null, false)
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyData.MetaEntityAttr" /> class.
-        /// </summary>
-        /// <param name="parentEntity">The parent entity.</param>
-        /// <param name="isVirtual">if set to <c>true</c> the created attribute will be virtual (calculated).</param>
-        public MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false): this(parentEntity, 
+        
+        protected internal MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false): this(parentEntity, 
             isVirtual ? EntityAttrKind.Virtual : EntityAttrKind.Data)
         {
    
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyData.MetaEntityAttr" /> class.
-        /// </summary>
-        /// <param name="parentEntity"></param>
-        /// <param name="kind"></param>
-        public MetaEntityAttr(MetaEntity parentEntity, EntityAttrKind kind)
+        protected internal MetaEntityAttr(MetaEntity parentEntity, EntityAttrKind kind)
         {
             Entity = parentEntity;
             Kind = kind;

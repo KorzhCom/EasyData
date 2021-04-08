@@ -263,6 +263,7 @@ namespace EasyData
                 throw new ArgumentNullException(nameof(desc));
 
             var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
+            attr.Id = DataUtils.ComposeKey(desc.Parent?.Id, desc.Expression);
             attr.Expr = desc.Expression;
             attr.Caption = desc.Caption;
             attr.DataType = desc.DataType;
@@ -396,6 +397,7 @@ namespace EasyData
             }
 
             var ent = CreateEntity(entity);
+            ent.Id = DataUtils.ComposeKey(entity?.Id, entityName);
             ent.Name = entityName;
             entity.SubEntities.Add(ent);
             return ent;
