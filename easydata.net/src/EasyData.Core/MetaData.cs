@@ -505,7 +505,7 @@ namespace EasyData
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
                            FileShare.None, 4096, true))
             {
-                await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
+                await SaveToJsonStreamAsync(stream, options).ConfigureAwait(false);
             }
         }
 
