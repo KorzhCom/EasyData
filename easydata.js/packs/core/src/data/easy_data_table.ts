@@ -74,7 +74,6 @@ export class EasyDataTable {
     private needTotal = true;
 
     public getRows(params?: GetRowsParams): Promise<Array<DataRow>> {
-
         let fromIndex = 0, count = this._chunkSize;
         if (params) {
             if ('page' in params) {
@@ -87,20 +86,24 @@ export class EasyDataTable {
             }
         }
 
-        if (fromIndex >= this.total) {
-            return Promise.resolve([]);
-        }
+        let endIndex = fromIndex + count; //the first index of the next page
 
-        let endIndex = fromIndex + count;
-        if (endIndex >= this.total) {
-            endIndex = this.total;
+        //if we don't calculate total on this request
+        if (!this.needTotal) {
+            if (fromIndex >= this.total) {
+                return Promise.resolve([]);
+            }
+    
+            if (endIndex > this.total) {
+                endIndex = this.total;
+            }
         }
 
         const lbChunk = Math.trunc(fromIndex / this._chunkSize);
-        const upChunk = Math.trunc(endIndex / this._chunkSize);
+        const ubChunk = Math.trunc((endIndex - 1) / this._chunkSize);
 
         let allChunksCached = true;
-        for(let i = lbChunk; i <= upChunk; i++) {
+        for (let i = lbChunk; i <= ubChunk; i++) {
             if (!this.chunkMap[i]) {
                 allChunksCached = false;
                 break;
@@ -109,13 +112,13 @@ export class EasyDataTable {
 
         if (allChunksCached) {
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= upChunk; i++) {
+            for(let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
+
+            const firstChunkOffset = this.chunkMap[lbChunk].offset;
             return Promise.resolve(
-                resultArr.slice(
-                    fromIndex - this.chunkMap[lbChunk].offset, 
-                    endIndex - this.chunkMap[lbChunk].offset)
+                    resultArr.slice(fromIndex - firstChunkOffset,  endIndex - firstChunkOffset)
                 );
         }
 
@@ -124,7 +127,7 @@ export class EasyDataTable {
             throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
         }
 
-        // we need total only fo first request
+        // we need total only for the first request
         const needTotal = this.needTotal;
         if (this.needTotal) {
             this.needTotal = false;
@@ -132,13 +135,16 @@ export class EasyDataTable {
 
         return this.loader.loadChunk({
             offset: lbChunk * this._chunkSize, 
-            limit: this._chunkSize * (upChunk - lbChunk + 1),
+            limit: this._chunkSize * (ubChunk - lbChunk + 1),
             needTotal: needTotal
         })
         .then(result => {
             const chunks = result.table.getCachedChunks();
             if (needTotal) {
                 this.total = result.total;
+                if (endIndex > this.total) {
+                    endIndex = this.total;
+                }
             }
     
             let index = lbChunk;
@@ -149,14 +155,14 @@ export class EasyDataTable {
                 }
                 index++;
             }
+
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= upChunk; i++) {
+            for(let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
-            return resultArr.slice(
-                fromIndex - this.chunkMap[lbChunk].offset, 
-                endIndex - this.chunkMap[lbChunk].offset
-            );
+
+            const firstChunkOffset = this.chunkMap[lbChunk].offset;
+            return resultArr.slice(fromIndex - firstChunkOffset,  endIndex - firstChunkOffset);
         });
     }
 
@@ -271,6 +277,5 @@ export class EasyDataTable {
 
     public getCachedChunks(): CachedChunk[] {
         return Object.values(this.chunkMap);
-    }
-    
+    }    
 }

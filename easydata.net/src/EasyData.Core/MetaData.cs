@@ -263,6 +263,8 @@ namespace EasyData
                 throw new ArgumentNullException(nameof(desc));
 
             var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
+            if (!string.IsNullOrEmpty(desc.Expression))
+                attr.Id = DataUtils.ComposeKey(desc.Parent?.Id, desc.Expression);
             attr.Expr = desc.Expression;
             attr.Caption = desc.Caption;
             attr.DataType = desc.DataType;
@@ -396,6 +398,7 @@ namespace EasyData
             }
 
             var ent = CreateEntity(entity);
+            ent.Id = DataUtils.ComposeKey(entity?.Id, entityName);
             ent.Name = entityName;
             entity.SubEntities.Add(ent);
             return ent;
@@ -499,11 +502,10 @@ namespace EasyData
         /// <returns>Task</returns>
         public async Task SaveToJsonFileAsync(string filePath, BitOptions options)
         {
-            using (var streamWriter = new StreamWriter(filePath)) {
-                using (var jsonWriter = new JsonTextWriter(streamWriter)) {
-                    jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
-                    await WriteToJsonAsync(jsonWriter, options).ConfigureAwait(false);
-                }
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
+                           FileShare.None, 4096, true))
+            {
+                await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
             }
         }
 
@@ -683,7 +685,8 @@ namespace EasyData
         public async Task LoadFromJsonFileAsync(string filePath, BitOptions options)
         {
             FilePath = filePath;
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, 
+                FileShare.Read, 4096, true)) {
                 await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
             }
         }
