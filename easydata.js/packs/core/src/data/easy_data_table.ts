@@ -74,7 +74,6 @@ export class EasyDataTable {
     private needTotal = true;
 
     public getRows(params?: GetRowsParams): Promise<Array<DataRow>> {
-
         let fromIndex = 0, count = this._chunkSize;
         if (params) {
             if ('page' in params) {
@@ -91,7 +90,7 @@ export class EasyDataTable {
             return Promise.resolve([]);
         }
 
-        let endIndex = fromIndex + count;
+        let endIndex = fromIndex + count - 1;
         if (endIndex >= this.total) {
             endIndex = this.total;
         }
@@ -124,7 +123,7 @@ export class EasyDataTable {
             throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
         }
 
-        // we need total only fo first request
+        // we need total only for the first request
         const needTotal = this.needTotal;
         if (this.needTotal) {
             this.needTotal = false;
@@ -271,6 +270,5 @@ export class EasyDataTable {
 
     public getCachedChunks(): CachedChunk[] {
         return Object.values(this.chunkMap);
-    }
-    
+    }    
 }
