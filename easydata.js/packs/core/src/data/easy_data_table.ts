@@ -90,16 +90,16 @@ export class EasyDataTable {
             return Promise.resolve([]);
         }
 
-        let endIndex = fromIndex + count - 1;
-        if (endIndex >= this.total) {
+        let endIndex = fromIndex + count; //the first index of the next page
+        if (endIndex > this.total) {
             endIndex = this.total;
         }
 
         const lbChunk = Math.trunc(fromIndex / this._chunkSize);
-        const upChunk = Math.trunc(endIndex / this._chunkSize);
+        const ubChunk = Math.trunc((endIndex - 1) / this._chunkSize);
 
         let allChunksCached = true;
-        for(let i = lbChunk; i <= upChunk; i++) {
+        for(let i = lbChunk; i <= ubChunk; i++) {
             if (!this.chunkMap[i]) {
                 allChunksCached = false;
                 break;
@@ -108,7 +108,7 @@ export class EasyDataTable {
 
         if (allChunksCached) {
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= upChunk; i++) {
+            for(let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
             return Promise.resolve(
@@ -131,7 +131,7 @@ export class EasyDataTable {
 
         return this.loader.loadChunk({
             offset: lbChunk * this._chunkSize, 
-            limit: this._chunkSize * (upChunk - lbChunk + 1),
+            limit: this._chunkSize * (ubChunk - lbChunk + 1),
             needTotal: needTotal
         })
         .then(result => {
@@ -149,7 +149,7 @@ export class EasyDataTable {
                 index++;
             }
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= upChunk; i++) {
+            for(let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
             return resultArr.slice(
