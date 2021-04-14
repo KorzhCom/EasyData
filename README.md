@@ -241,7 +241,9 @@ __Q:__ **I don’t like annotations. They ruin my pure data structures with some
 
 __A:__ Not yet. You can add a new [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that to make it happen faster.
 
-__Q:__ **I have a question regarding EasyData. Where to send it?**
 
-__A:__ Feel free to [submit an issue](https://github.com/korzh/EasyData/issues) here. We'll try to help you as soon as possible. 
-However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project that we maintain in our spare time.
+## Contact us
+
+If you want to be the first to know about project updates, just [follow Sergiy on Twitter](https://twitter.com/korzhs). 
+
+If you have a feature request or found a bug in EasyData, please [submit an issue](https://github.com/KorzhCom/EasyData/issues). We will try to fix the problem or implement new functionality (if the request is relevant) as soon as possible. However, please don't be too demanding with your requests :). Remember that EasyData is an open-source project, and we maintain it in our spare time.
