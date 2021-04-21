@@ -144,6 +144,14 @@ export class HttpClient {
     }
 
     private static decodeArrayBuffer(uintArray): Promise<string> {
-        return new Blob([uintArray]).text();
+        var reader = new FileReader();
+        return new Promise<string>((resolve) => {
+            reader.onloadend = function () {
+                if (reader.readyState == FileReader.DONE) { 
+                    resolve(reader.result as string);
+                }
+            };
+            reader.readAsText(new Blob([uintArray]));
+        });
     }
 }
