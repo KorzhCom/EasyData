@@ -21,7 +21,7 @@ namespace EasyDataBasicDemo.Controllers
         [Route("{**entity}")]
         public IActionResult Index(string entity)
         {
-            if (!string.IsNullOrEmpty(entity)) {
+            if (string.IsNullOrEmpty(entity)) {
                 _logger.LogInformation("Index page");
             }
             else {
