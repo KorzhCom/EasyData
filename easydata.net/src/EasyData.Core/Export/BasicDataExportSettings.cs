@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyData.Export
@@ -62,7 +63,7 @@ namespace EasyData.Export
         /// </summary>
         public Func<EasyDataRow, bool> RowFilter { get; set; }
 
-        public Func<EasyDataRow, Func<EasyDataRow, Task>, Task> BeforeRowAdded { get; set; }
+        public Func<EasyDataRow, Func<EasyDataRow, CancellationToken, Task>, CancellationToken, Task> BeforeRowAdded { get; set; }
 
         /// <summary>
         /// The title

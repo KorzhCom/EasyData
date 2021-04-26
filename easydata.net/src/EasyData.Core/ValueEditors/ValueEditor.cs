@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace EasyData
 {
@@ -267,26 +268,25 @@ namespace EasyData
         /// Creates a value editor based on the value of "tag" property and reads the content of the newly created editor from JSON (asynchronous way).
         /// </summary>
         /// <param name="reader">The reader.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task&lt;ValueEditor&gt;.</returns>
         /// <exception cref="BadJsonFormatException">
         /// </exception>
-        public static async Task<ValueEditor> ReadFromJsonAsync(JsonReader reader)
+        public static async Task<ValueEditor> ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
-            if (reader.TokenType != JsonToken.StartObject)
-            {
+            if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            var jObject = await JObject.LoadAsync(reader).ConfigureAwait(false);
-            if (!jObject.TryGetValue("tag", out var tagToken))
-            {
+            var jObject = await JObject.LoadAsync(reader, ct).ConfigureAwait(false);
+            if (!jObject.TryGetValue("tag", out var tagToken)) {
                 throw new BadJsonFormatException(jObject.Path);
             }
 
             var editor = ValueEditor.Create(tagToken.ToString());
             var editorReader = jObject.CreateReader();
-            await editorReader.ReadAsync().ConfigureAwait(false);
-            await editor.ReadContentFromJsonAsync(editorReader).ConfigureAwait(false);
+            await editorReader.ReadAsync(ct).ConfigureAwait(false);
+            await editor.ReadContentFromJsonAsync(editorReader, ct).ConfigureAwait(false);
 
             return editor;
         }
@@ -296,14 +296,15 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct = default)
         {
-            await writer.WriteStartObjectAsync().ConfigureAwait(false);
-            await writer.WritePropertyNameAsync("tag").ConfigureAwait(false);
-            await writer.WriteValueAsync(Tag).ConfigureAwait(false);
-            await WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
-            await writer.WriteEndObjectAsync().ConfigureAwait(false);
+            await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("tag", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Tag, ct).ConfigureAwait(false);
+            await WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -311,33 +312,35 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-            await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-            await writer.WriteValueAsync(Id).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Id, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("rtype").ConfigureAwait(false);
-            await writer.WriteValueAsync(ResultType).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("rtype", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ResultType, ct).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Reads the content of the value editor from JSON (asynchronous way).
         /// </summary>
         /// <param name="reader">The reader</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns></returns>
-        public async Task ReadContentFromJsonAsync(JsonReader reader)
+        public async Task ReadContentFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while (await reader.ReadAsync().ConfigureAwait(false)
+            while (await reader.ReadAsync(ct).ConfigureAwait(false)
                 && reader.TokenType != JsonToken.EndObject)
             {
 
                 var propertyName = reader.Value.ToString();
-                await ReadOnePropFromJsonAsync(reader, propertyName).ConfigureAwait(false);
+                await ReadOnePropFromJsonAsync(reader, propertyName, ct).ConfigureAwait(false);
             }
 
         }
@@ -348,18 +351,19 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property to read</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns></returns>
-        protected virtual async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected virtual async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName) {
                 case "id":
-                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "rtype":
-                    ResultType = (DataType)await reader.ReadAsInt32Async().ConfigureAwait(false);
+                    ResultType = (DataType)await reader.ReadAsInt32Async(ct).ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
             }
         }
@@ -374,38 +378,30 @@ namespace EasyData
     {
         private readonly Dictionary<string, int> _idSearchIndex = new Dictionary<string, int>();
 
-        private void AddOrUpdateInCache(ValueEditor editor, int index)
+        private void InvalidateSearchIndex()
         {
-            _idSearchIndex[editor.Id] = index;
-        }
-
-        private void RemoveFromCache(ValueEditor editor)
-        {
-            _idSearchIndex.Remove(editor.Id);
+            _idSearchIndex.Clear();
+            for (int i = 0; i < Count; i++) {
+                _idSearchIndex[this[i].Id] = i;
+            }
         }
 
         protected override void InsertItem(int index, ValueEditor item)
         {
             base.InsertItem(index, item);
-            AddOrUpdateInCache(item, index);
+            InvalidateSearchIndex();
         }
 
         protected override void RemoveItem(int index)
         {
-            RemoveFromCache(this[index]);
             base.RemoveItem(index);
+            InvalidateSearchIndex();
         }
 
         protected override void ClearItems()
         {
-            _idSearchIndex.Clear();
             base.ClearItems();
-        }
-
-        public new void Add(ValueEditor editor) 
-        {
-            base.Add(editor);
-            AddOrUpdateInCache(editor, Count - 1);
+            InvalidateSearchIndex();
         }
 
         /// <summary>
@@ -469,37 +465,37 @@ namespace EasyData
         /// <param name="writer">The writer.</param>
         /// <param name="rwOptions">Read/write options.</param>
         /// <param name="includeDefaults">if set to <c>true</c> then the default editors must be saved as well.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions, bool includeDefaults = false)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions, bool includeDefaults = false, CancellationToken ct = default)
         {
-            await writer.WriteStartArrayAsync().ConfigureAwait(false);
-            foreach (ValueEditor editor in this)
-            {
-                if (editor != null && (includeDefaults || !editor.IsDefault))
-                {
-                    await editor.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await writer.WriteStartArrayAsync(ct).ConfigureAwait(false);
+            foreach (ValueEditor editor in this) {
+                if (editor != null && (includeDefaults || !editor.IsDefault)) {
+                    await editor.WriteToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
                 }
             }
-            await writer.WriteEndArrayAsync().ConfigureAwait(false);
+            await writer.WriteEndArrayAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Reads the list of value editors from JSON (asynchronous way).
         /// </summary>
         /// <param name="reader">The reader</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns></returns>
-        public async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartArray)
             {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while (await reader.ReadAsync().ConfigureAwait(false)
+            while (await reader.ReadAsync(ct).ConfigureAwait(false)
                 && reader.TokenType != JsonToken.EndArray)
             {
 
-                var editor = await ValueEditor.ReadFromJsonAsync(reader)
+                var editor = await ValueEditor.ReadFromJsonAsync(reader, ct)
                     .ConfigureAwait(false);
 
                 if (this.FindById(editor.Id) == null)

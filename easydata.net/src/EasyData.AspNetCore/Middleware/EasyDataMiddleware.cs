@@ -99,27 +99,27 @@ namespace EasyData.AspNetCore
                     try {
                         switch (action) {
                             case DataAction.GetModel:
-                                await handler.HandleGetModelAsync(modelId);
+                                await handler.HandleGetModelAsync(modelId, _context.RequestAborted);
                                 return;
                             case DataAction.GetEntity:
-                                await handler.HandleGetEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleGetEntityAsync(modelId, entityTypeName, entityId, _context.RequestAborted);
                                 return;
                             case DataAction.GetEntities:
-                                await handler.HandleGetEntitiesAsync(modelId, entityTypeName);
+                                await handler.HandleGetEntitiesAsync(modelId, entityTypeName, _context.RequestAborted);
                                 return;
                             case DataAction.CreateEntity:
-                                await handler.HandleCreateEntityAsync(modelId, entityTypeName);
+                                await handler.HandleCreateEntityAsync(modelId, entityTypeName, _context.RequestAborted);
                                 return;
                             case DataAction.UpdateEntity:
-                                await handler.HandleUpdateEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleUpdateEntityAsync(modelId, entityTypeName, entityId, _context.RequestAborted);
                                 return;
                             case DataAction.DeleteEntity:
-                                await handler.HandleDeleteEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleDeleteEntityAsync(modelId, entityTypeName, entityId, _context.RequestAborted);
                                 return;
                         }
                     }
                     catch (Exception ex) {
-                        await handler.HandleExceptionAsync(ex);
+                        await handler.HandleExceptionAsync(ex, _context.RequestAborted);
                         return;
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
 using System.Collections.Generic;
@@ -52,22 +53,23 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct = default)
         {
-            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
             if (ExtraParams.Count > 0) {
 
-                await writer.WritePropertyNameAsync("extraParams").ConfigureAwait(false);
-                await writer.WriteStartObjectAsync().ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("extraParams", ct).ConfigureAwait(false);
+                await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
 
                 foreach (var kv in ExtraParams) {
-                    await writer.WritePropertyNameAsync(kv.Key).ConfigureAwait(false);
-                    await writer.WriteValueAsync(kv.Value).ConfigureAwait(false);
+                    await writer.WritePropertyNameAsync(kv.Key, ct).ConfigureAwait(false);
+                    await writer.WriteValueAsync(kv.Value, ct).ConfigureAwait(false);
                 }
 
-                await writer.WriteEndObjectAsync().ConfigureAwait(false);
+                await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
             }
         }
 
@@ -77,23 +79,24 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property which is read</param>
+        /// <param name="ct">The cancelleation token.</param>
         /// <returns>Task</returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct = default)
         {
             if (propName == "extraParams") {
-                await reader.ReadAsync().ConfigureAwait(false);
+                await reader.ReadAsync(ct).ConfigureAwait(false);
                 if (reader.TokenType != JsonToken.StartObject) {
                     throw new BadJsonFormatException(reader.Path);
                 }
 
-                while ((await reader.ReadAsync().ConfigureAwait(false))
+                while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                     && reader.TokenType != JsonToken.EndObject) {
                     var paramName = reader.Value.ToString();
-                    ExtraParams.Add(paramName, await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    ExtraParams.Add(paramName, await reader.ReadAsStringAsync(ct).ConfigureAwait(false));
                 }
             }
             else {
-                await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
         }
     }
@@ -184,13 +187,14 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
-            await writer.WriteValueAsync(ListName).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("name", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ListName, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -198,14 +202,15 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property which is read</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             if (propName == "name") {
-                ListName = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                ListName = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
             }
             else {
-                await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
         }
     }
@@ -384,27 +389,28 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Different read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("values").ConfigureAwait(false);
-            await writer.WriteStartArrayAsync().ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("values", ct).ConfigureAwait(false);
+            await writer.WriteStartArrayAsync(ct).ConfigureAwait(false);
 
             foreach (var value in Values) {
-                await writer.WriteStartObjectAsync().ConfigureAwait(false);
+                await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
 
-                await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-                await writer.WriteValueAsync(value.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(value.Id, ct).ConfigureAwait(false);
 
-                await writer.WritePropertyNameAsync("text").ConfigureAwait(false);
-                await writer.WriteValueAsync(value.Text).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("text", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(value.Text, ct).ConfigureAwait(false);
 
-                await writer.WriteEndObjectAsync().ConfigureAwait(false);
+                await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
             }
 
-            await writer.WriteEndArrayAsync().ConfigureAwait(false);
+            await writer.WriteEndArrayAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -412,33 +418,34 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property which is read now</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             if (propName == "values") {
-                await reader.ReadAsync().ConfigureAwait(false);
+                await reader.ReadAsync(ct).ConfigureAwait(false);
                 if (reader.TokenType != JsonToken.StartArray) {
                     throw new BadJsonFormatException(reader.Path);
                 }
 
-                while (await reader.ReadAsync().ConfigureAwait(false)
+                while (await reader.ReadAsync(ct).ConfigureAwait(false)
                     && reader.TokenType != JsonToken.EndArray) {
 
                     if (reader.TokenType == JsonToken.StartObject) {
 
                         var value = new ConstValueItem();
-                        while (await reader.ReadAsync().ConfigureAwait(false)
+                        while (await reader.ReadAsync(ct).ConfigureAwait(false)
                             && reader.TokenType != JsonToken.EndObject) {
 
                             var valuePropName = reader.Value.ToString();
                             if (valuePropName == "id") {
-                                value.Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                                value.Id = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                             }
                             else if (valuePropName == "text") {
-                                value.Text = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                                value.Text = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                             }
                             else {
-                                await reader.SkipAsync().ConfigureAwait(false);
+                                await reader.SkipAsync(ct).ConfigureAwait(false);
                             }
                         }
 
@@ -451,7 +458,7 @@ namespace EasyData
                 }
             }
             else {
-                await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
         }
     }

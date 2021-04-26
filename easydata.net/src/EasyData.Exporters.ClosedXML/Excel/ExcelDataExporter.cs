@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using ClosedXML.Excel;
@@ -67,10 +68,11 @@ namespace EasyData.Export
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public Task ExportAsync(IEasyDataResultSet data, Stream stream)
+        public Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
         {
-            return ExportAsync(data, stream, ExcelDataExportSettings.Default);
+            return ExportAsync(data, stream, ExcelDataExportSettings.Default, ct);
         }
 
         /// <summary>
@@ -79,8 +81,9 @@ namespace EasyData.Export
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="settings">The settings.</param>
+        /// <param name="ct">The cacnellation token.</param>
         /// <returns>Task.</returns>
-        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
+        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
             var mappedSettings = MapSettings(settings);
 
@@ -130,7 +133,7 @@ namespace EasyData.Export
             var endHeaderNum = cellNum;
             var endCellLetter = startLetter;
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
             {
                 var rowCellLetter = startLetter;
                 for (int i = 0; i < row.Count; i++) {
@@ -153,7 +156,7 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => WriteRowAsync(extraRow, true, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
@@ -161,13 +164,13 @@ namespace EasyData.Export
                     continue;
 
                 if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
 
-                await WriteRowAsync(row);
+                await WriteRowAsync(row, cancellationToken: ct);
             }
 
             if (mappedSettings.BeforeRowAdded != null)
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
 
             cellNum--;
 
@@ -230,7 +233,7 @@ namespace EasyData.Export
                 wb.SaveAs(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                await memoryStream.CopyToAsync(stream).ConfigureAwait(false);
+                await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -76,19 +77,20 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property which is read</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName)
             {
                 case "data":
-                    Data = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Data = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "type":
-                    _tag = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    _tag = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 default:
-                    await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                    await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
                     break;
             }
         }
@@ -98,16 +100,17 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("data").ConfigureAwait(false);
-            await writer.WriteValueAsync(Data).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("data", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Data, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("type").ConfigureAwait(false);
-            await writer.WriteValueAsync(_tag).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("type", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(_tag, ct).ConfigureAwait(false);
         }
 
         /// <summary>

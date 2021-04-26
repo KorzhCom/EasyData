@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyData.Export
@@ -48,10 +49,11 @@ namespace EasyData.Export
         /// </summary>
         /// <param name="data">The data reader.</param>
         /// <param name="stream">The stream.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public Task ExportAsync(IEasyDataResultSet data, Stream stream)
+        public Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
         {
-            return ExportAsync(data, stream, CsvDataExportSettings.Default);
+            return ExportAsync(data, stream, CsvDataExportSettings.Default, ct);
         }
 
         /// <summary>
@@ -60,14 +62,15 @@ namespace EasyData.Export
         /// <param name="data">The data reader.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="settings">The settings.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
+        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
             var writer = new StreamWriter(stream, new UTF8Encoding(false));
-            await ExportAsync(data, writer, settings).ConfigureAwait(false);
+            await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
         }
 
-        private async Task ExportAsync(IEasyDataResultSet data, TextWriter writer, IDataExportSettings settings)
+        private async Task ExportAsync(IEasyDataResultSet data, TextWriter writer, IDataExportSettings settings, CancellationToken ct)
         {
             var mappedSettings = MapSettings(settings);
             if (data == null) return;
@@ -107,7 +110,7 @@ namespace EasyData.Export
             }
 
 
-            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
             {
                 var rowContent = new StringBuilder();
 
@@ -126,7 +129,7 @@ namespace EasyData.Export
                 await writer.WriteLineAsync(rowContent.ToString()).ConfigureAwait(false);
             }
 
-            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => WriteRowAsync(extraRow, true, cancellationToken);
 
 
             foreach (var row in data.Rows) {
@@ -135,14 +138,14 @@ namespace EasyData.Export
                     continue;
 
                 if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
 
-                await WriteRowAsync(row, false);
+                await WriteRowAsync(row, false, ct);
 
             }
 
             if (mappedSettings.BeforeRowAdded != null) {
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
             }
 
             await writer.FlushAsync().ConfigureAwait(false);

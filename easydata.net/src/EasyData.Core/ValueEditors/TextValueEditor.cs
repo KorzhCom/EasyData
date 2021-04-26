@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -107,14 +108,15 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="propName">The name of the property which is read</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns></returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             if (propName == "defval") {
-                defaultValue = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                defaultValue = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
             }
             else {
-                await base.ReadOnePropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
         }
 
@@ -123,13 +125,14 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="rwOptions">Read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-            await base.WritePropertiesToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+            await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("defval").ConfigureAwait(false);
-            await writer.WriteValueAsync(defaultValue).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("defval", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(defaultValue, ct).ConfigureAwait(false);
         }
     }
 }

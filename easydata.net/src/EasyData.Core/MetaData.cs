@@ -488,10 +488,11 @@ namespace EasyData
         /// Saves the data model to a file in JSON format (asynchronous way). 
         /// </summary>
         /// <param name="filePath">The path to the result file</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task SaveToJsonFileAsync(string filePath)
+        public async Task SaveToJsonFileAsync(string filePath, CancellationToken ct = default)
         {
-            await SaveToJsonFileAsync(filePath, DefaultRWOptions).ConfigureAwait(false);
+            await SaveToJsonFileAsync(filePath, DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -499,13 +500,14 @@ namespace EasyData
         /// </summary> 
         /// <param name="filePath">The path to the result file</param>
         /// <param name="options">Different read/write options</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task</returns>
-        public async Task SaveToJsonFileAsync(string filePath, BitOptions options)
+        public async Task SaveToJsonFileAsync(string filePath, BitOptions options, CancellationToken ct = default)
         {
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
                            FileShare.None, 4096, true))
             {
-                await SaveToJsonStreamAsync(stream, options).ConfigureAwait(false);
+                await SaveToJsonStreamAsync(stream, options, ct).ConfigureAwait(false);
             }
         }
 
@@ -534,10 +536,11 @@ namespace EasyData
         /// Saves the data model to a stream in JSON format (asynchronous way).
         /// </summary>
         /// <param name="stream">The stream to save the model to</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task SaveToJsonStreamAsync(Stream stream)
+        public async Task SaveToJsonStreamAsync(Stream stream, CancellationToken ct = default)
         {
-            await SaveToJsonStreamAsync(stream, DefaultRWOptions).ConfigureAwait(false);
+            await SaveToJsonStreamAsync(stream, DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
 
@@ -546,12 +549,13 @@ namespace EasyData
         /// </summary>
         /// <param name="stream">The stream to save the model to</param>
         /// <param name="options">Different read/write options</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task SaveToJsonStreamAsync(Stream stream, BitOptions options)
+        public async Task SaveToJsonStreamAsync(Stream stream, BitOptions options, CancellationToken ct = default)
         {
             using (var streamWriter = new StreamWriter(stream)) {
                 using (JsonWriter jsonWriter = new JsonTextWriter(streamWriter)) {
-                    await WriteToJsonAsync(jsonWriter, options).ConfigureAwait(false);
+                    await WriteToJsonAsync(jsonWriter, options, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -579,23 +583,25 @@ namespace EasyData
         /// <summary>
         /// Saves the model to a string in JSON format (asynchronous way).
         /// </summary>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task<string> SaveToJsonStringAsync()
+        public async Task<string> SaveToJsonStringAsync(CancellationToken ct = default)
         {
-            return await SaveToJsonStringAsync(DefaultRWOptions).ConfigureAwait(false);
+            return await SaveToJsonStringAsync(DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Saves the model to a string in JSON format (asynchronous way).
         /// </summary>
         /// <param name="options">Different read/write options.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> SaveToJsonStringAsync(BitOptions options)
+        public async Task<string> SaveToJsonStringAsync(BitOptions options, CancellationToken ct = default)
         {
             var result = new StringBuilder(1000);
             using (var textWriter = new StringWriter(result)) {
                 using (var jsonWriter = new JsonTextWriter(textWriter)) {
-                    await WriteToJsonAsync(jsonWriter, options).ConfigureAwait(false);
+                    await WriteToJsonAsync(jsonWriter, options, ct).ConfigureAwait(false);
                 }
             }
             return result.ToString();
@@ -625,10 +631,11 @@ namespace EasyData
         /// Loads data model from JSON stream (asynchronous way).
         /// </summary>
         /// <param name="stream">>A Stream object which contains data model definition.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task LoadFromJsonStreamAsync(Stream stream)
+        public async Task LoadFromJsonStreamAsync(Stream stream, CancellationToken ct = default)
         {
-            await LoadFromJsonStreamAsync(stream, DefaultRWOptions).ConfigureAwait(false);
+            await LoadFromJsonStreamAsync(stream, DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -636,12 +643,13 @@ namespace EasyData
         /// </summary>
         /// <param name="stream">A Stream object which contains data model definition.</param>
         /// <param name="options">Different read/write options. See <see cref="MetaDataReadWriterOptions"/> for details.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <return>Task</return>
-        public async Task LoadFromJsonStreamAsync(Stream stream, BitOptions options)
+        public async Task LoadFromJsonStreamAsync(Stream stream, BitOptions options, CancellationToken ct = default)
         {
             using (var streamReader = new StreamReader(stream)) {
                 using (var jsonReader = new JsonTextReader(streamReader)) {
-                    await ReadFromJsonAsync(jsonReader, options).ConfigureAwait(false);
+                    await ReadFromJsonAsync(jsonReader, options, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -671,7 +679,8 @@ namespace EasyData
         /// Loads the metadata from a JSON file as an asynchronous operation.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public async Task LoadFromJsonFileAsync(string filePath)
+        /// <param name="ct">The cancellation token</param>
+        public async Task LoadFromJsonFileAsync(string filePath, CancellationToken ct = default)
         {
             await LoadFromJsonFileAsync(filePath, DefaultRWOptions).ConfigureAwait(false);
         }
@@ -681,13 +690,14 @@ namespace EasyData
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="options"></param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
-        public async Task LoadFromJsonFileAsync(string filePath, BitOptions options)
+        public async Task LoadFromJsonFileAsync(string filePath, BitOptions options, CancellationToken ct = default)
         {
             FilePath = filePath;
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, 
                 FileShare.Read, 4096, true)) {
-                await LoadFromJsonStreamAsync(stream, options).ConfigureAwait(false);
+                await LoadFromJsonStreamAsync(stream, options, ct).ConfigureAwait(false);
             }
         }
 
@@ -715,10 +725,11 @@ namespace EasyData
         /// Loads the model from a string in JSON format (asynchronous way).
         /// </summary>
         /// <param name="json">>A string in JSON format.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        public async Task LoadFromJsonStringAsync(string json)
+        public async Task LoadFromJsonStringAsync(string json, CancellationToken ct = default)
         {
-            await LoadFromJsonStringAsync(json, DefaultRWOptions).ConfigureAwait(false);
+            await LoadFromJsonStringAsync(json, DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -726,12 +737,13 @@ namespace EasyData
         /// </summary>
         /// <param name="json">A string in JSON format.</param>
         /// <param name="options">Different read/write options.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
-        public async Task LoadFromJsonStringAsync(string json, BitOptions options)
+        public async Task LoadFromJsonStringAsync(string json, BitOptions options, CancellationToken ct = default)
         {
             using (var textReader = new StringReader(json)) {
                 using (var jsonReader = new JsonTextReader(textReader)) {
-                    await ReadFromJsonAsync(jsonReader, options).ConfigureAwait(false);
+                    await ReadFromJsonAsync(jsonReader, options, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -760,10 +772,11 @@ namespace EasyData
         /// Writes the content of the data model to JSON using JsonWriter (asynchronous way).
         /// </summary>
         /// <param name="writer">An instance of JsonWriter class.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer)
+        public async Task WriteToJsonAsync(JsonWriter writer, CancellationToken ct = default)
         {
-            await WriteToJsonAsync(writer, DefaultRWOptions).ConfigureAwait(false);
+            await WriteToJsonAsync(writer, DefaultRWOptions, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -771,13 +784,14 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">An instance of JsonWriter class.</param>
         /// <param name="options">Read-write options</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct = default)
         {
-            await writer.WriteStartObjectAsync().ConfigureAwait(false); //root DataModel object
-            await WriteModelPropsToJsonAsync(writer, options).ConfigureAwait(false);
-            await WriteContentToJsonAsync(writer, options).ConfigureAwait(false);
-            await writer.WriteEndObjectAsync().ConfigureAwait(false); //close DataModel
+            await writer.WriteStartObjectAsync(ct).ConfigureAwait(false); //root DataModel object
+            await WriteModelPropsToJsonAsync(writer, options, ct).ConfigureAwait(false);
+            await WriteContentToJsonAsync(writer, options, ct).ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(ct).ConfigureAwait(false); //close DataModel
         }
 
         /// <summary>
@@ -785,31 +799,32 @@ namespace EasyData
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="options"></param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns></returns>
-        protected virtual async Task WriteModelPropsToJsonAsync(JsonWriter writer, BitOptions options)
+        protected virtual async Task WriteModelPropsToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct)
         {
-            await writer.WritePropertyNameAsync("fver").ConfigureAwait(false);
-            await writer.WriteValueAsync(FormatVersionJson).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("fver", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(FormatVersionJson, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("mver").ConfigureAwait(false);
-            await writer.WriteValueAsync(ModelVersion).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("mver", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ModelVersion, ct).ConfigureAwait(false);
 
             CheckModelId();
 
-            await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-            await writer.WriteValueAsync(Id).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Id, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
-            await writer.WriteValueAsync(Name).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("name", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Name, ct).ConfigureAwait(false);
 
             if (options.Contains(MetaDataReadWriteOptions.Description)) {
-                await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
-                await writer.WriteValueAsync(Description).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("desc", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Description, ct).ConfigureAwait(false);
             }
 
             if (options.Contains(MetaDataReadWriteOptions.CustomInfo)) {
-                await writer.WritePropertyNameAsync("cstinf").ConfigureAwait(false);
-                await writer.WriteValueAsync(CustomInfo.ToString()).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("cstinf", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(CustomInfo.ToString(), ct).ConfigureAwait(false);
             }          
         }
 
@@ -818,22 +833,23 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="rwOptions">The read/write options.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
 
             // Editors must be saved before operators
             if (rwOptions.Contains(MetaDataReadWriteOptions.Editors)) {
-                await writer.WritePropertyNameAsync("editors").ConfigureAwait(false);
-                await Editors.WriteToJsonAsync(writer, rwOptions, true).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("editors", ct).ConfigureAwait(false);
+                await Editors.WriteToJsonAsync(writer, rwOptions, true, ct).ConfigureAwait(false);
             }
 
             if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
-                await writer.WritePropertyNameAsync("maxAttrId").ConfigureAwait(false);
-                await writer.WriteValueAsync(_maxEntAttrId).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("maxAttrId", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(_maxEntAttrId, ct).ConfigureAwait(false);
 
-                await writer.WritePropertyNameAsync("entroot").ConfigureAwait(false);
-                await EntityRoot.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("entroot", ct).ConfigureAwait(false);
+                await EntityRoot.WriteToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
             }
         }
 
@@ -854,11 +870,12 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader</param>
         /// <param name="options">Some read/write options.</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>Task.</returns>
         /// <exception cref="BadJsonFormatException"></exception>
-        public async Task ReadFromJsonAsync(JsonReader reader, BitOptions options)
+        public async Task ReadFromJsonAsync(JsonReader reader, BitOptions options, CancellationToken ct = default)
         {
-            if (!await reader.ReadAsync().ConfigureAwait(false)
+            if (!await reader.ReadAsync(ct).ConfigureAwait(false)
                 || reader.TokenType != JsonToken.StartObject)
             {
                 throw new BadJsonFormatException(reader.Path);
@@ -868,10 +885,10 @@ namespace EasyData
                 Clear();
             }
            
-            while (await reader.ReadAsync()) {
+            while (await reader.ReadAsync(ct)) {
                 if (reader.TokenType == JsonToken.PropertyName) {
                     string propName = reader.Value.ToString();
-                    await ReadOneModelPropFromJsonAsync(reader, propName).ConfigureAwait(false);
+                    await ReadOneModelPropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
                 }
                 else if (reader.TokenType == JsonToken.EndObject) {
                     break;
@@ -887,42 +904,43 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="propName">Name of the property.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ReadOneModelPropFromJsonAsync(JsonReader reader, string propName)
+        protected virtual async Task ReadOneModelPropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName)
             {
                 case "entroot":
-                    await reader.ReadAsync().ConfigureAwait(false); //readring start object
-                    await EntityRoot.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                    await reader.ReadAsync(ct).ConfigureAwait(false); //readring start object
+                    await EntityRoot.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                     break;
                 case "fver":
-                    _formatVersionReadJson = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    _formatVersionReadJson = (await reader.ReadAsInt32Async(ct).ConfigureAwait(false)).Value;
                     break;
                 case "mver":
-                    ModelVersion = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    ModelVersion = (await reader.ReadAsInt32Async(ct).ConfigureAwait(false)).Value;
                     break;
                 case "id":
-                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "name":
-                    Name = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Name = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "desc":
-                    Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Description = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "cstinf":
-                    CustomInfo = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    CustomInfo = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "maxAttrId":
-                    _maxEntAttrId = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    _maxEntAttrId = (await reader.ReadAsInt32Async(ct).ConfigureAwait(false)).Value;
                     break;
                 case "editors":
-                    await reader.ReadAsync().ConfigureAwait(false); //reading StartArray token
-                    await Editors.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                    await reader.ReadAsync(ct).ConfigureAwait(false); //reading StartArray token
+                    await Editors.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
             }
         }
