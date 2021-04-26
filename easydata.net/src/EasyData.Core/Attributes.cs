@@ -516,7 +516,7 @@ namespace EasyData
         /// <returns>Task.</returns>
         /// <param name="options">Some read/write options</param>
         /// <param name="ct">The cancellation token.</param>
-        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct = default)
+        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct)
         {
             await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
             await WritePropertiesToJsonAsync(writer, options, ct).ConfigureAwait(false);
@@ -530,7 +530,7 @@ namespace EasyData
         /// <param name="options">Some read/write options</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct = default)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct)
         {
             await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
             await writer.WriteValueAsync(Id, ct).ConfigureAwait(false);
@@ -646,7 +646,7 @@ namespace EasyData
         /// <param name="propName">Name of the property.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ReadPropertyFromJsonAsync(JsonReader reader, string propName, CancellationToken ct = default)
+        protected virtual async Task ReadPropertyFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName)
             {

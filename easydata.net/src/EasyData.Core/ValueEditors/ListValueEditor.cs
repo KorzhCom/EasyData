@@ -55,7 +55,7 @@ namespace EasyData
         /// <param name="rwOptions">Read/write options.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task</returns>
-        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct = default)
+        protected override async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
             await base.WritePropertiesToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
@@ -81,7 +81,7 @@ namespace EasyData
         /// <param name="propName">The name of the property which is read</param>
         /// <param name="ct">The cancelleation token.</param>
         /// <returns>Task</returns>
-        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct = default)
+        protected override async Task ReadOnePropFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             if (propName == "extraParams") {
                 await reader.ReadAsync(ct).ConfigureAwait(false);
