@@ -422,13 +422,14 @@ export namespace i18n {
     }
 
     export function numberToStr(number: number, format?: string): string {
-        if (format) {
-            if (format.indexOf('M') === 0) {
-                return covertWithMask(Math.trunc(number), format.slice(1));
-            }
-            else {
+        if (format && format.length > 0) {
+            const type = format[0];
+            if (['D', 'F', 'C'].indexOf(type) >= 0) {
                 const locale = getCurrentLocale();
                 return number.toLocaleString(locale, getNumberFromatOptions(format));
+            }
+            else {
+                return covertWithMask(Math.trunc(number), format);
             }
         }
 
@@ -439,22 +440,27 @@ export namespace i18n {
     function covertWithMask(number: number, mask: string) {
         let value = number.toString();
         let result = '';
-        let index = 0;
-        for(const ch of mask) {
-            if (ch === '9') {
-                if (index < value.length) {
+        let index = value.length - 1;
+        
+        for(let i = mask.length - 1; i >= 0; i ++) {
+            const ch = mask[i];
+            if (ch === '#' || ch === '0') {
+                if (index >= 0) {
                     result += value[index];
-                    index++;
+                    index--;
                 }
                 else {
-                    result += '_';
+                    if (ch === '0') {
+                        result += 0;
+                    }
                 }
             }
             else {
                 result += ch;
             }
         }
-        return result;
+        
+        return result.split('').reverse().join('');
     }
 
     function getNumberFromatOptions(format: string): Intl.NumberFormatOptions {

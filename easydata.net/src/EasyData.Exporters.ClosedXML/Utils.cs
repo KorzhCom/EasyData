@@ -15,10 +15,7 @@ namespace EasyData.Export
             if (_formatRegex.IsMatch(displayFormat)) {
                 return _formatRegex.Replace(displayFormat, m => {
                     var format = m.Groups[1].Value;
-                    if (format.StartsWith("M") && format.Length > 1) {
-                        return format.Substring(1).Replace('9', '#');
-                    }
-
+      
                     var type = char.ToUpperInvariant(format[0]);
                     var digits = (format.Length > 1)
                         ? int.Parse(format.Substring(1))
@@ -32,8 +29,11 @@ namespace EasyData.Export
                     if (type == 'C') {
                         return settings.Culture.NumberFormat.CurrencySymbol + floatFormat;
                     }
+                    else if (type == 'F') {
+                        return floatFormat;
+                    }
 
-                    return floatFormat;
+                    return format;
                 });
             }
 
