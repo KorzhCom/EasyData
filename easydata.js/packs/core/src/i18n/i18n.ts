@@ -423,13 +423,13 @@ export namespace i18n {
 
     export function numberToStr(number: number, format?: string): string {
         if (format && format.length > 0) {
-            const type = format[0];
+            const type = format.charAt(0);
             if (['D', 'F', 'C'].indexOf(type) >= 0) {
                 const locale = getCurrentLocale();
                 return number.toLocaleString(locale, getNumberFromatOptions(format));
             }
             else {
-                return covertWithMask(Math.trunc(number), format);
+                return convertWithMask(Math.trunc(number), format);
             }
         }
 
@@ -437,16 +437,29 @@ export namespace i18n {
         return utils.numberToStr(number, localeSettings.decimalSeparator);
     }    
 
-    function covertWithMask(number: number, mask: string) {
+    export function booleanToStr(bool: boolean, format?: string) {
+        if (format && format.length > 0) {
+            const type = format.charAt(0);
+            if (type === 'S') {
+                const values = format.slice(1).split('|');
+                if (values.length === 2) {
+                    return values[(bool) ? 1 : 0];
+                }
+            }
+        }
+        return `${bool}`;
+    }
+
+    function convertWithMask(number: number, mask: string) {
         let value = number.toString();
         let result = '';
         let index = value.length - 1;
         
-        for(let i = mask.length - 1; i >= 0; i ++) {
-            const ch = mask[i];
+        for(let i = mask.length - 1; i >= 0; i--) {
+            const ch = mask.charAt(i);
             if (ch === '#' || ch === '0') {
                 if (index >= 0) {
-                    result += value[index];
+                    result += value.charAt(index);
                     index--;
                 }
                 else {
