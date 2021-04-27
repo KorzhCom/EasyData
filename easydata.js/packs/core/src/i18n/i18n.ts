@@ -456,7 +456,9 @@ export namespace i18n {
         let index = value.length - 1;
         
         for(let i = mask.length - 1; i >= 0; i--) {
+            
             const ch = mask.charAt(i);
+
             if (ch === '#' || ch === '0') {
                 if (index >= 0) {
                     result += value.charAt(index);

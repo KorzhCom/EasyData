@@ -186,11 +186,14 @@ namespace EasyData.Export
                 var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
                 var dataType = MapDataType(type);
                 colRange.DataType = dataType;
+                if (type == DataType.Bool) {
+                    colRange.Style.NumberFormat.Format = "\"True\";;\"False\";";
+                }
                 if (dataType == XLDataType.DateTime) {
                     var format = Utils.GetDateFormat(type, mappedSettings, dfmt);
                     colRange.Style.DateFormat.Format = format;
                 }
-                else if (!string.IsNullOrEmpty(dfmt))  {
+                else if (!string.IsNullOrEmpty(dfmt)) {
                     var format = Utils.GetExcelDisplayFormat(mappedSettings, dfmt);
                     colRange.Style.NumberFormat.Format = format;
                 }
@@ -254,13 +257,12 @@ namespace EasyData.Export
         private static XLDataType MapDataType(DataType type)
         {
             switch (type) {
-                case DataType.Bool:
-                    return XLDataType.Boolean;
                 case DataType.Date:
                 case DataType.DateTime:
                     return XLDataType.DateTime;
                 case DataType.Time:
                     return XLDataType.TimeSpan;
+                case DataType.Bool:
                 case DataType.Byte:
                 case DataType.Currency:
                 case DataType.Int32:
