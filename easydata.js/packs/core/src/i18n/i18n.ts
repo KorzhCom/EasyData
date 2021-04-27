@@ -442,7 +442,7 @@ export namespace i18n {
         let result = '';
         let index = value.length - 1;
         
-        for(let i = mask.length - 1; i >= 0; i ++) {
+        for(let i = mask.length - 1; i >= 0; i--) {
             const ch = mask[i];
             if (ch === '#' || ch === '0') {
                 if (index >= 0) {

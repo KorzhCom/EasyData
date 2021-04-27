@@ -64,6 +64,10 @@ namespace EasyData.Export
 
                 return string.Format(settings.Culture, "{0}", val);
             }
+            else if (val is bool) {
+                if (!string.IsNullOrEmpty(displayFormat))
+                    return string.Format(new SequenceFormat(settings.Culture), displayFormat, val);
+            }
 
 
             return val.ToString();

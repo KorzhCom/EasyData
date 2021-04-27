@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -17,22 +18,28 @@ namespace EasyData.Export
                     var format = m.Groups[1].Value;
       
                     var type = char.ToUpperInvariant(format[0]);
-                    var digits = (format.Length > 1)
-                        ? int.Parse(format.Substring(1))
-                        : type == 'D' ? 1 : 2;
+                    if (type == 'D' || type == 'C' || type == 'F') {
+                        var digits = (format.Length > 1)
+                          ? int.Parse(format.Substring(1))
+                          : type == 'D' ? 1 : 2;
 
-                    if (type == 'D') {
-                        return new string('0', digits);
-                    }
+                        if (type == 'D') {
+                            return new string('0', digits);
+                        }
 
-                    var floatFormat = "#0." + new string('0', digits);
-                    if (type == 'C') {
-                        return settings.Culture.NumberFormat.CurrencySymbol + floatFormat;
+                        var floatFormat = "#0." + new string('0', digits);
+                        if (type == 'C') {
+                            return settings.Culture.NumberFormat.CurrencySymbol + floatFormat;
+                        }
+                        else if (type == 'F') {
+                            return floatFormat;
+                        }
                     }
-                    else if (type == 'F') {
-                        return floatFormat;
+                    else if (type == 'S') {
+                        var values = format.Substring(1).Split('|').Reverse();
+                        return string.Join(";", values.Select(v => $"\"{v}\";"));
                     }
-
+                  
                     return format;
                 });
             }
