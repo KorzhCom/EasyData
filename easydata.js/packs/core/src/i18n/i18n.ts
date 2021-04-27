@@ -421,15 +421,41 @@ export namespace i18n {
         return format;
     }
 
-    export function numberToStr(number: Number, format?: string): string {
+    export function numberToStr(number: number, format?: string): string {
         if (format) {
-            const locale = getCurrentLocale();
-            return number.toLocaleString(locale, getNumberFromatOptions(format));
+            if (format.indexOf('M') === 0) {
+                return covertWithMask(Math.trunc(number), format.slice(1));
+            }
+            else {
+                const locale = getCurrentLocale();
+                return number.toLocaleString(locale, getNumberFromatOptions(format));
+            }
         }
 
         const localeSettings = getLocaleSettings();
         return utils.numberToStr(number, localeSettings.decimalSeparator);
     }    
+
+    function covertWithMask(number: number, mask: string) {
+        let value = number.toString();
+        let result = '';
+        let index = 0;
+        for(const ch of mask) {
+            if (ch === '9') {
+                if (index < value.length) {
+                    result += value[index];
+                    index++;
+                }
+                else {
+                    result += '_';
+                }
+            }
+            else {
+                result += ch;
+            }
+        }
+        return result;
+    }
 
     function getNumberFromatOptions(format: string): Intl.NumberFormatOptions {
         const localeSettings = getLocaleSettings();

@@ -15,6 +15,10 @@ namespace EasyData.Export
             if (_formatRegex.IsMatch(displayFormat)) {
                 return _formatRegex.Replace(displayFormat, m => {
                     var format = m.Groups[1].Value;
+                    if (format.StartsWith("M") && format.Length > 1) {
+                        return format.Substring(1).Replace('9', '#');
+                    }
+
                     var type = char.ToUpperInvariant(format[0]);
                     var digits = (format.Length > 1)
                         ? int.Parse(format.Substring(1))
@@ -56,43 +60,6 @@ namespace EasyData.Export
             }
 
             return BuildShortDateTimeFormat(settings.Culture, dataType);
-        }
-
-        public static string GetFormattedValue(object val, DataType dataType, IDataExportSettings settings, string displayFormat)
-        {
-            if (val == null) {
-                return "";
-            }
-
-            if (val is DateTime) {
-                DateTime dt = (DateTime)val;
-
-                if (!string.IsNullOrEmpty(displayFormat)) {
-                    return string.Format(settings.Culture, displayFormat, val);
-                }
-
-                var format = BuildShortDateTimeFormat(settings.Culture, dataType);
-                return dt.ToString(format, CultureInfo.InvariantCulture);
-            }
-            else if (val is DateTimeOffset) {
-                DateTimeOffset dt = (DateTimeOffset)val;
-
-                if (!string.IsNullOrEmpty(displayFormat)) {
-                    return string.Format(settings.Culture, displayFormat, val);
-                }
-
-                var format = BuildShortDateTimeFormat(settings.Culture, dataType);
-                return dt.ToString(format, CultureInfo.InvariantCulture);
-            }
-            else if (val is float || val is double || val is int || val is decimal) {
-                if (!string.IsNullOrEmpty(displayFormat))
-                    return string.Format(settings.Culture, displayFormat, val);
-
-                return string.Format(settings.Culture, "{0}", val);
-            }
-
-
-            return val.ToString();
         }
 
         private static string BuildShortDateTimeFormat(CultureInfo culture, DataType type)

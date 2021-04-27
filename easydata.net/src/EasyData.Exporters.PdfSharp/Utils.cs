@@ -60,7 +60,7 @@ namespace EasyData.Export
             }
             else if (val is float || val is double || val is int || val is decimal) {
                 if (!string.IsNullOrEmpty(displayFormat))
-                    return string.Format(settings.Culture, displayFormat, val);
+                    return string.Format(new MaskNumberFormat(settings.Culture), displayFormat, val);
 
                 return string.Format(settings.Culture, "{0}", val);
             }
