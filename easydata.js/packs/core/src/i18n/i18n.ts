@@ -65,7 +65,11 @@ export namespace i18n {
         displayName: 'English',
         texts: {
             ButtonOK: 'OK',
-            ButtonCancel: 'Cancel'
+            ButtonCancel: 'Cancel',
+            Yes: 'Yes',
+            No: 'No',
+            True: 'True',
+            False: 'False'
         },
         settings: englishUSLocaleSettings
     };
@@ -443,7 +447,8 @@ export namespace i18n {
             if (type === 'S') {
                 const values = format.slice(1).split('|');
                 if (values.length === 2) {
-                    return values[(bool) ? 1 : 0];
+                    const value = values[(bool) ? 1 : 0];
+                    return i18n.getText(value) || value;
                 }
             }
         }
