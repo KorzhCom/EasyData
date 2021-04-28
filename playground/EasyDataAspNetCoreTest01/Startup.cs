@@ -56,6 +56,7 @@ namespace EasyDataBasicDemo
                     options.Endpoint = "/api/easy-crud";
                     options.UseDbContext<AppDbContext>();
                 });
+                //.RequireAuthorization();
 
                 endpoints.MapRazorPages();
             });

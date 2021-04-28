@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -514,11 +515,12 @@ namespace EasyData
         /// <param name="writer">The writer.</param>
         /// <returns>Task.</returns>
         /// <param name="options">Some read/write options</param>
-        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
+        /// <param name="ct">The cancellation token.</param>
+        protected internal async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct)
         {
-            await writer.WriteStartObjectAsync().ConfigureAwait(false);
-            await WritePropertiesToJsonAsync(writer, options).ConfigureAwait(false);
-            await writer.WriteEndObjectAsync().ConfigureAwait(false);
+            await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
+            await WritePropertiesToJsonAsync(writer, options, ct).ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -526,87 +528,88 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer</param>
         /// <param name="options">Some read/write options</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct)
         {
-            await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-            await writer.WriteValueAsync(Id).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Id, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("cptn").ConfigureAwait(false);
-            await writer.WriteValueAsync(Caption).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("cptn", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Caption, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("dtype").ConfigureAwait(false);
-            await writer.WriteValueAsync(DataType.ToInt()).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("dtype", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(DataType.ToInt(), ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("kind").ConfigureAwait(false);
-            await writer.WriteValueAsync(Kind).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("kind", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Kind, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("size").ConfigureAwait(false);
-            await writer.WriteValueAsync(Size).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("size", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(Size, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ipk").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsPrimaryKey).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("ipk", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(IsPrimaryKey, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ifk").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsForeignKey).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("ifk", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(IsForeignKey, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("nul").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsNullable).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("nul", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(IsNullable, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("ied").ConfigureAwait(false);
-            await writer.WriteValueAsync(IsEditable).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("ied", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(IsEditable, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("sov").ConfigureAwait(false);
-            await writer.WriteValueAsync(ShowOnView).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("sov", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnView, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("soe").ConfigureAwait(false);
-            await writer.WriteValueAsync(ShowOnEdit).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("soe", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnEdit, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("soc").ConfigureAwait(false);
-            await writer.WriteValueAsync(ShowOnCreate).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("soc", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowOnCreate, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("sil").ConfigureAwait(false);
-            await writer.WriteValueAsync(ShowInLookup).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("sil", ct).ConfigureAwait(false);
+            await writer.WriteValueAsync(ShowInLookup, ct).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(DisplayFormat)) {
-                await writer.WritePropertyNameAsync("dfmt").ConfigureAwait(false);
-                await writer.WriteValueAsync(DisplayFormat).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("dfmt", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(DisplayFormat, ct).ConfigureAwait(false);
             }
 
             if (LookupAttr != null) {
-                await writer.WritePropertyNameAsync("lattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(LookupAttr.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("lattr", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupAttr.Id, ct).ConfigureAwait(false);
             }
 
             if (DataAttr != null) {
-                await writer.WritePropertyNameAsync("dattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(DataAttr.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("dattr", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(DataAttr.Id, ct).ConfigureAwait(false);
             }
 
             if (LookupEntity != null) {
-                await writer.WritePropertyNameAsync("lent").ConfigureAwait(false);
-                await writer.WriteValueAsync(LookupEntity.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("lent", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupEntity.Id, ct).ConfigureAwait(false);
             }
 
             if (LookupDataAttribute != null) {
-                await writer.WritePropertyNameAsync("ldattr").ConfigureAwait(false);
-                await writer.WriteValueAsync(LookupDataAttribute.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("ldattr", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(LookupDataAttribute.Id, ct).ConfigureAwait(false);
             }
 
             if (DefaultEditor != null) {
-                await writer.WritePropertyNameAsync("edtr").ConfigureAwait(false);
-                await writer.WriteValueAsync(DefaultEditor.Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("edtr", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(DefaultEditor.Id, ct).ConfigureAwait(false);
             }
 
             //saving the list of operators' IDs
             if (!string.IsNullOrEmpty(Description)) {
-                await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
-                await writer.WriteValueAsync(Description).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("desc", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Description, ct).ConfigureAwait(false);
             }
 
             if (UserData != null) {
-                await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
-                await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("udata", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(UserData.ToString(), ct).ConfigureAwait(false);
             }
         }
 
@@ -614,16 +617,17 @@ namespace EasyData
         /// Reads the attribute content from JSON (asynchronous way).
         /// </summary>
         /// <param name="reader">A JsonReader.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
         /// <exception cref="BadJsonFormatException">
         /// </exception>
-        public async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while ((await reader.ReadAsync().ConfigureAwait(false))
+            while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndObject) {
 
                 if (reader.TokenType != JsonToken.PropertyName) {
@@ -631,7 +635,7 @@ namespace EasyData
                 }
 
                 var propName = reader.Value.ToString();
-                await ReadPropertyFromJsonAsync(reader, propName).ConfigureAwait(false);
+                await ReadPropertyFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
         }
 
@@ -640,82 +644,83 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">A JsonReader.</param>
         /// <param name="propName">Name of the property.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ReadPropertyFromJsonAsync(JsonReader reader, string propName)
+        protected virtual async Task ReadPropertyFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName)
             {
                 case "id":
-                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "dfmt":
-                    DisplayFormat = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    DisplayFormat = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "cptn":
-                    Caption = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Caption = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "dtype":
-                    DataType = (await reader.ReadAsInt32Async().ConfigureAwait(false))
+                    DataType = (await reader.ReadAsInt32Async(ct).ConfigureAwait(false))
                         .Value.IntToDataType();
                     break;
                 case "edtr":
-                    var editor = Model.Editors.FindById(await reader.ReadAsStringAsync().ConfigureAwait(false));
+                    var editor = Model.Editors.FindById(await reader.ReadAsStringAsync(ct).ConfigureAwait(false));
                     SetDefaultEditorWithoutChecking(editor);
                     break;
                 case "kind":
-                    Kind = (EntityAttrKind)await reader.ReadAsInt32Async().ConfigureAwait(false);
+                    Kind = (EntityAttrKind)await reader.ReadAsInt32Async(ct).ConfigureAwait(false);
                     break;
                 case "virtual":
-                    if ((await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value)
+                    if ((await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value)
                         Kind = EntityAttrKind.Virtual;
                     break;
                 case "size":
-                    Size = (await reader.ReadAsInt32Async().ConfigureAwait(false)).Value;
+                    Size = (await reader.ReadAsInt32Async(ct).ConfigureAwait(false)).Value;
                     break;
                 case "ipk":
-                    IsPrimaryKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    IsPrimaryKey = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "ifk":
-                    IsForeignKey = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    IsForeignKey = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "sov":
-                    ShowOnView = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    ShowOnView = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "soe":
-                    ShowOnEdit = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    ShowOnEdit = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "soc":
-                    ShowOnCreate = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    ShowOnCreate = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "sil":
-                    ShowInLookup = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    ShowInLookup = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "nul":
-                    IsNullable = (await reader.ReadAsBooleanAsync().ConfigureAwait(false)).Value;
+                    IsNullable = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 case "lattr":
-                    _lookupAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    _lookupAttrId = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "dattr":
-                    _dataAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    _dataAttrId = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "ldattr":
-                    _lookupDataAttrId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    _lookupDataAttrId = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "lent":
-                    _lookupEntityId = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    _lookupEntityId = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "opg":
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
                 case "desc":
-                    Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Description = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "udata":
-                    UserData = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    UserData = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
             }
         }
@@ -800,27 +805,27 @@ namespace EasyData
             }
         }
 
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct = default)
         {
-            await writer.WriteStartArrayAsync().ConfigureAwait(false);
+            await writer.WriteStartArrayAsync(ct).ConfigureAwait(false);
             foreach (var attr in this) {
-                await attr.WriteToJsonAsync(writer, options).ConfigureAwait(false);
+                await attr.WriteToJsonAsync(writer, options, ct).ConfigureAwait(false);
             }
-            await writer.WriteEndArrayAsync().ConfigureAwait(false);
+            await writer.WriteEndArrayAsync(ct).ConfigureAwait(false);
         }
 
 
-        public async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartArray) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while ((await reader.ReadAsync().ConfigureAwait(false))
+            while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
                 var attr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(_entity));
-                await attr.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                await attr.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                 Add(attr);
             }
         }

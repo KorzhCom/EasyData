@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -13,7 +14,7 @@ namespace EasyData.Services
             Model = model;
         }
 
-        public abstract Task ReadFromJsonAsync(JsonReader reader);
+        public abstract Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default);
         
         public abstract object Apply(MetaEntity entity, bool isLookup, object data);
     }

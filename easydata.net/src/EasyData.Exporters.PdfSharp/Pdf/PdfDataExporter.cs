@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using MigraDoc.DocumentObjectModel;
@@ -69,10 +70,11 @@ namespace EasyData.Export
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public Task ExportAsync(IEasyDataResultSet data, Stream stream)
+        public Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
         {
-            return ExportAsync(data, stream, PdfDataExportSettings.Default);
+            return ExportAsync(data, stream, PdfDataExportSettings.Default, ct);
         }
 
         /// <summary>
@@ -81,8 +83,9 @@ namespace EasyData.Export
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="settings">The settings.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
+        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
             var mappedSettings = MapSettings(settings);
 
@@ -167,7 +170,7 @@ namespace EasyData.Export
             }).ToList();
 
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false)
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
             {
                 var pdfRow = table.AddRow();
                 pdfRow.TopPadding = 1.5;
@@ -194,17 +197,17 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, Task> WriteExtraRowAsync = (extraRow) => WriteRowAsync(extraRow, true);
+            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => WriteRowAsync(extraRow, true, cancellationToken);
 
             foreach (var row in rows) {
                 if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync);
+                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row);
             }
 
             if (mappedSettings.BeforeRowAdded != null) {
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync);
+                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
             }
 
             // rendering pdf
@@ -216,7 +219,7 @@ namespace EasyData.Export
                 pdfRenderer.PdfDocument.Save(memoryStream, false);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                await memoryStream.CopyToAsync(stream).ConfigureAwait(false);
+                await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
         }
 

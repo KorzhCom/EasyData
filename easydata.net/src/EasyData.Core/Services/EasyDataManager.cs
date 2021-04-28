@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json.Linq;
 
 namespace EasyData.Services
 {
@@ -42,31 +44,31 @@ namespace EasyData.Services
             Options = options;
         }
 
-        public async Task<MetaData> GetModelAsync(string modelId)
+        public async Task<MetaData> GetModelAsync(string modelId, CancellationToken ct = default)
         {
             if (Model.Id !=modelId) {
                 //TODO: Try to load model from cache
 
-                await LoadModelAsync(modelId);
+                await LoadModelAsync(modelId, ct);
             }
 
             return Model;
         }
 
 
-        public abstract Task LoadModelAsync(string modelId);
+        public abstract Task LoadModelAsync(string modelId, CancellationToken ct = default);
 
-        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null);
+        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default);
 
-        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false);
+        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
 
-        public abstract Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr);
+        public abstract Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 
-        public abstract Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props);
+        public abstract Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
 
-        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props); 
+        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default); 
 
-        public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr);
+        public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

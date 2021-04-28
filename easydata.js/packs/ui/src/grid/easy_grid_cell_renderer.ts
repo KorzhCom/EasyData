@@ -19,10 +19,14 @@ export type GridCellRenderer = (value: any, column: GridColumn, cellElement: HTM
 
 const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
     const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
-    domel('div', cellElement)
+    const builder = domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(text)
         .title(value || '');
+
+    if (column.align == GridColumnAlign.NONE) {
+        builder.addClass(`${cssPrefix}-cell-value-align-right`);
+    }
 }
 
 
@@ -41,7 +45,7 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
         }
     }
 
-    let builder = domel('div', cellElement)
+    const builder = domel('div', cellElement)
         .addClass(`${cssPrefix}-cell-value`)
         .addHtml(strValue)
         .title(strValue);
@@ -92,10 +96,20 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
 
 
 const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
-    domel('div', cellElement)
-        .addClass(`${cssPrefix}-cell-value`)
-        .addClass(`${cssPrefix}-cell-value-bool`)
-        .addClass(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
+    if (column.dataColumn && column.dataColumn.displayFormat
+        && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+        const strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+            return i18n.booleanToStr(value, $1);
+        });
+
+        return StringCellRendererDefault(strValue, column, cellElement, rowElement);
+    }
+    else {
+        domel('div', cellElement)
+            .addClass(`${cssPrefix}-cell-value`)
+            .addClass(`${cssPrefix}-cell-value-bool`)
+            .addClass(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
+    }
 
 }
 

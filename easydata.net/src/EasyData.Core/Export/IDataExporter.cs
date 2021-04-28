@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using System.Globalization;
+using System.Threading;
 
 namespace EasyData.Export
 {
@@ -34,8 +35,9 @@ namespace EasyData.Export
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        Task ExportAsync(IEasyDataResultSet data, Stream stream);
+        Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default);
 
         /// <summary>
         /// Asynchronical version of <see cref="IDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
@@ -43,8 +45,9 @@ namespace EasyData.Export
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="settings">Some exporting settings.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings);
+        Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the MIME content type of the exporting format.

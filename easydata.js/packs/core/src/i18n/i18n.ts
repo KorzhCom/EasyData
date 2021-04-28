@@ -65,7 +65,11 @@ export namespace i18n {
         displayName: 'English',
         texts: {
             ButtonOK: 'OK',
-            ButtonCancel: 'Cancel'
+            ButtonCancel: 'Cancel',
+            Yes: 'Yes',
+            No: 'No',
+            True: 'True',
+            False: 'False'
         },
         settings: englishUSLocaleSettings
     };
@@ -421,15 +425,63 @@ export namespace i18n {
         return format;
     }
 
-    export function numberToStr(number: Number, format?: string): string {
-        if (format) {
-            const locale = getCurrentLocale();
-            return number.toLocaleString(locale, getNumberFromatOptions(format));
+    export function numberToStr(number: number, format?: string): string {
+        if (format && format.length > 0) {
+            const type = format.charAt(0);
+            if (['D', 'F', 'C'].indexOf(type) >= 0) {
+                const locale = getCurrentLocale();
+                return number.toLocaleString(locale, getNumberFromatOptions(format));
+            }
+            else {
+                return convertWithMask(Math.trunc(number), format);
+            }
         }
 
         const localeSettings = getLocaleSettings();
         return utils.numberToStr(number, localeSettings.decimalSeparator);
     }    
+
+    export function booleanToStr(bool: boolean, format?: string) {
+        if (format && format.length > 0) {
+            const type = format.charAt(0);
+            if (type === 'S') {
+                const values = format.slice(1).split('|');
+                if (values.length === 2) {
+                    const value = values[(bool) ? 1 : 0];
+                    return i18n.getText(value) || value;
+                }
+            }
+        }
+        return `${bool}`;
+    }
+
+    function convertWithMask(number: number, mask: string) {
+        let value = number.toString();
+        let result = '';
+        let index = value.length - 1;
+        
+        for(let i = mask.length - 1; i >= 0; i--) {
+            
+            const ch = mask.charAt(i);
+
+            if (ch === '#' || ch === '0') {
+                if (index >= 0) {
+                    result += value.charAt(index);
+                    index--;
+                }
+                else {
+                    if (ch === '0') {
+                        result += 0;
+                    }
+                }
+            }
+            else {
+                result += ch;
+            }
+        }
+        
+        return result.split('').reverse().join('');
+    }
 
     function getNumberFromatOptions(format: string): Intl.NumberFormatOptions {
         const localeSettings = getLocaleSettings();

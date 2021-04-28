@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 using EasyData.Services;
-using System.Web;
 
 namespace EasyData.AspNetCore
 {
@@ -24,7 +24,6 @@ namespace EasyData.AspNetCore
     public class EasyDataMiddleware<THandler> where THandler: EasyDataApiHandler
     {
         private readonly RequestDelegate _next;
-        private HttpContext _context;
         private readonly EasyDataOptions _options;
 
         private struct Endpoint
@@ -59,8 +58,6 @@ namespace EasyData.AspNetCore
 
         public async Task InvokeAsync(HttpContext context)
         {
-            _context = context;
-
             var path = context.Request.Path;
             if (path.StartsWithSegments(_options.Endpoint, out var command) && !string.IsNullOrEmpty(command)) {
                 if (_options.ManagerResolver == null)
@@ -90,36 +87,37 @@ namespace EasyData.AspNetCore
                     }
                 }
 
-
                 if (!string.IsNullOrEmpty(action)) {
 
-                    var manager = _options.ManagerResolver(_context.RequestServices, _options);
+                    var manager = _options.ManagerResolver(context.RequestServices, _options);
                     var handler = (THandler)Activator.CreateInstance(typeof(THandler), manager, _options, context);
+
+                    var ct = context.RequestAborted;
 
                     try {
                         switch (action) {
                             case DataAction.GetModel:
-                                await handler.HandleGetModelAsync(modelId);
+                                await handler.HandleGetModelAsync(modelId, ct);
                                 return;
                             case DataAction.GetEntity:
-                                await handler.HandleGetEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleGetEntityAsync(modelId, entityTypeName, entityId, ct);
                                 return;
                             case DataAction.GetEntities:
-                                await handler.HandleGetEntitiesAsync(modelId, entityTypeName);
+                                await handler.HandleGetEntitiesAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.CreateEntity:
-                                await handler.HandleCreateEntityAsync(modelId, entityTypeName);
+                                await handler.HandleCreateEntityAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.UpdateEntity:
-                                await handler.HandleUpdateEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleUpdateEntityAsync(modelId, entityTypeName, entityId, ct);
                                 return;
                             case DataAction.DeleteEntity:
-                                await handler.HandleDeleteEntityAsync(modelId, entityTypeName, entityId);
+                                await handler.HandleDeleteEntityAsync(modelId, entityTypeName, entityId, ct);
                                 return;
                         }
                     }
                     catch (Exception ex) {
-                        await handler.HandleExceptionAsync(ex);
+                        await handler.HandleExceptionAsync(ex, ct);
                         return;
                     }
                 }

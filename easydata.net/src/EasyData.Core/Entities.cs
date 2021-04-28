@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -324,61 +325,64 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="options">Some read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions options, CancellationToken ct = default)
         {
-            await writer.WriteStartObjectAsync().ConfigureAwait(false);
-            await WritePropertiesToJsonAsync(writer).ConfigureAwait(false);
+            await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
+            await WritePropertiesToJsonAsync(writer, ct).ConfigureAwait(false);
 
-            await writer.WritePropertyNameAsync("attrs").ConfigureAwait(false);
-            await Attributes.WriteToJsonAsync(writer, options).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync("attrs", ct).ConfigureAwait(false);
+            await Attributes.WriteToJsonAsync(writer, options, ct).ConfigureAwait(false);
 
             if (SubEntities.Count > 0) {
-                await writer.WritePropertyNameAsync("ents").ConfigureAwait(false);
-                await SubEntities.WriteToJsonAsync(writer, options).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("ents", ct).ConfigureAwait(false);
+                await SubEntities.WriteToJsonAsync(writer, options, ct).ConfigureAwait(false);
             }
 
-            await writer.WriteEndObjectAsync().ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Writes entity's properties to JSON (asynchronous way).
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer)
+        protected virtual async Task WritePropertiesToJsonAsync(JsonWriter writer, CancellationToken ct)
         {
             if (!string.IsNullOrEmpty(Id)) {
-                await writer.WritePropertyNameAsync("id").ConfigureAwait(false);
-                await writer.WriteValueAsync(Id).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("id", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Id, ct).ConfigureAwait(false);
             }
 
             if (!string.IsNullOrEmpty(Name)) {
-                await writer.WritePropertyNameAsync("name").ConfigureAwait(false);
-                await writer.WriteValueAsync(Name).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("name", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Name, ct).ConfigureAwait(false);
             }
 
             if (!string.IsNullOrEmpty(NamePlural)) {
-                await writer.WritePropertyNameAsync("namePlur").ConfigureAwait(false);
-                await writer.WriteValueAsync(NamePlural).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("namePlur", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(NamePlural, ct).ConfigureAwait(false);
             }
 
             if (!string.IsNullOrEmpty(Description))  {
-                await writer.WritePropertyNameAsync("desc").ConfigureAwait(false);
-                await writer.WriteValueAsync(Description).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("desc", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Description, ct).ConfigureAwait(false);
             }
 
             if (UserData != null) {
-                await writer.WritePropertyNameAsync("udata").ConfigureAwait(false);
-                await writer.WriteValueAsync(UserData.ToString()).ConfigureAwait(false);
+                await writer.WritePropertyNameAsync("udata", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(UserData.ToString(), ct).ConfigureAwait(false);
             }
         }
 
         /// <summary>Reads the entity content from JSON (asynchronous way).</summary>
         /// <param name="reader">The reader.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
         /// <exception cref="BadJsonFormatException"></exception>
-        public async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartObject) {
                 throw new BadJsonFormatException(reader.Path);
@@ -387,7 +391,7 @@ namespace EasyData
             Attributes.Clear();
             SubEntities.Clear();
 
-            while ((await reader.ReadAsync().ConfigureAwait(false))
+            while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndObject) {
 
                 if (reader.TokenType != JsonToken.PropertyName) {
@@ -396,15 +400,15 @@ namespace EasyData
 
                 var propName = reader.Value.ToString();
                 if (propName == "attrs") {
-                    await reader.ReadAsync().ConfigureAwait(false); //reading first StartArray token
-                    await Attributes.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                    await reader.ReadAsync(ct).ConfigureAwait(false); //reading first StartArray token
+                    await Attributes.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                 }
                 else if (propName == "ents") {
                     await reader.ReadAsync().ConfigureAwait(false); //reading first StartArray token
-                    await SubEntities.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                    await SubEntities.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                 }
                 else {
-                    await ReadOnePropertyFromJsonAsync(reader, propName).ConfigureAwait(false);
+                    await ReadOnePropertyFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -414,28 +418,29 @@ namespace EasyData
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="propName">Name of the property.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ReadOnePropertyFromJsonAsync(JsonReader reader, string propName)
+        protected virtual async Task ReadOnePropertyFromJsonAsync(JsonReader reader, string propName, CancellationToken ct)
         {
             switch (propName)
             {
                 case "id":
-                    Id = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Id = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "name":
-                    Name = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Name = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "namePlur":
-                    NamePlural = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    NamePlural = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "desc":
-                    Description = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    Description = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "udata":
-                    UserData = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                    UserData = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 default:
-                    await reader.SkipAsync().ConfigureAwait(false);
+                    await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
             }
         }
@@ -525,30 +530,32 @@ namespace EasyData
         /// </summary>
         /// <param name="writer">An instance of JsonWriter class.</param>
         /// <param name="rwOptions">Different read/write options.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions)
+        public async Task WriteToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct = default)
         {
-            await writer.WriteStartArrayAsync().ConfigureAwait(false);
+            await writer.WriteStartArrayAsync(ct).ConfigureAwait(false);
             foreach (var ent in this) {
-                await ent.WriteToJsonAsync(writer, rwOptions).ConfigureAwait(false);
+                await ent.WriteToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
             }
-            await writer.WriteEndArrayAsync().ConfigureAwait(false);
+            await writer.WriteEndArrayAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>Reads the list of entities from JSON (asynchronous way).</summary>
         /// <param name="reader">The reader.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task ReadFromJsonAsync(JsonReader reader)
+        public async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
             if (reader.TokenType != JsonToken.StartArray) {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while ((await reader.ReadAsync().ConfigureAwait(false))
+            while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray)
             {
                 var ent = Model.CreateEntity(_parentEntity);
-                await ent.ReadFromJsonAsync(reader).ConfigureAwait(false);
+                await ent.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                 Add(ent);
             }
         }

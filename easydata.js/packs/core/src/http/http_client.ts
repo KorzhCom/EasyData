@@ -107,14 +107,24 @@ export class HttpClient {
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const status = xhr.status;
                 if (status >= 300 || status < 200) {
-                    const responseObj = (responseContentType.indexOf('application/json') == 0)
-                        ? JSON.parse(xhr.responseText)
-                        : xhr.responseText;
-                    const message = responseObj.message ||
-                        (status == 404
-                            ? `No such endpoint: ${url}`
-                            : responseObj);
-                    reject(new HttpResponseError(status, message));
+                    const rtPromise = (xhr.responseType === 'arraybuffer' 
+                        || xhr.responseType === 'blob')
+                        ? HttpClient.decodeArrayBuffer(xhr.response)
+                        : Promise.resolve(xhr.responseText);
+                       
+                    rtPromise.then(responseText => {
+                        const responseObj = (responseContentType.indexOf('application/json') == 0)
+                            ? JSON.parse(responseText)
+                            : responseText;
+
+                        const message = responseObj.message ||
+                            (status == 404
+                                ? `No such endpoint: ${url}`
+                                : responseObj);
+
+                        reject(new HttpResponseError(status, message));
+                    });
+    
                     return;
                 }
 
@@ -131,5 +141,17 @@ export class HttpClient {
             xhr.send(dataToSend);
 
         }));
+    }
+
+    private static decodeArrayBuffer(uintArray): Promise<string> {
+        var reader = new FileReader();
+        return new Promise<string>((resolve) => {
+            reader.onloadend = function () {
+                if (reader.readyState == FileReader.DONE) { 
+                    resolve(reader.result as string);
+                }
+            };
+            reader.readAsText(new Blob([uintArray]));
+        });
     }
 }

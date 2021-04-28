@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -33,23 +34,23 @@ namespace EasyData.Services
             return query.FullTextSearchQuery(_filterText, GetFilterOptions(entity, isLookup));
         }
 
-        public override async Task ReadFromJsonAsync(JsonReader reader)
+        public override async Task ReadFromJsonAsync(JsonReader reader, CancellationToken ct = default)
         {
-            if (!await reader.ReadAsync().ConfigureAwait(false)
+            if (!await reader.ReadAsync(ct).ConfigureAwait(false)
                || reader.TokenType != JsonToken.StartObject)
             {
                 throw new BadJsonFormatException(reader.Path);
             }
 
-            while (await reader.ReadAsync().ConfigureAwait(false)) {
+            while (await reader.ReadAsync(ct).ConfigureAwait(false)) {
                 if (reader.TokenType == JsonToken.PropertyName) {
                     var propName = reader.Value.ToString();
                     switch (propName) {
                         case "value":
-                            _filterText = await reader.ReadAsStringAsync().ConfigureAwait(false);
+                            _filterText = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                             break;
                         default:
-                            await reader.SkipAsync().ConfigureAwait(false);
+                            await reader.SkipAsync(ct).ConfigureAwait(false);
                             break;
                     }
                 }
