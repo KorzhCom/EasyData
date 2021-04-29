@@ -10,6 +10,14 @@ namespace EasyData.Export
     {
         private static Regex _formatRegex = new Regex("{0:(.*?)}", RegexOptions.Singleline);
 
+        public static string GetFormat(string displayFormat)
+        {
+            if (_formatRegex.IsMatch(displayFormat))
+                return _formatRegex.Match(displayFormat).Groups[1].Value;
+
+            return "";
+        }
+
         public static string GetDateFormat(DataType dataType, IDataExportSettings settings, string displayFormat)
         {
             if (!string.IsNullOrEmpty(displayFormat)) {
@@ -64,12 +72,7 @@ namespace EasyData.Export
 
                 return string.Format(settings.Culture, "{0}", val);
             }
-            else if (val is bool) {
-                if (!string.IsNullOrEmpty(displayFormat))
-                    return string.Format(new SequenceFormat(settings.Culture), displayFormat, val);
-            }
-
-
+          
             return val.ToString();
         }
 

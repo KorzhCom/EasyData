@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace EasyData
@@ -107,35 +108,55 @@ namespace EasyData
         /// <returns></returns>
         public static DataType GetDataTypeBySystemType(Type systemType)
         {
+            if (systemType.IsEnum)
+                return GetDataTypeBySystemType(systemType.GetEnumUnderlyingType());
             if (systemType == typeof(bool) || systemType == typeof(bool?))
                 return DataType.Bool;
-            else if (systemType == typeof(byte[]))
+            if (systemType == typeof(byte[]))
                 return DataType.Blob;
-            else if (systemType == typeof(Guid))
+            if (systemType == typeof(Guid))
                 return DataType.Guid;
-            else if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))
+            if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))
                 return DataType.Byte;
-            else if (systemType == typeof(DateTime) || systemType == typeof(DateTime?)
+            if (systemType == typeof(DateTime) || systemType == typeof(DateTime?)
                      || systemType == typeof(DateTimeOffset) || systemType == typeof(DateTimeOffset?))
                 return DataType.DateTime;
-            else if (systemType == typeof(TimeSpan) || systemType == typeof(TimeSpan?))
+            if (systemType == typeof(TimeSpan) || systemType == typeof(TimeSpan?))
                 return DataType.Time;
-            else if (systemType == typeof(decimal) || systemType == typeof(decimal?))
+            if (systemType == typeof(decimal) || systemType == typeof(decimal?))
                 return DataType.Currency;
-            else if (systemType == typeof(double) || systemType == typeof(Single) || systemType == typeof(float) || systemType == typeof(double?) || systemType == typeof(Single?) || systemType == typeof(float?))
+            if (systemType == typeof(double) || systemType == typeof(Single) || systemType == typeof(float) || systemType == typeof(double?) || systemType == typeof(Single?) || systemType == typeof(float?))
                 return DataType.Float;
-            else if (systemType == typeof(short) || systemType == typeof(ushort) || systemType == typeof(short?) || systemType == typeof(ushort?))
+            if (systemType == typeof(short) || systemType == typeof(ushort) || systemType == typeof(short?) || systemType == typeof(ushort?))
                 return DataType.Word;
-            else if (systemType == typeof(int) || systemType == typeof(uint) || systemType == typeof(int?) || systemType == typeof(uint?))
+            if (systemType == typeof(int) || systemType == typeof(uint) || systemType == typeof(int?) || systemType == typeof(uint?))
                 return DataType.Int32;
-            else if (systemType == typeof(long) || systemType == typeof(ulong) || systemType == typeof(long?) || systemType == typeof(ulong?))
+            if (systemType == typeof(long) || systemType == typeof(ulong) || systemType == typeof(long?) || systemType == typeof(ulong?))
                 return DataType.Int64;
-            else if (systemType == typeof(string))
+            if (systemType == typeof(string))
                 return DataType.String;
-            else
-                return DataType.Unknown;
+            
+            return DataType.Unknown;
         }
 
+        /// <summary>
+        /// Builds sequence display format for enum.
+        /// </summary>
+        /// <param name="enumType">Type of the enum.</param>
+        /// <returns></returns>
+        public static string ComposeDisplayFormatForEnum(Type enumType)
+        {
+            if (!enumType.IsEnum)
+                return "";
+
+            var result = string.Join("|", enumType.GetFields()
+                .Where(f => f.Name != "value__")
+                .Select(f => $"{f.Name}={f.GetRawConstantValue()}"));
+           
+            return "{0:S" + result + "}";
+        }
+
+   
 
         /// <summary>
         /// Convert string representation in internal format to DateTime value.

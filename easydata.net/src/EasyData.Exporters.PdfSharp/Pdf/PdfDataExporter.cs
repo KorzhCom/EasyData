@@ -123,6 +123,9 @@ namespace EasyData.Export
             table.Borders.Right.Width = 0.5;
             table.Rows.LeftIndent = 0;
 
+            // predefined formatters
+            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+
             // filling columns
 
             //ignored columns
@@ -144,8 +147,7 @@ namespace EasyData.Export
                 row.Format.Alignment = ParagraphAlignment.Center;
                 row.Format.Font.Bold = true;
                 row.Shading.Color = Color.FromRgb(0, 191, 255);
-                for (int i = 0; i < data.Cols.Count; i++)
-                {
+                for (int i = 0; i < data.Cols.Count; i++) { 
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -181,14 +183,21 @@ namespace EasyData.Export
                     var col = data.Cols[i];
                     var dfmt = col.DisplayFormat;
                     var type = col.Type;
-                    var s = Utils.GetFormattedValue(row[i], type, mappedSettings, dfmt);
+                    string value;
+                    if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
+                        value = string.Format(provider, dfmt, row[i]);
+                    }
+                    else {
+                        value = Utils.GetFormattedValue(row[i], type, mappedSettings, dfmt);
+                    }
+
 
                     pdfRow.Cells[i].Shading.Color = Color.FromRgb(255, 255, 255);
                     pdfRow.Cells[i].VerticalAlignment = VerticalAlignment.Center;
                     pdfRow.Cells[i].Format.Alignment = MapAlignment(col.Style.Alignment);
                     pdfRow.Cells[i].Format.FirstLineIndent = 1;
                     pdfRow.Cells[i].Format.Font.Bold = isExtra;
-                    pdfRow.Cells[i].AddParagraph(s);
+                    pdfRow.Cells[i].AddParagraph(value);
 
                     table.SetEdge(0, 1, colsCount, 1,
                          Edge.Box, BorderStyle.Single, 0.75);
@@ -221,6 +230,22 @@ namespace EasyData.Export
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
+        }
+
+        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
+        {
+            var result = new Dictionary<string, IFormatProvider>();
+            for (int i = 0; i < cols.Count; i++) {
+                var dfmt = cols[i].DisplayFormat;
+                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
+                    var format = Utils.GetFormat(dfmt);
+                    if (format.StartsWith("S")) {
+                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
+                    }
+                }
+
+            }
+            return result;
         }
 
         private static ParagraphAlignment MapAlignment(ColumnAlignment alignment) 
