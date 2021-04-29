@@ -11,6 +11,14 @@ namespace EasyData.Export
     {
         private static Regex _formatRegex = new Regex("{0:(.*?)}", RegexOptions.Singleline);
 
+        public static string GetFormat(string displayFormat)
+        {
+            if (_formatRegex.IsMatch(displayFormat))
+                return _formatRegex.Match(displayFormat).Groups[1].Value;
+
+            return "";
+        }
+
         public static string GetExcelDisplayFormat(IDataExportSettings settings, string displayFormat)
         {
             if (_formatRegex.IsMatch(displayFormat)) {
@@ -35,11 +43,7 @@ namespace EasyData.Export
                             return floatFormat;
                         }
                     }
-                    else if (type == 'S') {
-                        var values = format.Substring(1).Split('|').Reverse();
-                        return string.Join(";", values.Select(v => $"\"{v}\";"));
-                    }
-                  
+                   
                     return format;
                 });
             }

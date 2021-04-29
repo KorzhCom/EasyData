@@ -87,6 +87,9 @@ namespace EasyData.Export
         {
             var mappedSettings = MapSettings(settings);
 
+            // predefined formatters
+            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+
             // replace forbidden symbols
             var r = new Regex(@"[\/\*\?:\[\]]");
             var result = r.Replace(mappedSettings.Title ?? "", "");
@@ -143,7 +146,16 @@ namespace EasyData.Export
                     var dfmt = data.Cols[i].DisplayFormat;
                     var type = data.Cols[i].Type;
 
-                    ws.Cell($"{rowCellLetter}{cellNum}").Value = row[i] ?? "";
+                
+                    object value;
+                    if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
+                        value = string.Format(provider, dfmt, row[i]);
+                    }
+                    else {
+                        value = row[i];
+                    }
+                   
+                    ws.Cell($"{rowCellLetter}{cellNum}").Value = value ?? "";
                     if (isExtra)
                         ws.Cell($"{rowCellLetter}{cellNum}").Style.Font.Bold = true;
                     rowCellLetter++;
@@ -156,7 +168,8 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => WriteRowAsync(extraRow, true, cancellationToken);
+            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) 
+                => WriteRowAsync(extraRow, true, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
@@ -185,18 +198,21 @@ namespace EasyData.Export
                 var dfmt = col.DisplayFormat;
                 var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
                 var dataType = MapDataType(type);
-                colRange.DataType = dataType;
-                if (type == DataType.Bool) {
-                    colRange.Style.NumberFormat.Format = "\"True\";;\"False\";";
+                if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.ContainsKey(dfmt)) {
+                    colRange.DataType = XLDataType.Text;
                 }
-                if (dataType == XLDataType.DateTime) {
-                    var format = Utils.GetDateFormat(type, mappedSettings, dfmt);
-                    colRange.Style.DateFormat.Format = format;
+                else {
+                    colRange.DataType = dataType;
+                    if (dataType == XLDataType.DateTime) {
+                        var format = Utils.GetDateFormat(type, mappedSettings, dfmt);
+                        colRange.Style.DateFormat.Format = format;
+                    }
+                    else if (!string.IsNullOrEmpty(dfmt)) {
+                        var format = Utils.GetExcelDisplayFormat(mappedSettings, dfmt);
+                        colRange.Style.NumberFormat.Format = format;
+                    }
                 }
-                else if (!string.IsNullOrEmpty(dfmt)) {
-                    var format = Utils.GetExcelDisplayFormat(mappedSettings, dfmt);
-                    colRange.Style.NumberFormat.Format = format;
-                }
+               
                 colRange.Style.Alignment.Horizontal = MapAlignment(col.Style.Alignment);
                 letter++;
             }
@@ -240,6 +256,22 @@ namespace EasyData.Export
             }
         }
 
+        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
+        {
+            var result = new Dictionary<string, IFormatProvider>();
+            for (int i = 0; i < cols.Count; i++) {
+                var dfmt = cols[i].DisplayFormat;
+                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
+                    var format = Utils.GetFormat(dfmt);
+                    if (format.StartsWith("S")) {
+                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
+                    }
+                }
+
+            }
+            return result;
+        }
+
         private static XLAlignmentHorizontalValues MapAlignment(ColumnAlignment alignment)
         {
             switch (alignment) {
@@ -257,12 +289,13 @@ namespace EasyData.Export
         private static XLDataType MapDataType(DataType type)
         {
             switch (type) {
+                case DataType.Bool:
+                    return XLDataType.Boolean;
                 case DataType.Date:
                 case DataType.DateTime:
                     return XLDataType.DateTime;
                 case DataType.Time:
                     return XLDataType.TimeSpan;
-                case DataType.Bool:
                 case DataType.Byte:
                 case DataType.Currency:
                 case DataType.Int32:

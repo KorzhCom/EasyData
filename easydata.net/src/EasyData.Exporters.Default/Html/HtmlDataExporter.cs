@@ -81,6 +81,9 @@ namespace EasyData.Export
             var mappedSettings = MapSettings(settings);
             if (data == null) return;
 
+            // predefined formatters
+            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+
             await writer.WriteLineAsync("<!DOCTYPE HTML PUBLIC ''-//W3C//DTD HTML 4.0 Transitional//EN''>").ConfigureAwait(false);
             await writer.WriteLineAsync("<html>").ConfigureAwait(false);
             await writer.WriteLineAsync("<head>").ConfigureAwait(false);
@@ -162,14 +165,22 @@ namespace EasyData.Export
                     if (ignoredCols.Contains(i))
                         continue;
 
-                    string dfmt = data.Cols[i].DisplayFormat;
-                    DataType type = data.Cols[i].Type;
-                    string s = GetFormattedValue(row[i], type, mappedSettings, dfmt);
-                    if (mappedSettings.FixHtmlTags)
-                    {
-                        s = FixHtmlTags(s);
+                    var dfmt = data.Cols[i].DisplayFormat;
+                    var type = data.Cols[i].Type;
+                   
+                    string value;
+                    if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
+                        value = string.Format(provider, dfmt, row[i]);
                     }
-                    await writer.WriteLineAsync(string.Format("<td>{0}</td>", s)).ConfigureAwait(false);
+                    else {
+                        value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
+                    }
+
+                    if (mappedSettings.FixHtmlTags) {
+                        value = FixHtmlTags(value);
+                    }
+
+                    await writer.WriteLineAsync(string.Format("<td>{0}</td>", value)).ConfigureAwait(false);
                 }
 
                 await writer.WriteLineAsync("</tr>").ConfigureAwait(false);
@@ -200,6 +211,22 @@ namespace EasyData.Export
             await writer.WriteLineAsync("</body>").ConfigureAwait(false);
             await writer.WriteLineAsync("</html>").ConfigureAwait(false);
             await writer.FlushAsync().ConfigureAwait(false);
+        }
+
+        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
+        {
+            var result = new Dictionary<string, IFormatProvider>();
+            for (int i = 0; i < cols.Count; i++) {
+                var dfmt = cols[i].DisplayFormat;
+                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
+                    var format = Utils.GetFormat(dfmt);
+                    if (format.StartsWith("S")) {
+                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
+                    }
+                }
+
+            }
+            return result;
         }
 
         /// <summary>

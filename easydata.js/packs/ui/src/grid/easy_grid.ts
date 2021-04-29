@@ -670,7 +670,7 @@ export class EasyGrid {
         .catch(error => {
             console.error(error);
             return [];
-        });;
+        });
     }
 
     protected renderFooter() {

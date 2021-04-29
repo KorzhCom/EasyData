@@ -428,7 +428,10 @@ export namespace i18n {
     export function numberToStr(number: number, format?: string): string {
         if (format && format.length > 0) {
             const type = format.charAt(0);
-            if (['D', 'F', 'C'].indexOf(type) >= 0) {
+            if (type === 'S') {
+                return formatWithSequence(number, format.slice(1));
+            }
+            else if (['D', 'F', 'C'].indexOf(type) >= 0) {
                 const locale = getCurrentLocale();
                 return number.toLocaleString(locale, getNumberFromatOptions(format));
             }
@@ -442,17 +445,53 @@ export namespace i18n {
     }    
 
     export function booleanToStr(bool: boolean, format?: string) {
+
         if (format && format.length > 0) {
             const type = format.charAt(0);
             if (type === 'S') {
                 const values = format.slice(1).split('|');
-                if (values.length === 2) {
+                if (values.length > 1) {
                     const value = values[(bool) ? 1 : 0];
                     return i18n.getText(value) || value;
                 }
             }
         }
         return `${bool}`;
+    }
+
+    const cachedSequenceFormats: { [format: string]: {[key: number]: string} } = {};
+
+    function formatWithSequence(number: number, format: string): string {
+        if (!cachedSequenceFormats[format]) {
+
+            // parse and save in cache format values 
+            const values = format.split('|')
+                .filter(v => v.length > 0)
+                .map(v => v.split('='));
+
+            cachedSequenceFormats[format] = {}
+            if (values.length > 0) {
+                if (values[0].length > 1) {
+                    for (const value of values) {
+                        cachedSequenceFormats[format][Number.parseInt(value[1])] = value[0];
+                    }
+                }
+                else {
+                    values.forEach((value, index) => {
+                        cachedSequenceFormats[format][index] = value[0];
+                    });
+                }
+            }
+          
+        }
+
+        const values = cachedSequenceFormats[format];
+        if (values[number] !== undefined) {
+            const value = values[number];
+            return i18n.getText(value) || value;
+        }
+
+        return number.toString();
     }
 
     function convertWithMask(number: number, mask: string) {
