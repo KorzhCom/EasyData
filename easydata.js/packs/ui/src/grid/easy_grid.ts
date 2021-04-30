@@ -488,8 +488,15 @@ export class EasyGrid {
     private calcTotals(): boolean {
         return this.options.totals 
             && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
-            && this.dataTable.columns.getItems()
-                .filter(col => col.isAggr).length > 0;
+            && this.hasAggregates();
+    }
+
+    private hasAggregates(): boolean {
+        return this.dataTable.columns.getItems()
+            .filter(col => col.isAggr).length > 0
+            || this.options.totals.cols && Object.values(this.options.totals.cols)
+                .filter(val => val.aggrFunc).length > 0
+               
     }
 
     private calcSubTotalsCols(): boolean {
@@ -503,9 +510,24 @@ export class EasyGrid {
     private prevRowTotals: DataRow = null;
 
     private getTotalsKeyCols() {
+
+        // to support two mods:
+        // 1. Aggr colums are already in dataset
+        // 2. Simple columns have aggr values in totals container
+
+        const hasAggrCols = this.dataTable.columns.getItems()
+            .filter(col => col.isAggr).length > 0;
+        
+        if (hasAggrCols) {
+            const keyCols = this.dataTable.columns.getItems()
+                .filter(col => !col.isAggr);
+            keyCols.pop();
+            return keyCols;
+        }
+       
+        const totalsCols = this.options.totals.cols || {};
         const keyCols = this.dataTable.columns.getItems()
-            .filter(col => !col.isAggr);
-        keyCols.pop();
+            .filter(col => totalsCols[col.id] && !totalsCols[col.id].aggrFunc);
 
         return keyCols;
     } 
@@ -558,7 +580,10 @@ export class EasyGrid {
             }
 
             const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+            let val = (colIndex == level || level == 0 && colIndex == 0) 
+                ? this.getTotalsTitle(level) 
+                : '';
+                
             if (colIndex == this.dataTable.columns.count - 1) {
                 val = 'Calculating...'
             }
@@ -567,6 +592,8 @@ export class EasyGrid {
         });
         
         const totals = this.options.totals.calculator.getTotals();
+        const aggrCols = Object.keys(this.options.totals.cols)
+            .filter(k => this.options.totals.cols[k].aggrFunc);
         totals.fillTotals(level, row)
             .then(() => {
                 rowElement.innerHTML = '';
@@ -577,8 +604,12 @@ export class EasyGrid {
                     }
         
                     const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-                    let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
-                    if (!column.isRowNum && column.dataColumn.isAggr) {
+                    let val = (colIndex == level || level == 0 && colIndex == 0) 
+                        ? this.getTotalsTitle(level) 
+                        : '';
+
+                    if (!column.isRowNum && (column.dataColumn.isAggr 
+                        || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
                     }
         

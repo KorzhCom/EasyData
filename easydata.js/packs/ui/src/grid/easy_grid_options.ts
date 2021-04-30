@@ -22,7 +22,9 @@ export interface EasyGridOptions {
         calcGrandTotals?: boolean;
         cols?: {
             [id: string]: {
-                calcSubTotals?: boolean
+                calcSubTotals?: boolean,
+                groupName?: string,
+                aggrFunc?: string
             }
         }
         calculator: TotalsCalculator
