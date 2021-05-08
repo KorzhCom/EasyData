@@ -100,11 +100,11 @@ export class EasyDataViewDispatcher {
             const activeEntityId = this.getActiveEntityId();
             if (activeEntityId) {
                 this.context.setActiveEntity(activeEntityId);
-                new EntityDataView(this.container, this.context, 
+                window['EntityDataView'] = new EntityDataView(this.container, this.context, 
                     this.basePath, this.options);
             }
             else {
-                new RootDataView(this.container, this.context, this.basePath);
+                window['RootDataView'] = new RootDataView(this.container, this.context, this.basePath);
             }
         })
         .catch(error => console.error(error))
