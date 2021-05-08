@@ -22,6 +22,7 @@ export interface ProgressDialogOptions {
     onSubmit?: () => void;
     width?: number | string;
     height?: number | string;
+    onDestroy?: () => void;
 };
 
 export interface Dialog {
@@ -52,4 +53,8 @@ export interface DialogService {
     openProgress(options: ProgressDialogOptions): PorgressDialog;
 
     open(options: DialogOptions): Dialog;
+
+    getAllDialogs(): Dialog[];
+
+    closeAllDialogs();
 }

@@ -8,6 +8,8 @@ const cssPrefix = "kdlg";
 
 export class DefaultDialogService implements DialogService {
 
+    private static openDialogs: Dialog[] = [];
+
     public openConfirm(title?: string, content?: string): Promise<boolean>;
     public openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): void;
     public openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): Promise<boolean> | void {
@@ -109,15 +111,52 @@ export class DefaultDialogService implements DialogService {
     }
 
     public open(options: DialogOptions) {
+        const onDestroy = options.onDestroy;
+        options.onDestroy = () => {
+            this.untrack(dlg);
+            onDestroy && onDestroy();
+        }
+
         const dlg = new DefaultDialog(options);
         dlg.open();
+
+        this.track(dlg);
         return dlg;
     }
 
+    private untrack(dlg: Dialog) {
+        const index = DefaultDialogService.openDialogs.indexOf(dlg);
+        if (index >= 0) {
+            DefaultDialogService.openDialogs.splice(index, 1);
+        }
+    }
+
+    private track(dlg: Dialog) {
+        DefaultDialogService.openDialogs.push(dlg);
+    }
+
     public openProgress(options: ProgressDialogOptions) {
+        const onDestroy = options.onDestroy;
+        options.onDestroy = () => {
+            this.untrack(dlg);
+            onDestroy && onDestroy();
+        }
+
         const dlg = new DefaultProgressDialog(options);
         dlg.open();
+
+        this.track(dlg);
         return dlg;
+    }
+
+    public getAllDialogs() {
+        return Array.from(DefaultDialogService.openDialogs);
+    }
+
+    public closeAllDialogs() {
+        for (const dialog of Array.from(DefaultDialogService.openDialogs)) {
+            dialog.close();
+        }
     }
 
 }
@@ -289,6 +328,7 @@ export class DefaultDialog implements Dialog {
     }
 
     protected destroy() {
+
         if (this.options.arrangeParents) {
             this.arrangeParents(false);
         }
@@ -298,7 +338,7 @@ export class DefaultDialog implements Dialog {
         if (this.options.submitOnEnter) {
             window.removeEventListener('keydown', this.keydownHandler, false);
         }
-
+        
         if (this.options.onDestroy) {
             this.options.onDestroy();
         }
@@ -399,7 +439,8 @@ export class DefaultProgressDialog extends DefaultDialog implements PorgressDial
             height: options.height,
             submitable: false,
             cancelable: false,
-            closable: false
+            closable: false,
+            onDestroy: options.onDestroy
         });
 
         this.contentElement = contentElement;
