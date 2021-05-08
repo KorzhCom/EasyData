@@ -376,6 +376,7 @@ export class EntityEditForm {
                                     const inputEl = ev.target as HTMLInputElement;
                                     const oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
                                     const pickerOptions: DateTimePickerOptions = {
+                                        zIndex: 9999999999,
                                         showCalendar: attr.dataType !== DataType.Time,
                                         showTimePicker: attr.dataType !== DataType.Date,
                                         onApply: (dateTime: Date) => {

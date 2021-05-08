@@ -4,6 +4,7 @@ export interface DateTimePickerOptions {
     showCalendar?: boolean;
     oneClickDateSelection?: boolean;
     showDateTimeInput?: boolean;
+    zIndex?: number;
     beforeShow?: () => void;
     onApply?: (dateTime: Date) => void;
     onCancel?: () => void;
