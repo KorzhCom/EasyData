@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn 
+    DataRow, utils, i18n, DataColumn, TotalsSettings 
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -71,7 +71,7 @@ export class EasyGrid {
         useRowNumeration: true,
         allowDragDrop: false,
         totals: {
-            calcGrandTotals: false,
+            settings: new TotalsSettings(),
             calculator: null
         },
         paging: {
@@ -486,54 +486,27 @@ export class EasyGrid {
     }
 
     private calcTotals(): boolean {
-        return this.options.totals 
-            && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
-            && this.hasAggregates();
-    }
+        if (!this.options || !this.options.totals || !this.options.totals.settings)
+            return false;
 
-    private hasAggregates(): boolean {
-        return this.dataTable.columns.getItems()
-            .filter(col => col.isAggr).length > 0
-            || this.options.totals.cols && Object.values(this.options.totals.cols)
-                .filter(val => val.aggrFunc).length > 0
-               
-    }
-
-    private calcSubTotalsCols(): boolean {
-        return this.options.totals.cols && Object.values(this.options.totals.cols)
-            .map(val => val.calcSubTotals)
-            .reduce((prev, value) => {
-                return prev || value;
-            }, false)
+        const settings = this.options.totals.settings;
+        return (settings.grandTotals || settings.getGroupColumns().length > 0)
+            && settings.getGroupColumns().length > 0;
     }
 
     private prevRowTotals: DataRow = null;
 
-    private getTotalsKeyCols() {
-
-        // to support two mods:
-        // 1. Aggr colums are already in dataset
-        // 2. Simple columns have aggr values in totals container
-
-        const hasAggrCols = this.dataTable.columns.getItems()
-            .filter(col => col.isAggr).length > 0;
-        
-        if (hasAggrCols) {
-            const keyCols = this.dataTable.columns.getItems()
-                .filter(col => !col.isAggr);
-            keyCols.pop();
-            return keyCols;
-        }
-       
-        const totalsCols = this.options.totals.cols || {};
+    private getTotalsKeyCols() {       
+        const settings = this.options.totals.settings;
         const keyCols = this.dataTable.columns.getItems()
-            .filter(col => totalsCols[col.id] && !totalsCols[col.id].aggrFunc);
+            .filter(col => settings.hasGroupColumn(col.id));
 
         return keyCols;
     } 
 
     private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals && this.calcSubTotalsCols()) {
+        const settings = this.options.totals.settings;
+        if (this.prevRowTotals && settings.getGroupColumns().length > 0) {
             let changeLevel = -1;
             for(let i = 0; i < keyCols.length; i++) {
                 const col = keyCols[i];
@@ -544,12 +517,12 @@ export class EasyGrid {
             }
 
             if (changeLevel != -1) {
-                const totalsOpts = this.options.totals;
                 for(let i = keyCols.length; i > changeLevel; i--) {
                     const col = keyCols[i - 1];
-                    const totalColOpts = totalsOpts.cols ? totalsOpts.cols[col.id] : null;  
-                    if (!totalColOpts || !totalColOpts.calcSubTotals)
+                    
+                    if (!settings.hasGroupColumn(col.id)) 
                         continue;
+
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(i, row);
                     this.bodyCellContainerDiv.appendChild(tr);
@@ -557,7 +530,7 @@ export class EasyGrid {
             }
         }
 
-        if (isLast && this.options.totals.calcGrandTotals) {
+        if (isLast && settings.grandTotals) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -591,9 +564,9 @@ export class EasyGrid {
             rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
         });
         
+        const settings = this.options.totals.settings;
         const totals = this.options.totals.calculator.getTotals();
-        const aggrCols = Object.keys(this.options.totals.cols)
-            .filter(k => this.options.totals.cols[k].aggrFunc);
+        const aggrCols = Object.keys(settings.getAggrColumns());
         totals.fillTotals(level, row)
             .then(() => {
                 rowElement.innerHTML = '';
