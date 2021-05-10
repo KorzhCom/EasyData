@@ -21,7 +21,7 @@ export class DefaultDateTimePicker extends DateTimePicker {
 
     protected render() {
 
-        this.slot = domel('div', document.body)
+        const sb = domel('div', document.body)
             .addClass(`${this.cssPrefix}`)
             .attr('tabIndex', '0')
             .setStyle('position', 'absolute')
@@ -35,9 +35,14 @@ export class DefaultDateTimePicker extends DateTimePicker {
                     this.apply(this.getDateTime());
                 }
                 return false;
-            })
-            .toDOM();
+            });
 
+        if (this.options.zIndex) {
+            sb.setStyle('z-index', `${this.options.zIndex}`);
+        }
+
+
+        this.slot = sb.toDOM();
 
         super.render();
 
