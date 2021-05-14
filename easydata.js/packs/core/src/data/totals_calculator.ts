@@ -25,52 +25,82 @@ export interface TotalsContainer {
     fillTotals(level: number, row: DataRow): Promise<void>;
 }
 
+export interface GroupSettings {
+    name?: string;
+}
+
+export interface GroupData {
+    name?: string;
+    columns: Array<string>;
+    aggregates?: Array<{colId: string, funcId: string}>;
+}
+
+export interface ColumnStore {
+    getColumnsBefore(colId: string): string[];
+    validAggregate(colId: string, funcId: string);
+}
+
 export class TotalsSettings {
 
-    private groupColumns: string[] = [];
-    private aggrColumns: { [colId: string]: { funcId: string} } = {};
-    
-    public grandTotals = false;
+    private levels: { [index: number]: GroupData } = {};
+    private aggregates: Array<{ colId: string, funcId: string }> = []
 
-    public addGroupColumn(colId: string) {
-        this.groupColumns.push(colId);
+    private lc = 0;
+
+    constructor(private colStore: ColumnStore) {
+
     }
 
-    public removeGroupColumn(colId: string) {
-        const index = this.groupColumns.indexOf(colId);
-        if (index >= 0) {
-            this.groupColumns.splice(index, 1);
+    public addGroup(colId: string, settings?: GroupSettings) {
+        const cols = this.colStore.getColumnsBefore(colId);
+        if (this.levels[this.lc] && this.levels[this.lc].columns.length > cols.length)
+            throw "Invalid group of columns";
+
+        this.levels[++this.lc] = { columns: cols, ...settings };
+        return this;
+    }
+
+    public addAggregateColumn(colId: string, funcId: string) {
+        if (!this.colStore.validAggregate(colId, funcId))
+            throw "Invalid aggregate function for such column";
+
+        this.aggregates.push({ colId, funcId });
+        return this;
+    }
+
+    public addGrandTotals() {
+        this.levels[0] = { columns: [] };
+        return this;
+    }
+
+    public getGroupLevels() {
+        const levels = this.levels;
+        for(const num in levels) {
+            levels[num].aggregates = this.aggregates;
         }
+        return levels;
     }
 
-    public addOrUpdateAggrColumn(colId: string, funcId: string) {
-        this.aggrColumns[colId] = { funcId };
+    public lastGroupLevel() {
+        return this.getGroupLevels()[this.lc];
     }
 
-    public removeAggrColumn(colId: string) {
-        delete this.aggrColumns[colId];
+    public getAggregates(): Array<{ colId: string, funcId: string }> {
+        return this.aggregates;
     }
 
-    public hasGroupColumn(colId: string) {
-        return this.groupColumns.indexOf(colId) >= 0;
+    public hasAggregates(): boolean {
+        return this.aggregates.length > 0;
     }
 
-    public hasAggrColumn(colId: string) {
-        return Object.keys(this.aggrColumns).indexOf(colId) >= 0;
-    }
-
-    public getGroupColumns(): string[] {
-        return this.groupColumns;
-    }
-
-    public getAggrColumns(): { [colId: string]: { funcId: string } } {
-        return this.aggrColumns;
+    public hasGroups(): boolean {
+        return Object.keys(this.levels).length > 0;
     }
 
     public drop() {
-        this.aggrColumns = {};
-        this.groupColumns = [];
-        this.grandTotals = false;
+        this.levels = {};
+        this.aggregates = [];
+        this.lc = 0;
     }
 
 }

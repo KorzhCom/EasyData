@@ -71,7 +71,7 @@ export class EasyGrid {
         useRowNumeration: true,
         allowDragDrop: false,
         totals: {
-            settings: new TotalsSettings(),
+            settings: null,
             calculator: null
         },
         paging: {
@@ -481,6 +481,15 @@ export class EasyGrid {
         this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
     }
 
+    private getTotalsKeyCols(): DataColumn[] {
+        const settings = this.options.totals.settings;
+        const ids = Object.values(settings.getGroupLevels())
+            .filter(g => g.columns.length > 0)
+            .map(g => g.columns[g.columns.length - 1]);
+
+        return this.dataTable.columns.getItems().filter(c => ids.indexOf(c.id) >= 0);
+    }
+
     private isLastPage() {
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
@@ -490,23 +499,14 @@ export class EasyGrid {
             return false;
 
         const settings = this.options.totals.settings;
-        return (settings.grandTotals || settings.getGroupColumns().length > 0)
-            && settings.getGroupColumns().length > 0;
+        return settings.hasAggregates() && settings.hasGroups();
     }
 
     private prevRowTotals: DataRow = null;
 
-    private getTotalsKeyCols() {       
-        const settings = this.options.totals.settings;
-        const keyCols = this.dataTable.columns.getItems()
-            .filter(col => settings.hasGroupColumn(col.id));
-
-        return keyCols;
-    } 
-
     private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
         const settings = this.options.totals.settings;
-        if (this.prevRowTotals && settings.getGroupColumns().length > 0) {
+        if (this.prevRowTotals && settings.hasGroups()) {
             let changeLevel = -1;
             for(let i = 0; i < keyCols.length; i++) {
                 const col = keyCols[i];
@@ -518,11 +518,6 @@ export class EasyGrid {
 
             if (changeLevel != -1) {
                 for(let i = keyCols.length; i > changeLevel; i--) {
-                    const col = keyCols[i - 1];
-                    
-                    if (!settings.hasGroupColumn(col.id)) 
-                        continue;
-
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(i, row);
                     this.bodyCellContainerDiv.appendChild(tr);
@@ -530,7 +525,7 @@ export class EasyGrid {
             }
         }
 
-        if (isLast && settings.grandTotals) {
+        if (isLast && settings.getGroupLevels()[0]) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -566,7 +561,7 @@ export class EasyGrid {
         
         const settings = this.options.totals.settings;
         const totals = this.options.totals.calculator.getTotals();
-        const aggrCols = Object.keys(settings.getAggrColumns());
+        const aggrCols = settings.getAggregates().map(c => c.colId);
         totals.fillTotals(level, row)
             .then(() => {
                 rowElement.innerHTML = '';
