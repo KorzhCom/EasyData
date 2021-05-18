@@ -534,6 +534,10 @@ export class EasyGrid {
     }
 
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
+
+        const settings = this.options.totals.settings;
+        const data = settings.getGroupLevels()[level];
+
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-totals`)
@@ -547,19 +551,24 @@ export class EasyGrid {
                 return;
             }
 
-            const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = (colIndex == level || level == 0 && colIndex == 0) 
-                ? this.getTotalsTitle(level) 
-                : '';
-                
+            let val = '';
+            const colIndex = !column.isRowNum
+                ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                : -1;
+
+            if (!column.isRowNum && column.dataColumn) {
+                if (data.columns.indexOf(column.dataColumn.id)) {
+                    val = row.getValue(colIndex);
+                };
+            }
+                           
             if (colIndex == this.dataTable.columns.count - 1) {
                 val = 'Calculating...'
             }
 
-            rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+            rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const settings = this.options.totals.settings;
         const totals = this.options.totals.calculator.getTotals();
         const aggrCols = settings.getAggregates().map(c => c.colId);
         totals.fillTotals(level, row)
@@ -571,10 +580,17 @@ export class EasyGrid {
                         return;
                     }
         
-                    const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-                    let val = (colIndex == level || level == 0 && colIndex == 0) 
-                        ? this.getTotalsTitle(level) 
-                        : '';
+                    let val = '';
+                    const colIndex = !column.isRowNum
+                        ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                        : -1;
+
+                    if (!column.isRowNum && column.dataColumn) {
+                        if (data.columns.indexOf(column.dataColumn.id) >= 0 
+                            || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                            val = row.getValue(colIndex);
+                        };
+                    }
 
                     if (!column.isRowNum && (column.dataColumn.isAggr 
                         || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
