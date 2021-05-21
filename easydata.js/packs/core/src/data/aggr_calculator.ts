@@ -5,11 +5,15 @@ export interface CalculateOptions {
     resultsObtained?(level?: number);
 }
 
-export interface TotalsCalculator {
+export interface AggregatesCalculator {
 
-    getTotals(): TotalsContainer;
+    getAggregates(): AggregatesContainer;
 
     calculate(options?: CalculateOptions): Promise<void>;
+}
+
+export interface TotalsKey {
+    [key: string]: any;
 }
 
 export interface TotalsValue {
@@ -18,11 +22,14 @@ export interface TotalsValue {
 
 type LevelData = Map<string, TotalsValue>;
 
-export interface TotalsContainer {
+export interface AggregatesContainer {
 
-    setTotals(level: number, data: LevelData);
+    setAggregates(level: number, data: LevelData);
 
-    fillTotals(level: number, row: DataRow): Promise<void>;
+    fillAggregates(level: number, row: DataRow): Promise<void>;
+
+    getAggregates(level: number, key: TotalsKey): Promise<TotalsValue>;
+
 }
 
 export interface GroupSettings {
@@ -32,31 +39,35 @@ export interface GroupSettings {
 export interface GroupData {
     name?: string;
     columns: Array<string>;
-    aggregates?: Array<{colId: string, funcId: string}>;
+    aggregates: Array<{colId: string, funcId: string}>;
 }
 
-export interface ColumnStore {
+export interface AggregationColumnStore {
     getColumnsBefore(colId: string): string[];
     validAggregate(colId: string, funcId: string);
 }
 
-export class TotalsSettings {
+export class AggregateSettings {
 
-    private levels: { [index: number]: GroupData } = {};
     private aggregates: Array<{ colId: string, funcId: string }> = []
 
-    private lc = 0;
+    private groups: GroupData[] = [];
 
-    constructor(private colStore: ColumnStore) {
+    private useGrandTotals = false;
+
+    constructor(private colStore: AggregationColumnStore) {
 
     }
 
     public addGroup(colId: string, settings?: GroupSettings) {
         const cols = this.colStore.getColumnsBefore(colId);
-        if (this.levels[this.lc] && this.levels[this.lc].columns.length > cols.length)
-            throw "Invalid group of columns";
+        if (this.hasGroups()) {
+            if (this.groups[this.groups.length].columns.length > cols.length) {
+                throw "Invalid group of columns";
+            }
+        }
 
-        this.levels[++this.lc] = { columns: cols, ...settings };
+        this.groups.push({ columns: cols, aggregates: null, ...settings })
         return this;
     }
 
@@ -69,20 +80,20 @@ export class TotalsSettings {
     }
 
     public addGrandTotals() {
-        this.levels[0] = { columns: [] };
+        this.useGrandTotals = true;
         return this;
     }
 
-    public getGroupLevels() {
-        const levels = this.levels;
-        for(const num in levels) {
-            levels[num].aggregates = this.aggregates;
-        }
-        return levels;
+    public getGroups() {
+        return this.groups.map(g => {
+            g.aggregates = this.aggregates;
+            return g;
+        })
     }
 
-    public lastGroupLevel() {
-        return this.getGroupLevels()[this.lc];
+    public lastGroup() {
+        const groups = this.getGroups();
+        return groups[groups.length - 1];
     }
 
     public getAggregates(): Array<{ colId: string, funcId: string }> {
@@ -94,13 +105,16 @@ export class TotalsSettings {
     }
 
     public hasGroups(): boolean {
-        return Object.keys(this.levels).length > 0;
+        return this.groups.length > 0;
+    }
+
+    public hasGrandTotals(): boolean {
+        return this.useGrandTotals && this.hasAggregates();
     }
 
     public drop() {
-        this.levels = {};
+        this.groups = [];
         this.aggregates = [];
-        this.lc = 0;
     }
 
 }
