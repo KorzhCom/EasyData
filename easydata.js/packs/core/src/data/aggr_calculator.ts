@@ -62,7 +62,7 @@ export class AggregateSettings {
     public addGroup(colId: string, settings?: GroupSettings) {
         const cols = this.colStore.getColumnsBefore(colId);
         if (this.hasGroups()) {
-            if (this.groups[this.groups.length].columns.length > cols.length) {
+            if (this.lastGroup().columns.length > cols.length) {
                 throw "Invalid group of columns";
             }
         }

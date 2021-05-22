@@ -536,8 +536,8 @@ export class EasyGrid {
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
 
         const settings = this.options.aggregates.settings;
-        const data = (level > 0)
-            ?  settings.getGroups()[level]
+        const group = (level > 0)
+            ?  settings.getGroups()[level - 1]
             : { columns: [], aggregates: settings.getAggregates() };
 
         const rowBuilder = domel('div')
@@ -559,7 +559,7 @@ export class EasyGrid {
                 : -1;
 
             if (!column.isRowNum && column.dataColumn) {
-                if (data.columns.indexOf(column.dataColumn.id)) {
+                if (group.columns.indexOf(column.dataColumn.id)) {
                     val = row.getValue(colIndex);
                 };
             }
@@ -588,7 +588,7 @@ export class EasyGrid {
                         : -1;
 
                     if (!column.isRowNum && column.dataColumn) {
-                        if (data.columns.indexOf(column.dataColumn.id) >= 0 
+                        if (group.columns.indexOf(column.dataColumn.id) >= 0
                             || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
                         };
