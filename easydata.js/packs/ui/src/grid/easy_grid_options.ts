@@ -1,4 +1,4 @@
-import { EasyDataTable, TotalsCalculator } from '@easydata/core';
+import { EasyDataTable, AggregatesCalculator, AggregateSettings } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -17,15 +17,10 @@ export interface EasyGridOptions {
 
     dataTable: EasyDataTable;
 
-    totals?: {
+    aggregates?: {
         showGrandTotalsOnEachPage?: boolean;
-        calcGrandTotals?: boolean;
-        cols?: {
-            [id: string]: {
-                calcSubTotals?: boolean
-            }
-        }
-        calculator: TotalsCalculator
+        settings: AggregateSettings;
+        calculator: AggregatesCalculator;
     },
     addColumns?: boolean;
     addColumnsTitle?: string;
