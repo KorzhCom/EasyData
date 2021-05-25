@@ -34,6 +34,9 @@ export interface AggregatesContainer {
 
 export interface GroupSettings {
     name?: string;
+    columns?: string[],
+    from?: number;
+    to?: number;
 }
 
 export interface GroupData {
@@ -43,8 +46,9 @@ export interface GroupData {
 }
 
 export interface AggregationColumnStore {
-    getColumnsBefore(colId: string): string[];
-    validAggregate(colId: string, funcId: string);
+    getColumnIds(from: number, to?: number): string[];
+    validateColumns(colIds: string[]): boolean;
+    validAggregate(colId: string, funcId: string): boolean;
 }
 
 export class AggregateSettings {
@@ -59,20 +63,21 @@ export class AggregateSettings {
 
     }
 
-    public addGroup(colId: string, settings?: GroupSettings) {
-        const cols = this.colStore.getColumnsBefore(colId);
-        if (this.hasGroups()) {
-            if (this.lastGroup().columns.length > cols.length) {
-                throw "Invalid group of columns";
-            }
-        }
+    public addGroup(settings: GroupSettings) {
+        const cols = settings.columns || this.colStore.getColumnIds(settings.from, settings.to);
+        if (!this.colStore.validateColumns(cols) || !this.areUnusedColumns(cols))
+            throw "Invalid group of columns";
 
         this.groups.push({ columns: cols, aggregates: null, ...settings })
         return this;
     }
 
-    public addAggregateColumn(colId: string, funcId: string) {
-        if (!this.colStore.validAggregate(colId, funcId))
+    public addAggregateColumn(colIndexOrId: number | string, funcId: string) {
+        const colId = typeof colIndexOrId == 'string'
+            ? colIndexOrId
+            : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
+
+        if (!this.areUnusedColumns([colId]) || !this.colStore.validAggregate(colId, funcId))
             throw "Invalid aggregate function for such column";
 
         this.aggregates.push({ colId, funcId });
@@ -85,10 +90,15 @@ export class AggregateSettings {
     }
 
     public getGroups() {
-        return this.groups.map(g => {
+        let cols = [];
+        const mappedGrops = this.groups.map(g => {
+            cols = cols.concat(g.columns);
             g.aggregates = this.aggregates;
+            g.columns = cols;
             return g;
-        })
+        });
+
+        return mappedGrops;
     }
 
     public lastGroup() {
@@ -109,12 +119,30 @@ export class AggregateSettings {
     }
 
     public hasGrandTotals(): boolean {
-        return this.useGrandTotals && this.hasAggregates();
+        return this.useGrandTotals;
     }
 
     public drop() {
         this.groups = [];
         this.aggregates = [];
+        this.useGrandTotals = false;
+    }
+
+    private areUnusedColumns(cols: string[]): boolean {
+        for(const group of this.groups) {
+            const interCols = group.columns
+                .filter(c => cols.indexOf(c) >= 0);
+
+            if (interCols.length > 0)
+                return false;
+        }
+
+        for(const aggr of this.aggregates) {
+            if (cols.indexOf(aggr.colId) >= 0)
+                return false;
+        }
+
+        return true;
     }
 
 }
