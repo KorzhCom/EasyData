@@ -1,6 +1,7 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn, AggregateSettings 
+    DataRow, utils, i18n, DataColumn, AggregateSettings,
+    GroupData
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -445,11 +446,10 @@ export class EasyGrid {
 
                     if (rows.length) {
                         const calcTotals = this.showAggregates();
-                        const keyCols = this.getTotalsKeyCols();
-     
+                        const groups = this.options.aggregates.settings.getGroups();
                         rows.forEach((row, index) => {
                             if (calcTotals)
-                                this.updateTotalsState(keyCols, row);
+                                this.updateTotalsState(groups, row);
 
                             const tr = this.renderRow(row, index);
                             this.bodyCellContainerDiv.appendChild(tr);
@@ -458,7 +458,7 @@ export class EasyGrid {
                         const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
                         if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
-                            this.updateTotalsState(keyCols, row, true);
+                            this.updateTotalsState(groups, row, true);
                         }
                     }
 
@@ -481,15 +481,6 @@ export class EasyGrid {
         this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
     }
 
-    private getTotalsKeyCols(): DataColumn[] {
-        const settings = this.options.aggregates.settings;
-        const ids = settings.getGroups()
-            .filter(g => g.columns.length > 0)
-            .map(g => g.columns[g.columns.length - 1]);
-
-        return this.dataTable.columns.getItems().filter(c => ids.indexOf(c.id) >= 0);
-    }
-
     private isLastPage() {
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
@@ -504,22 +495,27 @@ export class EasyGrid {
 
     private prevRowTotals: DataRow = null;
 
-    private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
+    private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
         const settings = this.options.aggregates.settings;
         if (this.prevRowTotals && settings.hasGroups()) {
             let changeLevel = -1;
-            for(let i = 0; i < keyCols.length; i++) {
-                const col = keyCols[i];
-                if (this.prevRowTotals.getValue(col.id) !== newRow.getValue(col.id)) {
-                    changeLevel = i;
-                    break;
+            for (let level = 1; level <= groups.length; level++) {
+                const group = groups[level - 1];
+                for(const col of group.columns) {
+                    if (this.prevRowTotals.getValue(col) !== newRow.getValue(col)) {
+                        changeLevel = level;
+                        break;
+                    }
                 }
-            }
 
-            if (changeLevel != -1) {
-                for(let i = keyCols.length; i > changeLevel; i--) {
+                if (changeLevel !== -1)
+                    break;
+            }
+          
+            if (changeLevel !== -1) {
+                for (let level = groups.length; level >= changeLevel; level--) {
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
-                    const tr = this.renderTotalsRow(i, row);
+                    const tr = this.renderTotalsRow(level, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
             }
@@ -559,7 +555,7 @@ export class EasyGrid {
                 : -1;
 
             if (!column.isRowNum && column.dataColumn) {
-                if (group.columns.indexOf(column.dataColumn.id)) {
+                if (group.columns.indexOf(column.dataColumn.id) >= 0) {
                     val = row.getValue(colIndex);
                 };
             }

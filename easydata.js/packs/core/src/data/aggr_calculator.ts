@@ -51,6 +51,12 @@ export interface AggregationColumnStore {
     validAggregate(colId: string, funcId: string): boolean;
 }
 
+export interface AggregateData {
+    groups: Array<GroupData>,
+    ugt: boolean;
+    aggregates: Array<{ colId: string, funcId: string }>;
+}
+
 export class AggregateSettings {
 
     private aggregates: Array<{ colId: string, funcId: string }> = []
@@ -93,9 +99,11 @@ export class AggregateSettings {
         let cols = [];
         const mappedGrops = this.groups.map(g => {
             cols = cols.concat(g.columns);
-            g.aggregates = this.aggregates;
-            g.columns = cols;
-            return g;
+            return {
+                ...g,
+                columns: Array.from(cols),
+                aggregates: Array.from(this.aggregates)
+            };
         });
 
         return mappedGrops;
@@ -143,6 +151,18 @@ export class AggregateSettings {
         }
 
         return true;
+    }
+
+    public saveToData(): AggregateData {
+        return {
+            groups: Array.from(this.groups),
+            ugt: this.useGrandTotals,
+            aggregates: Array.from(this.aggregates)
+        }
+    }
+
+    public loadFromData(data: AggregateData) {
+        // TODO: implement in future
     }
 
 }
