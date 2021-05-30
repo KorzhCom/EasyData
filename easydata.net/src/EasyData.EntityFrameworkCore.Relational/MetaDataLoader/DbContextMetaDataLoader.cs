@@ -167,6 +167,10 @@ namespace EasyData.EntityFrameworkCore
 
                 lookUpAttr.PropInfo = navigation.PropertyInfo;
 
+                if (property.ClrType.IsEnum) {
+                    lookUpAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
+                }
+
                 var enabled = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
                 if (!enabled)
                     return;
@@ -271,6 +275,10 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.IsForeignKey = property.IsForeignKey();
 
             entityAttr.IsNullable = property.IsNullable;
+
+            if (property.ClrType.IsEnum) {
+                entityAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
+            }
 
             var propInfo = property.PropertyInfo;
             if (propInfo != null) {         

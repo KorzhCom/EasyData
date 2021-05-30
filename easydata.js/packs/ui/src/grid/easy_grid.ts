@@ -1,6 +1,7 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn 
+    DataRow, utils, i18n, DataColumn, AggregateSettings,
+    GroupData
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -70,8 +71,8 @@ export class EasyGrid {
         syncGridColumns: true,
         useRowNumeration: true,
         allowDragDrop: false,
-        totals: {
-            calcGrandTotals: false,
+        aggregates: {
+            settings: null,
             calculator: null
         },
         paging: {
@@ -444,21 +445,20 @@ export class EasyGrid {
                     this.prevRowTotals = null;
 
                     if (rows.length) {
-                        const calcTotals = this.calcTotals();
-                        const keyCols = this.getTotalsKeyCols();
-     
+                        const calcTotals = this.showAggregates();
+                        const groups = this.options.aggregates.settings.getGroups();
                         rows.forEach((row, index) => {
                             if (calcTotals)
-                                this.updateTotalsState(keyCols, row);
+                                this.updateTotalsState(groups, row);
 
                             const tr = this.renderRow(row, index);
                             this.bodyCellContainerDiv.appendChild(tr);
                         });
     
-                        const showGrandTotalsOnEachPage = this.options.totals && this.options.totals.showGrandTotalsOnEachPage;
+                        const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
                         if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
-                            this.updateTotalsState(keyCols, row, true);
+                            this.updateTotalsState(groups, row, true);
                         }
                     }
 
@@ -485,57 +485,43 @@ export class EasyGrid {
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
 
-    private calcTotals(): boolean {
-        return this.options.totals 
-            && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
-            && this.dataTable.columns.getItems()
-                .filter(col => col.isAggr).length > 0;
-    }
+    private showAggregates(): boolean {
+        if (!this.options || !this.options.aggregates || !this.options.aggregates.settings)
+            return false;
 
-    private calcSubTotalsCols(): boolean {
-        return this.options.totals.cols && Object.values(this.options.totals.cols)
-            .map(val => val.calcSubTotals)
-            .reduce((prev, value) => {
-                return prev || value;
-            }, false)
+        const settings = this.options.aggregates.settings;
+        return settings.hasAggregates() && (settings.hasGroups() || settings.hasGrandTotals());
     }
 
     private prevRowTotals: DataRow = null;
 
-    private getTotalsKeyCols() {
-        const keyCols = this.dataTable.columns.getItems()
-            .filter(col => !col.isAggr);
-        keyCols.pop();
-
-        return keyCols;
-    } 
-
-    private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals && this.calcSubTotalsCols()) {
+    private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
+        const settings = this.options.aggregates.settings;
+        if (this.prevRowTotals && settings.hasGroups()) {
             let changeLevel = -1;
-            for(let i = 0; i < keyCols.length; i++) {
-                const col = keyCols[i];
-                if (this.prevRowTotals.getValue(col.id) !== newRow.getValue(col.id)) {
-                    changeLevel = i;
-                    break;
+            for (let level = 1; level <= groups.length; level++) {
+                const group = groups[level - 1];
+                for(const col of group.columns) {
+                    if (this.prevRowTotals.getValue(col) !== newRow.getValue(col)) {
+                        changeLevel = level;
+                        break;
+                    }
                 }
-            }
 
-            if (changeLevel != -1) {
-                const totalsOpts = this.options.totals;
-                for(let i = keyCols.length; i > changeLevel; i--) {
-                    const col = keyCols[i - 1];
-                    const totalColOpts = totalsOpts.cols ? totalsOpts.cols[col.id] : null;  
-                    if (!totalColOpts || !totalColOpts.calcSubTotals)
-                        continue;
+                if (changeLevel !== -1)
+                    break;
+            }
+          
+            if (changeLevel !== -1) {
+                for (let level = groups.length; level >= changeLevel; level--) {
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
-                    const tr = this.renderTotalsRow(i, row);
+                    const tr = this.renderTotalsRow(level, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
             }
         }
 
-        if (isLast && this.options.totals.calcGrandTotals) {
+        if (isLast && settings.hasGrandTotals()) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -544,6 +530,12 @@ export class EasyGrid {
     }
 
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
+
+        const settings = this.options.aggregates.settings;
+        const group = (level > 0)
+            ?  settings.getGroups()[level - 1]
+            : { columns: [], aggregates: settings.getAggregates() };
+
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-totals`)
@@ -557,17 +549,27 @@ export class EasyGrid {
                 return;
             }
 
-            const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+            let val = '';
+            const colIndex = !column.isRowNum
+                ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                : -1;
+
+            if (!column.isRowNum && column.dataColumn) {
+                if (group.columns.indexOf(column.dataColumn.id) >= 0) {
+                    val = row.getValue(colIndex);
+                };
+            }
+                           
             if (colIndex == this.dataTable.columns.count - 1) {
                 val = 'Calculating...'
             }
 
-            rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+            rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const totals = this.options.totals.calculator.getTotals();
-        totals.fillTotals(level, row)
+        const aggrs = this.options.aggregates.calculator.getAggregates();
+        const aggrCols = settings.getAggregates().map(c => c.colId);
+        aggrs.fillAggregates(level, row)
             .then(() => {
                 rowElement.innerHTML = '';
 
@@ -576,9 +578,20 @@ export class EasyGrid {
                         return;
                     }
         
-                    const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-                    let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
-                    if (!column.isRowNum && column.dataColumn.isAggr) {
+                    let val = '';
+                    const colIndex = !column.isRowNum
+                        ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                        : -1;
+
+                    if (!column.isRowNum && column.dataColumn) {
+                        if (group.columns.indexOf(column.dataColumn.id) >= 0
+                            || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                            val = row.getValue(colIndex);
+                        };
+                    }
+
+                    if (!column.isRowNum && (column.dataColumn.isAggr 
+                        || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
                     }
         
@@ -588,10 +601,6 @@ export class EasyGrid {
             .catch((error) => console.error(error));
         
         return rowElement;
-    }
-
-    private getTotalsTitle(level: number) {
-        return (level) ? 'Sub totals: ' : 'Grand totals: ';
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
@@ -670,7 +679,7 @@ export class EasyGrid {
         .catch(error => {
             console.error(error);
             return [];
-        });;
+        });
     }
 
     protected renderFooter() {
