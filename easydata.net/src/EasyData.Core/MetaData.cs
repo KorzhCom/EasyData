@@ -248,9 +248,6 @@ namespace EasyData
         /// <returns></returns>
         public MetaEntityAttr CreateEntityAttr(MetaEntityAttrDescriptor desc)
         {
-            if (desc == null)
-                throw new ArgumentNullException(nameof(desc));
-
             var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
             if (!string.IsNullOrEmpty(desc.Expression))
                 attr.Id = DataUtils.ComposeKey(desc.Parent?.Id, desc.Expression);
@@ -260,6 +257,14 @@ namespace EasyData
             attr.Size = desc.Size;
 
             return attr;
+        }
+
+        protected virtual void ValidateEntityAttrDesc(MetaEntityAttrDescriptor desc) {
+            if (desc == null)
+                throw new ArgumentNullException(nameof(desc));
+
+            if (desc.Parent == null)
+                throw new InvalidOperationException("Parent entity is required");
         }
 
         protected virtual MetaEntity CreateEntityCore(MetaEntity parent)
@@ -401,6 +406,8 @@ namespace EasyData
         /// <returns>EntityAttr.</returns>
         public virtual MetaEntityAttr AddEntityAttr(MetaEntityAttrDescriptor desc)
         {
+            ValidateEntityAttrDesc(desc);
+
             var attr = CreateEntityAttr(desc);
             attr.Entity.Attributes.Add(attr);
             AssignEntityAttrID(attr);
