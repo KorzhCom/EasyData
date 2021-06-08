@@ -10,31 +10,20 @@ namespace EasyData
 {
     public class MetaEntityAttrDescriptor
     {
-        public MetaEntityAttrDescriptor(MetaEntity parent): this(parent, "")
-        {        
-        }
-
-        public MetaEntityAttrDescriptor(MetaEntity parent, string expr)
+        public MetaEntityAttrDescriptor()
         {
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
-
-            Parent = parent;
-            Expression = expr;
-            Caption = expr?.GetSecondPart('.');
             Kind = EntityAttrKind.Data;
             DataType = DataType.Unknown;
             Size = 100;
         }
 
-        public MetaEntityAttrDescriptor(MetaEntity parent, EntityAttrKind kind, string expr = ""): this(parent, expr)
-        {
-            Kind = kind;
+        public MetaEntity Parent { get; set; }
+
+        private string _caption;
+        public string Caption { 
+            get => _caption ?? Expression?.GetSecondPart('.');
+            set => _caption = value;
         }
-
-        public MetaEntity Parent { get; private set; }
-
-        public string Caption { get; set; }
 
         public string Expression { get; set; }
 

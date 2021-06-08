@@ -161,7 +161,10 @@ namespace EasyData.EntityFrameworkCore
             var property = foreignKey.Properties.First();
 
             if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
-                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity, EntityAttrKind.Lookup));
+                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { 
+                    Parent = entity, 
+                    Kind = EntityAttrKind.Lookup 
+                });
                 lookUpAttr.Id = DataUtils.ComposeKey(entity.Id, navigation.Name);
                 lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
 
@@ -263,7 +266,11 @@ namespace EasyData.EntityFrameworkCore
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
-            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity));
+            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
+            {
+                Parent = entity
+            });
+
             entityAttr.Id = DataUtils.ComposeKey(entityName, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
