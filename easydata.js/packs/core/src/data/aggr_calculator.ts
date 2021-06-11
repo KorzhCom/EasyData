@@ -109,6 +109,10 @@ export class AggregateSettings {
         return mappedGrops;
     }
 
+    public getInternalGroups() {
+        return this.groups;
+    }
+
     public lastGroup() {
         const groups = this.getGroups();
         return groups[groups.length - 1];
@@ -128,6 +132,10 @@ export class AggregateSettings {
 
     public hasGrandTotals(): boolean {
         return this.useGrandTotals;
+    }
+
+    public isEmpty(): boolean {
+        return !(this.hasAggregates() || this.hasGroups() || this.hasAggregates());
     }
 
     public drop() {
@@ -162,7 +170,17 @@ export class AggregateSettings {
     }
 
     public loadFromData(data: AggregateData) {
-        // TODO: implement in future
+        if (data) {
+            this.useGrandTotals = data.ugt || false;
+
+            if (data.groups) {
+                this.groups = Array.from(data.groups);
+            }
+
+            if (data.aggregates) {
+                this.aggregates = Array.from(data.aggregates);
+            }
+        }
     }
 
 }
