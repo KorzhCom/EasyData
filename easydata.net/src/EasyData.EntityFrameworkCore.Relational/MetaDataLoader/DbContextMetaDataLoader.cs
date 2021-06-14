@@ -283,7 +283,14 @@ namespace EasyData.EntityFrameworkCore
 
             entityAttr.IsNullable = property.IsNullable;
 
+            var veId = $"VE_{entityName}_{propertyName}";
             if (property.ClrType.IsEnum) {
+                var editor = new ConstListValueEditor(veId);
+                FieldInfo[] fields = property.ClrType.GetFields();
+                foreach (var field in fields.Where(f => !f.Name.Equals("value__"))) {
+                    editor.Values.Add(field.GetRawConstantValue().ToString(), field.Name);
+                }
+                entityAttr.DefaultEditor = editor;
                 entityAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
             }
 

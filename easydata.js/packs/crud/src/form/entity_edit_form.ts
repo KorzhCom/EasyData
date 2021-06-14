@@ -214,15 +214,15 @@ export class EntityEditForm {
                     domel(parent)
                     .addChild('div', b => { b
                         .addClass(horizClass)
-                        .addChild('input', b => { 
-                            inputEl = b.toDOM(); 
+                        .addChild('input', b => {
+                            inputEl = b.toDOM();
                             b.attr('readonly', '');
 
                             b.name(dataAttr.id)
                             b.type(getInputType(dataAttr.dataType));
-            
+
                             b.value(dataUtils.IsDefinedAndNotNull(value)
-                                    ? value.toString() : '');     
+                                ? value.toString() : '');
                         });
 
                         if (!readOnly)
@@ -399,44 +399,48 @@ export class EntityEditForm {
     
                     case EditorTag.List:
                         domel(parent)
-                            .addChild('select', b => {
-                                if (readOnly)
-                                    b.attr('readonly', '');
-                                b
-                                .attr('name', attr.id)
-                                
-                                if (editor.values) {
-                                    for(let i = 0 ; i < editor.values.length; i++) {
-                                        b.addOption({
-                                            value: value.id,
-                                            title: value.text,
-                                            selected: i === 0
-                                        });
-                                    }
-                                }
-                            });
-    
-                    case EditorTag.Edit:
-                        default:
-                            domel(parent)
-                                .addChild('input', b => {
+                            .addChild('div', b => b
+                                .addClass('kfrm-select')
+                                .addChild('select', b => {
                                     if (readOnly)
                                         b.attr('readonly', '');
+                                    b.attr('name', attr.id)
 
-                                    b
-                                    .name(attr.id)
-                                    .type(getInputType(attr.dataType));
-        
-                                    if (attr.dataType == DataType.Bool) {
-                                        if (value)
-                                            b.attr('checked', '');
-                                    } else {
-                                        b.value(dataUtils.IsDefinedAndNotNull(value) 
-                                        ? value.toString() 
-                                        : '');
+                                    if (editor.values) {
+                                        for (let i = 0; i < editor.values.length; i++) {
+                                            const val = editor.values[i];
+                                            b.addOption({
+                                                value: val.id,
+                                                title: val.text,
+                                                selected: i === 0
+                                            });
+                                        }
                                     }
-                                });
-                            break;
+                                })
+                            );
+                        break;
+    
+                    case EditorTag.Edit:
+                    default:
+                        domel(parent)
+                            .addChild('input', b => {
+                                if (readOnly)
+                                    b.attr('readonly', '');
+
+                                b
+                                .name(attr.id)
+                                .type(getInputType(attr.dataType));
+    
+                                if (attr.dataType == DataType.Bool) {
+                                    if (value)
+                                        b.attr('checked', '');
+                                } else {
+                                    b.value(dataUtils.IsDefinedAndNotNull(value) 
+                                    ? value.toString() 
+                                    : '');
+                                }
+                            });
+                        break;
                 }
                 
             }
