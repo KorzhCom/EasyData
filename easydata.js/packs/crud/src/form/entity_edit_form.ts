@@ -96,7 +96,7 @@ export class EntityEditForm {
     private mapValue(type: DataType, value: string) {
 
         if (dataUtils.getDateDataTypes().indexOf(type) >= 0) 
-            return new Date(value);
+            return value && value.length ? value: null;
 
         if (dataUtils.isIntType(type))
             return parseInt(value);
@@ -361,42 +361,63 @@ export class EntityEditForm {
                 switch (editor.tag) {
                     case EditorTag.DateTime:
                         domel(parent)
-                         .addChild('input', b => { 
-    
-                            if (readOnly)
-                                b.attr('readonly', '');
+                         .addChild('div', b => 
+                            b.addClass(`kfrm-dt-editor`)
+                                 .addChild('a', b => {
+                                     b.addHtml((dataUtils.IsDefinedAndNotNull(value)
+                                         ? i18n.dateTimeToStr(value, attr.dataType)
+                                         : i18n.getText('SelectLink')));
 
-                            b.name(attr.id)
-                            b.value(dataUtils.IsDefinedAndNotNull(value) 
-                                ? new Date(value).toUTCString() 
-                                : '');
-    
-                            if (!readOnly)
-                                b.on('focus', (ev) => {
-                                    const inputEl = ev.target as HTMLInputElement;
-                                    const oldValue = inputEl.value ? new Date(inputEl.value) : new Date();
-                                    const pickerOptions: DateTimePickerOptions = {
-                                        zIndex: 9999999999,
-                                        showCalendar: attr.dataType !== DataType.Time,
-                                        showTimePicker: attr.dataType !== DataType.Date,
-                                        onApply: (dateTime: Date) => {
-                                            inputEl.value = dateTime.toUTCString();
-                                        },
-                                        onCancel: () => {
-                                            inputEl.value = oldValue.toUTCString();
-                                        },
-                                        onDateTimeChanged: (dateTime: Date) => {
-                                            inputEl.value = dateTime.toUTCString();
-                                        }
-                                    };
+                                     b.attr('href', 'javascript:void(0)');
 
-                                    const dtp = new DefaultDateTimePicker(pickerOptions);
-                                    dtp.setDateTime(oldValue);
-                                    dtp.show(inputEl);
-                                });
-                         });
-                        break;
-    
+                                     if (readOnly) {
+                                         b.addChild('disabled');
+                                     }
+
+                                    b.on('click', (ev) => {
+                                        ev.preventDefault();
+                                        
+                                        const format = this.getInternalDateTimeFormat(attr.dataType);
+                                        const aEl = ev.target as HTMLAnchorElement;
+                                        const inputEl = aEl.parentElement.querySelector('input') as HTMLInputElement;
+                                        const value = inputEl.value.length 
+                                            ? attr.dataType !== DataType.Time 
+                                                ? dataUtils.strToDateTime(inputEl.value, format)
+                                                : dataUtils.strToTime(inputEl.value)
+                                            : new Date(new Date().setSeconds(0));
+
+                                        const pickerOptions: DateTimePickerOptions = {
+                                            zIndex: 9999999999,
+                                            showCalendar: attr.dataType !== DataType.Time,
+                                            showTimePicker: attr.dataType !== DataType.Date,
+                                            onApply: (dateTime: Date) => {
+                                                dateTime.setSeconds(0);
+                                                dateTime.setMilliseconds(0);
+
+                                                inputEl.value = dataUtils.dateTimeToStr(dateTime, format);
+                                                aEl.innerHTML = i18n.dateTimeToStr(dateTime, attr.dataType);
+                                            }
+                                        };
+
+                                        const dtp = new DefaultDateTimePicker(pickerOptions);
+                                        dtp.setDateTime(value);
+                                        dtp.show(aEl);
+                                    })
+                                 })
+                                 .addChild('input', b => {
+
+                                     b.attr('hidden', '');
+
+                                     b.name(attr.id);
+
+                                     const format = this.getInternalDateTimeFormat(attr.dataType);
+                                     b.value((dataUtils.IsDefinedAndNotNull(value)
+                                         ? dataUtils.dateTimeToStr(value, format)
+                                         : ''))
+                                 })
+                         );
+                    break;
+                      
                     case EditorTag.List:
                         domel(parent)
                             .addChild('div', b => b
@@ -463,4 +484,19 @@ export class EntityEditForm {
 
         return new EntityEditForm(context, formHtml)
     }
+
+    private static _internalDateFormat = 'yyyy-MM-dd';
+    private static _internalTimeFormat = 'HH:mm';
+
+    private static getInternalDateTimeFormat(dtype: DataType): string {
+        if (dtype == DataType.Date)
+            return this._internalDateFormat;
+
+        if (dtype == DataType.Time)
+            return this._internalTimeFormat;
+
+        return `${this._internalDateFormat}T${this._internalTimeFormat}`;
+    }
+
+  
 }

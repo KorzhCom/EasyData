@@ -13,6 +13,7 @@ function addEasyDataCRUDTexts() {
         AddBtnTitle: 'Add',
         EditBtn: 'Edit',
         DeleteBtn: 'Delete',
+        SelectLink: '[ select ]',
         AddDlgCaption: 'Create {entity}',
         EditDlgCaption: 'Edit {entity}',
         DeleteDlgCaption: 'Delete {entity}',

@@ -1,6 +1,8 @@
-import { DataColumnDescriptor, DataColumnList } from "./data_column";
-import { DataRow } from "./data_row";
-import { DataLoader } from "./data_loader";
+import { DataColumnDescriptor, DataColumnList } from './data_column';
+import { DataRow } from './data_row';
+import { DataLoader } from './data_loader';
+import { DataType } from '../types/data_type';
+import { utils } from '../utils/utils';
 
 export interface EasyDataTableOptions {
     chunkSize?: number;
@@ -205,12 +207,26 @@ export class EasyDataTable {
                 const value = getValue(column.id);
                 const index = this.columns.getIndex(column.id);
                 values[index] = (dateIdx.indexOf(index) >= 0)
-                    ? (value ? new Date(value) : value)
+                    ? this.mapDate(value, column.type)
                     : value;
             });    
         }
        
         return new DataRow(this._columns, values);
+    }
+
+    private mapDate(value: any, dtype: DataType): Date {
+
+        if (value) {
+            let result = new Date(value);
+            if (isNaN(result.getTime())
+                && dtype == DataType.Time) {
+                result = utils.strToTime(value);
+            }
+            return result;
+        }
+
+        return null;
     }
 
     public addRow(rowOrValue: any[] | DataRow) : DataRow {
@@ -220,7 +236,7 @@ export class EasyDataTable {
             if (dateIdx.length > 0) {
                 for(const idx of dateIdx) {
                     if (rowOrValue[idx]) {
-                        rowOrValue[idx] = new Date(rowOrValue[idx]);
+                        rowOrValue[idx] = this.mapDate(rowOrValue[idx], this._columns.get(idx).type);
                     }
                 }
             }

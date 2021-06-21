@@ -93,3 +93,7 @@
       to {left: 100%;}
   }
 /* Progress Bar end */
+
+.kfrm-dt-editor {
+    padding: .5em 0;
+}

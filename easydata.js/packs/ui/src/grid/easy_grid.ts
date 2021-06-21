@@ -445,10 +445,13 @@ export class EasyGrid {
                     this.prevRowTotals = null;
 
                     if (rows.length) {
-                        const calcTotals = this.showAggregates();
-                        const groups = this.options.aggregates.settings.getGroups();
+                        const showAggrs = this.showAggregates();
+                        const groups = showAggrs 
+                            ? this.options.aggregates.settings.getGroups() 
+                            : [];
+                            
                         rows.forEach((row, index) => {
-                            if (calcTotals)
+                            if (showAggrs)
                                 this.updateTotalsState(groups, row);
 
                             const tr = this.renderRow(row, index);
@@ -456,7 +459,7 @@ export class EasyGrid {
                         });
     
                         const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
-                        if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
+                        if (showAggrs && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
                             this.updateTotalsState(groups, row, true);
                         }

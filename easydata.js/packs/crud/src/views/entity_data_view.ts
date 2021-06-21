@@ -155,7 +155,8 @@ export class EntityDataView {
 
     private showEditForm(row: DataRow) {
         const activeEntity = this.context.getActiveEntity();
-        const form = EntityEditForm.build(this.context, {isEditForm: true, values: row});
+
+        const form = EntityEditForm.build(this.context, { isEditForm: true, values: row });
         form.useValidators(this.defaultValidators);
 
         this.dlg.open({
