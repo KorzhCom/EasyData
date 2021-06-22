@@ -264,7 +264,9 @@ export class EntityEditFormBuilder {
                 if (!readOnly)
                     b.addChild('button', b => btnEl = b
                         .addClass('kfrm-button')
-                        .attr('title', i18n.getText('NavigationBtnTitle'))
+                        .attr('title', i18n.getText(attr.dataType !== DataType.Time  
+                            ? 'CalendarBtnTitle'
+                            : 'TimerBtnTitle'))
                         .addChild('i', b => b.addClass(attr.dataType !== DataType.Time 
                             ? 'ed-calendar-icon'
                             : 'ed-timer-icon'))

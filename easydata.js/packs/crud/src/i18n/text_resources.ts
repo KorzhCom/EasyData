@@ -11,6 +11,8 @@ function addEasyDataCRUDTexts() {
         LookupDlgCaption: 'Select {entity}',
         None: 'None',
         NavigationBtnTitle: 'Navigation values',
+        CalendarBtnTitle: 'Open calendar',
+        TimerBtnTitle: 'Open timer',
         AddBtnTitle: 'Add',
         EditBtn: 'Edit',
         DeleteBtn: 'Delete',
