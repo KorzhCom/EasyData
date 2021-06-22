@@ -23,18 +23,423 @@ export type FormBuildParams = {
 
 const isIE = browserUtils.IsIE();
 
+
+export class EntityEditFormBuilder {
+
+    private _internalDateFormat = 'yyyy-MM-dd';
+    private _internalTimeFormat = 'HH:mm';
+
+    private getInternalDateTimeFormat(dtype: DataType): string {
+        if (dtype == DataType.Date)
+            return this._internalDateFormat;
+
+        if (dtype == DataType.Time)
+            return this._internalTimeFormat;
+
+        return `${this._internalDateFormat}T${this._internalTimeFormat}`;
+    }
+
+    private form: EntityEditForm;
+
+    constructor(private context: DataContext, private params?: FormBuildParams) {
+        this.params = params || {};
+        this.reset();
+    }
+
+    public reset() {
+        this.form = new EntityEditForm(this.context);
+    }
+
+    private setupLookupField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+        const lookupEntity = this.context.getMetaData().getRootEntity()
+            .subEntities.filter(ent => ent.id == attr.lookupEntity)[0];
+        const dataAttr = this.context.getMetaData().getAttributeById(attr.dataAttr);
+
+        readOnly = readOnly && dataAttr.isEditable;
+
+        value = this.params.values
+            ? this.params.values.getValue(dataAttr.id)
+            : undefined;
+
+        const horizClass = isIE
+            ? 'kfrm-fields-ie is-horizontal'
+            : 'kfrm-fields is-horizontal';
+
+        let inputEl: HTMLInputElement;
+        domel(parent)
+            .addChild('div', b => {
+                b
+                .addClass(horizClass)
+                .addChild('input', b => {
+                    inputEl = b.toDOM();
+                    b.attr('readonly', '');
+
+                    b.name(dataAttr.id)
+                    b.type(this.resolveInputType(dataAttr.dataType));
+
+                    b.value(dataUtils.IsDefinedAndNotNull(value)
+                        ? value.toString() : '');
+                });
+
+                if (!readOnly)
+                    b.addChild('button', b => b
+                        .addClass('kfrm-button')
+                        .attr('title', i18n.getText('NavigationBtnTitle'))
+                        .addText('...')
+                        .on('click', (ev) => {
+
+                            const lookupTable = new EasyDataTable({
+                                loader: {
+                                    loadChunk: (chunkParams) => this.context.getDataLoader()
+                                        .loadChunk({ ...chunkParams, id: lookupEntity.id } as any)
+                                }
+                            });
+
+                            this.context.getDataLoader()
+                                .loadChunk({ offset: 0, limit: 1000, needTotal: true, entityId: lookupEntity.id } as any)
+                                .then(data => {
+
+                                    for (const col of data.table.columns.getItems()) {
+                                        const attrs = lookupEntity.attributes.filter(attr =>
+                                            attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
+
+                                        if (attrs.length) {
+                                            lookupTable.columns.add(col);
+                                        }
+                                    }
+
+                                    lookupTable.setTotal(data.total);
+
+                                    for (const row of data.table.getCachedRows()) {
+                                        lookupTable.addRow(row);
+                                    }
+
+                                    const ds = new DefaultDialogService();
+                                    let gridSlot: HTMLElement = null;
+
+                                    let selectedSlot: HTMLElement = null;
+
+                                    let widgetSlot: HTMLElement;
+                                    const slot = domel('div')
+                                        .addClass(`kfrm-form`)
+                                        .addChild('div', b => b
+                                            .addClass(`kfrm-field`)
+                                            .addChild('label', b => b
+                                                .addText(i18n.getText('LookupSelectedItem'))
+                                                .toDOM()
+                                            )
+                                            .addChild('div', b => selectedSlot = b
+                                                .addText('None')
+                                                .toDOM()
+                                            )
+                                        )
+                                        .addChild('div', b => widgetSlot = b.toDOM())
+                                        .addChild('div', b => b
+                                            .addClass('kfrm-control')
+                                            .addChild('div', b => gridSlot = b.toDOM())
+                                        )
+                                        .toDOM();
+
+                                    let selectedValue = inputEl.value;
+
+                                    const getValue = (row: DataRow | any, colId: string) => {
+
+                                        if (row instanceof DataRow) {
+                                            return row.getValue(colId);
+                                        }
+
+                                        const property = colId.substring(colId.lastIndexOf('.') + 1);
+                                        return row[property]
+                                    }
+
+                                    const updateSelectedValue = (row: DataRow | any) => {
+                                        selectedSlot.innerHTML = lookupTable.columns
+                                            .getItems()
+                                            .map(col => {
+                                                return `<b>${col.label}:</b> ${getValue(row, col.id)}`
+                                            })
+                                            .join(', ');
+                                    }
+
+                                    if (selectedValue) {
+                                        this.context.getEntity(selectedValue, lookupEntity.id)
+                                            .then(data => {
+                                                if (data.entity) {
+                                                    updateSelectedValue(data.entity);
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    }
+
+                                    const lookupGrid = new EasyGrid({
+                                        slot: gridSlot,
+                                        dataTable: lookupTable,
+                                        fixHeightOnFirstRender: true,
+                                        paging: {
+                                            pageSize: 10
+                                        },
+                                        onActiveRowChanged: (ev) => {
+                                            lookupGrid.getData().getRow(ev.rowIndex)
+                                                .then((row) => {
+                                                    selectedValue = row.getValue(attr.lookupDataAttr);
+                                                    updateSelectedValue(row);
+                                                });
+                                        }
+                                    });
+
+                                    ds.open({
+                                        title: i18n.getText('LookupDlgCaption')
+                                            .replace('{entity}', lookupEntity.caption),
+                                        body: slot,
+                                        arrangeParents: true,
+                                        beforeOpen: () => {
+                                            const dataFilter = this.context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
+                                            new TextFilterWidget(widgetSlot, lookupGrid, dataFilter,
+                                                { instantMode: true, focus: true });
+                                        },
+                                        onSubmit: () => {
+                                            inputEl.value = selectedValue;
+                                            return true;
+                                        },
+                                        onDestroy: () => {
+                                            lookupGrid.destroy();
+                                        }
+                                    });
+                                });
+                        })
+                    );
+            });
+    }
+
+    private setupDateTimeField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+        domel(parent)
+            .addChild('div', b =>
+                b.addClass(`kfrm-dt-editor`)
+                    .addChild('a', b => {
+                        b.addHtml((dataUtils.IsDefinedAndNotNull(value)
+                            ? i18n.dateTimeToStr(value, attr.dataType)
+                            : i18n.getText('SelectLink')));
+
+                        b.attr('href', 'javascript:void(0)');
+
+                        if (readOnly) {
+                            b.addChild('disabled');
+                        }
+
+                        b.on('click', (ev) => {
+                            ev.preventDefault();
+
+                            const format = this.getInternalDateTimeFormat(attr.dataType);
+                            const aEl = ev.target as HTMLAnchorElement;
+                            const inputEl = aEl.parentElement.querySelector('input') as HTMLInputElement;
+                            const value = inputEl.value.length
+                                ? attr.dataType !== DataType.Time
+                                    ? dataUtils.strToDateTime(inputEl.value, format)
+                                    : dataUtils.strToTime(inputEl.value)
+                                : new Date(new Date().setSeconds(0));
+
+                            const pickerOptions: DateTimePickerOptions = {
+                                zIndex: 9999999999,
+                                showCalendar: attr.dataType !== DataType.Time,
+                                showTimePicker: attr.dataType !== DataType.Date,
+                                onApply: (dateTime: Date) => {
+                                    dateTime.setSeconds(0);
+                                    dateTime.setMilliseconds(0);
+
+                                    inputEl.value = dataUtils.dateTimeToStr(dateTime, format);
+                                    aEl.innerHTML = i18n.dateTimeToStr(dateTime, attr.dataType);
+                                }
+                            };
+
+                            const dtp = new DefaultDateTimePicker(pickerOptions);
+                            dtp.setDateTime(value);
+                            dtp.show(aEl);
+                        })
+                    })
+                    .addChild('input', b => {
+
+                        b.attr('hidden', '');
+
+                        b.name(attr.id);
+
+                        const format = this.getInternalDateTimeFormat(attr.dataType);
+                        b.value((dataUtils.IsDefinedAndNotNull(value)
+                            ? dataUtils.dateTimeToStr(value, format)
+                            : ''))
+                    })
+            );
+    }
+
+    private setupListField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, values: any, value: any) {
+        domel(parent)
+            .addChild('div', b => b
+                .addClass('kfrm-select')
+                .addChild('select', b => {
+                    if (readOnly)
+                        b.attr('readonly', '');
+                    b.attr('name', attr.id)
+
+                    if (values) {
+                        for (let i = 0; i < values.length; i++) {
+                            const val = values[i];
+                            b.addOption({
+                                value: val.id,
+                                title: val.text,
+                                selected: i === 0
+                            });
+                        }
+                    }
+                })
+            );
+    }
+
+    private setupTextField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+        domel(parent)
+            .addChild('input', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+
+                b.name(attr.id)
+                 .type(this.resolveInputType(attr.dataType));
+
+                if (attr.dataType == DataType.Bool) {
+                    if (value)
+                        b.attr('checked', '');
+                } else {
+                    b.value(dataUtils.IsDefinedAndNotNull(value)
+                        ? value.toString()
+                        : '');
+                }
+            });
+    }
+
+    private addFormField(parent: HTMLElement, attr: MetaEntityAttr) {
+        let value = this.params.values && attr.kind !== EntityAttrKind.Lookup
+            ? this.params.values.getValue(attr.id)
+            : undefined;
+
+        const editor = this.resolveEditor(attr);
+        
+
+        let readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+        const required = !attr.isNullable;
+
+        if (isIE) {
+            parent = domel('div', parent)
+                .addClass('kfrm-field-ie')
+                .toDOM();
+        }
+
+        domel(parent)
+            .addChild('label', b => b
+                .attr('for', attr.id)
+                .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `)
+            );
+
+        if (attr.kind === EntityAttrKind.Lookup) {
+            this.setupLookupField(parent, attr, readOnly, value);
+            return;
+        }
+
+        switch (editor.tag) {
+            case EditorTag.DateTime:
+                this.setupDateTimeField(parent, attr, readOnly, value);
+                break;
+
+            case EditorTag.List:
+                this.setupListField(parent, attr, readOnly, editor.values, value);
+                break;
+
+            case EditorTag.Edit:
+            default:
+                this.setupTextField(parent, attr, readOnly, value);
+                break;
+        }
+    }
+
+    private resolveInputType(dataType: DataType): string {
+        if (dataType == DataType.Bool) {
+            return 'checkbox';
+        }
+
+        return 'text';
+    }
+
+    private resolveEditor(attr: MetaEntityAttr): ValueEditor {
+        let editor =  attr.defaultEditor || new ValueEditor();
+        if (editor.tag == EditorTag.Unknown) {
+            if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
+                editor.tag = EditorTag.DateTime;
+            }
+            else {
+                editor.tag = EditorTag.Edit;
+            }
+        }
+
+        return editor;
+    }
+
+    public build(): EntityEditForm {
+        let fb: DomElementBuilder<HTMLDivElement>;
+        const formHtml =
+            domel('div')
+                .addClass('kfrm-form')
+                .addChild('div', b => b
+                    .addClass(`errors-block`)
+                    .toDOM()
+                )
+                .addChild('div', b => {
+                    b.addClass(`${isIE
+                        ? 'kfrm-fields-ie col-ie-1-4 label-align-right'
+                        : 'kfrm-fields col-a-1 label-align-right'}`);
+
+                    fb = b;
+                })
+                .toDOM();
+
+        this.form['setHtmlInt'](formHtml);
+
+        for (const attr of this.context.getActiveEntity().attributes) {
+            if (attr.isForeignKey)
+                continue;
+
+            if (this.params.isEditForm) {
+                if (!attr.showOnEdit)
+                    continue;
+            }
+            else {
+                if (!attr.showOnCreate)
+                    continue;
+            }
+
+            this.addFormField(fb.toDOM(), attr)
+        }
+
+        return this.form;
+    }
+}
+
 export class EntityEditForm {
 
     private errorsDiv: HTMLElement;
 
-    private constructor(private context: DataContext, private html: HTMLElement){
-        this.errorsDiv = html.querySelector('.errors-block');
+    private html: HTMLElement;
+
+    constructor(private context: DataContext){
+        
     }
 
     private validators: Validator[] = [];
 
     public getHtml() {
         return this.html;
+    }
+
+    private setHtmlInt(html: HTMLElement) {
+        this.html = html;
+        this.errorsDiv = this.html.querySelector('.errors-block');
     }
 
     public validate(): boolean {
@@ -132,371 +537,5 @@ export class EntityEditForm {
 
         return result;
     }
-
-    public static build(context: DataContext, params?: FormBuildParams): EntityEditForm {
-            params = params || {};
-            let fb: DomElementBuilder<HTMLDivElement>;
-            const formHtml =
-             domel('div')
-                .addClass('kfrm-form')
-                .addChild('div', b => b
-                    .addClass(`errors-block`)
-                    .toDOM()
-                )
-                .addChild('div', b => {
-                    b.addClass(`${isIE 
-                        ? 'kfrm-fields-ie col-ie-1-4 label-align-right' 
-                        : 'kfrm-fields col-a-1 label-align-right'}`);
-     
-                    fb = b;
-                })
-                .toDOM();
-    
-    
-            const getInputType = (dataType: DataType): string => {
-                if (dataType == DataType.Bool) {
-                    return 'checkbox';
-                }
-        
-                return 'text';
-            }
-    
-            const getEditor = (attr: MetaEntityAttr): ValueEditor => {
-                return attr.defaultEditor || new ValueEditor();
-            }
-    
-            const addFormField = (parent: HTMLElement, attr: MetaEntityAttr) => {
-                let value = params.values && attr.kind !== EntityAttrKind.Lookup
-                    ? params.values.getValue(attr.id)
-                    : undefined;
-    
-                const editor = getEditor(attr);
-                if (editor.tag == EditorTag.Unknown) {
-                    if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
-                        editor.tag = EditorTag.DateTime;
-                    }
-                    else {
-                        editor.tag = EditorTag.Edit;  
-                    }
-                }
-
-                let readOnly = params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
-                const required = !attr.isNullable;
-
-                if (isIE) {
-                    parent = domel('div', parent)
-                        .addClass('kfrm-field-ie')
-                        .toDOM();
-                }
-
-                domel(parent)
-                    .addChild('label', b => b
-                        .attr('for', attr.id)
-                        .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>': ''}: `)
-                );
-    
-                if (attr.kind === EntityAttrKind.Lookup) {
-                    const lookupEntity = context.getMetaData().getRootEntity()
-                        .subEntities.filter(ent => ent.id == attr.lookupEntity)[0]; 
-                    const dataAttr = context.getMetaData().getAttributeById(attr.dataAttr);
-    
-                    readOnly = readOnly && dataAttr.isEditable;
-
-                    value = params.values 
-                        ? params.values.getValue(dataAttr.id)
-                        : undefined;
-    
-                    const horizClass = isIE 
-                        ? 'kfrm-fields-ie is-horizontal' 
-                        : 'kfrm-fields is-horizontal';
-
-                    let inputEl: HTMLInputElement;
-                    domel(parent)
-                    .addChild('div', b => { b
-                        .addClass(horizClass)
-                        .addChild('input', b => {
-                            inputEl = b.toDOM();
-                            b.attr('readonly', '');
-
-                            b.name(dataAttr.id)
-                            b.type(getInputType(dataAttr.dataType));
-
-                            b.value(dataUtils.IsDefinedAndNotNull(value)
-                                ? value.toString() : '');
-                        });
-
-                        if (!readOnly)
-                            b.addChild('button', b => b
-                                .addClass('kfrm-button')
-                                .attr('title', i18n.getText('NavigationBtnTitle'))
-                                .addText('...')
-                                .on('click', (ev) => {
-                            
-                                    const lookupTable = new EasyDataTable({
-                                        loader: {
-                                            loadChunk: (chunkParams) => context.getDataLoader()
-                                                .loadChunk({ ... chunkParams, id: lookupEntity.id } as any)
-                                        } 
-                                    });
-            
-                                    context.getDataLoader()
-                                    .loadChunk({ offset: 0, limit: 1000, needTotal: true, entityId: lookupEntity.id } as any)
-                                    .then(data => {
-        
-                                        for(const col of data.table.columns.getItems()) {
-                                            const attrs = lookupEntity.attributes.filter(attr => 
-                                                attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
-                            
-                                            if (attrs.length) {
-                                                lookupTable.columns.add(col);
-                                            }
-                                        }
-                        
-                                        lookupTable.setTotal(data.total);
-                        
-                                        for(const row of data.table.getCachedRows()) {
-                                            lookupTable.addRow(row);
-                                        }
-        
-                                        const ds = new DefaultDialogService();
-                                        let gridSlot: HTMLElement = null;
-        
-                                        let selectedSlot: HTMLElement = null;
-
-                                        let widgetSlot: HTMLElement;
-                                        const slot = domel('div')
-                                            .addClass(`kfrm-form`)
-                                            .addChild('div', b => b
-                                                .addClass(`kfrm-field`)
-                                                .addChild('label', b => b
-                                                    .addText(i18n.getText('LookupSelectedItem'))
-                                                    .toDOM()
-                                                )
-                                                .addChild('div', b => selectedSlot = b
-                                                    .addText('None')
-                                                .toDOM()
-                                            )
-                                            )  
-                                            .addChild('div', b => widgetSlot = b.toDOM())   
-                                            .addChild('div', b => b
-                                                .addClass('kfrm-control')
-                                                .addChild('div', b => gridSlot = b.toDOM())
-                                            )
-                                            .toDOM();
-                
-                                        let selectedValue = inputEl.value;
-
-                                        const getValue = (row: DataRow| any, colId: string) => {
-
-                                            if (row instanceof DataRow) {
-                                                return row.getValue(colId);
-                                            }
-
-                                            const property = colId.substring(colId.lastIndexOf('.') + 1);
-                                            return row[property]
-                                        }
-
-                                        const updateSelectedValue = (row: DataRow | any) => {
-                                            selectedSlot.innerHTML = lookupTable.columns
-                                                .getItems()
-                                                .map(col => {
-                                                    return `<b>${col.label}:</b> ${getValue(row, col.id)}`
-                                                })
-                                                .join(', ');
-                                        } 
-
-                                        if (selectedValue) {
-                                            context.getEntity(selectedValue, lookupEntity.id)
-                                            .then(data => {
-                                                if (data.entity) {
-                                                    updateSelectedValue(data.entity);
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
-                                        }
-        
-                                        const lookupGrid = new EasyGrid({
-                                            slot: gridSlot,
-                                            dataTable: lookupTable,
-                                            fixHeightOnFirstRender: true,
-                                            paging: {
-                                                pageSize: 10
-                                            },
-                                            onActiveRowChanged: (ev) => {
-                                                lookupGrid.getData().getRow(ev.rowIndex)
-                                                .then((row) => {
-                                                    selectedValue = row.getValue(attr.lookupDataAttr);
-                                                    updateSelectedValue(row);
-                                                });
-                                            }
-                                        });
-
-                                        ds.open({
-                                            title: i18n.getText('LookupDlgCaption')
-                                                .replace('{entity}', lookupEntity.caption),
-                                            body: slot,
-                                            arrangeParents: true,
-                                            beforeOpen: () => {
-                                                const dataFilter = context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
-                                                new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, 
-                                                    { instantMode: true, focus: true});
-                                            },
-                                            onSubmit: () => {
-                                                inputEl.value = selectedValue;
-                                                return true;
-                                            },
-                                            onDestroy: () => {
-                                                lookupGrid.destroy();
-                                            }
-                                        });
-                                    });
-                                })
-                            );
-                        });
-                    return;
-                }
-    
-                switch (editor.tag) {
-                    case EditorTag.DateTime:
-                        domel(parent)
-                         .addChild('div', b => 
-                            b.addClass(`kfrm-dt-editor`)
-                                 .addChild('a', b => {
-                                     b.addHtml((dataUtils.IsDefinedAndNotNull(value)
-                                         ? i18n.dateTimeToStr(value, attr.dataType)
-                                         : i18n.getText('SelectLink')));
-
-                                     b.attr('href', 'javascript:void(0)');
-
-                                     if (readOnly) {
-                                         b.addChild('disabled');
-                                     }
-
-                                    b.on('click', (ev) => {
-                                        ev.preventDefault();
-                                        
-                                        const format = this.getInternalDateTimeFormat(attr.dataType);
-                                        const aEl = ev.target as HTMLAnchorElement;
-                                        const inputEl = aEl.parentElement.querySelector('input') as HTMLInputElement;
-                                        const value = inputEl.value.length 
-                                            ? attr.dataType !== DataType.Time 
-                                                ? dataUtils.strToDateTime(inputEl.value, format)
-                                                : dataUtils.strToTime(inputEl.value)
-                                            : new Date(new Date().setSeconds(0));
-
-                                        const pickerOptions: DateTimePickerOptions = {
-                                            zIndex: 9999999999,
-                                            showCalendar: attr.dataType !== DataType.Time,
-                                            showTimePicker: attr.dataType !== DataType.Date,
-                                            onApply: (dateTime: Date) => {
-                                                dateTime.setSeconds(0);
-                                                dateTime.setMilliseconds(0);
-
-                                                inputEl.value = dataUtils.dateTimeToStr(dateTime, format);
-                                                aEl.innerHTML = i18n.dateTimeToStr(dateTime, attr.dataType);
-                                            }
-                                        };
-
-                                        const dtp = new DefaultDateTimePicker(pickerOptions);
-                                        dtp.setDateTime(value);
-                                        dtp.show(aEl);
-                                    })
-                                 })
-                                 .addChild('input', b => {
-
-                                     b.attr('hidden', '');
-
-                                     b.name(attr.id);
-
-                                     const format = this.getInternalDateTimeFormat(attr.dataType);
-                                     b.value((dataUtils.IsDefinedAndNotNull(value)
-                                         ? dataUtils.dateTimeToStr(value, format)
-                                         : ''))
-                                 })
-                         );
-                    break;
-                      
-                    case EditorTag.List:
-                        domel(parent)
-                            .addChild('div', b => b
-                                .addClass('kfrm-select')
-                                .addChild('select', b => {
-                                    if (readOnly)
-                                        b.attr('readonly', '');
-                                    b.attr('name', attr.id)
-
-                                    if (editor.values) {
-                                        for (let i = 0; i < editor.values.length; i++) {
-                                            const val = editor.values[i];
-                                            b.addOption({
-                                                value: val.id,
-                                                title: val.text,
-                                                selected: i === 0
-                                            });
-                                        }
-                                    }
-                                })
-                            );
-                        break;
-    
-                    case EditorTag.Edit:
-                    default:
-                        domel(parent)
-                            .addChild('input', b => {
-                                if (readOnly)
-                                    b.attr('readonly', '');
-
-                                b
-                                .name(attr.id)
-                                .type(getInputType(attr.dataType));
-    
-                                if (attr.dataType == DataType.Bool) {
-                                    if (value)
-                                        b.attr('checked', '');
-                                } else {
-                                    b.value(dataUtils.IsDefinedAndNotNull(value) 
-                                    ? value.toString() 
-                                    : '');
-                                }
-                            });
-                        break;
-                }
-                
-            }
-    
-        for(const attr of context.getActiveEntity().attributes) {
-            if (attr.isForeignKey)
-                continue;
-
-            if (params.isEditForm) {
-                if (!attr.showOnEdit)
-                    continue;
-            }
-            else {
-                if (!attr.showOnCreate)
-                    continue;
-            }
-            
-            addFormField(fb.toDOM(), attr)
-        }
-
-        return new EntityEditForm(context, formHtml)
-    }
-
-    private static _internalDateFormat = 'yyyy-MM-dd';
-    private static _internalTimeFormat = 'HH:mm';
-
-    private static getInternalDateTimeFormat(dtype: DataType): string {
-        if (dtype == DataType.Date)
-            return this._internalDateFormat;
-
-        if (dtype == DataType.Time)
-            return this._internalTimeFormat;
-
-        return `${this._internalDateFormat}T${this._internalTimeFormat}`;
-    }
-
   
 }

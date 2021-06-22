@@ -6,7 +6,7 @@ import {
     GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
 
-import { EntityEditForm } from '../form/entity_edit_form';
+import { EntityEditForm, EntityEditFormBuilder } from '../form/entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 import { DataContext } from '../main/data_context';
@@ -119,7 +119,7 @@ export class EntityDataView {
     private addClickHandler() {
 
         const activeEntity = this.context.getActiveEntity();
-        const form = EntityEditForm.build(this.context);
+        const form = new EntityEditFormBuilder(this.context).build();
 
         form.useValidators(this.defaultValidators);
 
@@ -156,7 +156,7 @@ export class EntityDataView {
     private showEditForm(row: DataRow) {
         const activeEntity = this.context.getActiveEntity();
 
-        const form = EntityEditForm.build(this.context, { isEditForm: true, values: row });
+        const form = new EntityEditFormBuilder(this.context, { isEditForm: true, values: row }).build();
         form.useValidators(this.defaultValidators);
 
         this.dlg.open({
