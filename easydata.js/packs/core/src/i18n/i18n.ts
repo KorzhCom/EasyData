@@ -347,7 +347,6 @@ export namespace i18n {
 
         const localeSettings = {
             shortDateFormat: dateFormat,
-            editDateFormat: dateFormat,
             shortTimeFormat: timeFormat    
         };
 

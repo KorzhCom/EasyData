@@ -6,6 +6,7 @@ function addEasyDataCRUDTexts() {
         RequiredError: 'Value is required.',
         NumberError: 'Value should be a number',
         IntNumberError: 'Value should be an integer number',
+        DateTimeError: 'Invalid date or time value',
         LookupSelectedItem: 'Selected item: ',
         LookupDlgCaption: 'Select {entity}',
         None: 'None',

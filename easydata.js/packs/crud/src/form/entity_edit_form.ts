@@ -16,6 +16,9 @@ import { DataContext } from '../main/data_context';
 import { ValidationResult, Validator } from '../validators/validator';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
+import * as crudUtils from '../utils/utils';
+import { DateTimeValidator } from '../validators/datetime_validator';
+
 export type FormBuildParams = { 
     values?: DataRow, 
     isEditForm?: boolean;
@@ -23,21 +26,7 @@ export type FormBuildParams = {
 
 const isIE = browserUtils.IsIE();
 
-
 export class EntityEditFormBuilder {
-
-    private _internalDateFormat = 'yyyy-MM-dd';
-    private _internalTimeFormat = 'HH:mm';
-
-    private getInternalDateTimeFormat(dtype: DataType): string {
-        if (dtype == DataType.Date)
-            return this._internalDateFormat;
-
-        if (dtype == DataType.Time)
-            return this._internalTimeFormat;
-
-        return `${this._internalDateFormat}T${this._internalTimeFormat}`;
-    }
 
     private form: EntityEditForm;
 
@@ -214,32 +203,85 @@ export class EntityEditFormBuilder {
     }
 
     private setupDateTimeField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+
+        const horizClass = isIE
+            ? 'kfrm-fields-ie is-horizontal'
+            : 'kfrm-fields is-horizontal';
+
+        const editFormat = crudUtils.getEditDateTimeFormat(attr.dataType);
+
+        let inputEl: HTMLInputElement;
+        let btnEl: HTMLButtonElement;
+
+        const mask = editFormat
+            .replace('yyyy', '9999')
+            .replace('MM', '99')
+            .replace('dd', '99')
+            .replace('HH', '99')
+            .replace('mm', '99')
+            .replace('ss', '99')
+
         domel(parent)
-            .addChild('div', b =>
-                b.addClass(`kfrm-dt-editor`)
-                    .addChild('a', b => {
-                        b.addHtml((dataUtils.IsDefinedAndNotNull(value)
-                            ? i18n.dateTimeToStr(value, attr.dataType)
-                            : i18n.getText('SelectLink')));
+            .addChild('div', b => {
+                b
+                .addClass(horizClass)
+                .addChild('input', b => {
+                    inputEl = b.toDOM();
 
-                        b.attr('href', 'javascript:void(0)');
+                    if (readOnly) {
+                        b.attr('readonly', '');
+                    }
+                    else {
+                        b.mask(mask)
+                            
+                        .on('input', ev => {
+                            b.removeClass('is-invalid');
+                            try {
+                                const newDate = dataUtils.strToDateTime(inputEl.value, editFormat);
+                            }
+                            catch (e) {
+                                b.addClass('is-invalid');
+                            }
+                            finally {
+                                
+                            }
+                        })
+                        .on('blur', ev => {
+                            if (inputEl.value === mask.replace(/[9]/g, '_')) {
+                                inputEl.value = '';
+                            }
+                        });
+                    }
 
-                        if (readOnly) {
-                            b.addChild('disabled');
-                        }
+                    b.name(attr.id)
+                    b.type(this.resolveInputType(attr.dataType));
 
-                        b.on('click', (ev) => {
-                            ev.preventDefault();
+                    b.value((dataUtils.IsDefinedAndNotNull(value)
+                        ? dataUtils.dateTimeToStr(value, editFormat)
+                        : ''))
+                });
 
-                            const format = this.getInternalDateTimeFormat(attr.dataType);
-                            const aEl = ev.target as HTMLAnchorElement;
-                            const inputEl = aEl.parentElement.querySelector('input') as HTMLInputElement;
-                            const value = inputEl.value.length
-                                ? attr.dataType !== DataType.Time
-                                    ? dataUtils.strToDateTime(inputEl.value, format)
-                                    : dataUtils.strToTime(inputEl.value)
-                                : new Date(new Date().setSeconds(0));
+                if (!readOnly)
+                    b.addChild('button', b => btnEl = b
+                        .addClass('kfrm-button')
+                        .attr('title', i18n.getText('NavigationBtnTitle'))
+                        .addChild('i', b => b.addClass(attr.dataType !== DataType.Time 
+                            ? 'ed-calendar-icon'
+                            : 'ed-timer-icon'))
+                        .on('click', (ev) => {
 
+                            let value: Date;
+                            try {
+                                value = inputEl.value.length
+                                    ? attr.dataType !== DataType.Time
+                                        ? dataUtils.strToDateTime(inputEl.value, editFormat)
+                                        : dataUtils.strToTime(inputEl.value)
+                                    : new Date(new Date().setSeconds(0));
+                            }
+                            catch {
+                                value = new Date(new Date().setSeconds(0));
+                            }
+                            
                             const pickerOptions: DateTimePickerOptions = {
                                 zIndex: 9999999999,
                                 showCalendar: attr.dataType !== DataType.Time,
@@ -248,34 +290,24 @@ export class EntityEditFormBuilder {
                                     dateTime.setSeconds(0);
                                     dateTime.setMilliseconds(0);
 
-                                    inputEl.value = dataUtils.dateTimeToStr(dateTime, format);
-                                    aEl.innerHTML = i18n.dateTimeToStr(dateTime, attr.dataType);
+                                    inputEl.value = dataUtils.dateTimeToStr(dateTime, editFormat);
+                                   
                                 }
                             };
 
                             const dtp = new DefaultDateTimePicker(pickerOptions);
                             dtp.setDateTime(value);
-                            dtp.show(aEl);
-                        })
-                    })
-                    .addChild('input', b => {
+                            dtp.show(ev.target as HTMLElement);
 
-                        b.attr('hidden', '');
-
-                        b.name(attr.id);
-
-                        const format = this.getInternalDateTimeFormat(attr.dataType);
-                        b.value((dataUtils.IsDefinedAndNotNull(value)
-                            ? dataUtils.dateTimeToStr(value, format)
-                            : ''))
-                    })
-            );
+                        }).toDOM()
+                    );
+            });
     }
 
     private setupListField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, values: any, value: any) {
         domel(parent)
             .addChild('div', b => b
-                .addClass('kfrm-select')
+                .addClass('kfrm-select full-width')
                 .addChild('select', b => {
                     if (readOnly)
                         b.attr('readonly', '');
@@ -431,7 +463,7 @@ export class EntityEditForm {
         
     }
 
-    private validators: Validator[] = [];
+    private validators: Validator[] = [ new DateTimeValidator() ];
 
     public getHtml() {
         return this.html;
@@ -500,8 +532,17 @@ export class EntityEditForm {
 
     private mapValue(type: DataType, value: string) {
 
-        if (dataUtils.getDateDataTypes().indexOf(type) >= 0) 
-            return value && value.length ? value: null;
+        if (dataUtils.getDateDataTypes().indexOf(type) >= 0) {
+            if (type !== DataType.Time && value && value.length) {
+                const editFormat =  crudUtils.getEditDateTimeFormat(type);
+                const internalFormat = crudUtils.getInternalDateTimeFormat(type);
+
+                const date = dataUtils.strToDateTime(value, editFormat);
+                return dataUtils.dateTimeToStr(date, internalFormat)
+            }     
+
+            return value && value.length ? value : null;
+        }
 
         if (dataUtils.isIntType(type))
             return parseInt(value);
