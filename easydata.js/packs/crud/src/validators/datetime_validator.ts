@@ -15,8 +15,7 @@ export class DateTimeValidator extends Validator {
         if (!dataUtils.IsDefinedAndNotNull(value) || value == '')
             return { successed: true };
 
-        if (dataUtils.getAllDataTypes().indexOf(attr.dataType) >= 0)
-
+        if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
             try {
                 const editFormat = getEditDateTimeFormat(attr.dataType);
                 const newDate = dataUtils.strToDateTime(value, editFormat);
@@ -27,8 +26,9 @@ export class DateTimeValidator extends Validator {
                     messages: [i18n.getText('DateTimeError')]
                 }
             }
-          
+        }
 
+    
         return { successed: true };
     }
 }
