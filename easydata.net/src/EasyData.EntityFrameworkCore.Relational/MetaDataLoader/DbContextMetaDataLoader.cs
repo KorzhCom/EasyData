@@ -43,7 +43,24 @@ namespace EasyData.EntityFrameworkCore
         { 
             TableEntity.Clear();
 
+
             var entityTypes = GetEntityTypes(context.Model);
+
+            if (Options.KeepDbSetDeclarationOrder) {
+                // EF Core keeps information about entity types 
+                // in alphabetical order.
+                // To make it possible to keep the original order
+                // we have to get all DbSet<> types manually
+                var dbSetTypes = context.GetType()
+                    .GetProperties()
+                    .Where(p => p.PropertyType.IsGenericType 
+                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
+                    .Select(p => p.PropertyType.GetGenericArguments()[0])
+                    .ToList();
+
+                entityTypes = entityTypes.OrderBy(t => dbSetTypes.IndexOf(t.ClrType));
+            }
+
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
                 if (entity is null)
