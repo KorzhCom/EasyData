@@ -329,6 +329,19 @@ export class EntityEditFormBuilder {
             );
     }
 
+    private setupFileField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, accept: string) {
+        domel(parent)
+            .addChild('input', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+
+                b.name(attr.id)
+                    .type(this.resolveInputType(attr.dataType));
+
+                b.attr('accept', accept);
+            });
+    }
+
     private setupTextField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
         domel(parent)
             .addChild('input', b => {
@@ -386,6 +399,10 @@ export class EntityEditFormBuilder {
                 this.setupListField(parent, attr, readOnly, editor.values, value);
                 break;
 
+            case EditorTag.File:
+                this.setupFileField(parent, attr, readOnly, editor.accept);
+                break;
+
             case EditorTag.Edit:
             default:
                 this.setupTextField(parent, attr, readOnly, value);
@@ -394,9 +411,11 @@ export class EntityEditFormBuilder {
     }
 
     private resolveInputType(dataType: DataType): string {
-        if (dataType == DataType.Bool) {
+        if (dataType === DataType.Bool) 
             return 'checkbox';
-        }
+
+        if (dataType === DataType.Blob)
+            return 'file';
 
         return 'text';
     }
@@ -508,20 +527,44 @@ export class EntityEditForm {
         return isValid;
     }
 
-    public getData() {
-        const inputs = Array.from(this.html
-            .querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select'));
-        let obj = {};
-        for(const input of inputs) {
-            const property = input.name.substring(input.name.lastIndexOf('.') + 1);
-            const attr = this.context.getMetaData().getAttributeById(input.name);
+    public getData(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const filePromises: Promise<any>[] = [];
+            const inputs = Array.from(this.html
+                .querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select'));
+            let obj = {};
+            for (const input of inputs) {
+                const property = input.name.substring(input.name.lastIndexOf('.') + 1);
+                const attr = this.context.getMetaData().getAttributeById(input.name);
 
-            obj[property] =  input.type !== 'checkbox'
-                ? this.mapValue(attr.dataType, input.value)
-                : (input as HTMLInputElement).checked          
-        }
+                if (input.type === 'checbox') {
+                    obj[property] = (input as HTMLInputElement).checked;
+                }
+                else if (input.type === 'file') {
+                    filePromises.push(this.fileToBase64((input as HTMLInputElement).files[0])
+                        .then(content => obj[property] = content));
+                }
+                else {
+                    obj[property] = this.mapValue(attr.dataType, input.value);
+                }
+            }
 
-        return obj;
+            Promise.all(filePromises)
+                .then(() => resolve(obj))
+                .catch((e) => reject(e));
+        });
+    }
+
+    private fileToBase64(file: File): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const result = reader.result.toString();
+                resolve(result.substring(result.indexOf(',') + 1));
+            } 
+            reader.onerror = error => reject(error);
+        })
     }
 
     public useValidator(...validator: Validator[]) {

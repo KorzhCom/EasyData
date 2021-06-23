@@ -39,8 +39,12 @@ namespace EasyData
         /// <summary>Represents a list value editor which allows to select several values at once</summary>
         public const string ConstListMulty = "MULTILIST";
 
+        /// <summary>Represents a file value editor</summary>
+        public const string File = "FILE";
+
         /// <summary>Represents a custom value editor</summary>
         public const string Custom = "CUSTOM";
+
     }
 
     /// <summary>
@@ -96,6 +100,9 @@ namespace EasyData
 
                 case EditorTags.Custom:
                     return new CustomValueEditor();
+
+                case EditorTags.File:
+                    return new FileValueEditor();
 
                 default:
                     return null;

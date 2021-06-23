@@ -300,6 +300,12 @@ namespace EasyData.EntityFrameworkCore
 
             entityAttr.IsNullable = property.IsNullable;
 
+            if (entityAttr.DataType == DataType.Blob) {
+                // HIDE blob fields by default
+                entityAttr.ShowOnCreate = false;
+                entityAttr.ShowOnEdit = false;
+            }
+
             var veId = $"VE_{entityName}_{propertyName}";
             if (property.ClrType.IsEnum) {
                 var editor = new ConstListValueEditor(veId);
@@ -326,10 +332,11 @@ namespace EasyData.EntityFrameworkCore
             }
 
             if (entityAttr.DataType == DataType.Blob) {
-                entityAttr.IsEditable = false;
+                // DO NOT show blob fields in GRID
                 entityAttr.ShowOnView = false;
-                entityAttr.ShowOnEdit = false;
-                entityAttr.ShowOnCreate = false;
+
+                var editor = new FileValueEditor(veId);
+                entityAttr.DefaultEditor = editor;
             }
 
             return entityAttr;

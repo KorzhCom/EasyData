@@ -132,8 +132,8 @@ export class EntityDataView {
                 if (!form.validate())
                     return false;
                       
-                const obj = form.getData();
-                this.context.createEntity(obj)
+                form.getData()
+                .then(obj => this.context.createEntity(obj))
                 .then(() => {
                     window.location.reload();
                 })
@@ -170,9 +170,8 @@ export class EntityDataView {
                 if (!form.validate())
                     return false;
 
-                const obj = form.getData();
-            
-                this.context.updateEntity(keys.join(':'), obj)
+                form.getData()
+                .then(obj => this.context.updateEntity(keys.join(':'), obj))
                 .then(() => {
                     window.location.reload();
                 })       

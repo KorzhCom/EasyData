@@ -9,7 +9,9 @@ export const EditorTag = {
     /** List tag value */
     List: "LIST",
     /** CustomList tag value */
-    CustomList: "CUSTOMLIST"
+    CustomList: "CUSTOMLIST",
+    /** File tag value */
+    File: "FILE"
 }
 
 export type EditorTag = (typeof EditorTag)[keyof typeof EditorTag];

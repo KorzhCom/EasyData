@@ -19,4 +19,6 @@ export interface ValueEditorDTO {
     name?: string;
     /** values. */
     values?: {id: string, text: string}[];
+    /** The accept. */
+    accept?: string;
 }
