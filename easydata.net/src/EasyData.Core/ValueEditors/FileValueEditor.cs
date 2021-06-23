@@ -13,10 +13,9 @@ namespace EasyData
         public override string Tag => EditorTags.File;
 
 
-        public FileValueEditor(string editorId): base(editorId)
-        { 
-            
-        }
+        public FileValueEditor() : base() { }
+
+        public FileValueEditor(string editorId): base(editorId) { }
 
         public string Accept { get; set; } = "*.*";
 
