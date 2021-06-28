@@ -159,7 +159,7 @@ export class EasyDataTable {
             }
 
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= ubChunk; i++) {
+            for (let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
 
@@ -216,7 +216,6 @@ export class EasyDataTable {
     }
 
     private mapDate(value: any, dtype: DataType): Date {
-
         if (value) {
             let result = new Date(value);
             if (isNaN(result.getTime())

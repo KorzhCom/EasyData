@@ -23,13 +23,11 @@ export interface TotalsValue {
 type LevelData = Map<string, TotalsValue>;
 
 export interface AggregatesContainer {
-
     setAggregates(level: number, data: LevelData);
 
     fillAggregates(level: number, row: DataRow): Promise<void>;
 
     getAggregates(level: number, key: TotalsKey): Promise<TotalsValue>;
-
 }
 
 export interface GroupSettings {
@@ -58,7 +56,6 @@ export interface AggregateData {
 }
 
 export class AggregateSettings {
-
     private aggregates: Array<{ colId: string, funcId: string }> = []
 
     private groups: GroupData[] = [];
@@ -97,10 +94,10 @@ export class AggregateSettings {
 
     public getGroups() {
         let cols = [];
-        const mappedGrops = this.groups.map(g => {
-            cols = cols.concat(g.columns);
+        const mappedGrops = this.groups.map(grp => {
+            cols = cols.concat(grp.columns);
             return {
-                ...g,
+                ...grp,
                 columns: Array.from(cols),
                 aggregates: Array.from(this.aggregates)
             };
@@ -145,7 +142,7 @@ export class AggregateSettings {
     }
 
     private areUnusedColumns(cols: string[]): boolean {
-        for(const group of this.groups) {
+        for (const group of this.groups) {
             const interCols = group.columns
                 .filter(c => cols.indexOf(c) >= 0);
 
@@ -182,5 +179,4 @@ export class AggregateSettings {
             }
         }
     }
-
 }
