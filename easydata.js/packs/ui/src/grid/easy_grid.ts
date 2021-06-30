@@ -77,7 +77,8 @@ export class EasyGrid {
         },
         paging: {
             enabled: true,
-            pageSize: 30
+            pageSize: 30,
+            pageSizeItems: [20, 30, 50, 100, 200]
         },
         addColumns: false,
         viewportRowsCount: null,
@@ -1022,10 +1023,52 @@ export class EasyGrid {
                 li.appendChild(a);
                 ul.appendChild(li);
 
-                paginateDiv.appendChild(ul);
-            }
+            paginateDiv.appendChild(ul);   
         }
-      
+
+        if (this.options.paging && this.options.paging.enabled && this.options.paging.allowPageSizeChange) {
+            const selectChangeHandler = (ev: Event) => {
+                const newValue = parseInt((ev.target as HTMLOptionElement).value);
+                this.pagination.pageSize = newValue;
+                this.refresh();
+            };
+
+            const pageSizes = document.createElement('div');
+            pageSizes.className = `${this.cssPrefix}-page-sizes`;
+
+            const selectSize = document.createElement('div');
+            selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+            pageSizes.appendChild(selectSize);
+
+            const sel = document.createElement('select');
+            const selOptions = this.options.paging.pageSizeItems || [];
+            const selSet = new Set(selOptions);
+            selSet.add(this.options.paging.pageSize || 20);
+
+
+            Array.from(selSet).forEach(el => {
+                const option = document.createElement("option");
+                option.value = el.toString();
+                option.text = el.toString();
+                sel.appendChild(option);
+            });
+
+            sel.value = (this.pagination.pageSize || 20).toString();
+            selectSize.appendChild(sel);
+            sel.addEventListener('change', selectChangeHandler);
+            
+            const labelDiv = document.createElement('div');
+            labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+            pageSizes.appendChild(labelDiv);
+
+            const label = document.createElement('span');
+            label.innerText = i18n.getText('GridItemsPerPage');
+            labelDiv.appendChild(label);
+
+
+            paginateDiv.appendChild(pageSizes);
+        }
+        
         return paginateDiv;
     }
 

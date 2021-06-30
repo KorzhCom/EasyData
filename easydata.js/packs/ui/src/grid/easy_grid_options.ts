@@ -18,9 +18,9 @@ export interface EasyGridOptions {
     dataTable: EasyDataTable;
 
     aggregates?: {
-        showGrandTotalsOnEachPage?: boolean;
-        settings: AggregateSettings;
-        calculator: AggregatesCalculator;
+        showGrandTotalsOnEachPage?: boolean,
+        settings: AggregateSettings,
+        calculator: AggregatesCalculator
     },
     addColumns?: boolean;
     addColumnsTitle?: string;
@@ -30,17 +30,19 @@ export interface EasyGridOptions {
     fixHeightOnFirstRender?: boolean;
 
     pagination?: {
-        maxButtonCount?: number;
-        useBootstap?: boolean;
+        maxButtonCount?: number,
+        useBootstap?: boolean
     } 
 
     paging?: {
         enabled?: boolean,
-        pageSize?: number
+        pageSize?: number,
+        allowPageSizeChange?: boolean,
+        pageSizeItems?: number[]
     }
 
     header?: {
-        fixed?: boolean;
+        fixed?: boolean
     }
 
     syncGridColumns?: boolean;
