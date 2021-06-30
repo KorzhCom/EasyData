@@ -436,7 +436,8 @@ export class EasyGrid {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => {                    
+                .then((rows) => { 
+            
                     this.hideProgress();
 
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
@@ -485,6 +486,13 @@ export class EasyGrid {
     }
 
     private isLastPage() {
+        if (this.dataTable.elasticChunks) {
+            const count = this.dataTable.getCachedCount();
+            const total = this.dataTable.getTotal();
+            return count === total 
+                && (this.pagination.page * this.pagination.pageSize) >= total;
+        }
+
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
 
@@ -686,37 +694,50 @@ export class EasyGrid {
     }
 
     protected renderFooter() {
+
         this.footerDiv = domel('div')
                     .addClass(`${this.cssPrefix}-footer`)
                     .toDOM();
 
-        this.footerPaginateDiv = this.renderPageNavigator();
-        this.footerDiv.appendChild(this.footerPaginateDiv);
-        const pageInfoBlock = this.renderPageInfoBlock();
-        this.footerDiv.appendChild(pageInfoBlock);
+        if (this.rowsOnPagePromise) {
+            this.rowsOnPagePromise.then(count => {
+                this.footerPaginateDiv = this.renderPageNavigator();
+                this.footerDiv.appendChild(this.footerPaginateDiv);
+                const pageInfoBlock = this.renderPageInfoBlock(count);
+                this.footerDiv.appendChild(pageInfoBlock);
+            });
+        }
+
+       
     }
 
-    protected renderPageInfoBlock(): HTMLDivElement {
+    protected renderPageInfoBlock(count: number): HTMLDivElement {
 
         const pageInfoDiv = domel('div')
             .addClass(`${this.cssPrefix}-page-info`)
             .toDOM()
 
-        if (this.rowsOnPagePromise) {
-            this.rowsOnPagePromise.then(count => {
+        const fistPageRecordNum = count 
+            ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
+            : 0;
+        const lastPageRecordNum = count 
+            ? fistPageRecordNum + count - 1 
+            : 0;
+            
+        let totalStr = this.dataTable.getTotal().toString();
 
-                const fistPageRecordNum = count ? (this.pagination.page - 1) * this.pagination.pageSize + 1 : 0;
-                const lastPageRecordNum = count ? fistPageRecordNum + count - 1 : 0;
-                const total = this.dataTable.getTotal();
-
-                pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
-                    .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
-                    .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
-                    .replace('{Total}', `<span>${total.toString()}</span>`);
-            });
+        if (this.dataTable.elasticChunks) {
+            const count = this.dataTable.getCachedCount();
+            const total = this.dataTable.getTotal();
+            if (count !== total)
+                totalStr = '?';
         }
-    
 
+        pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
+            .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
+            .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
+            .replace('{Total}', `<span>${totalStr}</span>`);
+    
         return pageInfoDiv;
     }
 
@@ -825,115 +846,186 @@ export class EasyGrid {
         let paginateDiv = document.createElement('div');
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
 
-        this.pagination.total = this.dataTable.getTotal();
-        if (this.options.paging && this.options.paging.enabled
-             && this.pagination.total > this.pagination.pageSize) {
-            const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
-            paginateDiv.innerHTML = "";
+        const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
 
-            const pageIndex = this.pagination.page || 1;
-            const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
-        
-            const buttonClickHandler = (ev: MouseEvent) => {
-                const element = ev.target as HTMLElement;
-                if (element.hasAttribute('data-page')) {
-                    let page = parseInt(element.getAttribute('data-page'));
-                    this.pagination.page = page;
-                    this.fireEvent({ type: "pageChanged", page: page });
-                    this.refresh();
-                    this.bodyViewportDiv.focus();
-                }        
-            };
-        
-            const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
-            const zeroBasedIndex = pageIndex - 1;
-            let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
-            let lastPageIndex = firstPageIndex + maxButtonCount - 1;
-            if (lastPageIndex > pageCount) {
-                lastPageIndex = pageCount;
+        const buttonClickHandler = (ev: MouseEvent) => {
+            const element = ev.target as HTMLElement;
+            if (element.hasAttribute('data-page')) {
+                let page = parseInt(element.getAttribute('data-page'));
+                this.pagination.page = page;
+                this.fireEvent({ type: "pageChanged", page: page });
+                this.refresh();
+                this.bodyViewportDiv.focus();
             }
-        
+        };
+
+        if (this.dataTable.elasticChunks) {
+            
+            const pageIndex = this.pagination.page || 1;
+
             let ul = document.createElement('ul');
             ul.className = `${prefix}pagination`;
-        
+
             let li = document.createElement('li');
             li.className = `${prefix}page-item`;
-        
-            let a:HTMLElement = document.createElement('span');
+
+            let a: HTMLElement = document.createElement('span');
             a.setAttribute("aria-hidden", 'true');
-        
+
             a.className = `${prefix}page-link`;
-        
-            if (firstPageIndex == 1) {
+
+            if (pageIndex == 1) {
                 li.className += " disabled";
             }
             else {
                 if (this.paginationOptions.useBootstrap) {
                     a = document.createElement('a');
                     a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${firstPageIndex - 1}`);
-                } 
+                    a.setAttribute("data-page", `${pageIndex - 1}`);
+                }
                 else {
                     let newA = document.createElement('a');
                     newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${firstPageIndex - 1}`);
-                    a = newA; 
+                    newA.setAttribute("data-page", `${pageIndex - 1}`);
+                    a = newA;
                 }
                 a.className = `${prefix}page-link`;
                 a.addEventListener("click", buttonClickHandler);
             }
             a.innerHTML = "&laquo;";
-        
+
             li.appendChild(a);
             ul.appendChild(li);
-        
-            for (let i = firstPageIndex; i <= lastPageIndex; i++) {
-                li = document.createElement('li');
-                li.className = `${prefix}page-item`;
-
-                if (i == pageIndex)
-                    li.className += " active";
-        
-                a = document.createElement('a');
-                a.setAttribute('href', 'javascript:void(0)');
-                a.innerHTML = i.toString();
-                a.setAttribute('data-page', i.toString());
-                a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
-                li.appendChild(a);
-                ul.appendChild(li);
-            }
-        
             li = document.createElement('li');
             li.className = `${prefix}page-item`;
             a = document.createElement("span");
             a.setAttribute('aria-hidden', 'true');
-        
+
             a.className = `${prefix}page-link`;
-            if (lastPageIndex == pageCount) {
+            if (this.isLastPage()) {
                 li.className += " disabled";
             }
             else {
                 if (this.paginationOptions.useBootstrap) {
                     a = document.createElement('a');
                     a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${lastPageIndex + 1}`);
+                    a.setAttribute("data-page", `${pageIndex + 1}`);
                 } else {
                     let newA = document.createElement('a');
                     newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${lastPageIndex + 1}`);
-                    a = newA; 
+                    newA.setAttribute("data-page", `${pageIndex + 1}`);
+                    a = newA;
                 }
                 a.className = `${prefix}page-link`;
                 a.addEventListener("click", buttonClickHandler);
             }
             a.innerHTML = "&raquo;";
-        
+
             li.appendChild(a);
             ul.appendChild(li);
 
-            paginateDiv.appendChild(ul);   
+            paginateDiv.appendChild(ul);
+
         }
+        else {
+            this.pagination.total = this.dataTable.getTotal();
+            if (this.options.paging && this.options.paging.enabled
+                && this.pagination.total > this.pagination.pageSize) {
+
+                const pageIndex = this.pagination.page || 1;
+                const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
+
+                const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
+                const zeroBasedIndex = pageIndex - 1;
+                let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
+                let lastPageIndex = firstPageIndex + maxButtonCount - 1;
+                if (lastPageIndex > pageCount) {
+                    lastPageIndex = pageCount;
+                }
+
+                let ul = document.createElement('ul');
+                ul.className = `${prefix}pagination`;
+
+                let li = document.createElement('li');
+                li.className = `${prefix}page-item`;
+
+                let a: HTMLElement = document.createElement('span');
+                a.setAttribute("aria-hidden", 'true');
+
+                a.className = `${prefix}page-link`;
+
+                if (firstPageIndex == 1) {
+                    li.className += " disabled";
+                }
+                else {
+                    if (this.paginationOptions.useBootstrap) {
+                        a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.setAttribute("data-page", `${firstPageIndex - 1}`);
+                    }
+                    else {
+                        let newA = document.createElement('a');
+                        newA.setAttribute('href', 'javascript:void(0)');
+                        newA.setAttribute("data-page", `${firstPageIndex - 1}`);
+                        a = newA;
+                    }
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                }
+                a.innerHTML = "&laquo;";
+
+                li.appendChild(a);
+                ul.appendChild(li);
+
+                for (let i = firstPageIndex; i <= lastPageIndex; i++) {
+                    li = document.createElement('li');
+                    li.className = `${prefix}page-item`;
+
+                    if (i == pageIndex)
+                        li.className += " active";
+
+                    a = document.createElement('a');
+                    a.setAttribute('href', 'javascript:void(0)');
+                    a.innerHTML = i.toString();
+                    a.setAttribute('data-page', i.toString());
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                }
+
+                li = document.createElement('li');
+                li.className = `${prefix}page-item`;
+                a = document.createElement("span");
+                a.setAttribute('aria-hidden', 'true');
+
+                a.className = `${prefix}page-link`;
+                if (lastPageIndex == pageCount) {
+                    li.className += " disabled";
+                }
+                else {
+                    if (this.paginationOptions.useBootstrap) {
+                        a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.setAttribute("data-page", `${lastPageIndex + 1}`);
+                    } else {
+                        let newA = document.createElement('a');
+                        newA.setAttribute('href', 'javascript:void(0)');
+                        newA.setAttribute("data-page", `${lastPageIndex + 1}`);
+                        a = newA;
+                    }
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                }
+                a.innerHTML = "&raquo;";
+
+                li.appendChild(a);
+                ul.appendChild(li);
+
+                paginateDiv.appendChild(ul);
+            }
+        }
+      
         return paginateDiv;
     }
 
