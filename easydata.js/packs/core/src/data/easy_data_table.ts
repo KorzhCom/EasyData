@@ -333,4 +333,13 @@ export class EasyDataTable {
     public getCachedChunks(): CachedChunk[] {
         return Object.values(this.chunkMap);
     }    
+
+    public totalIsKnown() : boolean {
+        if (this.elasticChunks) {
+            const count = this.getCachedCount();
+            return count === this.total;
+        }
+
+        return !this.needTotal;
+    }
 }

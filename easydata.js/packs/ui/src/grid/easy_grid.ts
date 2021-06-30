@@ -438,7 +438,8 @@ export class EasyGrid {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
                 .then((rows) => { 
-            
+                    this.pagination.total = this.dataTable.getTotal();
+
                     this.hideProgress();
 
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
@@ -488,10 +489,8 @@ export class EasyGrid {
 
     private isLastPage() {
         if (this.dataTable.elasticChunks) {
-            const count = this.dataTable.getCachedCount();
-            const total = this.dataTable.getTotal();
-            return count === total 
-                && (this.pagination.page * this.pagination.pageSize) >= total;
+            return this.dataTable.totalIsKnown()
+                && (this.pagination.page * this.pagination.pageSize) >= this.pagination.total;
         }
 
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
@@ -847,92 +846,87 @@ export class EasyGrid {
         let paginateDiv = document.createElement('div');
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
 
-        const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
-
-        const buttonClickHandler = (ev: MouseEvent) => {
-            const element = ev.target as HTMLElement;
-            if (element.hasAttribute('data-page')) {
-                let page = parseInt(element.getAttribute('data-page'));
-                this.pagination.page = page;
-                this.fireEvent({ type: "pageChanged", page: page });
-                this.refresh();
-                this.bodyViewportDiv.focus();
-            }
-        };
-
         if (this.options.paging && this.options.paging.enabled) {
-            if (this.dataTable.elasticChunks) {
 
+            const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
+
+            const buttonClickHandler = (ev: MouseEvent) => {
+                const element = ev.target as HTMLElement;
+                if (element.hasAttribute('data-page')) {
+                    let page = parseInt(element.getAttribute('data-page'));
+                    this.pagination.page = page;
+                    this.fireEvent({ type: "pageChanged", page: page });
+                    this.refresh();
+                    this.bodyViewportDiv.focus();
+                }
+            };
+
+            const renderPageCell = (pageIndex: number, content?: string, 
+                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => {
+
+                const li = document.createElement('li');
+                li.className = `${prefix}page-item`;
+
+                if (!extreme) {
+                    if (active) {
+                        li.className += ' active';
+                    }
+                    const a = document.createElement('a');
+                    a.setAttribute('href', 'javascript:void(0)');
+                    a.innerHTML = content || pageIndex.toString();
+                    a.setAttribute("data-page", `${pageIndex}`);
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                    li.appendChild(a);
+                    return li;
+                }
+
+                let a: HTMLElement = document.createElement('span');
+                a.setAttribute('aria-hidden', 'true');
+
+                a.className = `${prefix}page-link`;
+
+                if (disabled) {
+                    li.className += ' disabled';
+                }
+                else {  
+                    if (this.paginationOptions.useBootstrap) {
+                        a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.setAttribute("data-page", `${pageIndex}`);
+                    }
+                    else {
+                        let newA = document.createElement('a');
+                        newA.setAttribute('href', 'javascript:void(0)');
+                        newA.setAttribute('data-page', `${pageIndex}`);
+                        a = newA;
+                    }
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                }
+                a.innerHTML = content;
+
+                li.appendChild(a);
+
+                return li;
+            }
+
+            if (this.dataTable.elasticChunks) {
                 const pageIndex = this.pagination.page || 1;
 
                 let ul = document.createElement('ul');
                 ul.className = `${prefix}pagination`;
 
-                let li = document.createElement('li');
-                li.className = `${prefix}page-item`;
+                let cell = renderPageCell(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
+                ul.appendChild(cell);
 
-                let a: HTMLElement = document.createElement('span');
-                a.setAttribute("aria-hidden", 'true');
-
-                a.className = `${prefix}page-link`;
-
-                if (pageIndex == 1) {
-                    li.className += " disabled";
-                }
-                else {
-                    if (this.paginationOptions.useBootstrap) {
-                        a = document.createElement('a');
-                        a.setAttribute('href', 'javascript:void(0)');
-                        a.setAttribute("data-page", `${pageIndex - 1}`);
-                    }
-                    else {
-                        let newA = document.createElement('a');
-                        newA.setAttribute('href', 'javascript:void(0)');
-                        newA.setAttribute("data-page", `${pageIndex - 1}`);
-                        a = newA;
-                    }
-                    a.className = `${prefix}page-link`;
-                    a.addEventListener("click", buttonClickHandler);
-                }
-                a.innerHTML = "&laquo;";
-
-                li.appendChild(a);
-                ul.appendChild(li);
-                li = document.createElement('li');
-                li.className = `${prefix}page-item`;
-                a = document.createElement("span");
-                a.setAttribute('aria-hidden', 'true');
-
-                a.className = `${prefix}page-link`;
-                if (this.isLastPage()) {
-                    li.className += " disabled";
-                }
-                else {
-                    if (this.paginationOptions.useBootstrap) {
-                        a = document.createElement('a');
-                        a.setAttribute('href', 'javascript:void(0)');
-                        a.setAttribute("data-page", `${pageIndex + 1}`);
-                    } else {
-                        let newA = document.createElement('a');
-                        newA.setAttribute('href', 'javascript:void(0)');
-                        newA.setAttribute("data-page", `${pageIndex + 1}`);
-                        a = newA;
-                    }
-                    a.className = `${prefix}page-link`;
-                    a.addEventListener("click", buttonClickHandler);
-                }
-                a.innerHTML = "&raquo;";
-
-                li.appendChild(a);
-                ul.appendChild(li);
+                cell = renderPageCell(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
+                ul.appendChild(cell);
 
                 paginateDiv.appendChild(ul);
-
             }
             else {
-                this.pagination.total = this.dataTable.getTotal();
                 if (this.pagination.total > this.pagination.pageSize) {
-
                     const pageIndex = this.pagination.page || 1;
                     const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
 
@@ -947,81 +941,18 @@ export class EasyGrid {
                     let ul = document.createElement('ul');
                     ul.className = `${prefix}pagination`;
 
-                    let li = document.createElement('li');
-                    li.className = `${prefix}page-item`;
-
-                    let a: HTMLElement = document.createElement('span');
-                    a.setAttribute("aria-hidden", 'true');
-
-                    a.className = `${prefix}page-link`;
-
-                    if (firstPageIndex == 1) {
-                        li.className += " disabled";
-                    }
-                    else {
-                        if (this.paginationOptions.useBootstrap) {
-                            a = document.createElement('a');
-                            a.setAttribute('href', 'javascript:void(0)');
-                            a.setAttribute("data-page", `${firstPageIndex - 1}`);
-                        }
-                        else {
-                            let newA = document.createElement('a');
-                            newA.setAttribute('href', 'javascript:void(0)');
-                            newA.setAttribute("data-page", `${firstPageIndex - 1}`);
-                            a = newA;
-                        }
-                        a.className = `${prefix}page-link`;
-                        a.addEventListener("click", buttonClickHandler);
-                    }
-                    a.innerHTML = "&laquo;";
-
-                    li.appendChild(a);
-                    ul.appendChild(li);
+                    let cell = renderPageCell(firstPageIndex - 1, '&laquo;', 
+                        firstPageIndex == 1, true, false);
+                    ul.appendChild(cell);
 
                     for (let i = firstPageIndex; i <= lastPageIndex; i++) {
-                        li = document.createElement('li');
-                        li.className = `${prefix}page-item`;
-
-                        if (i == pageIndex)
-                            li.className += " active";
-
-                        a = document.createElement('a');
-                        a.setAttribute('href', 'javascript:void(0)');
-                        a.innerHTML = i.toString();
-                        a.setAttribute('data-page', i.toString());
-                        a.className = `${prefix}page-link`;
-                        a.addEventListener("click", buttonClickHandler);
-                        li.appendChild(a);
-                        ul.appendChild(li);
+                        cell = renderPageCell(i, i.toString(),
+                            false, false, i == pageIndex);
+                        ul.appendChild(cell);
                     }
 
-                    li = document.createElement('li');
-                    li.className = `${prefix}page-item`;
-                    a = document.createElement("span");
-                    a.setAttribute('aria-hidden', 'true');
-
-                    a.className = `${prefix}page-link`;
-                    if (lastPageIndex == pageCount) {
-                        li.className += " disabled";
-                    }
-                    else {
-                        if (this.paginationOptions.useBootstrap) {
-                            a = document.createElement('a');
-                            a.setAttribute('href', 'javascript:void(0)');
-                            a.setAttribute("data-page", `${lastPageIndex + 1}`);
-                        } else {
-                            let newA = document.createElement('a');
-                            newA.setAttribute('href', 'javascript:void(0)');
-                            newA.setAttribute("data-page", `${lastPageIndex + 1}`);
-                            a = newA;
-                        }
-                        a.className = `${prefix}page-link`;
-                        a.addEventListener("click", buttonClickHandler);
-                    }
-                    a.innerHTML = "&raquo;";
-
-                    li.appendChild(a);
-                    ul.appendChild(li);
+                    cell = renderPageCell(lastPageIndex + 1, '&raquo;', lastPageIndex == pageCount, true, false);
+                    ul.appendChild(cell);
 
                     paginateDiv.appendChild(ul);
                 }
