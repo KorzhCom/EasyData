@@ -860,89 +860,10 @@ export class EasyGrid {
             }
         };
 
-        if (this.dataTable.elasticChunks) {
-            
-            const pageIndex = this.pagination.page || 1;
-
-            let ul = document.createElement('ul');
-            ul.className = `${prefix}pagination`;
-
-            let li = document.createElement('li');
-            li.className = `${prefix}page-item`;
-
-            let a: HTMLElement = document.createElement('span');
-            a.setAttribute("aria-hidden", 'true');
-
-            a.className = `${prefix}page-link`;
-
-            if (pageIndex == 1) {
-                li.className += " disabled";
-            }
-            else {
-                if (this.paginationOptions.useBootstrap) {
-                    a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${pageIndex - 1}`);
-                }
-                else {
-                    let newA = document.createElement('a');
-                    newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${pageIndex - 1}`);
-                    a = newA;
-                }
-                a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
-            }
-            a.innerHTML = "&laquo;";
-
-            li.appendChild(a);
-            ul.appendChild(li);
-            li = document.createElement('li');
-            li.className = `${prefix}page-item`;
-            a = document.createElement("span");
-            a.setAttribute('aria-hidden', 'true');
-
-            a.className = `${prefix}page-link`;
-            if (this.isLastPage()) {
-                li.className += " disabled";
-            }
-            else {
-                if (this.paginationOptions.useBootstrap) {
-                    a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${pageIndex + 1}`);
-                } else {
-                    let newA = document.createElement('a');
-                    newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${pageIndex + 1}`);
-                    a = newA;
-                }
-                a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
-            }
-            a.innerHTML = "&raquo;";
-
-            li.appendChild(a);
-            ul.appendChild(li);
-
-            paginateDiv.appendChild(ul);
-
-        }
-        else {
-            this.pagination.total = this.dataTable.getTotal();
-            if (this.options.paging && this.options.paging.enabled
-                && this.pagination.total > this.pagination.pageSize) {
+        if (this.options.paging && this.options.paging.enabled) {
+            if (this.dataTable.elasticChunks) {
 
                 const pageIndex = this.pagination.page || 1;
-                const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
-
-                const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
-                const zeroBasedIndex = pageIndex - 1;
-                let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
-                let lastPageIndex = firstPageIndex + maxButtonCount - 1;
-                if (lastPageIndex > pageCount) {
-                    lastPageIndex = pageCount;
-                }
 
                 let ul = document.createElement('ul');
                 ul.className = `${prefix}pagination`;
@@ -955,19 +876,19 @@ export class EasyGrid {
 
                 a.className = `${prefix}page-link`;
 
-                if (firstPageIndex == 1) {
+                if (pageIndex == 1) {
                     li.className += " disabled";
                 }
                 else {
                     if (this.paginationOptions.useBootstrap) {
                         a = document.createElement('a');
                         a.setAttribute('href', 'javascript:void(0)');
-                        a.setAttribute("data-page", `${firstPageIndex - 1}`);
+                        a.setAttribute("data-page", `${pageIndex - 1}`);
                     }
                     else {
                         let newA = document.createElement('a');
                         newA.setAttribute('href', 'javascript:void(0)');
-                        newA.setAttribute("data-page", `${firstPageIndex - 1}`);
+                        newA.setAttribute("data-page", `${pageIndex - 1}`);
                         a = newA;
                     }
                     a.className = `${prefix}page-link`;
@@ -977,42 +898,24 @@ export class EasyGrid {
 
                 li.appendChild(a);
                 ul.appendChild(li);
-
-                for (let i = firstPageIndex; i <= lastPageIndex; i++) {
-                    li = document.createElement('li');
-                    li.className = `${prefix}page-item`;
-
-                    if (i == pageIndex)
-                        li.className += " active";
-
-                    a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.innerHTML = i.toString();
-                    a.setAttribute('data-page', i.toString());
-                    a.className = `${prefix}page-link`;
-                    a.addEventListener("click", buttonClickHandler);
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                }
-
                 li = document.createElement('li');
                 li.className = `${prefix}page-item`;
                 a = document.createElement("span");
                 a.setAttribute('aria-hidden', 'true');
 
                 a.className = `${prefix}page-link`;
-                if (lastPageIndex == pageCount) {
+                if (this.isLastPage()) {
                     li.className += " disabled";
                 }
                 else {
                     if (this.paginationOptions.useBootstrap) {
                         a = document.createElement('a');
                         a.setAttribute('href', 'javascript:void(0)');
-                        a.setAttribute("data-page", `${lastPageIndex + 1}`);
+                        a.setAttribute("data-page", `${pageIndex + 1}`);
                     } else {
                         let newA = document.createElement('a');
                         newA.setAttribute('href', 'javascript:void(0)');
-                        newA.setAttribute("data-page", `${lastPageIndex + 1}`);
+                        newA.setAttribute("data-page", `${pageIndex + 1}`);
                         a = newA;
                     }
                     a.className = `${prefix}page-link`;
@@ -1023,52 +926,152 @@ export class EasyGrid {
                 li.appendChild(a);
                 ul.appendChild(li);
 
-            paginateDiv.appendChild(ul);   
-        }
+                paginateDiv.appendChild(ul);
 
-        if (this.options.paging && this.options.paging.enabled && this.options.paging.allowPageSizeChange) {
-            const selectChangeHandler = (ev: Event) => {
-                const newValue = parseInt((ev.target as HTMLOptionElement).value);
-                this.pagination.pageSize = newValue;
-                this.refresh();
-            };
+            }
+            else {
+                this.pagination.total = this.dataTable.getTotal();
+                if (this.pagination.total > this.pagination.pageSize) {
 
-            const pageSizes = document.createElement('div');
-            pageSizes.className = `${this.cssPrefix}-page-sizes`;
+                    const pageIndex = this.pagination.page || 1;
+                    const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
 
-            const selectSize = document.createElement('div');
-            selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
-            pageSizes.appendChild(selectSize);
+                    const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
+                    const zeroBasedIndex = pageIndex - 1;
+                    let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
+                    let lastPageIndex = firstPageIndex + maxButtonCount - 1;
+                    if (lastPageIndex > pageCount) {
+                        lastPageIndex = pageCount;
+                    }
 
-            const sel = document.createElement('select');
-            const selOptions = this.options.paging.pageSizeItems || [];
-            const selSet = new Set(selOptions);
-            selSet.add(this.options.paging.pageSize || 20);
+                    let ul = document.createElement('ul');
+                    ul.className = `${prefix}pagination`;
+
+                    let li = document.createElement('li');
+                    li.className = `${prefix}page-item`;
+
+                    let a: HTMLElement = document.createElement('span');
+                    a.setAttribute("aria-hidden", 'true');
+
+                    a.className = `${prefix}page-link`;
+
+                    if (firstPageIndex == 1) {
+                        li.className += " disabled";
+                    }
+                    else {
+                        if (this.paginationOptions.useBootstrap) {
+                            a = document.createElement('a');
+                            a.setAttribute('href', 'javascript:void(0)');
+                            a.setAttribute("data-page", `${firstPageIndex - 1}`);
+                        }
+                        else {
+                            let newA = document.createElement('a');
+                            newA.setAttribute('href', 'javascript:void(0)');
+                            newA.setAttribute("data-page", `${firstPageIndex - 1}`);
+                            a = newA;
+                        }
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                    }
+                    a.innerHTML = "&laquo;";
+
+                    li.appendChild(a);
+                    ul.appendChild(li);
+
+                    for (let i = firstPageIndex; i <= lastPageIndex; i++) {
+                        li = document.createElement('li');
+                        li.className = `${prefix}page-item`;
+
+                        if (i == pageIndex)
+                            li.className += " active";
+
+                        a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.innerHTML = i.toString();
+                        a.setAttribute('data-page', i.toString());
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    }
+
+                    li = document.createElement('li');
+                    li.className = `${prefix}page-item`;
+                    a = document.createElement("span");
+                    a.setAttribute('aria-hidden', 'true');
+
+                    a.className = `${prefix}page-link`;
+                    if (lastPageIndex == pageCount) {
+                        li.className += " disabled";
+                    }
+                    else {
+                        if (this.paginationOptions.useBootstrap) {
+                            a = document.createElement('a');
+                            a.setAttribute('href', 'javascript:void(0)');
+                            a.setAttribute("data-page", `${lastPageIndex + 1}`);
+                        } else {
+                            let newA = document.createElement('a');
+                            newA.setAttribute('href', 'javascript:void(0)');
+                            newA.setAttribute("data-page", `${lastPageIndex + 1}`);
+                            a = newA;
+                        }
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                    }
+                    a.innerHTML = "&raquo;";
+
+                    li.appendChild(a);
+                    ul.appendChild(li);
+
+                    paginateDiv.appendChild(ul);
+                }
+            }
+
+            if (this.options.paging.allowPageSizeChange) {
+                const selectChangeHandler = (ev: Event) => {
+                    const newValue = parseInt((ev.target as HTMLOptionElement).value);
+                    this.pagination.pageSize = newValue;
+                    this.pagination.page = 1;
+                    this.refresh();
+                };
+
+                const pageSizes = document.createElement('div');
+                pageSizes.className = `${this.cssPrefix}-page-sizes`;
+
+                const selectSize = document.createElement('div');
+                selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+                pageSizes.appendChild(selectSize);
+
+                const sel = document.createElement('select');
+                const selOptions = this.options.paging.pageSizeItems || [];
+                const selSet = new Set(selOptions);
+                selSet.add(this.options.paging.pageSize || 20);
 
 
-            Array.from(selSet).forEach(el => {
-                const option = document.createElement("option");
-                option.value = el.toString();
-                option.text = el.toString();
-                sel.appendChild(option);
-            });
+                Array.from(selSet).forEach(el => {
+                    const option = document.createElement("option");
+                    option.value = el.toString();
+                    option.text = el.toString();
+                    sel.appendChild(option);
+                });
 
-            sel.value = (this.pagination.pageSize || 20).toString();
-            selectSize.appendChild(sel);
-            sel.addEventListener('change', selectChangeHandler);
-            
-            const labelDiv = document.createElement('div');
-            labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
-            pageSizes.appendChild(labelDiv);
+                sel.value = (this.pagination.pageSize || 20).toString();
+                selectSize.appendChild(sel);
+                sel.addEventListener('change', selectChangeHandler);
 
-            const label = document.createElement('span');
-            label.innerText = i18n.getText('GridItemsPerPage');
-            labelDiv.appendChild(label);
+                const labelDiv = document.createElement('div');
+                labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+                pageSizes.appendChild(labelDiv);
+
+                const label = document.createElement('span');
+                label.innerText = i18n.getText('GridItemsPerPage');
+                labelDiv.appendChild(label);
 
 
-            paginateDiv.appendChild(pageSizes);
-        }
-        
+                paginateDiv.appendChild(pageSizes);
+            }
+        }  
+
         return paginateDiv;
     }
 
