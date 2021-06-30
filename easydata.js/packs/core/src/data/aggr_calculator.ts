@@ -52,6 +52,7 @@ export interface AggregationColumnStore {
 export interface AggregateData {
     groups: Array<GroupData>,
     ugt: boolean;
+    uc: boolean;
     aggregates: Array<{ colId: string, funcId: string }>;
 }
 
@@ -61,6 +62,8 @@ export class AggregateSettings {
     private groups: GroupData[] = [];
 
     private useGrandTotals = false;
+
+    private useCounts = false;
 
     constructor(private colStore: AggregationColumnStore) {
 
@@ -89,6 +92,11 @@ export class AggregateSettings {
 
     public addGrandTotals() {
         this.useGrandTotals = true;
+        return this;
+    }
+
+    public addCounts() {
+        this.useCounts = true;
         return this;
     }
 
@@ -131,14 +139,20 @@ export class AggregateSettings {
         return this.useGrandTotals;
     }
 
+    public hasCounts(): boolean {
+        return this.useCounts;
+    }
+
     public isEmpty(): boolean {
-        return !(this.hasAggregates() || this.hasGroups() || this.hasAggregates());
+        return !(this.hasAggregates() || this.hasGroups() || 
+                 this.hasAggregates() || this.hasCounts());
     }
 
     public drop() {
         this.groups = [];
         this.aggregates = [];
         this.useGrandTotals = false;
+        this.useCounts = false;
     }
 
     private areUnusedColumns(cols: string[]): boolean {
@@ -162,6 +176,7 @@ export class AggregateSettings {
         return {
             groups: Array.from(this.groups),
             ugt: this.useGrandTotals,
+            uc: this.useCounts,
             aggregates: Array.from(this.aggregates)
         }
     }
@@ -169,6 +184,7 @@ export class AggregateSettings {
     public loadFromData(data: AggregateData) {
         if (data) {
             this.useGrandTotals = data.ugt || false;
+            this.useCounts = data.uc || false;
 
             if (data.groups) {
                 this.groups = Array.from(data.groups);
