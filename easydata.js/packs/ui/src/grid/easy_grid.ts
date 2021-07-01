@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn, AggregateSettings,
+    DataRow, utils, i18n,
     GroupData
 } from '@easydata/core';
 
@@ -540,6 +540,12 @@ export class EasyGrid {
         this.prevRowTotals = newRow;
     }
 
+    private applyGroupColumnTemplate(template: string, value: any, count: number): string {
+        let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `<span>${value}</span>` : '-');
+        result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `<span>${count}</span>` : '-');
+        return result;
+    }
+
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
 
         const settings = this.options.aggregates.settings;
@@ -578,10 +584,16 @@ export class EasyGrid {
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const aggrs = this.options.aggregates.calculator.getAggregates();
+        const aggrCont = this.options.aggregates.calculator.getAggregates();
         const aggrCols = settings.getAggregates().map(c => c.colId);
-        aggrs.fillAggregates(level, row)
-            .then(() => {
+
+        const key = this.buildGroupKey(group, row);
+        aggrCont.getAggregates(level, key)
+            .then((values) => {
+                for(const aggrColId of aggrCols) {
+                    row.setValue(aggrColId, values[aggrColId]);
+                }
+
                 rowElement.innerHTML = '';
 
                 this.columns.getItems().forEach((column, index) => {
@@ -598,20 +610,35 @@ export class EasyGrid {
                         if (group.columns.indexOf(column.dataColumn.id) >= 0
                             || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
+                            if (column.dataColumn.groupFooterColumnTemplate) {
+                                val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count'])
+                            }
                         };
                     }
 
                     if (!column.isRowNum && (column.dataColumn.isAggr 
                         || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
+                        if (column.dataColumn.groupFooterColumnTemplate) {
+                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count']);
+                        }
                     }
         
-                    rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+                    const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                    rowElement.appendChild(cellDiv);
                 });
             })
             .catch((error) => console.error(error));
         
         return rowElement;
+    }
+
+    private buildGroupKey(group: GroupData, row: DataRow) {
+        let result: any = {}
+        for(const colId of group.columns) {
+            result[colId] = row.getValue(colId);
+        }
+        return result;
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
