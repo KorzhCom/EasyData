@@ -12,22 +12,19 @@ export interface AggregatesCalculator {
     calculate(options?: CalculateOptions): Promise<void>;
 }
 
-export interface TotalsKey {
+export interface GroupKeys {
     [key: string]: any;
 }
 
-export interface TotalsValue {
+export interface GroupValues {
     [key: string]: any;
 }
 
-type LevelData = Map<string, TotalsValue>;
+type LevelData = Map<string, GroupValues>;
 
 export interface AggregatesContainer {
     setAggregates(level: number, data: LevelData);
-
-    fillAggregates(level: number, row: DataRow): Promise<void>;
-
-    getAggregates(level: number, key: TotalsKey): Promise<TotalsValue>;
+    getAggregates(level: number, key: GroupKeys): Promise<GroupValues>;
 }
 
 export interface GroupSettings {

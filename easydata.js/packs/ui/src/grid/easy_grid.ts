@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn, AggregateSettings,
+    DataRow, utils, i18n,
     GroupData
 } from '@easydata/core';
 
@@ -584,11 +584,16 @@ export class EasyGrid {
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const aggrs = this.options.aggregates.calculator.getAggregates();
+        const aggrCont = this.options.aggregates.calculator.getAggregates();
         const aggrCols = settings.getAggregates().map(c => c.colId);
 
-        aggrs.fillAggregates(level, row)
-            .then(() => {
+        const key = this.buildGroupKey(group, row);
+        aggrCont.getAggregates(level, key)
+            .then((values) => {
+                for(const aggrColId of aggrCols) {
+                    row.setValue(aggrColId, values[aggrColId]);
+                }
+
                 rowElement.innerHTML = '';
 
                 this.columns.getItems().forEach((column, index) => {
@@ -605,16 +610,18 @@ export class EasyGrid {
                         if (group.columns.indexOf(column.dataColumn.id) >= 0
                             || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
-                            //////////////////
-                            val = this.applyGroupColumnTemplate('SubTotal by {{ GroupValue }} (Count: {{ GroupCount }})', val, 25)
+                            if (column.dataColumn.groupFooterColumnTemplate) {
+                                val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count'])
+                            }
                         };
                     }
 
                     if (!column.isRowNum && (column.dataColumn.isAggr 
                         || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
-                        //////////////////
-                        val = this.applyGroupColumnTemplate('Sum: {{ GroupValue }}', val, null);
+                        if (column.dataColumn.groupFooterColumnTemplate) {
+                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count']);
+                        }
                     }
         
                     const cellDiv = this.renderCell(column, colIndex, val, rowElement);
@@ -624,6 +631,14 @@ export class EasyGrid {
             .catch((error) => console.error(error));
         
         return rowElement;
+    }
+
+    private buildGroupKey(group: GroupData, row: DataRow) {
+        let result: any = {}
+        for(const colId of group.columns) {
+            result[colId] = row.getValue(colId);
+        }
+        return result;
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
