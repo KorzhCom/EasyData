@@ -540,6 +540,12 @@ export class EasyGrid {
         this.prevRowTotals = newRow;
     }
 
+    private applyGroupColumnTemplate(template: string, value: any, count: number): string {
+        let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `<span>${value}</span>` : '-');
+        result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `<span>${count}</span>` : '-');
+        return result;
+    }
+
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
 
         const settings = this.options.aggregates.settings;
@@ -580,6 +586,7 @@ export class EasyGrid {
         
         const aggrs = this.options.aggregates.calculator.getAggregates();
         const aggrCols = settings.getAggregates().map(c => c.colId);
+
         aggrs.fillAggregates(level, row)
             .then(() => {
                 rowElement.innerHTML = '';
@@ -598,15 +605,20 @@ export class EasyGrid {
                         if (group.columns.indexOf(column.dataColumn.id) >= 0
                             || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
+                            //////////////////
+                            val = this.applyGroupColumnTemplate('SubTotal by {{ GroupValue }} (Count: {{ GroupCount }})', val, 25)
                         };
                     }
 
                     if (!column.isRowNum && (column.dataColumn.isAggr 
                         || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
+                        //////////////////
+                        val = this.applyGroupColumnTemplate('Sum: {{ GroupValue }}', val, null);
                     }
         
-                    rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+                    const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                    rowElement.appendChild(cellDiv);
                 });
             })
             .catch((error) => console.error(error));
