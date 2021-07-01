@@ -157,7 +157,8 @@ namespace EasyData.Export
             await writer.WriteLineAsync("<tbody>");
             int a = 0;
 
-            async Task RenderRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            async Task RenderRowAsync(EasyDataRow row, bool isExtra = false, 
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 await writer.WriteLineAsync($"<tr {(isExtra ? "class=\"eq-extra-row\"" : "")}>").ConfigureAwait(false);
 
@@ -166,6 +167,7 @@ namespace EasyData.Export
                         continue;
 
                     var dfmt = data.Cols[i].DisplayFormat;
+                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
                     var type = data.Cols[i].Type;
                    
                     string value;
@@ -175,6 +177,11 @@ namespace EasyData.Export
                     else {
                         value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
                     }
+
+                    if (isExtra && !string.IsNullOrEmpty(gfct)) {
+                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
+                    }
+
 
                     if (mappedSettings.FixHtmlTags) {
                         value = FixHtmlTags(value);
@@ -186,8 +193,8 @@ namespace EasyData.Export
                 await writer.WriteLineAsync("</tr>").ConfigureAwait(false);
             }
 
-            Func<EasyDataRow, CancellationToken, Task> RenderExtraRowAsync = (extraRow, cancellationToken) => RenderRowAsync(extraRow, true, cancellationToken);
-
+            BeforeRowAddedCallback RenderExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+                RenderRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);

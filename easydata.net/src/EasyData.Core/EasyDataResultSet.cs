@@ -68,7 +68,7 @@ namespace EasyData
         public string DisplayFormat { get; set; }
 
         [JsonProperty("gfct")]
-        public string GroopFooterColumnTemplate { get; set; }
+        public string GroupFooterColumnTemplate { get; set; }
 
         [JsonProperty("style")]
         public EasyDataColStyle Style { get; }
@@ -83,7 +83,7 @@ namespace EasyData
             Label = desc.Label;
             Type = desc.Type;
             DisplayFormat = desc.DisplayFormat;
-            GroopFooterColumnTemplate = desc.GroupFooterColumnTemplate;
+            GroupFooterColumnTemplate = desc.GroupFooterColumnTemplate;
         }
     }
 

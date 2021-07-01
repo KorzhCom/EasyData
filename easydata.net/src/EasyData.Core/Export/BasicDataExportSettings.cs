@@ -63,7 +63,7 @@ namespace EasyData.Export
         /// </summary>
         public Func<EasyDataRow, bool> RowFilter { get; set; }
 
-        public Func<EasyDataRow, Func<EasyDataRow, CancellationToken, Task>, CancellationToken, Task> BeforeRowAdded { get; set; }
+        public Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded { get; set; }
 
         /// <summary>
         /// The title

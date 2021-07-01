@@ -112,7 +112,8 @@ namespace EasyData.Export
                 await writer.WriteLineAsync(val.ToString()).ConfigureAwait(false);
             }
 
-            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false,
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var rowContent = new StringBuilder();
 
@@ -122,6 +123,7 @@ namespace EasyData.Export
                         continue;
 
                     var dfmt = data.Cols[i].DisplayFormat;
+                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
                     DataType type = data.Cols[i].Type;
 
                     if (i > 0) rowContent.Append(mappedSettings.Separator);
@@ -134,14 +136,18 @@ namespace EasyData.Export
                         value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
                     }
 
+                    if (isExtra && !string.IsNullOrEmpty(gfct)) {
+                        value =  ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
+                    }
+
                     rowContent.Append(value);
                 }
 
                 await writer.WriteLineAsync(rowContent.ToString()).ConfigureAwait(false);
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => 
-                WriteRowAsync(extraRow, true, cancellationToken);
+            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+                WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
 
             foreach (var row in data.Rows) {
@@ -152,7 +158,7 @@ namespace EasyData.Export
                 if (mappedSettings.BeforeRowAdded != null)
                     await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
 
-                await WriteRowAsync(row, false, ct);
+                await WriteRowAsync(row, false, null, ct);
 
             }
 

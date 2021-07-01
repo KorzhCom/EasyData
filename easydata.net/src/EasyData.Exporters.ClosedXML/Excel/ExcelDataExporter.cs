@@ -136,7 +136,8 @@ namespace EasyData.Export
             var endHeaderNum = cellNum;
             var endCellLetter = startLetter;
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, 
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var rowCellLetter = startLetter;
                 for (int i = 0; i < row.Count; i++) {
@@ -168,8 +169,8 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) 
-                => WriteRowAsync(extraRow, true, cancellationToken);
+            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
+                => WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
