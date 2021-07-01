@@ -21,6 +21,7 @@ export interface DataColumnDescriptor {
     label: string;
     isAggr?: boolean;
     dfmt?: string;
+    gfct?: string;
     style?: DataColumnStyle;
 }
 
@@ -37,6 +38,8 @@ export class DataColumn {
     public label: string;
 
     public displayFormat?: string;
+
+    public groupFooterColumnTemplate?: string;
 
     public style?: DataColumnStyle;
 
@@ -56,6 +59,7 @@ export class DataColumn {
         this.originAttrId = desc.originAttrId;
         this.isAggr = desc.isAggr || false;
         this.displayFormat = desc.dfmt;
+        this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
     }
 }
