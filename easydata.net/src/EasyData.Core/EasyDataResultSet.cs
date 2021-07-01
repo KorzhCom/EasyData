@@ -37,7 +37,7 @@ namespace EasyData
 
         public string DisplayFormat { get; set; }
 
-        public string GroopFooterColumnTemplate { get; set; }
+        public string GroupFooterColumnTemplate { get; set; }
 
         public EasyDataColStyle Style { get; set; }
 
@@ -83,7 +83,7 @@ namespace EasyData
             Label = desc.Label;
             Type = desc.Type;
             DisplayFormat = desc.DisplayFormat;
-            GroopFooterColumnTemplate = desc.GroopFooterColumnTemplate;
+            GroopFooterColumnTemplate = desc.GroupFooterColumnTemplate;
         }
     }
 
