@@ -193,7 +193,7 @@ namespace EasyData.Export
                         value = Utils.GetFormattedValue(row[i], type, mappedSettings, dfmt);
                     }
 
-                    if (isExtra && !string.IsNullOrEmpty(gfct)) {
+                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 

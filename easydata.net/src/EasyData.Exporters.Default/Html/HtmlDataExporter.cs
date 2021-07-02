@@ -82,7 +82,7 @@ namespace EasyData.Export
             if (data == null) return;
 
             // predefined formatters
-            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+            var predefinedFormatters = ExportHelpers.GetPredefinedFormatters(data.Cols, settings);
 
             await writer.WriteLineAsync("<!DOCTYPE HTML PUBLIC ''-//W3C//DTD HTML 4.0 Transitional//EN''>").ConfigureAwait(false);
             await writer.WriteLineAsync("<html>").ConfigureAwait(false);
@@ -178,10 +178,9 @@ namespace EasyData.Export
                         value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
                     }
 
-                    if (isExtra && !string.IsNullOrEmpty(gfct)) {
+                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
-
 
                     if (mappedSettings.FixHtmlTags) {
                         value = FixHtmlTags(value);
@@ -220,22 +219,6 @@ namespace EasyData.Export
             await writer.FlushAsync().ConfigureAwait(false);
         }
 
-        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
-        {
-            var result = new Dictionary<string, IFormatProvider>();
-            for (int i = 0; i < cols.Count; i++) {
-                var dfmt = cols[i].DisplayFormat;
-                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
-                    var format = Utils.GetFormat(dfmt);
-                    if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
-                    }
-                }
-
-            }
-            return result;
-        }
-
         /// <summary>
         /// Gets the MIME content type of the exporting format.
         /// </summary>
@@ -256,7 +239,7 @@ namespace EasyData.Export
         /// <returns>System.String.</returns>
         protected string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
         {
-            var result = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
+            var result = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
 
             if (settings.PreserveFormatting) {
                 result = result.Replace("\n", "<br>");

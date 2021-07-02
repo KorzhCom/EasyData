@@ -76,7 +76,7 @@ namespace EasyData.Export
             if (data == null) return;
 
             // predefined formatters
-            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+            var predefinedFormatters = ExportHelpers.GetPredefinedFormatters(data.Cols, settings);
 
             if (settings.ShowDatasetInfo) {
                 if (!string.IsNullOrEmpty(mappedSettings.Title)) {
@@ -117,8 +117,7 @@ namespace EasyData.Export
             {
                 var rowContent = new StringBuilder();
 
-                for (int i = 0; i < row.Count; i++)
-                {
+                for (int i = 0; i < row.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
@@ -134,10 +133,6 @@ namespace EasyData.Export
                     }
                     else {
                         value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
-                    }
-
-                    if (isExtra && !string.IsNullOrEmpty(gfct)) {
-                        value =  ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 
                     rowContent.Append(value);
@@ -169,21 +164,6 @@ namespace EasyData.Export
             await writer.FlushAsync().ConfigureAwait(false);
         }
 
-        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
-        {
-            var result = new Dictionary<string, IFormatProvider>();
-            for (int i = 0; i < cols.Count; i++) {
-                var dfmt = cols[i].DisplayFormat;
-                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
-                    var format = Utils.GetFormat(dfmt);
-                    if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
-                    }
-                }
-           
-            }
-            return result;
-        }
 
         /// <summary>
         /// Gets the MIME content type of the exporting format.
@@ -210,7 +190,7 @@ namespace EasyData.Export
                 return "";
             }
 
-            var s = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
+            var s = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
 
             bool needQuote = settings.QuoteAlways || s.Contains(settings.Separator) || s.IndexOfAny(new[] { '\n', '\r' }) > -1;
             if (needQuote) {
