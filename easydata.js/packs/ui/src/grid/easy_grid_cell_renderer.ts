@@ -14,7 +14,8 @@ export enum CellRendererType {
     BOOL
 }
 
-export type GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => void;
+export type GridCellRenderer = (value: any, column: GridColumn, 
+    cellElement: HTMLElement, rowElement: HTMLElement, isGroup?: boolean) => void;
 
 
 const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {

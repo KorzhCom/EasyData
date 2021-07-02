@@ -1,5 +1,3 @@
-import { DataRow } from './data_row';
-
 export interface CalculateOptions {
     maxLevel?: number;
     resultsObtained?(level?: number);
