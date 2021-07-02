@@ -610,20 +610,23 @@ export class EasyGrid {
                         if (group.columns.indexOf(column.dataColumn.id) >= 0
                             || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
-                            if (column.dataColumn.groupFooterColumnTemplate) {
-                                val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count'])
-                            }
                         };
                     }
 
                     if (!column.isRowNum && (column.dataColumn.isAggr 
                         || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
-                        if (column.dataColumn.groupFooterColumnTemplate) {
-                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values['__count']);
-                        }
                     }
         
+                    if (!column.isRowNum && column.dataColumn.groupFooterColumnTemplate) {
+                        const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                        const innerCell = (cellDiv.firstChild as HTMLElement);
+                        console.log(innerCell);
+                        val = innerCell.innerHTML;
+                        if (val)
+                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val , values['__counts']);
+                    }
+
                     const cellDiv = this.renderCell(column, colIndex, val, rowElement);
                     rowElement.appendChild(cellDiv);
                 });
