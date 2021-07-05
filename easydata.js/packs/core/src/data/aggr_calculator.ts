@@ -44,13 +44,20 @@ export interface AggregationColumnStore {
     validAggregate(colId: string, funcId: string): boolean;
 }
 
-export interface AggregateData {
+/**
+ * Represents AggregationSettings structure prepared for saving into a storage.
+ */
+export interface AggregationData {
     groups: Array<GroupData>,
     ugt: boolean;
     uc: boolean;
     aggregates: Array<{ colId: string, funcId: string }>;
 }
 
+/**
+ * Defines aggregations settings for the current context.
+ * Group, aggregate columns, grand totals, etc.
+ */
 export class AggregationSettings {
     private aggregates: Array<{ colId: string, funcId: string }> = []
 
@@ -61,7 +68,6 @@ export class AggregationSettings {
     private useCounts = false;
 
     constructor(private colStore: AggregationColumnStore) {
-
     }
 
     public addGroup(settings: GroupSettings) {
@@ -167,7 +173,7 @@ export class AggregationSettings {
         return true;
     }
 
-    public saveToData(): AggregateData {
+    public saveToData(): AggregationData {
         return {
             groups: Array.from(this.groups),
             ugt: this.useGrandTotals,
@@ -176,7 +182,7 @@ export class AggregationSettings {
         }
     }
 
-    public loadFromData(data: AggregateData) {
+    public loadFromData(data: AggregationData) {
         if (data) {
             this.useGrandTotals = data.ugt || false;
             this.useCounts = data.uc || false;
