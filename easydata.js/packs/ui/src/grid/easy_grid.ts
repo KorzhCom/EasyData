@@ -584,11 +584,11 @@ export class EasyGrid {
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const aggrCont = this.options.aggregates.calculator.getAggregates();
+        const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
         const aggrCols = settings.getAggregates().map(c => c.colId);
 
         const key = this.buildGroupKey(group, row);
-        aggrCont.getAggregates(level, key)
+        aggrContainer.getAggregates(level, key)
             .then((values) => {
                 for(const aggrColId of aggrCols) {
                     row.setValue(aggrColId, values[aggrColId]);

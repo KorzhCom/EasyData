@@ -4,7 +4,6 @@ export interface CalculateOptions {
 }
 
 export interface AggregatesCalculator {
-
     getAggrContainer(): AggregatesContainer;
 
     calculate(options?: CalculateOptions): Promise<void>;
