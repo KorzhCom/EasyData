@@ -5,7 +5,6 @@ export interface CalculateOptions {
 
 export interface AggregatesCalculator {
     getAggrContainer(): AggregatesContainer;
-
     calculate(options?: CalculateOptions): Promise<void>;
 }
 
@@ -34,13 +33,15 @@ export interface GroupSettings {
 export interface GroupData {
     name?: string;
     columns: Array<string>;
-    aggregates: Array<{colId: string, funcId: string}>;
+    aggregates: Array<AggregateInfo>;
 }
+
+export type AggregateInfo = { colId: string, funcId: string };
 
 export interface AggregationColumnStore {
     getColumnIds(from: number, to?: number): string[];
     validateColumns(colIds: string[]): boolean;
-    validAggregate(colId: string, funcId: string): boolean;
+    validateAggregate(colId: string, funcId: string): boolean;
 }
 
 /**
@@ -50,7 +51,7 @@ export interface AggregationData {
     groups: Array<GroupData>,
     ugt: boolean;
     uc: boolean;
-    aggregates: Array<{ colId: string, funcId: string }>;
+    aggregates: Array<AggregateInfo>;
 }
 
 /**
@@ -58,7 +59,10 @@ export interface AggregationData {
  * Group, aggregate columns, grand totals, etc.
  */
 export class AggregationSettings {
-    private aggregates: Array<{ colId: string, funcId: string }> = []
+
+    public static readonly COUNT_FIELD_NAME = '__count';
+     
+    private aggregates: Array<AggregateInfo> = []
 
     private groups: GroupData[] = [];
 
@@ -83,7 +87,7 @@ export class AggregationSettings {
             ? colIndexOrId
             : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
 
-        if (!this.areUnusedColumns([colId]) || !this.colStore.validAggregate(colId, funcId))
+        if (!this.areUnusedColumns([colId]) || !this.colStore.validateAggregate(colId, funcId))
             throw "Invalid aggregate function for such column";
 
         this.aggregates.push({ colId, funcId });
@@ -123,7 +127,7 @@ export class AggregationSettings {
         return groups[groups.length - 1];
     }
 
-    public getAggregates(): Array<{ colId: string, funcId: string }> {
+    public getAggregates(): Array<AggregateInfo> {
         return this.aggregates;
     }
 

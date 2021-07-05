@@ -1,7 +1,8 @@
 import { 
     EventEmitter, EasyDataTable, 
     DataRow, utils, i18n,
-    GroupData
+    GroupData,
+    AggregationSettings
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -624,7 +625,7 @@ export class EasyGrid {
                         console.log(innerCell);
                         val = innerCell.innerHTML;
                         if (val)
-                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val , values['__counts']);
+                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val , values[AggregationSettings.COUNT_FIELD_NAME]);
                     }
 
                     const cellDiv = this.renderCell(column, colIndex, val, rowElement);
