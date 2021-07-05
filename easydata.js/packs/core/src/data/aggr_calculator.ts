@@ -51,7 +51,7 @@ export interface AggregateData {
     aggregates: Array<{ colId: string, funcId: string }>;
 }
 
-export class AggregateSettings {
+export class AggregationSettings {
     private aggregates: Array<{ colId: string, funcId: string }> = []
 
     private groups: GroupData[] = [];

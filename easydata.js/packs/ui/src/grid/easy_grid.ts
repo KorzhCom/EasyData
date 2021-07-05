@@ -189,7 +189,7 @@ export class EasyGrid {
                     this.slot.classList.remove(`${eqCssPrefix}-drophover`);
                     this.hideLandingSlot();
                 },
-                onDrop: (_, ev) => {
+            onDrop: (_, ev) => {
                     this.dataTable.columns.move(ev.data.column, this.landingIndex);
                     this.refresh();
 
