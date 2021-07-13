@@ -132,7 +132,7 @@ export class EasyDataTable {
 
         if (allChunksCached) {
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= ubChunk; i++) {
+            for (let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
 
@@ -172,7 +172,7 @@ export class EasyDataTable {
             }
 
             let index = lbChunk;
-            for(const chunk of chunks) {
+            for (const chunk of chunks) {
                 this.chunkMap[index] = {
                     offset: index * this._chunkSize,
                     rows: chunk.rows
