@@ -39,14 +39,16 @@ namespace EasyData
         }
 
 
-        public DisplayFormatDescriptor AddOrUpdate(DataType type, string name, string format)
+        public DisplayFormatDescriptor AddOrUpdate(DataType type, string name, string format, bool isDefault = false)
         {
             DisplayFormatDescriptor desc;
             if (TryGetFormat(type, name, out desc)) {
                 desc.Format = format;
+                desc.IsDefault = isDefault;
             }
             else {
                 desc = new DisplayFormatDescriptor(name, format);
+                desc.IsDefault = isDefault;
                 if (_dict.TryGetValue(type, out var formats)) {
                     formats.Add(desc);
                 }
