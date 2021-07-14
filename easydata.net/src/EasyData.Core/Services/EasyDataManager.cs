@@ -56,7 +56,11 @@ namespace EasyData.Services
         }
 
 
-        public abstract Task LoadModelAsync(string modelId, CancellationToken ct = default);
+        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default) 
+        {
+            Options.ModelTuner?.Invoke(Model);
+            return Task.CompletedTask;
+        }
 
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default);
 

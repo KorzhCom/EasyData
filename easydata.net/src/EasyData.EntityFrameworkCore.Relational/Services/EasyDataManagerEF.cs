@@ -33,7 +33,7 @@ namespace EasyData.Services
             var loaderOptions = new DbContextMetaDataLoaderOptions();
             Options.MetaDataLoaderOptionsBuilder?.Invoke(loaderOptions);
             Model.LoadFromDbContext(DbContext, loaderOptions);
-            return Task.FromResult(Model);
+            return base.LoadModelAsync(modelId, ct);
         }
 
         public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
@@ -52,12 +52,28 @@ namespace EasyData.Services
             foreach (var prop in props) {
                 var attrId = DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name);
                 var attr = Model.FindEntityAttr(attrId);
-                result.Cols.Add(new EasyDataCol(new EasyDataColDesc {
-                    Id =  attrId,
+
+                DataType dataType;
+                string dfmt = null;
+                if (attr != null) {
+                    dataType = attr.DataType;
+                    dfmt = attr.DisplayFormat;
+                }
+                else {
+                    dataType = DataUtils.GetDataTypeBySystemType(prop.ClrType);
+                }
+
+                if (string.IsNullOrEmpty(dfmt)) {
+                    dfmt = Model.DisplayFormats.GetDefault(attr.DataType)?.Format;
+                }
+
+                result.Cols.Add(new EasyDataCol(new EasyDataColDesc
+                {
+                    Id = attrId,
                     Label = DataUtils.PrettifyName(prop.Name),
                     AttrId = attr?.Id,
-                    DisplayFormat = attr?.DisplayFormat,
-                    Type = attr != null ? attr.DataType :DataUtils.GetDataTypeBySystemType(prop.ClrType)
+                    DisplayFormat = dfmt,
+                    Type = dataType
                 }));
             }
 
