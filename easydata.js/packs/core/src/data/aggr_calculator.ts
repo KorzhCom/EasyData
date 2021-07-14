@@ -60,7 +60,7 @@ export interface AggregationData {
  */
 export class AggregationSettings {
 
-    public static readonly COUNT_FIELD_NAME = '__count';
+    public readonly COUNT_FIELD_NAME: string;
      
     private aggregates: Array<AggregateInfo> = []
 
@@ -71,6 +71,7 @@ export class AggregationSettings {
     private useCounts = false;
 
     constructor(private colStore: AggregationColumnStore) {
+        this.COUNT_FIELD_NAME = '__count';
     }
 
     public addGroup(settings: GroupSettings) {
