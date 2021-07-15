@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
-using System.Threading;
 
 namespace EasyData.Services
 {
@@ -48,37 +48,32 @@ namespace EasyData.Services
 
             var result = new EasyDataResultSet();
 
-            var props = entityType.GetProperties();
-            foreach (var prop in props) {
-                var attrId = DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name);
-                var attr = Model.FindEntityAttr(attrId);
+            var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
+            var attrIdProps = entityType.GetProperties().ToDictionary(prop => DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name), prop => prop );
 
-                DataType dataType;
-                string dfmt = null;
-                if (attr != null) {
-                    dataType = attr.DataType;
-                    dfmt = attr.DisplayFormat;
-                }
-                else {
-                    dataType = DataUtils.GetDataTypeBySystemType(prop.ClrType);
-                }
+            var attrs = modelEntity.Attributes.Where(attr => attr.Kind != EntityAttrKind.Lookup);
+            foreach (var attr in attrs) {
 
+                var dataType = attr.DataType;
+                var dfmt = attr.DisplayFormat;
+              
                 if (string.IsNullOrEmpty(dfmt)) {
                     dfmt = Model.DisplayFormats.GetDefault(attr.DataType)?.Format;
                 }
 
+                var prop = attrIdProps[attr.Id];
                 result.Cols.Add(new EasyDataCol(new EasyDataColDesc
                 {
-                    Id = attrId,
+                    Id = attr.Id,
                     Label = DataUtils.PrettifyName(prop.Name),
                     AttrId = attr?.Id,
                     DisplayFormat = dfmt,
                     Type = dataType
                 }));
-            }
+            } 
 
             foreach (var entity in entities) {
-                result.Rows.Add(new EasyDataRow(props.Select(prop => prop.PropertyInfo.GetValue(entity)).ToList()));
+                result.Rows.Add(new EasyDataRow(attrs.Select(attr => attrIdProps[attr.Id].PropertyInfo.GetValue(entity)).ToList()));
             }
 
             return result;
