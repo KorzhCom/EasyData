@@ -118,7 +118,18 @@ namespace EasyData.AspNetCore
                 total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer, filters, isLookup, ct);
             }
 
-            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filters, isLookup, offset, fetch);
+            var sorters = new List<EasySorter>();
+
+
+            // TODO: REMOVE BEFORE THE RELEASE!!! (This is a test of the sorting functionality) 
+            if (entityContainer == "Order") {
+                sorters.Add(new EasySorter {
+                    FieldName = "OrderDate",
+                    Direction = SortDirection.Descending
+                });
+            }
+
+            var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filters, sorters, isLookup, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                 await WriteGetEntitiesResponseAsync(jsonWriter, result, total, cancellationToken);
             }, ct);

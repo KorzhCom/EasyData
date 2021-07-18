@@ -36,7 +36,11 @@ namespace EasyData.Services
             return base.LoadModelAsync(modelId, ct);
         }
 
-        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
+        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, 
+            string entityContainer, 
+            IEnumerable<EasyFilter> filters = null, 
+            IList<EasySorter> sorters = null,
+            bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
         {
             if (filters == null)
                 filters = Enumerable.Empty<EasyFilter>();
@@ -44,7 +48,8 @@ namespace EasyData.Services
             await GetModelAsync(modelId);
 
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup, offset, fetch, ct);
+            var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType, 
+                    filters, sorters, isLookup, offset, fetch, ct);
 
             var result = new EasyDataResultSet();
 
@@ -202,7 +207,10 @@ namespace EasyData.Services
             return (object)((dynamic)task).Result;
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, IEnumerable<EasyFilter> filters, bool isLookup, int? offset,
+        private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, 
+            IEnumerable<EasyFilter> filters,
+            IList<EasySorter> sorters,
+            bool isLookup, int? offset,
             int? fetch, CancellationToken ct)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
@@ -210,7 +218,7 @@ namespace EasyData.Services
                        .Single(m => m.Name == "ListAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, filters, isLookup, offset, fetch, ct });
+                       .Invoke(this, new object[] { dbContext, filters, sorters, isLookup, offset, fetch, ct });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
@@ -235,7 +243,10 @@ namespace EasyData.Services
             return await dbContext.Set<T>().FindAsync(keys.ToArray(), ct);
         }
 
-        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup,
+        private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, 
+            IEnumerable<EasyFilter> filters, 
+            IList<EasySorter> sorters,
+            bool isLookup,
             int? offset, int? fetch, CancellationToken ct) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
@@ -251,6 +262,19 @@ namespace EasyData.Services
             if (fetch.HasValue) {
                 query = query.Take(fetch.Value);
             }
+
+            if (sorters != null) {
+                for (var i = 0; i < sorters.Count; i++) {
+                    var sorter = sorters[i];
+                    if (i == 0) {
+                        query = query.OrderBy(sorter.FieldName, sorter.Direction == SortDirection.Descending);
+                    }
+                    else {
+                        query = query.ThenBy(sorter.FieldName, sorter.Direction == SortDirection.Descending);
+                    }
+                }
+            }
+
             return await query.Cast<object>().ToListAsync(ct);
         }
 

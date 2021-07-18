@@ -245,5 +245,4 @@ namespace EasyData
         });
 
     }
-
 }

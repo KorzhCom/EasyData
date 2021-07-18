@@ -62,7 +62,13 @@ namespace EasyData.Services
             return Task.CompletedTask;
         }
 
-        public abstract Task<EasyDataResultSet> GetEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default);
+        public abstract Task<EasyDataResultSet> GetEntitiesAsync(
+            string modelId, string entityContainer, 
+            IEnumerable<EasyFilter> filters = null,
+            IList<EasySorter> sorters = null,
+            bool isLookup = false, 
+            int? offset = null, int? fetch = null, 
+            CancellationToken ct = default);
 
         public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
 
