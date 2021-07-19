@@ -87,13 +87,12 @@ namespace EasyData.AspNetCore
             bool isLookup = false;
 
             IEnumerable<EasyFilter> filters = null;
-
+         
             bool needTotal = false;
 
             JObject requestParams;
             using (var requestReader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
-            using (var jsonReader = new JsonTextReader(requestReader))
-            {
+            using (var jsonReader = new JsonTextReader(requestReader)) {
                 requestParams = await JObject.LoadAsync(jsonReader, ct);
             }
 
@@ -118,16 +117,7 @@ namespace EasyData.AspNetCore
                 total = await Manager.GetTotalEntitiesAsync(modelId, entityContainer, filters, isLookup, ct);
             }
 
-            var sorters = new List<EasySorter>();
-
-
-            // TODO: REMOVE BEFORE THE RELEASE!!! (This is a test of the sorting functionality) 
-            if (entityContainer == "Order") {
-                sorters.Add(new EasySorter {
-                    FieldName = "OrderDate",
-                    Direction = SortDirection.Descending
-                });
-            }
+            var sorters = await Manager.GetDefaultSortersAsync(modelId, entityContainer);
 
             var result = await Manager.GetEntitiesAsync(modelId, entityContainer, filters, sorters, isLookup, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
@@ -138,8 +128,7 @@ namespace EasyData.AspNetCore
         private async Task<IEnumerable<EasyFilter>> GetFiltersAsync(string modelId, JArray jarr, CancellationToken ct)
         {
             var result = new List<EasyFilter>();
-            foreach (var filterJson in jarr)
-            {
+            foreach (var filterJson in jarr) {
                 var filterClass = filterJson.Value<string>("class");
                 var filter = Options.ResolveFilter(filterClass, await Manager.GetModelAsync(modelId));
                 if (filter != null) {
@@ -150,7 +139,8 @@ namespace EasyData.AspNetCore
 
             return result;
         }
-         
+
+     
         protected virtual async Task WriteGetEntitiesResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total, CancellationToken ct)
         {
             if (total.HasValue) {

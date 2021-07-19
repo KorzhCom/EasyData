@@ -268,6 +268,7 @@ namespace EasyData.EntityFrameworkCore
                 entityAttr.ShowOnView = annotation.ShowOnView;
                 entityAttr.ShowOnEdit = annotation.ShowOnEdit;
                 entityAttr.ShowOnCreate = annotation.ShowOnCreate;
+                entityAttr.Sorting = annotation.Sorting;
 
                 if (annotation.Index != int.MaxValue) {
                     entityAttr.Index = annotation.Index;
@@ -294,6 +295,7 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
 
             entityAttr.PropInfo = property.PropertyInfo;
+            entityAttr.PropName = property.Name;
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();

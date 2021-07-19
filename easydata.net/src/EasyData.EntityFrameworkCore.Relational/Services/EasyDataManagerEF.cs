@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,11 +9,9 @@ using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
-
 namespace EasyData.Services
 {
     public class EasyDataManagerEF<TDbContext>: EasyDataManager where TDbContext: DbContext
@@ -36,10 +35,26 @@ namespace EasyData.Services
             return base.LoadModelAsync(modelId, ct);
         }
 
+        public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
+        {
+            var model = await GetModelAsync(modelId);
+            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
+
+            return modelEntity.Attributes
+                    .Where(a => a.Sorting != 0)
+                    .OrderBy(a => Math.Abs(a.Sorting))
+                    .Select(a => new EasySorter
+                    {
+                        FieldName = a.PropName,
+                        Direction = a.Sorting > 0 ? SortDirection.Ascending : SortDirection.Descending
+                    });
+        }
+
         public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId, 
             string entityContainer, 
-            IEnumerable<EasyFilter> filters = null, 
-            IList<EasySorter> sorters = null,
+            IEnumerable<EasyFilter> filters = null,
+            IEnumerable<EasySorter> sorters = null,
             bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
         {
             if (filters == null)
@@ -209,7 +224,7 @@ namespace EasyData.Services
 
         private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType, 
             IEnumerable<EasyFilter> filters,
-            IList<EasySorter> sorters,
+            IEnumerable<EasySorter> sorters,
             bool isLookup, int? offset,
             int? fetch, CancellationToken ct)
         {
@@ -244,35 +259,41 @@ namespace EasyData.Services
         }
 
         private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext, 
-            IEnumerable<EasyFilter> filters, 
-            IList<EasySorter> sorters,
+            IEnumerable<EasyFilter> filters,
+            IEnumerable<EasySorter> sorters,
             bool isLookup,
             int? offset, int? fetch, CancellationToken ct) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
             var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
-            foreach (var filter in filters)
-            {
-                query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
+            if (filters != null) {
+                foreach (var filter in filters) {
+                    query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
+                }
+            }
+
+            if (sorters != null) {
+                using (var e = sorters.GetEnumerator()) {
+                    if (e.MoveNext()) {
+                        var sorter = e.Current;
+                        var isDescending = sorter.Direction == SortDirection.Descending;
+                        var orderedQuery = query.OrderBy(sorter.FieldName, isDescending);
+                        while (e.MoveNext()) {
+                            sorter = e.Current;
+                            isDescending = sorter.Direction == SortDirection.Descending;
+                            orderedQuery = orderedQuery.ThenBy(sorter.FieldName, isDescending);
+                        }
+                        query = orderedQuery.AsQueryable();
+                    }
+                }
             }
 
             if (offset.HasValue) {
                 query = query.Skip(offset.Value);
             }
+
             if (fetch.HasValue) {
                 query = query.Take(fetch.Value);
-            }
-
-            if (sorters != null) {
-                for (var i = 0; i < sorters.Count; i++) {
-                    var sorter = sorters[i];
-                    if (i == 0) {
-                        query = query.OrderBy(sorter.FieldName, sorter.Direction == SortDirection.Descending);
-                    }
-                    else {
-                        query = query.ThenBy(sorter.FieldName, sorter.Direction == SortDirection.Descending);
-                    }
-                }
             }
 
             return await query.Cast<object>().ToListAsync(ct);
@@ -282,8 +303,7 @@ namespace EasyData.Services
         {
             var query = dbContext.Set<T>().AsQueryable();
             var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
-            foreach (var filter in filters)
-            {
+            foreach (var filter in filters) {
                 query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
             }
             return await query.LongCountAsync(ct);

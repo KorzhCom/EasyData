@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -15,12 +13,6 @@ namespace EasyData.EntityFrameworkCore
 
         public string Description { get; set; }
 
-        [Obsolete("Use ShowOnView instead")]
-        public bool Visible {
-            get => ShowOnView;
-            set => ShowOnView = value;
-        }
-
         public bool Editable { get; set; } = true;
 
         public int Index { get; set; } = int.MaxValue;
@@ -32,5 +24,7 @@ namespace EasyData.EntityFrameworkCore
         public bool ShowOnEdit { get; set; } = true;
         
         public bool ShowOnCreate { get; set; } = true;
+
+        public int Sorting { get; set; } = 0;
     }
 }

@@ -65,7 +65,7 @@ namespace EasyData.Services
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(
             string modelId, string entityContainer, 
             IEnumerable<EasyFilter> filters = null,
-            IList<EasySorter> sorters = null,
+            IEnumerable<EasySorter> sorters = null,
             bool isLookup = false, 
             int? offset = null, int? fetch = null, 
             CancellationToken ct = default);
@@ -79,6 +79,8 @@ namespace EasyData.Services
         public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default); 
 
         public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
+
+        public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

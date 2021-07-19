@@ -13,6 +13,7 @@ namespace EasyDataBasicDemo.Models
         public int Id { get; set; }
 
         [Column("ProductName")]
+        [MetaEntityAttr(Sorting = 2)]
         public string Name { get; set; }
 
         [ScaffoldColumn(false)]
@@ -29,7 +30,7 @@ namespace EasyDataBasicDemo.Models
 
         public string QuantityPerUnit { get; set; }
 
-        [MetaEntityAttr(DisplayFormat = "{0:C2}")]
+        [MetaEntityAttr(DisplayFormat = "{0:C2}", Sorting = -1)]
         public decimal? UnitPrice { get; set; }
 
         public short? UnitsInStock { get; set; }
