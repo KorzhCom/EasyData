@@ -49,6 +49,11 @@ export class DomElementBuilder<TElement extends HTMLElement>  {
         return this.attr("id", value);
     }
 
+    public focus() {
+        this.element.focus();
+        return this;
+    }
+
     public title(value: string) {
         return this.attr('title', value);
     }
