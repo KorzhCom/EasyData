@@ -22,6 +22,7 @@ namespace EasyData
         public override string DefaultValue { get; set; }
         public override string DefaultText { get; set; }
 
+        /// <summary>
         /// Writes the content of the custom value editor to JSON (asynchronous way).
         /// </summary>
         /// <param name="writer">The writer</param>
