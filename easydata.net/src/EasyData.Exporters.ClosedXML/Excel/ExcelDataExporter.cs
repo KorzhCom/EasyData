@@ -94,7 +94,9 @@ namespace EasyData.Export
             var r = new Regex(@"[\/\*\?:\[\]]");
             var result = r.Replace(mappedSettings.Title ?? "", "");
             var sheetName = !string.IsNullOrWhiteSpace(result)
-                ? result
+                ? (result.Length > 30)
+                    ? result.Substring(0, 30)
+                    : result
                 : "Sheet 1";
 
             var wb = new XLWorkbook();
