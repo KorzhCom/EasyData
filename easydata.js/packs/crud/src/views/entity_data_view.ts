@@ -6,7 +6,7 @@ import {
     GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
 
-import { EntityEditForm, EntityEditFormBuilder } from '../form/entity_edit_form';
+import { EntityEditFormBuilder } from '../form/entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 import { DataContext } from '../main/data_context';
@@ -135,7 +135,7 @@ export class EntityDataView {
                 form.getData()
                 .then(obj => this.context.createEntity(obj))
                 .then(() => {
-                    window.location.reload();
+                    return this.refreshData();
                 })
                 .catch((error) => {
                     this.processError(error);
@@ -173,7 +173,7 @@ export class EntityDataView {
                 form.getData()
                 .then(obj => this.context.updateEntity(keys.join(':'), obj))
                 .then(() => {
-                    window.location.reload();
+                    return this.refreshData();
                 })       
                 .catch((error) => {
                    this.processError(error);
@@ -206,7 +206,7 @@ export class EntityDataView {
                             //pass entityId in future
                             this.context.deleteEntity(keys.join(':'))
                                 .then(() => {
-                                    window.location.reload();
+                                    return this.refreshData();
                                 })
                                 .catch((error) => {
                                     this.processError(error);
@@ -224,6 +224,13 @@ export class EntityDataView {
             closable: true,
             cancelable: false
         });
+    }
+
+    private refreshData(): Promise<void> {
+        return this.context.getEntities()
+            .then(() => {
+                this.grid.refresh();
+            });
     }
 
 }

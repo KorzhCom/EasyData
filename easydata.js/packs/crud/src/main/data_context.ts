@@ -112,6 +112,7 @@ export class DataContext {
     }
 
     public getEntities() {
+        this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
             .then(result => {
                 

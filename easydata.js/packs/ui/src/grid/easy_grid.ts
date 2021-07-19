@@ -871,6 +871,13 @@ export class EasyGrid {
         return builder.toDOM();
     }
 
+    public setPage(page: number) {
+        this.pagination.page = page;
+        this.fireEvent({ type: "pageChanged", page: page });
+        this.refresh();
+        this.bodyViewportDiv.focus();
+    }
+
     protected renderPageNavigator(): HTMLDivElement {
         let paginateDiv = document.createElement('div');
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
@@ -882,11 +889,8 @@ export class EasyGrid {
             const buttonClickHandler = (ev: MouseEvent) => {
                 const element = ev.target as HTMLElement;
                 if (element.hasAttribute('data-page')) {
-                    let page = parseInt(element.getAttribute('data-page'));
-                    this.pagination.page = page;
-                    this.fireEvent({ type: "pageChanged", page: page });
-                    this.refresh();
-                    this.bodyViewportDiv.focus();
+                    const page = parseInt(element.getAttribute('data-page'));
+                    this.setPage(page);
                 }
             };
 
