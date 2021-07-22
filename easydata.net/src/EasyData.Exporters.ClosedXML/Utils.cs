@@ -11,6 +11,7 @@ namespace EasyData.Export
     {
         private static Regex _formatRegex = new Regex("{0:(.*?)}", RegexOptions.Singleline);
 
+
         public static string GetFormat(string displayFormat)
         {
             if (_formatRegex.IsMatch(displayFormat))
@@ -97,6 +98,19 @@ namespace EasyData.Export
 
             return culture.DateTimeFormat.LongDatePattern + " "
                     + culture.DateTimeFormat.LongTimePattern;
+        }
+
+        private static Regex _forbidSymbols = new Regex(string.Format("[{0}]", Regex.Escape(@":\/?*[]""")));
+
+        public static string ToExcelSheetName(string title)
+        {
+            title = title ?? "";
+            var result = _forbidSymbols.Replace(title, "");
+            return !string.IsNullOrWhiteSpace(result)
+                ? (result.Length > 30)
+                    ? result.Substring(0, 30)
+                    : result
+                : "Sheet 1";
         }
     }
 }

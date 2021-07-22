@@ -90,14 +90,7 @@ namespace EasyData.Export
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
 
-            // replace forbidden symbols
-            var r = new Regex(@"[\/\*\?:\[\]]");
-            var result = r.Replace(mappedSettings.Title ?? "", "");
-            var sheetName = !string.IsNullOrWhiteSpace(result)
-                ? (result.Length > 30)
-                    ? result.Substring(0, 30)
-                    : result
-                : "Sheet 1";
+            var sheetName = Utils.ToExcelSheetName(mappedSettings.Title);
 
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add(sheetName);
