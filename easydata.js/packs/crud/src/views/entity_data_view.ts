@@ -14,6 +14,7 @@ import { RequiredValidator } from '../validators/required_validator';
 import { TypeValidator } from '../validators/type_validator';
 import { Validator } from '../validators/validator';
 import { EasyDataViewOptions } from './options';
+import { setLocation } from '../utils/utils';
 
 export class EntityDataView {
 
@@ -41,7 +42,15 @@ export class EntityDataView {
         const ent = this.context.getActiveEntity();
         this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
-            this.slot.innerHTML += `<a href="${this.basePath}"> ← ${i18n.getText('BackToEntities')}</a>`;
+            domel(this.slot)
+                .addChild('a', b => b
+                    .attr('href', 'javascript:void(0)')
+                    .text(`← ${i18n.getText('BackToEntities')}`)
+                    .on('click', (e) => {
+                        e.preventDefault();
+                        setLocation(this.basePath);
+                    })
+                );
         }
 
         this.renderGrid();

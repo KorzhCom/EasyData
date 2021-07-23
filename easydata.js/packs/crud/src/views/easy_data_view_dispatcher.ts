@@ -95,18 +95,38 @@ export class EasyDataViewDispatcher {
     }
 
     run(): Promise<void> {
+        window.addEventListener('ed_set_location', this.onSetLocation);
         return this.context.loadMetaData()
         .then(() => {
-            const activeEntityId = this.getActiveEntityId();
-            if (activeEntityId) {
-                this.context.setActiveEntity(activeEntityId);
-                window['EntityDataView'] = new EntityDataView(this.container, this.context, 
-                    this.basePath, this.options);
-            }
-            else {
-                window['RootDataView'] = new RootDataView(this.container, this.context, this.basePath);
-            }
+            this.setActiveView();
         })
         .catch(error => console.error(error))
+    }
+
+    private setActiveView() {
+        this.clear();
+
+        const activeEntityId = this.getActiveEntityId();
+        if (activeEntityId) {
+            this.context.setActiveEntity(activeEntityId);
+            window['EDView'] = new EntityDataView(this.container, this.context,
+                this.basePath, this.options);
+        }
+        else {
+            window['EDView'] = new RootDataView(this.container, this.context, this.basePath);
+        }
+    }
+
+    private clear() {
+        this.container.innerHTML = '';
+        this.context.getData().clear();
+    }
+
+    private onSetLocation = () => {
+        this.setActiveView();
+    }
+
+    detach() {
+        window.removeEventListener('ed_set_location', this.onSetLocation);
     }
 }
