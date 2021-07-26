@@ -1,5 +1,8 @@
+import { EasyGridOptions } from '@easydata/ui';
+
 export interface EasyDataViewOptions {
-    showBackToEntities?: boolean
+    showBackToEntities?: boolean,
+    grid?: Omit<EasyGridOptions, 'slot' | 'dataTable'>
 }
 
 export interface EasyDataViewDispatcherOptions extends EasyDataViewOptions {

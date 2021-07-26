@@ -18,7 +18,7 @@ import { setLocation } from '../utils/utils';
 
 export class EntityDataView {
 
-    private options = {
+    private options: EasyDataViewOptions = {
         showBackToEntities: true
     }
 
@@ -71,11 +71,13 @@ export class EntityDataView {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
-                this.grid = new EasyGrid({
+                this.grid = new EasyGrid(dataUtils.assignDeep({
                     slot: gridSlot,
                     dataTable: result,
                     paging: {
                         pageSize: 15,
+                        allowPageSizeChange: true,
+                        pageSizeItems: [15, 30, 50, 100, 200]
                     },
                     addColumns: true,
                     addColumnsTitle: i18n.getText('AddBtnTitle'),
@@ -84,7 +86,7 @@ export class EntityDataView {
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this),
                     onSyncGridColumn: this.syncGridColumnHandler.bind(this)
-                });
+                }, this.options.grid || {}));
 
                 let widgetSlot: HTMLElement;
                 const filterBar = domel('div')
