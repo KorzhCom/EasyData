@@ -1,5 +1,7 @@
 ﻿@page "/easydata/{entity?}"
 
+@implements IAsyncDisposable
+
 @inject IJSRuntime JSRuntime
 
 <div class="container">
@@ -17,6 +19,19 @@
             await JSRuntime.InvokeVoidAsync("runEasyData");
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private bool _disposed = false;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (!_disposed)
+        {
+
+            _disposed = true;
+
+            await JSRuntime.InvokeVoidAsync("stopEasyData");
+        }
     }
 
 }
