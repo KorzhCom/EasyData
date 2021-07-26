@@ -1,6 +1,7 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n, DataColumn 
+    DataRow, utils, i18n,
+    GroupData
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -70,13 +71,14 @@ export class EasyGrid {
         syncGridColumns: true,
         useRowNumeration: true,
         allowDragDrop: false,
-        totals: {
-            calcGrandTotals: false,
+        aggregates: {
+            settings: null,
             calculator: null
         },
         paging: {
             enabled: true,
-            pageSize: 30
+            pageSize: 30,
+            pageSizeItems: [20, 30, 50, 100, 200]
         },
         addColumns: false,
         viewportRowsCount: null,
@@ -187,7 +189,7 @@ export class EasyGrid {
                     this.slot.classList.remove(`${eqCssPrefix}-drophover`);
                     this.hideLandingSlot();
                 },
-                onDrop: (_, ev) => {
+            onDrop: (_, ev) => {
                     this.dataTable.columns.move(ev.data.column, this.landingIndex);
                     this.refresh();
 
@@ -435,7 +437,9 @@ export class EasyGrid {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => {                    
+                .then((rows) => { 
+                    this.pagination.total = this.dataTable.getTotal();
+
                     this.hideProgress();
 
                     //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
@@ -444,21 +448,23 @@ export class EasyGrid {
                     this.prevRowTotals = null;
 
                     if (rows.length) {
-                        const calcTotals = this.calcTotals();
-                        const keyCols = this.getTotalsKeyCols();
-     
+                        const showAggrs = this.showAggregates();
+                        const groups = showAggrs 
+                            ? this.options.aggregates.settings.getGroups() 
+                            : [];
+                            
                         rows.forEach((row, index) => {
-                            if (calcTotals)
-                                this.updateTotalsState(keyCols, row);
+                            if (showAggrs)
+                                this.updateTotalsState(groups, row);
 
                             const tr = this.renderRow(row, index);
                             this.bodyCellContainerDiv.appendChild(tr);
                         });
     
-                        const showGrandTotalsOnEachPage = this.options.totals && this.options.totals.showGrandTotalsOnEachPage;
-                        if (calcTotals && (this.isLastPage() || showGrandTotalsOnEachPage)) {
+                        const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
+                        if (showAggrs && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
-                            this.updateTotalsState(keyCols, row, true);
+                            this.updateTotalsState(groups, row, true);
                         }
                     }
 
@@ -482,60 +488,51 @@ export class EasyGrid {
     }
 
     private isLastPage() {
+        if (this.dataTable.elasticChunks) {
+            return this.dataTable.totalIsKnown()
+                && (this.pagination.page * this.pagination.pageSize) >= this.pagination.total;
+        }
+
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
 
-    private calcTotals(): boolean {
-        return this.options.totals 
-            && (this.options.totals.calcGrandTotals || this.calcSubTotalsCols())
-            && this.dataTable.columns.getItems()
-                .filter(col => col.isAggr).length > 0;
-    }
+    private showAggregates(): boolean {
+        if (!this.options || !this.options.aggregates || !this.options.aggregates.settings)
+            return false;
 
-    private calcSubTotalsCols(): boolean {
-        return this.options.totals.cols && Object.values(this.options.totals.cols)
-            .map(val => val.calcSubTotals)
-            .reduce((prev, value) => {
-                return prev || value;
-            }, false)
+        const settings = this.options.aggregates.settings;
+        return settings.hasAggregates() && (settings.hasGroups() || settings.hasGrandTotals());
     }
 
     private prevRowTotals: DataRow = null;
 
-    private getTotalsKeyCols() {
-        const keyCols = this.dataTable.columns.getItems()
-            .filter(col => !col.isAggr);
-        keyCols.pop();
-
-        return keyCols;
-    } 
-
-    private updateTotalsState(keyCols: DataColumn[], newRow: DataRow, isLast = false) {
-        if (this.prevRowTotals && this.calcSubTotalsCols()) {
+    private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
+        const settings = this.options.aggregates.settings;
+        if (this.prevRowTotals && settings.hasGroups()) {
             let changeLevel = -1;
-            for(let i = 0; i < keyCols.length; i++) {
-                const col = keyCols[i];
-                if (this.prevRowTotals.getValue(col.id) !== newRow.getValue(col.id)) {
-                    changeLevel = i;
-                    break;
+            for (let level = 1; level <= groups.length; level++) {
+                const group = groups[level - 1];
+                for(const col of group.columns) {
+                    if (this.prevRowTotals.getValue(col) !== newRow.getValue(col)) {
+                        changeLevel = level;
+                        break;
+                    }
                 }
-            }
 
-            if (changeLevel != -1) {
-                const totalsOpts = this.options.totals;
-                for(let i = keyCols.length; i > changeLevel; i--) {
-                    const col = keyCols[i - 1];
-                    const totalColOpts = totalsOpts.cols ? totalsOpts.cols[col.id] : null;  
-                    if (!totalColOpts || !totalColOpts.calcSubTotals)
-                        continue;
+                if (changeLevel !== -1)
+                    break;
+            }
+          
+            if (changeLevel !== -1) {
+                for (let level = groups.length; level >= changeLevel; level--) {
                     const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
-                    const tr = this.renderTotalsRow(i, row);
+                    const tr = this.renderTotalsRow(level, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
             }
         }
 
-        if (isLast && this.options.totals.calcGrandTotals) {
+        if (isLast && settings.hasGrandTotals()) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -543,7 +540,19 @@ export class EasyGrid {
         this.prevRowTotals = newRow;
     }
 
+    private applyGroupColumnTemplate(template: string, value: any, count: number): string {
+        let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `<span>${value}</span>` : '-');
+        result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `<span>${count}</span>` : '-');
+        return result;
+    }
+
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
+
+        const settings = this.options.aggregates.settings;
+        const group = (level > 0)
+            ?  settings.getGroups()[level - 1]
+            : { columns: [], aggregates: settings.getAggregates() };
+
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
                 .addClass(`${this.cssPrefix}-row-totals`)
@@ -557,18 +566,34 @@ export class EasyGrid {
                 return;
             }
 
-            const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
+            let val = '';
+            const colIndex = !column.isRowNum
+                ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                : -1;
+
+            if (!column.isRowNum && column.dataColumn) {
+                if (group.columns.indexOf(column.dataColumn.id) >= 0) {
+                    val = row.getValue(colIndex);
+                };
+            }
+                           
             if (colIndex == this.dataTable.columns.count - 1) {
                 val = 'Calculating...'
             }
 
-            rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+            rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const totals = this.options.totals.calculator.getTotals();
-        totals.fillTotals(level, row)
-            .then(() => {
+        const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
+        const aggrCols = settings.getAggregates().map(c => c.colId);
+
+        const key = this.buildGroupKey(group, row);
+        aggrContainer.getAggregates(level, key)
+            .then((values) => {
+                for(const aggrColId of aggrCols) {
+                    row.setValue(aggrColId, values[aggrColId]);
+                }
+
                 rowElement.innerHTML = '';
 
                 this.columns.getItems().forEach((column, index) => {
@@ -576,13 +601,33 @@ export class EasyGrid {
                         return;
                     }
         
-                    const colIndex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-                    let val = (colIndex == level || level == 0 && colIndex == 0) ? this.getTotalsTitle(level) : '';
-                    if (!column.isRowNum && column.dataColumn.isAggr) {
+                    let val = '';
+                    const colIndex = !column.isRowNum
+                        ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                        : -1;
+
+                    if (!column.isRowNum && column.dataColumn) {
+                        if (group.columns.indexOf(column.dataColumn.id) >= 0
+                            || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                            val = row.getValue(colIndex);
+                        };
+                    }
+
+                    if (!column.isRowNum && (column.dataColumn.isAggr 
+                        || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
                         val = row.getValue(colIndex);
                     }
         
-                    rowElement.appendChild(this.renderCell(column, colIndex, val, rowElement));
+                    if (!column.isRowNum && column.dataColumn.groupFooterColumnTemplate) {
+                        const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                        const innerCell = (cellDiv.firstChild as HTMLElement);
+                        val = innerCell.innerHTML;
+                        if (val)
+                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values[settings.COUNT_FIELD_NAME]);
+                    }
+
+                    const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                    rowElement.appendChild(cellDiv);
                 });
             })
             .catch((error) => console.error(error));
@@ -590,8 +635,12 @@ export class EasyGrid {
         return rowElement;
     }
 
-    private getTotalsTitle(level: number) {
-        return (level) ? 'Sub totals: ' : 'Grand totals: ';
+    private buildGroupKey(group: GroupData, row: DataRow) {
+        let result: any = {}
+        for(const colId of group.columns) {
+            result[colId] = row.getValue(colId);
+        }
+        return result;
     }
 
     private onVieportKeydown(ev: KeyboardEvent) {
@@ -674,37 +723,50 @@ export class EasyGrid {
     }
 
     protected renderFooter() {
+
         this.footerDiv = domel('div')
                     .addClass(`${this.cssPrefix}-footer`)
                     .toDOM();
 
-        this.footerPaginateDiv = this.renderPageNavigator();
-        this.footerDiv.appendChild(this.footerPaginateDiv);
-        const pageInfoBlock = this.renderPageInfoBlock();
-        this.footerDiv.appendChild(pageInfoBlock);
+        if (this.rowsOnPagePromise) {
+            this.rowsOnPagePromise.then(count => {
+                this.footerPaginateDiv = this.renderPageNavigator();
+                this.footerDiv.appendChild(this.footerPaginateDiv);
+                const pageInfoBlock = this.renderPageInfoBlock(count);
+                this.footerDiv.appendChild(pageInfoBlock);
+            });
+        }
+
+       
     }
 
-    protected renderPageInfoBlock(): HTMLDivElement {
+    protected renderPageInfoBlock(count: number): HTMLDivElement {
 
         const pageInfoDiv = domel('div')
             .addClass(`${this.cssPrefix}-page-info`)
             .toDOM()
 
-        if (this.rowsOnPagePromise) {
-            this.rowsOnPagePromise.then(count => {
+        const fistPageRecordNum = count 
+            ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
+            : 0;
+        const lastPageRecordNum = count 
+            ? fistPageRecordNum + count - 1 
+            : 0;
+            
+        let totalStr = this.dataTable.getTotal().toString();
 
-                const fistPageRecordNum = count ? (this.pagination.page - 1) * this.pagination.pageSize + 1 : 0;
-                const lastPageRecordNum = count ? fistPageRecordNum + count - 1 : 0;
-                const total = this.dataTable.getTotal();
-
-                pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
-                    .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
-                    .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
-                    .replace('{Total}', `<span>${total.toString()}</span>`);
-            });
+        if (this.dataTable.elasticChunks) {
+            const count = this.dataTable.getCachedCount();
+            const total = this.dataTable.getTotal();
+            if (count !== total)
+                totalStr = '?';
         }
-    
 
+        pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
+            .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
+            .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
+            .replace('{Total}', `<span>${totalStr}</span>`);
+    
         return pageInfoDiv;
     }
 
@@ -809,119 +871,171 @@ export class EasyGrid {
         return builder.toDOM();
     }
 
+    public setPage(page: number) {
+        this.pagination.page = page;
+        this.fireEvent({ type: "pageChanged", page: page });
+        this.refresh();
+        this.bodyViewportDiv.focus();
+    }
+
     protected renderPageNavigator(): HTMLDivElement {
         let paginateDiv = document.createElement('div');
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
 
-        this.pagination.total = this.dataTable.getTotal();
-        if (this.options.paging && this.options.paging.enabled
-             && this.pagination.total > this.pagination.pageSize) {
-            const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
-            paginateDiv.innerHTML = "";
+        if (this.options.paging && this.options.paging.enabled) {
 
-            const pageIndex = this.pagination.page || 1;
-            const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
-        
+            const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
+
             const buttonClickHandler = (ev: MouseEvent) => {
                 const element = ev.target as HTMLElement;
                 if (element.hasAttribute('data-page')) {
-                    let page = parseInt(element.getAttribute('data-page'));
-                    this.pagination.page = page;
-                    this.fireEvent({ type: "pageChanged", page: page });
-                    this.refresh();
-                    this.bodyViewportDiv.focus();
-                }        
-            };
-        
-            const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
-            const zeroBasedIndex = pageIndex - 1;
-            let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
-            let lastPageIndex = firstPageIndex + maxButtonCount - 1;
-            if (lastPageIndex > pageCount) {
-                lastPageIndex = pageCount;
-            }
-        
-            let ul = document.createElement('ul');
-            ul.className = `${prefix}pagination`;
-        
-            let li = document.createElement('li');
-            li.className = `${prefix}page-item`;
-        
-            let a:HTMLElement = document.createElement('span');
-            a.setAttribute("aria-hidden", 'true');
-        
-            a.className = `${prefix}page-link`;
-        
-            if (firstPageIndex == 1) {
-                li.className += " disabled";
-            }
-            else {
-                if (this.paginationOptions.useBootstrap) {
-                    a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${firstPageIndex - 1}`);
-                } 
-                else {
-                    let newA = document.createElement('a');
-                    newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${firstPageIndex - 1}`);
-                    a = newA; 
+                    const page = parseInt(element.getAttribute('data-page'));
+                    this.setPage(page);
                 }
-                a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
-            }
-            a.innerHTML = "&laquo;";
-        
-            li.appendChild(a);
-            ul.appendChild(li);
-        
-            for (let i = firstPageIndex; i <= lastPageIndex; i++) {
-                li = document.createElement('li');
+            };
+
+            const renderPageCell = (pageIndex: number, content?: string, 
+                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => {
+
+                const li = document.createElement('li');
                 li.className = `${prefix}page-item`;
 
-                if (i == pageIndex)
-                    li.className += " active";
-        
-                a = document.createElement('a');
-                a.setAttribute('href', 'javascript:void(0)');
-                a.innerHTML = i.toString();
-                a.setAttribute('data-page', i.toString());
+                if (!extreme) {
+                    if (active) {
+                        li.className += ' active';
+                    }
+                    const a = document.createElement('a');
+                    a.setAttribute('href', 'javascript:void(0)');
+                    a.innerHTML = content || pageIndex.toString();
+                    a.setAttribute("data-page", `${pageIndex}`);
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                    li.appendChild(a);
+                    return li;
+                }
+
+                let a: HTMLElement = document.createElement('span');
+                a.setAttribute('aria-hidden', 'true');
+
                 a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
+
+                if (disabled) {
+                    li.className += ' disabled';
+                }
+                else {  
+                    if (this.paginationOptions.useBootstrap) {
+                        a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.setAttribute("data-page", `${pageIndex}`);
+                    }
+                    else {
+                        let newA = document.createElement('a');
+                        newA.setAttribute('href', 'javascript:void(0)');
+                        newA.setAttribute('data-page', `${pageIndex}`);
+                        a = newA;
+                    }
+                    a.className = `${prefix}page-link`;
+                    a.addEventListener("click", buttonClickHandler);
+                }
+                a.innerHTML = content;
+
                 li.appendChild(a);
-                ul.appendChild(li);
+
+                return li;
             }
-        
-            li = document.createElement('li');
-            li.className = `${prefix}page-item`;
-            a = document.createElement("span");
-            a.setAttribute('aria-hidden', 'true');
-        
-            a.className = `${prefix}page-link`;
-            if (lastPageIndex == pageCount) {
-                li.className += " disabled";
+
+            if (this.dataTable.elasticChunks) {
+                const pageIndex = this.pagination.page || 1;
+
+                let ul = document.createElement('ul');
+                ul.className = `${prefix}pagination`;
+
+                let cell = renderPageCell(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
+                ul.appendChild(cell);
+
+                cell = renderPageCell(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
+                ul.appendChild(cell);
+
+                paginateDiv.appendChild(ul);
             }
             else {
-                if (this.paginationOptions.useBootstrap) {
-                    a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.setAttribute("data-page", `${lastPageIndex + 1}`);
-                } else {
-                    let newA = document.createElement('a');
-                    newA.setAttribute('href', 'javascript:void(0)');
-                    newA.setAttribute("data-page", `${lastPageIndex + 1}`);
-                    a = newA; 
-                }
-                a.className = `${prefix}page-link`;
-                a.addEventListener("click", buttonClickHandler);
-            }
-            a.innerHTML = "&raquo;";
-        
-            li.appendChild(a);
-            ul.appendChild(li);
+                if (this.pagination.total > this.pagination.pageSize) {
+                    const pageIndex = this.pagination.page || 1;
+                    const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
 
-            paginateDiv.appendChild(ul);   
-        }
+                    const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
+                    const zeroBasedIndex = pageIndex - 1;
+                    let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
+                    let lastPageIndex = firstPageIndex + maxButtonCount - 1;
+                    if (lastPageIndex > pageCount) {
+                        lastPageIndex = pageCount;
+                    }
+
+                    let ul = document.createElement('ul');
+                    ul.className = `${prefix}pagination`;
+
+                    let cell = renderPageCell(firstPageIndex - 1, '&laquo;', 
+                        firstPageIndex == 1, true, false);
+                    ul.appendChild(cell);
+
+                    for (let i = firstPageIndex; i <= lastPageIndex; i++) {
+                        cell = renderPageCell(i, i.toString(),
+                            false, false, i == pageIndex);
+                        ul.appendChild(cell);
+                    }
+
+                    cell = renderPageCell(lastPageIndex + 1, '&raquo;', lastPageIndex == pageCount, true, false);
+                    ul.appendChild(cell);
+
+                    paginateDiv.appendChild(ul);
+                }
+            }
+
+            if (this.options.paging.allowPageSizeChange) {
+                const selectChangeHandler = (ev: Event) => {
+                    const newValue = parseInt((ev.target as HTMLOptionElement).value);
+                    this.pagination.pageSize = newValue;
+                    this.pagination.page = 1;
+                    this.refresh();
+                };
+
+                const pageSizes = document.createElement('div');
+                pageSizes.className = `${this.cssPrefix}-page-sizes`;
+
+                const selectSize = document.createElement('div');
+                selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+                pageSizes.appendChild(selectSize);
+
+                const sel = document.createElement('select');
+                const selOptions = this.options.paging.pageSizeItems || [];
+                const selSet = new Set(selOptions);
+                selSet.add(this.options.paging.pageSize || 20);
+
+
+                Array.from(selSet).forEach(el => {
+                    const option = document.createElement("option");
+                    option.value = el.toString();
+                    option.text = el.toString();
+                    sel.appendChild(option);
+                });
+
+                sel.value = (this.pagination.pageSize || 20).toString();
+                selectSize.appendChild(sel);
+                sel.addEventListener('change', selectChangeHandler);
+
+                const labelDiv = document.createElement('div');
+                labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+                pageSizes.appendChild(labelDiv);
+
+                const label = document.createElement('span');
+                label.innerText = i18n.getText('GridItemsPerPage');
+                labelDiv.appendChild(label);
+
+
+                paginateDiv.appendChild(pageSizes);
+            }
+        }  
+
         return paginateDiv;
     }
 

@@ -136,6 +136,10 @@
     width: max-content;
 }
 
+.kfrm-select.full-width {
+    width: 100%;
+}
+
 .kfrm-select select::-ms-expand {
     display: none !important;
 }
@@ -155,6 +159,11 @@
 .kfrm-select select:not([multiple]) {
     padding-right: 2.5em;
 }
+
+.kfrm-select.kfrm-select.full-width select:not([multiple]) {
+    width: 100%;
+}
+
 
  .kfrm-select:not(.is-multiple):not(.is-loading)::after {
     border: 3px solid #3273dc;

@@ -82,7 +82,7 @@ namespace EasyData.Export
             if (data == null) return;
 
             // predefined formatters
-            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+            var predefinedFormatters = ExportHelpers.GetPredefinedFormatters(data.Cols, settings);
 
             await writer.WriteLineAsync("<!DOCTYPE HTML PUBLIC ''-//W3C//DTD HTML 4.0 Transitional//EN''>").ConfigureAwait(false);
             await writer.WriteLineAsync("<html>").ConfigureAwait(false);
@@ -157,7 +157,8 @@ namespace EasyData.Export
             await writer.WriteLineAsync("<tbody>");
             int a = 0;
 
-            async Task RenderRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            async Task RenderRowAsync(EasyDataRow row, bool isExtra = false, 
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 await writer.WriteLineAsync($"<tr {(isExtra ? "class=\"eq-extra-row\"" : "")}>").ConfigureAwait(false);
 
@@ -166,6 +167,7 @@ namespace EasyData.Export
                         continue;
 
                     var dfmt = data.Cols[i].DisplayFormat;
+                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
                     var type = data.Cols[i].Type;
                    
                     string value;
@@ -174,6 +176,10 @@ namespace EasyData.Export
                     }
                     else {
                         value = GetFormattedValue(row[i], type, mappedSettings, dfmt);
+                    }
+
+                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
+                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 
                     if (mappedSettings.FixHtmlTags) {
@@ -186,8 +192,8 @@ namespace EasyData.Export
                 await writer.WriteLineAsync("</tr>").ConfigureAwait(false);
             }
 
-            Func<EasyDataRow, CancellationToken, Task> RenderExtraRowAsync = (extraRow, cancellationToken) => RenderRowAsync(extraRow, true, cancellationToken);
-
+            BeforeRowAddedCallback RenderExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+                RenderRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
@@ -213,22 +219,6 @@ namespace EasyData.Export
             await writer.FlushAsync().ConfigureAwait(false);
         }
 
-        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
-        {
-            var result = new Dictionary<string, IFormatProvider>();
-            for (int i = 0; i < cols.Count; i++) {
-                var dfmt = cols[i].DisplayFormat;
-                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
-                    var format = Utils.GetFormat(dfmt);
-                    if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
-                    }
-                }
-
-            }
-            return result;
-        }
-
         /// <summary>
         /// Gets the MIME content type of the exporting format.
         /// </summary>
@@ -249,7 +239,7 @@ namespace EasyData.Export
         /// <returns>System.String.</returns>
         protected string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
         {
-            var result = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
+            var result = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
 
             if (settings.PreserveFormatting) {
                 result = result.Replace("\n", "<br>");

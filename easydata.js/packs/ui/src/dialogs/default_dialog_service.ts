@@ -178,6 +178,7 @@ export class DefaultDialog implements Dialog {
             .attr('tab-index', '-1')
             .data('dialog-id', id)
             .addClass(`${cssPrefix}-modal`, 'is-active')
+            .focus()
             .addChild('div', b => b
                 .addClass('kdlg-modal-background')
             )
@@ -198,6 +199,7 @@ export class DefaultDialog implements Dialog {
                             .on('click', () => {
                                 this.cancelHandler();
                             })
+                            .focus()
                         );
                 })
                 .addChild('section', b =>  { 
@@ -230,7 +232,8 @@ export class DefaultDialog implements Dialog {
                             .on('click', (e) => {
                                 this.submitHandler();
                             })
-                        )
+                            .focus()
+                        );
 
                         if (options.cancelable !== false)
                             b.addChild('button', builder => builder

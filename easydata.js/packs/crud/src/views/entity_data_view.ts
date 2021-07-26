@@ -6,7 +6,7 @@ import {
     GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
 
-import { EntityEditForm } from '../form/entity_edit_form';
+import { EntityEditFormBuilder } from '../form/entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 import { DataContext } from '../main/data_context';
@@ -14,10 +14,11 @@ import { RequiredValidator } from '../validators/required_validator';
 import { TypeValidator } from '../validators/type_validator';
 import { Validator } from '../validators/validator';
 import { EasyDataViewOptions } from './options';
+import { setLocation } from '../utils/utils';
 
 export class EntityDataView {
 
-    private options = {
+    private options: EasyDataViewOptions = {
         showBackToEntities: true
     }
 
@@ -41,7 +42,15 @@ export class EntityDataView {
         const ent = this.context.getActiveEntity();
         this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
-            this.slot.innerHTML += `<a href="${this.basePath}"> ← ${i18n.getText('BackToEntities')}</a>`;
+            domel(this.slot)
+                .addChild('a', b => b
+                    .attr('href', 'javascript:void(0)')
+                    .text(`← ${i18n.getText('BackToEntities')}`)
+                    .on('click', (e) => {
+                        e.preventDefault();
+                        setLocation(this.basePath);
+                    })
+                );
         }
 
         this.renderGrid();
@@ -62,11 +71,13 @@ export class EntityDataView {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
-                this.grid = new EasyGrid({
+                this.grid = new EasyGrid(dataUtils.assignDeep({
                     slot: gridSlot,
                     dataTable: result,
                     paging: {
                         pageSize: 15,
+                        allowPageSizeChange: true,
+                        pageSizeItems: [15, 30, 50, 100, 200]
                     },
                     addColumns: true,
                     addColumnsTitle: i18n.getText('AddBtnTitle'),
@@ -75,7 +86,7 @@ export class EntityDataView {
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this),
                     onSyncGridColumn: this.syncGridColumnHandler.bind(this)
-                });
+                }, this.options.grid || {}));
 
                 let widgetSlot: HTMLElement;
                 const filterBar = domel('div')
@@ -119,7 +130,7 @@ export class EntityDataView {
     private addClickHandler() {
 
         const activeEntity = this.context.getActiveEntity();
-        const form = EntityEditForm.build(this.context);
+        const form = new EntityEditFormBuilder(this.context).build();
 
         form.useValidators(this.defaultValidators);
 
@@ -132,10 +143,10 @@ export class EntityDataView {
                 if (!form.validate())
                     return false;
                       
-                const obj = form.getData();
-                this.context.createEntity(obj)
+                form.getData()
+                .then(obj => this.context.createEntity(obj))
                 .then(() => {
-                    window.location.reload();
+                    return this.refreshData();
                 })
                 .catch((error) => {
                     this.processError(error);
@@ -155,7 +166,8 @@ export class EntityDataView {
 
     private showEditForm(row: DataRow) {
         const activeEntity = this.context.getActiveEntity();
-        const form = EntityEditForm.build(this.context, {isEditForm: true, values: row});
+
+        const form = new EntityEditFormBuilder(this.context, { isEditForm: true, values: row }).build();
         form.useValidators(this.defaultValidators);
 
         this.dlg.open({
@@ -169,11 +181,10 @@ export class EntityDataView {
                 if (!form.validate())
                     return false;
 
-                const obj = form.getData();
-            
-                this.context.updateEntity(keys.join(':'), obj)
+                form.getData()
+                .then(obj => this.context.updateEntity(keys.join(':'), obj))
                 .then(() => {
-                    window.location.reload();
+                    return this.refreshData();
                 })       
                 .catch((error) => {
                    this.processError(error);
@@ -206,7 +217,7 @@ export class EntityDataView {
                             //pass entityId in future
                             this.context.deleteEntity(keys.join(':'))
                                 .then(() => {
-                                    window.location.reload();
+                                    return this.refreshData();
                                 })
                                 .catch((error) => {
                                     this.processError(error);
@@ -224,6 +235,13 @@ export class EntityDataView {
             closable: true,
             cancelable: false
         });
+    }
+
+    private refreshData(): Promise<void> {
+        return this.context.getEntities()
+            .then(() => {
+                this.grid.refresh();
+            });
     }
 
 }

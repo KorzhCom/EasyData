@@ -50,7 +50,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         [MetaEntityAttr(Enabled = false)]
         public string City { get; set; }
 
-        [MetaEntityAttr(Visible = false, DisplayName = "Test", ShowInLookup = true, Editable = false)]
+        [MetaEntityAttr(ShowOnView = false, DisplayName = "Test", ShowInLookup = true, Editable = false)]
         public string Region { get; set; }
 
         public string PostalCode { get; set; }

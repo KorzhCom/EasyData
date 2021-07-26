@@ -14,7 +14,8 @@ export enum CellRendererType {
     BOOL
 }
 
-export type GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => void;
+export type GridCellRenderer = (value: any, column: GridColumn, 
+    cellElement: HTMLElement, rowElement: HTMLElement, isGroup?: boolean) => void;
 
 
 const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
@@ -62,7 +63,8 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
 
     if (isDate) {
         if (column.dataColumn && column.dataColumn.displayFormat 
-            && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+            && DFMT_REGEX.test(column.dataColumn.displayFormat)) 
+        {
             strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
                 return i18n.dateTimeToStr(value, column.type, $1);
             });

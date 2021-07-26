@@ -1,4 +1,4 @@
-import { EasyDataTable, TotalsCalculator } from '@easydata/core';
+import { EasyDataTable, AggregatesCalculator, AggregationSettings } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -17,15 +17,10 @@ export interface EasyGridOptions {
 
     dataTable: EasyDataTable;
 
-    totals?: {
-        showGrandTotalsOnEachPage?: boolean;
-        calcGrandTotals?: boolean;
-        cols?: {
-            [id: string]: {
-                calcSubTotals?: boolean
-            }
-        }
-        calculator: TotalsCalculator
+    aggregates?: {
+        showGrandTotalsOnEachPage?: boolean,
+        settings: AggregationSettings,
+        calculator: AggregatesCalculator
     },
     addColumns?: boolean;
     addColumnsTitle?: string;
@@ -35,17 +30,19 @@ export interface EasyGridOptions {
     fixHeightOnFirstRender?: boolean;
 
     pagination?: {
-        maxButtonCount?: number;
-        useBootstap?: boolean;
+        maxButtonCount?: number,
+        useBootstap?: boolean
     } 
 
     paging?: {
         enabled?: boolean,
-        pageSize?: number
+        pageSize?: number,
+        allowPageSizeChange?: boolean,
+        pageSizeItems?: number[]
     }
 
     header?: {
-        fixed?: boolean;
+        fixed?: boolean
     }
 
     syncGridColumns?: boolean;

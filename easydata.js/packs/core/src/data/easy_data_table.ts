@@ -1,9 +1,12 @@
-import { DataColumnDescriptor, DataColumnList } from "./data_column";
-import { DataRow } from "./data_row";
-import { DataLoader } from "./data_loader";
+import { DataColumnDescriptor, DataColumnList } from './data_column';
+import { DataRow } from './data_row';
+import { DataLoader } from './data_loader';
+import { DataType } from '../types/data_type';
+import { utils } from '../utils/utils';
 
 export interface EasyDataTableOptions {
     chunkSize?: number;
+    elasticChunks?: boolean;
     loader?: DataLoader;
     columns?: DataColumnDescriptor[];
     rows?: any[];
@@ -27,9 +30,11 @@ export class EasyDataTable {
 
     private _chunkSize: number = 1000;
 
+
     constructor(options?: EasyDataTableOptions) {
         options = options || {};
         this._chunkSize = options.chunkSize || this._chunkSize;
+        this._elasticChunks = options.elasticChunks || this._elasticChunks;
         this.loader = options.loader;
         this._columns = new DataColumnList();
 
@@ -45,6 +50,8 @@ export class EasyDataTable {
                 this.addRow(row);
             }
         }
+
+        this.needTotal = !this._elasticChunks;
     }
 
     private _columns: DataColumnList;
@@ -60,7 +67,20 @@ export class EasyDataTable {
     public set chunkSize(value: number) {
         this._chunkSize = value;
         this.total = 0;
-        this.needTotal = true;
+        this.needTotal = !this.elasticChunks;
+        this.chunkMap = {};
+    }
+
+    private _elasticChunks = false;
+
+    public get elasticChunks(): boolean {
+        return this._elasticChunks;
+    }
+
+    public set elasticChunks(value: boolean) {
+        this._elasticChunks = value;
+        this.total = 0;
+        this.needTotal = !this.elasticChunks;
         this.chunkMap = {};
     }
 
@@ -89,7 +109,7 @@ export class EasyDataTable {
         let endIndex = fromIndex + count; //the first index of the next page
 
         //if we don't calculate total on this request
-        if (!this.needTotal) {
+        if (!this.needTotal && !this.elasticChunks) {
             if (fromIndex >= this.total) {
                 return Promise.resolve([]);
             }
@@ -112,7 +132,7 @@ export class EasyDataTable {
 
         if (allChunksCached) {
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= ubChunk; i++) {
+            for (let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
 
@@ -133,9 +153,13 @@ export class EasyDataTable {
             this.needTotal = false;
         }
 
+        let limit = this._chunkSize * (ubChunk - lbChunk + 1);
+        if (this.elasticChunks)
+            limit++;
+
         return this.loader.loadChunk({
             offset: lbChunk * this._chunkSize, 
-            limit: this._chunkSize * (ubChunk - lbChunk + 1),
+            limit: limit,
             needTotal: needTotal
         })
         .then(result => {
@@ -146,9 +170,9 @@ export class EasyDataTable {
                     endIndex = this.total;
                 }
             }
-    
+
             let index = lbChunk;
-            for(const chunk of chunks) {
+            for (const chunk of chunks) {
                 this.chunkMap[index] = {
                     offset: index * this._chunkSize,
                     rows: chunk.rows
@@ -156,8 +180,26 @@ export class EasyDataTable {
                 index++;
             }
 
+            if (this.elasticChunks) {
+                const count = result.table.getCachedCount();
+                if (count > 0) {
+                    const chunk = this.chunkMap[index - 1];
+
+                    if (count === limit) {
+                        chunk.rows.splice(chunk.rows.length - 1, 1);
+                        if (chunk.rows.length == 0) {
+                            delete this.chunkMap[index - 1];
+                        }
+                    }
+                
+                    if (count < limit) {
+                        this.total = this.getCachedCount();
+                    }
+                }
+            }
+
             let resultArr: DataRow[] = [];
-            for(let i = lbChunk; i <= ubChunk; i++) {
+            for (let i = lbChunk; i <= ubChunk; i++) {
                resultArr = resultArr.concat(this.chunkMap[i].rows)
             }
 
@@ -189,7 +231,7 @@ export class EasyDataTable {
         this.columns.clear();
         this.chunkMap = {};
         this.total = 0;
-        this.needTotal = true;
+        this.needTotal = !this._elasticChunks;
     }
 
     protected createRow(dataOrRow?: DataRow | any): DataRow {
@@ -205,12 +247,25 @@ export class EasyDataTable {
                 const value = getValue(column.id);
                 const index = this.columns.getIndex(column.id);
                 values[index] = (dateIdx.indexOf(index) >= 0)
-                    ? (value ? new Date(value) : value)
+                    ? this.mapDate(value, column.type)
                     : value;
             });    
         }
        
         return new DataRow(this._columns, values);
+    }
+
+    private mapDate(value: any, dtype: DataType): Date {
+        if (value) {
+            let result = new Date(value);
+            if (isNaN(result.getTime())
+                && dtype == DataType.Time) {
+                result = utils.strToTime(value);
+            }
+            return result;
+        }
+
+        return null;
     }
 
     public addRow(rowOrValue: any[] | DataRow) : DataRow {
@@ -220,7 +275,7 @@ export class EasyDataTable {
             if (dateIdx.length > 0) {
                 for(const idx of dateIdx) {
                     if (rowOrValue[idx]) {
-                        rowOrValue[idx] = new Date(rowOrValue[idx]);
+                        rowOrValue[idx] = this.mapDate(rowOrValue[idx], this._columns.get(idx).type);
                     }
                 }
             }
@@ -278,4 +333,13 @@ export class EasyDataTable {
     public getCachedChunks(): CachedChunk[] {
         return Object.values(this.chunkMap);
     }    
+
+    public totalIsKnown() : boolean {
+        if (this.elasticChunks) {
+            const count = this.getCachedCount();
+            return count === this.total;
+        }
+
+        return !this.needTotal;
+    }
 }

@@ -12,4 +12,11 @@ export interface MetaDataDTO {
     editors?: ValueEditorDTO[];
     /** Root entity. */
     entroot: MetaEntityDTO;
+    /** The display formats. */
+    displayFormats?: {
+        [dtype: string]: [{
+            name: string,
+            format: string
+        }]
+    }
 }

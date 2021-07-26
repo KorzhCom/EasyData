@@ -90,12 +90,7 @@ namespace EasyData.Export
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
 
-            // replace forbidden symbols
-            var r = new Regex(@"[\/\*\?:\[\]]");
-            var result = r.Replace(mappedSettings.Title ?? "", "");
-            var sheetName = !string.IsNullOrWhiteSpace(result)
-                ? result
-                : "Sheet 1";
+            var sheetName = Utils.ToExcelSheetName(mappedSettings.Title);
 
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add(sheetName);
@@ -136,7 +131,8 @@ namespace EasyData.Export
             var endHeaderNum = cellNum;
             var endCellLetter = startLetter;
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, 
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var rowCellLetter = startLetter;
                 for (int i = 0; i < row.Count; i++) {
@@ -145,16 +141,22 @@ namespace EasyData.Export
 
                     var dfmt = data.Cols[i].DisplayFormat;
                     var type = data.Cols[i].Type;
+                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
 
-                
-                    object value;
+
+                    string value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
                         value = string.Format(provider, dfmt, row[i]);
                     }
                     else {
-                        value = row[i];
+                        value = ExportHelpers.GetFormattedValue(row[i], type, settings, dfmt);;
                     }
-                   
+
+                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) { 
+                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
+                    }
+
+                    ws.Cell($"{rowCellLetter}{cellNum}").DataType = XLDataType.Text;
                     ws.Cell($"{rowCellLetter}{cellNum}").Value = value ?? "";
                     if (isExtra)
                         ws.Cell($"{rowCellLetter}{cellNum}").Style.Font.Bold = true;
@@ -168,8 +170,8 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) 
-                => WriteRowAsync(extraRow, true, cancellationToken);
+            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
+                => WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
@@ -198,6 +200,8 @@ namespace EasyData.Export
                 var dfmt = col.DisplayFormat;
                 var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
                 var dataType = MapDataType(type);
+                colRange.DataType = XLDataType.Text;
+                /* UNCOMMENT
                 if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.ContainsKey(dfmt)) {
                     colRange.DataType = XLDataType.Text;
                 }
@@ -212,7 +216,8 @@ namespace EasyData.Export
                         colRange.Style.NumberFormat.Format = format;
                     }
                 }
-               
+                */
+
                 colRange.Style.Alignment.Horizontal = MapAlignment(col.Style.Alignment);
                 letter++;
             }

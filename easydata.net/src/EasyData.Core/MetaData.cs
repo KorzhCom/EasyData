@@ -5,36 +5,26 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace EasyData
 {
     public class MetaEntityAttrDescriptor
     {
-        public MetaEntityAttrDescriptor(MetaEntity parent): this(parent, "")
-        {        
-        }
-
-        public MetaEntityAttrDescriptor(MetaEntity parent, string expr)
+        public MetaEntityAttrDescriptor()
         {
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
-
-            Parent = parent;
-            Expression = expr;
-            Caption = expr?.GetSecondPart('.');
             Kind = EntityAttrKind.Data;
             DataType = DataType.Unknown;
             Size = 100;
         }
 
-        public MetaEntityAttrDescriptor(MetaEntity parent, EntityAttrKind kind, string expr = ""): this(parent, expr)
-        {
-            Kind = kind;
+        public MetaEntity Parent { get; set; }
+
+        private string _caption;
+        public string Caption { 
+            get => _caption ?? Expression?.GetSecondPart('.');
+            set => _caption = value;
         }
-
-        public MetaEntity Parent { get; private set; }
-
-        public string Caption { get; set; }
 
         public string Expression { get; set; }
 
@@ -121,6 +111,8 @@ namespace EasyData
             //null entity
             nullEntity = CreateRootEntity();
             nullEntity.Name = "";
+
+            AddDefaultDisplayFormats();
 
         }
 
@@ -259,9 +251,6 @@ namespace EasyData
         /// <returns></returns>
         public MetaEntityAttr CreateEntityAttr(MetaEntityAttrDescriptor desc)
         {
-            if (desc == null)
-                throw new ArgumentNullException(nameof(desc));
-
             var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
             if (!string.IsNullOrEmpty(desc.Expression))
                 attr.Id = DataUtils.ComposeKey(desc.Parent?.Id, desc.Expression);
@@ -271,6 +260,14 @@ namespace EasyData
             attr.Size = desc.Size;
 
             return attr;
+        }
+
+        protected virtual void ValidateEntityAttrDesc(MetaEntityAttrDescriptor desc) {
+            if (desc == null)
+                throw new ArgumentNullException(nameof(desc));
+
+            if (desc.Parent == null)
+                throw new InvalidOperationException("Parent entity is required");
         }
 
         protected virtual MetaEntity CreateEntityCore(MetaEntity parent)
@@ -297,6 +294,55 @@ namespace EasyData
             else {
                 action();
             }
+        }
+
+        /// <summary>
+        /// The formats store
+        /// </summary>
+        public readonly DisplayFormatStore DisplayFormats = new DisplayFormatStore();
+
+        protected virtual void AddDefaultDisplayFormats()
+        {
+            // Bool
+            DisplayFormats.AddOrUpdate(DataType.Bool, "0/1", "{0:S0|1}");
+            DisplayFormats.AddOrUpdate(DataType.Bool, "False/True", "{0:SFalse|True}");
+            DisplayFormats.AddOrUpdate(DataType.Bool, "No/Yes", "{0:SNo|Yes}");
+
+            // Byte
+            DisplayFormats.AddOrUpdate(DataType.Byte, "3-digit", "{0:D3}");
+
+            // Int32
+            DisplayFormats.AddOrUpdate(DataType.Int32, "5-digit", "{0:D5}");
+            DisplayFormats.AddOrUpdate(DataType.Int32, "10-digit", "{0:D10}");
+
+            // Int64
+            DisplayFormats.AddOrUpdate(DataType.Int64, "10-digit", "{0:D10}");
+
+            // Float
+            DisplayFormats.AddOrUpdate(DataType.Float, "2-precision", "{0:F2}");
+            DisplayFormats.AddOrUpdate(DataType.Float, "3-precision", "{0:F3}");
+            DisplayFormats.AddOrUpdate(DataType.Float, "4-precision", "{0:F4}");
+
+            // Currency
+            DisplayFormats.AddOrUpdate(DataType.Currency, "2-precision", "{0:F2}");
+            DisplayFormats.AddOrUpdate(DataType.Currency, "3-precision", "{0:F3}");
+            DisplayFormats.AddOrUpdate(DataType.Currency, "4-precision", "{0:F4}");
+
+            // Date
+            DisplayFormats.AddOrUpdate(DataType.Date, "Short date", "{0:d}");
+            DisplayFormats.AddOrUpdate(DataType.Date, "Long date", "{0:D}");
+
+            // Time
+            DisplayFormats.AddOrUpdate(DataType.Time, "Short time", "{0:HH:mm}");
+            DisplayFormats.AddOrUpdate(DataType.Time, "Full time", "{0:HH:mm:ss}");
+
+            // DateTime
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Short date & time", "{0:f}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Long date & time", "{0:F}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Short date", "{0:d}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Long date", "{0:D}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Short time", "{0:HH:mm}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Full time", "{0:HH:mm:ss}");
         }
 
 
@@ -412,6 +458,8 @@ namespace EasyData
         /// <returns>EntityAttr.</returns>
         public virtual MetaEntityAttr AddEntityAttr(MetaEntityAttrDescriptor desc)
         {
+            ValidateEntityAttrDesc(desc);
+
             var attr = CreateEntityAttr(desc);
             attr.Entity.Attributes.Add(attr);
             AssignEntityAttrID(attr);
@@ -838,6 +886,9 @@ namespace EasyData
         protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
 
+            await writer.WritePropertyNameAsync("displayFormats", ct).ConfigureAwait(false);
+            await WriteDisplayFormatsToJsonAsync(writer, ct).ConfigureAwait(false);
+
             // Editors must be saved before operators
             if (rwOptions.Contains(MetaDataReadWriteOptions.Editors)) {
                 await writer.WritePropertyNameAsync("editors", ct).ConfigureAwait(false);
@@ -851,6 +902,29 @@ namespace EasyData
                 await writer.WritePropertyNameAsync("entroot", ct).ConfigureAwait(false);
                 await EntityRoot.WriteToJsonAsync(writer, rwOptions, ct).ConfigureAwait(false);
             }
+        }
+
+        protected virtual async Task WriteDisplayFormatsToJsonAsync(JsonWriter writer, CancellationToken ct)
+        {
+            await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
+            foreach (var typeFormats in DisplayFormats) {
+                await writer.WritePropertyNameAsync(typeFormats.Key.ToString(), ct).ConfigureAwait(false);
+                await writer.WriteStartArrayAsync(ct).ConfigureAwait(false);
+                foreach (var format in typeFormats.Value) {
+                    await writer.WriteStartObjectAsync(ct).ConfigureAwait(false);
+                    await writer.WritePropertyNameAsync("name", ct).ConfigureAwait(false);
+                    await writer.WriteValueAsync(format.Name, ct).ConfigureAwait(false);
+                    await writer.WritePropertyNameAsync("format", ct).ConfigureAwait(false);
+                    await writer.WriteValueAsync(format.Format, ct).ConfigureAwait(false);
+                    if (format.IsDefault) {
+                        await writer.WritePropertyNameAsync("isdef", ct).ConfigureAwait(false);
+                        await writer.WriteValueAsync(format.IsDefault, ct).ConfigureAwait(false);
+                    }
+                    await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
+                }
+                await writer.WriteEndArrayAsync(ct).ConfigureAwait(false);
+            }
+            await writer.WriteEndObjectAsync(ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -939,9 +1013,45 @@ namespace EasyData
                     await reader.ReadAsync(ct).ConfigureAwait(false); //reading StartArray token
                     await Editors.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                     break;
+                case "dataFormats":
+                    await reader.ReadAsync(ct).ConfigureAwait(false); //reading StartObject token
+                    await ReadDisplayFormatsFromJsonAsync(reader, ct).ConfigureAwait(false);
+                    break;
                 default:
                     await reader.SkipAsync(ct).ConfigureAwait(false);
                     break;
+            }
+        }
+
+        protected async virtual Task ReadDisplayFormatsFromJsonAsync(JsonReader reader, CancellationToken ct)
+        {
+            DisplayFormats.Clear();
+            if (reader.TokenType != JsonToken.StartObject) {
+                throw new BadJsonFormatException(reader.Path);
+            }
+
+            while ((await reader.ReadAsync(ct).ConfigureAwait(false))
+                && reader.TokenType != JsonToken.EndObject)
+            {
+                var formatType = reader.Value.ToString().StrToDataType();
+
+                await reader.ReadAsync(ct).ConfigureAwait(false);
+                if (reader.TokenType != JsonToken.StartArray) {
+                    while ((await reader.ReadAsync(ct).ConfigureAwait(false))
+                        && reader.TokenType != JsonToken.EndArray)
+                    {
+                        var fmtObj = await JObject.ReadFromAsync(reader, ct).ConfigureAwait(false);
+                        var name = fmtObj.Value<string>("name");
+                        var format = fmtObj.Value<string>("format");
+
+                        var isdef = fmtObj.Value<bool?>("isdef");
+
+                        var fmt = DisplayFormats.AddOrUpdate(formatType, name, format);
+                        if (isdef.HasValue) {
+                            fmt.IsDefault = isdef.Value;
+                        }
+                    }
+                }
             }
         }
         #endregion

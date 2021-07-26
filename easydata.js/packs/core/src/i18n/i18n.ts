@@ -49,8 +49,8 @@ export namespace i18n {
         shortMonthNames: [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
         longMonthNames: [ 'January', 'February', 'March', 'April', 'May', 'June', 
                             'July', 'August', 'September', 'October', 'November', 'December' ],
-        shortWeekDayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-        longWeekDayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        shortWeekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        longWeekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         decimalSeparator:'.',
         currency: 'USD'
     }
@@ -136,7 +136,7 @@ export namespace i18n {
      * @param l The locale.
      */
     export function setLocale(l : string) : void {
-        console.warn("This method is deprecated. Use setCurrentLocale instead");
+        console.warn('This method is deprecated. Use setCurrentLocale instead');
         setCurrentLocale(l);
     }
 
@@ -243,8 +243,6 @@ export namespace i18n {
     /**
      * Updates the locale settings (date/time formats, separators, etc) for the specified locale.
      * @param settingsToUpdate a LocaleSettings object
-     * @param locale The locale ID (like 'en', 'de', 'uk', etc). 
-     * If not specified - the function will update the settings for the current locale
      */
     export function updateLocaleSettings(settingsToUpdate: LocaleSettings) : void {
         if (!currentLocale.settings) {
@@ -347,7 +345,6 @@ export namespace i18n {
 
         const localeSettings = {
             shortDateFormat: dateFormat,
-            editDateFormat: dateFormat,
             shortTimeFormat: timeFormat    
         };
 
@@ -369,16 +366,16 @@ export namespace i18n {
 
     export function dateTimeToStr(dateTime: Date, dataType: DataType, format?: string): string {
         if (format) {
-            if (format == "d") {
+            if (format == 'd') {
                 format = buildShortDateTimeFormat(DataType.Date);
             }
-            else if (format == "D") {
+            else if (format == 'D') {
                 format = buildLongDateTimeFormat(DataType.Date);
             }
-            else if (format == "f") {
+            else if (format == 'f') {
                 format = buildShortDateTimeFormat(DataType.DateTime);
             }
-            else if (format == "F") {
+            else if (format == 'F') {
                 format = buildLongDateTimeFormat(DataType.DateTime);
             }
         }

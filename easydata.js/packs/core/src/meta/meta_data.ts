@@ -30,11 +30,15 @@ export class MetaData {
 
     protected mainEntity: MetaEntity | null = null;
 
+    protected displayFormats: Map<DataType, DisplayFormatDescriptor[]>;
+
     /** The default constructor. */
     constructor() {
         this.id = '__none';
         this.name = 'Empty model';
         this.rootEntity = this.createEntity();
+
+        this.displayFormats = new Map<DataType, DisplayFormatDescriptor[]>();
     }
 
     /**
@@ -87,7 +91,52 @@ export class MetaData {
 
         //rootEntity
         this.rootEntity.loadFromData(this, data.entroot);
+
+        //DataFormats
+        this.displayFormats = new Map<DataType, DisplayFormatDescriptor[]>();
+        if (data.displayFormats) {
+            for (const dtypeStr in data.displayFormats) {
+                const dtype = DataType[dtypeStr];
+                const formats: DisplayFormatDescriptor[] = data.displayFormats[dtypeStr] || new Array();
+                this.displayFormats.set(dtype, formats);
+            }
+        }
     }
+
+    /**
+     * Gets the display formats.
+     * @returns The display formats.
+     */
+    public getDisplayFormats(): Map<DataType, DisplayFormatDescriptor[]> {
+        return this.displayFormats;
+    }
+
+    /**
+     * Gets the display formats for type
+     * @param type The type
+     * @returns An array of display formats
+     */
+    public getDisplayFormatsForType(type: DataType): DisplayFormatDescriptor[] {
+        if (this.displayFormats.has(type)) {
+            return this.displayFormats.get(type);
+        }
+
+        return [];
+    }
+
+    /**
+     * Gets the default display format for the provided type
+     * @param type The type
+     * @returns The default type format or null
+     */
+    public getDefaultFormat(type: DataType): DisplayFormatDescriptor | null {
+        if (this.displayFormats.has(type)) {
+            return this.displayFormats.get(type).filter(f => f.isdef)[0];
+        }
+
+        return null;
+    }
+
 
     /**
      * Sets data to data model.
@@ -533,4 +582,10 @@ export class MetaData {
         }, null);
         return res;
     }
+}
+
+export interface DisplayFormatDescriptor {
+    name: string;
+    format: string;
+    isdef?: boolean;
 }

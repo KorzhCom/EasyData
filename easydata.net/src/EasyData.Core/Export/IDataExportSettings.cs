@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyData.Export
 {
+
+    public delegate Task BeforeRowAddedCallback(EasyDataRow row, Dictionary<string, object> extraData, CancellationToken ct);
+
     /// <summary>
     /// Represents some settings used during exporting operations
     /// </summary>
@@ -33,7 +37,7 @@ namespace EasyData.Export
         /// </summary>
         Func<EasyDataRow, bool> RowFilter { get; set; }
 
-        Func<EasyDataRow, Func<EasyDataRow, CancellationToken, Task>, CancellationToken, Task> BeforeRowAdded { get; set; }
+        Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded { get; set; }
 
         /// <summary>
         /// The title

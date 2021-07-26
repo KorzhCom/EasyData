@@ -60,6 +60,8 @@ namespace EasyDataBasicDemo.Models
 
         public string ShipCountry { get; set; }
 
+       // public TimeSpan OrderTime { get; set; }
+
        // public OrderType OrderType { get; set; }
     }
 

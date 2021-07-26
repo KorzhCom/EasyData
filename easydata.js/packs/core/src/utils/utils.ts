@@ -489,6 +489,25 @@ export namespace utils {
         }
     }
 
+    export function strToTime(str: string): Date {
+
+        const timeItems = str.split(':');
+
+        const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+        if (hour > 23)
+            throw '';
+
+        const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+        if (minute > 59)
+            throw '';
+
+        const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
+        if (second > 59)
+            throw '';
+
+        return new Date(0, 0, 0, hour, minute, second);
+    }
+
     const DT_FORMAT_RGEX = /\[([^\]]+)]|y{4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
 
     /**

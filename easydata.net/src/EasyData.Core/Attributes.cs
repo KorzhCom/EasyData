@@ -57,7 +57,7 @@ namespace EasyData
         /// ID represents internal entityAttr attribute id which is not shown to user 
         /// but is used for storing data model in external files.
         /// </remarks>
-        public string Id { get; set; } 
+        public string Id { get; set; }
 
         /// <summary>Gets or sets a value indicating whether this attribute is nullable.</summary>
         /// <value>
@@ -144,8 +144,8 @@ namespace EasyData
             get {
                 if (_dataAttr == null) {
                     CheckModel();
-                    _dataAttr = string.IsNullOrEmpty(_dataAttrId) 
-                        ? null 
+                    _dataAttr = string.IsNullOrEmpty(_dataAttrId)
+                        ? null
                         : Model.GetAttributeById(_dataAttrId, false);
 
                 }
@@ -239,8 +239,8 @@ namespace EasyData
             get {
                 if (_lookupAttr == null) {
                     CheckModel();
-                    _lookupAttr = string.IsNullOrEmpty(_lookupAttrId) 
-                        ? null 
+                    _lookupAttr = string.IsNullOrEmpty(_lookupAttrId)
+                        ? null
                         : Model.GetAttributeById(_lookupAttrId, false);
 
                 }
@@ -337,7 +337,7 @@ namespace EasyData
         /// <summary>
         /// Called when model is assigned.
         /// </summary>
-        public virtual void OnModelAssignment() {}
+        public virtual void OnModelAssignment() { }
 
         /// <summary>
         /// Gets or sets the attribute's caption.
@@ -373,16 +373,16 @@ namespace EasyData
         /// </summary>
         public bool IsVirtual => Kind == EntityAttrKind.Virtual;
 
-     
+
         protected internal MetaEntityAttr() : this(null, false)
         {
         }
 
-        
-        protected internal MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false): this(parentEntity, 
+
+        protected internal MetaEntityAttr(MetaEntity parentEntity, bool isVirtual = false) : this(parentEntity,
             isVirtual ? EntityAttrKind.Virtual : EntityAttrKind.Data)
         {
-   
+
         }
 
         protected internal MetaEntityAttr(MetaEntity parentEntity, EntityAttrKind kind)
@@ -390,6 +390,11 @@ namespace EasyData
             Entity = parentEntity;
             Kind = kind;
         }
+
+        /// <summary>
+        /// Gets or sets the default sorting order
+        /// </summary>
+        public int Sorting { get; set; }
 
         /// <summary>
         /// Gets or sets the type of data represented by attribute.
@@ -824,7 +829,7 @@ namespace EasyData
             while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                 && reader.TokenType != JsonToken.EndArray) {
 
-                var attr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(_entity));
+                var attr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { Parent = _entity });
                 await attr.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                 Add(attr);
             }

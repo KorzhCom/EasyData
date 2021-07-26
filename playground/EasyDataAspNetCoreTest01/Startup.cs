@@ -54,7 +54,11 @@ namespace EasyDataBasicDemo
             app.UseEndpoints(endpoints => {
                 endpoints.MapEasyData((options) => {
                     options.Endpoint = "/api/easy-crud";
-                    options.UseDbContext<AppDbContext>();
+                    options.UseModelTuner(model =>
+                    {
+                        model.DisplayFormats.SetDefault(EasyData.DataType.DateTime, "Long date & time");
+                    });
+                    options.UseDbContext<AppDbContext>(opts => opts.KeepDbSetDeclarationOrder = true);
                 });
                 //.RequireAuthorization();
 

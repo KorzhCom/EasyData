@@ -7,7 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.RazorPage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.RazorPages.NetCore31", "samples\EasyDataBasicDemo.RazorPages.NetCore31\EasyDataBasicDemo.RazorPages.NetCore31.csproj", "{A7B1EF24-2DDF-4512-AF72-34102913BF78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDataBasicDemo.MVC.Net5", "samples\EasyDataBasicDemo.MVC.Net5\EasyDataBasicDemo.MVC.Net5.csproj", "{C26F86D2-E2E4-45D7-BFB2-CA99CABD134B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.MVC.Net5", "samples\EasyDataBasicDemo.MVC.Net5\EasyDataBasicDemo.MVC.Net5.csproj", "{C26F86D2-E2E4-45D7-BFB2-CA99CABD134B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorAppServer.Net5", "samples\EasyDataBasicDemo.BlazorAppServer.Net5\EasyDataBasicDemo.BlazorAppServer.Net5.csproj", "{F75567B4-C067-46E3-8F2E-5E79CB95DF61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EasyDataBasicDemo.BlazorWebAsm.Net5", "EasyDataBasicDemo.BlazorWebAsm.Net5", "{D156B42E-1DC2-4B4E-B68D-CF0F60D64F0B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorWebAsm.Net5.Server", "samples\EasyDataBasicDemo.BlazorWebAsm.Net5\Server\EasyDataBasicDemo.BlazorWebAsm.Net5.Server.csproj", "{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorWebAsm.Net5.Client", "samples\EasyDataBasicDemo.BlazorWebAsm.Net5\Client\EasyDataBasicDemo.BlazorWebAsm.Net5.Client.csproj", "{47705E5D-F94B-4143-9457-4E67AC30FCA4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorWebAsm.Net5.Shared", "samples\EasyDataBasicDemo.BlazorWebAsm.Net5\Shared\EasyDataBasicDemo.BlazorWebAsm.Net5.Shared.csproj", "{6D213867-AC44-4789-8B30-C6C551ED30FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDataBasicDemo.Angular.Net5", "samples\EasyDataBasicDemo.Angular.Net5\EasyDataBasicDemo.Angular.Net5.csproj", "{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +39,34 @@ Global
 		{C26F86D2-E2E4-45D7-BFB2-CA99CABD134B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C26F86D2-E2E4-45D7-BFB2-CA99CABD134B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C26F86D2-E2E4-45D7-BFB2-CA99CABD134B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75567B4-C067-46E3-8F2E-5E79CB95DF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75567B4-C067-46E3-8F2E-5E79CB95DF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75567B4-C067-46E3-8F2E-5E79CB95DF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75567B4-C067-46E3-8F2E-5E79CB95DF61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47705E5D-F94B-4143-9457-4E67AC30FCA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47705E5D-F94B-4143-9457-4E67AC30FCA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47705E5D-F94B-4143-9457-4E67AC30FCA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47705E5D-F94B-4143-9457-4E67AC30FCA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D213867-AC44-4789-8B30-C6C551ED30FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D213867-AC44-4789-8B30-C6C551ED30FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D213867-AC44-4789-8B30-C6C551ED30FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D213867-AC44-4789-8B30-C6C551ED30FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2B5D44F0-A9C9-4840-833C-FE65DDABC1A3} = {D156B42E-1DC2-4B4E-B68D-CF0F60D64F0B}
+		{47705E5D-F94B-4143-9457-4E67AC30FCA4} = {D156B42E-1DC2-4B4E-B68D-CF0F60D64F0B}
+		{6D213867-AC44-4789-8B30-C6C551ED30FA} = {D156B42E-1DC2-4B4E-B68D-CF0F60D64F0B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15562A42-D965-4A8E-B708-CF2E36429B26}

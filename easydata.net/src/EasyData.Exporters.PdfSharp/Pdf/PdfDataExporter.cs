@@ -172,7 +172,8 @@ namespace EasyData.Export
             }).ToList();
 
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, 
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var pdfRow = table.AddRow();
                 pdfRow.TopPadding = 1.5;
@@ -182,6 +183,7 @@ namespace EasyData.Export
 
                     var col = data.Cols[i];
                     var dfmt = col.DisplayFormat;
+                    var gfct = col.GroupFooterColumnTemplate;
                     var type = col.Type;
                     string value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
@@ -191,6 +193,9 @@ namespace EasyData.Export
                         value = Utils.GetFormattedValue(row[i], type, mappedSettings, dfmt);
                     }
 
+                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
+                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
+                    }
 
                     pdfRow.Cells[i].Shading.Color = Color.FromRgb(255, 255, 255);
                     pdfRow.Cells[i].VerticalAlignment = VerticalAlignment.Center;
@@ -206,7 +211,8 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => WriteRowAsync(extraRow, true, cancellationToken);
+            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+                WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in rows) {
                 if (mappedSettings.BeforeRowAdded != null)

@@ -1,6 +1,7 @@
 import { i18n, MetaData } from '@easydata/core';
 import { domel } from '@easydata/ui';
-import { DataContext } from '../public_api';
+import { setLocation } from '../utils/utils';
+import { DataContext } from '../main/data_context';
 
 export class RootDataView {
 
@@ -33,8 +34,7 @@ export class RootDataView {
                         b.addChild('li', b => {
                             b.addClass('ed-entity-item')
                             .on('click', () => {
-                                this.context.startProcess();
-                                window.location.href = `${this.basePath}/${decodeURIComponent(ent.id)}`;
+                                setLocation(`${this.basePath}/${decodeURIComponent(ent.id)}`);
                             })
                             .addChild('div', b => {
                                 b.addClass('ed-entity-item-caption')

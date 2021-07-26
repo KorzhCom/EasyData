@@ -76,7 +76,7 @@ namespace EasyData.Export
             if (data == null) return;
 
             // predefined formatters
-            var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
+            var predefinedFormatters = ExportHelpers.GetPredefinedFormatters(data.Cols, settings);
 
             if (settings.ShowDatasetInfo) {
                 if (!string.IsNullOrEmpty(mappedSettings.Title)) {
@@ -112,16 +112,17 @@ namespace EasyData.Export
                 await writer.WriteLineAsync(val.ToString()).ConfigureAwait(false);
             }
 
-            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false, CancellationToken cancellationToken = default)
+            async Task WriteRowAsync(EasyDataRow row, bool isExtra = false,
+                Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var rowContent = new StringBuilder();
 
-                for (int i = 0; i < row.Count; i++)
-                {
+                for (int i = 0; i < row.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
                     var dfmt = data.Cols[i].DisplayFormat;
+                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
                     DataType type = data.Cols[i].Type;
 
                     if (i > 0) rowContent.Append(mappedSettings.Separator);
@@ -140,8 +141,8 @@ namespace EasyData.Export
                 await writer.WriteLineAsync(rowContent.ToString()).ConfigureAwait(false);
             }
 
-            Func<EasyDataRow, CancellationToken, Task> WriteExtraRowAsync = (extraRow, cancellationToken) => 
-                WriteRowAsync(extraRow, true, cancellationToken);
+            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+                WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
 
             foreach (var row in data.Rows) {
@@ -152,7 +153,7 @@ namespace EasyData.Export
                 if (mappedSettings.BeforeRowAdded != null)
                     await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
 
-                await WriteRowAsync(row, false, ct);
+                await WriteRowAsync(row, false, null, ct);
 
             }
 
@@ -163,21 +164,6 @@ namespace EasyData.Export
             await writer.FlushAsync().ConfigureAwait(false);
         }
 
-        private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
-        {
-            var result = new Dictionary<string, IFormatProvider>();
-            for (int i = 0; i < cols.Count; i++) {
-                var dfmt = cols[i].DisplayFormat;
-                if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
-                    var format = Utils.GetFormat(dfmt);
-                    if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
-                    }
-                }
-           
-            }
-            return result;
-        }
 
         /// <summary>
         /// Gets the MIME content type of the exporting format.
@@ -204,7 +190,7 @@ namespace EasyData.Export
                 return "";
             }
 
-            var s = Utils.GetFormattedValue(val, dataType, settings, displayFormat);
+            var s = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
 
             bool needQuote = settings.QuoteAlways || s.Contains(settings.Separator) || s.IndexOfAny(new[] { '\n', '\r' }) > -1;
             if (needQuote) {

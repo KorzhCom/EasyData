@@ -24,6 +24,7 @@ namespace EasyDataBasicDemo.Models
         public string Description { get; set; }
 
         [ScaffoldColumn(false)]
+        [MetaEntityAttr(ShowOnCreate = true)]
         public byte[] Picture { get; set; } 
 
     }

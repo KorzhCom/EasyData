@@ -33,6 +33,11 @@ export class ValueEditor {
      */
     public statement?: string;
 
+    /**
+     * The accept
+     */
+    public accept?: string;
+
       /**
      * The values.
      */
@@ -61,6 +66,7 @@ export class ValueEditor {
             this.tag = data.tag;
             this.defValue = data.defval;
             this.resType = data.rtype;
+            this.accept = data.accept;
             if (data.subType) {
                 this.resType = data.subType;
             }

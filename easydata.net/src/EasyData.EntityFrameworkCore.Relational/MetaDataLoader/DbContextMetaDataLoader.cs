@@ -43,7 +43,24 @@ namespace EasyData.EntityFrameworkCore
         { 
             TableEntity.Clear();
 
+
             var entityTypes = GetEntityTypes(context.Model);
+
+            if (Options.KeepDbSetDeclarationOrder) {
+                // EF Core keeps information about entity types 
+                // in alphabetical order.
+                // To make it possible to keep the original order
+                // we have to get all DbSet<> types manually
+                var dbSetTypes = context.GetType()
+                    .GetProperties()
+                    .Where(p => p.PropertyType.IsGenericType 
+                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
+                    .Select(p => p.PropertyType.GetGenericArguments()[0])
+                    .ToList();
+
+                entityTypes = entityTypes.OrderBy(t => dbSetTypes.IndexOf(t.ClrType));
+            }
+
             foreach (var entityType in entityTypes) {
                 var entity = ProcessEntityType(context.Model, entityType);
                 if (entity is null)
@@ -161,7 +178,10 @@ namespace EasyData.EntityFrameworkCore
             var property = foreignKey.Properties.First();
 
             if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
-                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity, EntityAttrKind.Lookup));
+                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { 
+                    Parent = entity, 
+                    Kind = EntityAttrKind.Lookup 
+                });
                 lookUpAttr.Id = DataUtils.ComposeKey(entity.Id, navigation.Name);
                 lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
 
@@ -248,6 +268,7 @@ namespace EasyData.EntityFrameworkCore
                 entityAttr.ShowOnView = annotation.ShowOnView;
                 entityAttr.ShowOnEdit = annotation.ShowOnEdit;
                 entityAttr.ShowOnCreate = annotation.ShowOnCreate;
+                entityAttr.Sorting = annotation.Sorting;
 
                 if (annotation.Index != int.MaxValue) {
                     entityAttr.Index = annotation.Index;
@@ -263,20 +284,38 @@ namespace EasyData.EntityFrameworkCore
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
-            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor(entity));
+            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
+            {
+                Parent = entity
+            });
+
             entityAttr.Id = DataUtils.ComposeKey(entityName, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
 
             entityAttr.PropInfo = property.PropertyInfo;
+            entityAttr.PropName = property.Name;
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();
 
             entityAttr.IsNullable = property.IsNullable;
 
+            if (entityAttr.DataType == DataType.Blob) {
+                // HIDE blob fields by default
+                entityAttr.ShowOnCreate = false;
+                entityAttr.ShowOnEdit = false;
+            }
+
+            var veId = $"VE_{entityName}_{propertyName}";
             if (property.ClrType.IsEnum) {
+                var editor = new ConstListValueEditor(veId);
+                FieldInfo[] fields = property.ClrType.GetFields();
+                foreach (var field in fields.Where(f => !f.Name.Equals("value__"))) {
+                    editor.Values.Add(field.GetRawConstantValue().ToString(), field.Name);
+                }
+                entityAttr.DefaultEditor = editor;
                 entityAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
             }
 
@@ -295,10 +334,11 @@ namespace EasyData.EntityFrameworkCore
             }
 
             if (entityAttr.DataType == DataType.Blob) {
-                entityAttr.IsEditable = false;
+                // DO NOT show blob fields in GRID
                 entityAttr.ShowOnView = false;
-                entityAttr.ShowOnEdit = false;
-                entityAttr.ShowOnCreate = false;
+
+                var editor = new FileValueEditor(veId);
+                entityAttr.DefaultEditor = editor;
             }
 
             return entityAttr;

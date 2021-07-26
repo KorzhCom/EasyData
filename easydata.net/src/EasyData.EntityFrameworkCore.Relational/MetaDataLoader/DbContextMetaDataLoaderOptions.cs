@@ -40,5 +40,10 @@ namespace EasyData.EntityFrameworkCore
         /// <value><c>true</c> if the foreign key fields must be skipped; otherwise, <c>false</c>.</value>
         public bool SkipForeignKeys { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether entities must keep order of DbSet declarations.
+        /// </summary>
+        public bool KeepDbSetDeclarationOrder { get; set; } = false; 
+
     }
 }
