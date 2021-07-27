@@ -537,7 +537,7 @@ export class EntityEditForm {
                 const property = input.name.substring(input.name.lastIndexOf('.') + 1);
                 const attr = this.context.getMetaData().getAttributeById(input.name);
 
-                if (input.type === 'checbox') {
+                if (input.type === 'checkbox') {
                     obj[property] = (input as HTMLInputElement).checked;
                 }
                 else if (input.type === 'file') {
