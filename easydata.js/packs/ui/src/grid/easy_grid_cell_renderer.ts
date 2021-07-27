@@ -26,7 +26,7 @@ const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
         .title(value || '');
 
     if (column.align == GridColumnAlign.NONE) {
-        builder.addClass(`${cssPrefix}-cell-value-align-right`);
+        builder.addClass(`${cssPrefix}-cell-value-align-left`);
     }
 }
 
