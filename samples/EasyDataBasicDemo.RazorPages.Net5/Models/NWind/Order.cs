@@ -11,6 +11,7 @@ namespace EasyDataBasicDemo.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("OrderID")]
+        [MetaEntityAttr(DisplayFormat = "{0:D8}")]
         public int Id { get; set; }
 
         [NotMapped]
@@ -21,7 +22,7 @@ namespace EasyDataBasicDemo.Models
         }
         
         [Display(Name = "Ordered")]
-        [MetaEntityAttr(Editable = false)]
+        [MetaEntityAttr(Editable = false, DisplayFormat = "{0:dd.MM.yyyy}", Sorting = -1)]
         public DateTime? OrderDate { get; set; }
 
         [Display(Name = "Required")]
@@ -30,6 +31,7 @@ namespace EasyDataBasicDemo.Models
         [Display(Name = "Shipped")]
         public DateTime? ShippedDate { get; set; }
 
+        [MetaEntityAttr(DisplayFormat = "{0:C2} грн")]
         public decimal? Freight { get; set; }
 
         public string CustomerID { get; set; }

@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
+using EasyData.EntityFrameworkCore;
+
 namespace EasyDataBasicDemo.Models
 {
+    [MetaEntity(false)]
     public class Shipper
     {
         [Column("ShipperID")]

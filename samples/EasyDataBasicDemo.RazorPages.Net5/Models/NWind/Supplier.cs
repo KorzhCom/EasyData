@@ -1,8 +1,9 @@
-﻿using EasyData.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using EasyData.EntityFrameworkCore;
 
 namespace EasyDataBasicDemo.Models
 {
+    [MetaEntity(false)]
     public class Supplier
     {
 
