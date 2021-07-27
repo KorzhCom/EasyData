@@ -130,11 +130,13 @@ export class EntityDataView {
     private addClickHandler() {
 
         const activeEntity = this.context.getActiveEntity();
-        const form = new EntityEditFormBuilder(this.context).build();
+        const form = new EntityEditFormBuilder(this.context)
+            .onSubmit(() => dlg.submit())
+            .build();
 
         form.useValidators(this.defaultValidators);
 
-        this.dlg.open({
+        const dlg = this.dlg.open({
             title: i18n.getText('AddDlgCaption')
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
@@ -167,10 +169,13 @@ export class EntityDataView {
     private showEditForm(row: DataRow) {
         const activeEntity = this.context.getActiveEntity();
 
-        const form = new EntityEditFormBuilder(this.context, { isEditForm: true, values: row }).build();
+        const form = new EntityEditFormBuilder(this.context, { isEditForm: true, values: row })
+            .onSubmit(() => dlg.submit())
+            .build();
+            
         form.useValidators(this.defaultValidators);
 
-        this.dlg.open({
+        const dlg = this.dlg.open({
             title: i18n.getText('EditDlgCaption')
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
