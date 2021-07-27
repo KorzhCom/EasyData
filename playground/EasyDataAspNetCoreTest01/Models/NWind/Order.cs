@@ -11,6 +11,7 @@ namespace EasyDataBasicDemo.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("OrderID")]
+        [MetaEntityAttr(Editable = false, DisplayFormat = "{0:D8}")]
         public int Id { get; set; }
 
         [NotMapped]

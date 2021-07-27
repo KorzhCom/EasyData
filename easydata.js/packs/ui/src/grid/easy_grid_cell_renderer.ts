@@ -5,7 +5,7 @@ import { domel } from '../utils/dom_elem_builder';
 import { EasyGridOptions } from './easy_grid_options';
 
 const cssPrefix = "keg";
-const DFMT_REGEX = /{0:(.*?)}/g;
+export const DFMT_REGEX = /{0:(.*?)}/g;
 
 export enum CellRendererType {
     STRING = 1,
@@ -26,7 +26,7 @@ const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
         .title(value || '');
 
     if (column.align == GridColumnAlign.NONE) {
-        builder.addClass(`${cssPrefix}-cell-value-align-right`);
+        builder.addClass(`${cssPrefix}-cell-value-align-left`);
     }
 }
 

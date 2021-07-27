@@ -194,6 +194,8 @@ export class EntityEditFormBuilder {
                                         },
                                         onDestroy: () => {
                                             lookupGrid.destroy();
+                                            // return focus on button
+                                            b.toDOM().focus();
                                         }
                                     });
                                 });
@@ -233,7 +235,7 @@ export class EntityEditFormBuilder {
                     }
                     else {
                         b.mask(mask)
-                            
+                        b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
                         .on('input', ev => {
                             b.removeClass('is-invalid');
                             try {
@@ -314,7 +316,7 @@ export class EntityEditFormBuilder {
                     if (readOnly)
                         b.attr('readonly', '');
                     b.attr('name', attr.id)
-
+                    b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
                     if (values) {
                         for (let i = 0; i < values.length; i++) {
                             const val = values[i];
@@ -355,7 +357,8 @@ export class EntityEditFormBuilder {
                     if (value)
                         b.attr('checked', '');
                 } else {
-                    b.value(dataUtils.IsDefinedAndNotNull(value)
+                    b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
+                     .value(dataUtils.IsDefinedAndNotNull(value)
                         ? value.toString()
                         : '');
                 }
@@ -432,6 +435,22 @@ export class EntityEditFormBuilder {
         }
 
         return editor;
+    }
+
+    private applySumbit(ev: KeyboardEvent): boolean {
+        if (ev.keyCode === 13) {
+            this.sumbitCallback && this.sumbitCallback();
+            return false;
+        }
+        
+        return false;
+    }
+
+    private sumbitCallback: () => void;
+
+    public onSubmit(sumbitCallback: () => void) {
+        this.sumbitCallback = sumbitCallback;
+        return this;
     }
 
     public build(): EntityEditForm {
@@ -537,7 +556,7 @@ export class EntityEditForm {
                 const property = input.name.substring(input.name.lastIndexOf('.') + 1);
                 const attr = this.context.getMetaData().getAttributeById(input.name);
 
-                if (input.type === 'checbox') {
+                if (input.type === 'checkbox') {
                     obj[property] = (input as HTMLInputElement).checked;
                 }
                 else if (input.type === 'file') {

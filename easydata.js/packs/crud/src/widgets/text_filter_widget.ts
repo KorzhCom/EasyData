@@ -1,5 +1,9 @@
 import { i18n, utils as dataUtils } from '@easydata/core';
-import { browserUtils, CellRendererType, domel, EasyGrid, GridCellRenderer, GridColumn } from '@easydata/ui';
+import { 
+    browserUtils, CellRendererType,
+    domel, EasyGrid, 
+    GridCellRenderer, GridColumn, DFMT_REGEX
+} from '@easydata/ui';
 import { DataFilter } from '../filter/data_filter';
 
 export interface TextFilterWidgetOptions {
@@ -143,7 +147,13 @@ export class TextFilterWidget {
         if (dataUtils.isIntType(column.type) 
         || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) {
             if (value) {
-                if(typeof value == 'number') {
+                if (column.dataColumn && column.dataColumn.displayFormat
+                    && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+                    value = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                        return i18n.numberToStr(value, $1);
+                    });
+                }
+                else {
                     value = value.toLocaleString();
                 }
 
