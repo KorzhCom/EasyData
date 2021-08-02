@@ -94,23 +94,18 @@ namespace EasyData.EntityFrameworkCore
 
         protected string GetEntityId(IEntityType entityType)
         {
-            var entityName = GetEntityNameByType(entityType);
+            var entityName = Utils.GetEntityNameByType(entityType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
-        protected string GetEntityNameByType(IEntityType entityType)
-        { 
-            return entityType.ClrType.Name.Split('`').First();
-        }
-
-
+  
         #region auxiliary functions for LoadFromDbContext
         protected virtual MetaEntity ProcessEntityType(IModel contextModel, IEntityType entityType)
         {
             var entity = Model.CreateEntity();
             var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
-            entity.Name = DataUtils.PrettifyName(GetEntityNameByType(entityType));
+            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             entity.ClrType = entityType.ClrType;
@@ -280,7 +275,7 @@ namespace EasyData.EntityFrameworkCore
 
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
-            var entityName = GetEntityNameByType(entityType);
+            var entityName = Utils.GetEntityNameByType(entityType);
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
