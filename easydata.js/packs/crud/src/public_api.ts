@@ -2,6 +2,7 @@ export * from './filter/data_filter'
 export * from './filter/text_data_filter'
 
 export * from './form/entity_edit_form'
+export * from './form/entity_form_builder'
 
 export * from './widgets/text_filter_widget'
 export * from './widgets/progress_bar'
