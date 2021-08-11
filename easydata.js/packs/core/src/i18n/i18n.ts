@@ -424,7 +424,7 @@ export namespace i18n {
 
     export function numberToStr(number: number, format?: string): string {
         if (format && format.length > 0) {
-            const type = format.charAt(0);
+            const type = format.charAt(0).toUpperCase();
             if (type === 'S') {
                 return formatWithSequence(number, format.slice(1));
             }
@@ -444,7 +444,7 @@ export namespace i18n {
     export function booleanToStr(bool: boolean, format?: string) {
 
         if (format && format.length > 0) {
-            const type = format.charAt(0);
+            const type = format.charAt(0).toUpperCase();
             if (type === 'S') {
                 const values = format.slice(1).split('|');
                 if (values.length > 1) {
