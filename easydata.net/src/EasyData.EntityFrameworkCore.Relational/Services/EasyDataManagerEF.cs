@@ -69,7 +69,7 @@ namespace EasyData.Services
             var result = new EasyDataResultSet();
 
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
-            var attrIdProps = entityType.GetProperties().ToDictionary(prop => DataUtils.ComposeKey(entityType.Name.Split('.').Last(), prop.Name), prop => prop );
+            var attrIdProps = entityType.GetProperties().ToDictionary(prop => DataUtils.ComposeKey(entityContainer, prop.Name), prop => prop );
 
             var attrs = modelEntity.Attributes.Where(attr => attr.Kind != EntityAttrKind.Lookup);
             foreach (var attr in attrs) {
@@ -168,8 +168,7 @@ namespace EasyData.Services
         private IEntityType GetCurrentEntityType(DbContext dbContext, string entityContainer)
         {
             var entityType = dbContext.Model.GetEntityTypes()
-                .FirstOrDefault(ent => 
-                    ent.Name.Split('.').LastOrDefault() == entityContainer);
+                .FirstOrDefault(ent => Utils.GetEntityNameByType(ent) == entityContainer);
 
             if (entityType == null) {
                 throw new ContainerNotFoundException(entityContainer);
