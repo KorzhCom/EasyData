@@ -58,7 +58,7 @@ namespace EasyDataBasicDemo
                     {
                         model.DisplayFormats.SetDefault(EasyData.DataType.DateTime, "Long date & time");
                     });
-                    options.UseDbContext<AppDbContext>(opts => opts.KeepDbSetDeclarationOrder = true);
+                    options.UseDbContext<AppDbContext>(opts => opts.SkipForeignKeys = false);
                 });
                 //.RequireAuthorization();
 

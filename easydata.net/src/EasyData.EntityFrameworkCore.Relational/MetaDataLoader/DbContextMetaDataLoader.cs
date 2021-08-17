@@ -216,9 +216,12 @@ namespace EasyData.EntityFrameworkCore
                 if (lookupDataAttr != null) {
                     lookUpAttr.LookupDataAttribute = lookupDataAttr;
 
-                    if (dataAttr.Index == int.MaxValue) {
-                        dataAttr.Index = attrCounter;
+                    if (lookupDataAttr.Index == int.MaxValue) {
+                        lookupDataAttr.Index = attrCounter;
                     }
+
+                    // hide lookup data field of lookup field on managing data
+                    lookupDataAttr.ShowOnEdit = lookupDataAttr.ShowOnCreate = false;
 
                     attrCounter++;
                     entity.Attributes.Add(lookUpAttr);

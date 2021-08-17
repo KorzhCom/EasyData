@@ -6,7 +6,7 @@ import {
     GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
 
-import { EntityEditFormBuilder } from '../form/entity_edit_form';
+import { EntityEditFormBuilder } from '../form/entity_form_builder';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
 import { DataContext } from '../main/data_context';
