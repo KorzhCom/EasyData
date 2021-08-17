@@ -22,7 +22,7 @@ namespace EasyDataBasicDemo.Models
         }
         
         [Display(Name = "Ordered")]
-        [MetaEntityAttr(Editable = false, DisplayFormat = "{0:D}")]
+        [MetaEntityAttr(Editable = false, DisplayFormat = "{0:D}", Sorting = -1)]
         public DateTime? OrderDate { get; set; }
 
         [Display(Name = "Required")]
