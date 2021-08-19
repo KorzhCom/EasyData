@@ -192,6 +192,11 @@ export class AggregationSettings {
         return false;
     }
 
+    public needAggrCalculation() : boolean {
+        return (this.hasAggregates() || this.hasCounts())
+                && (this.hasGrandTotals() || this.hasGroups());
+    }
+
     public saveToData(): AggregationData {
         return {
             groups: Array.from(this.groups),
