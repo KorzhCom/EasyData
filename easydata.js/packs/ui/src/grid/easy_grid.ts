@@ -448,7 +448,7 @@ export class EasyGrid {
                     this.prevRowTotals = null;
 
                     if (rows.length) {
-                        const showAggrs = this.showAggregates();
+                        const showAggrs = this.canShowAggregates();
                         const groups = showAggrs 
                             ? this.options.aggregates.settings.getGroups() 
                             : [];
@@ -496,12 +496,13 @@ export class EasyGrid {
         return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
     }
 
-    private showAggregates(): boolean {
+    private canShowAggregates(): boolean {
         if (!this.options || !this.options.aggregates || !this.options.aggregates.settings)
             return false;
 
-        const settings = this.options.aggregates.settings;
-        return settings.hasAggregates() && (settings.hasGroups() || settings.hasGrandTotals());
+        const aggrSettings = this.options.aggregates.settings;
+        const result = (aggrSettings.hasAggregates() || aggrSettings.hasCounts()) && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
+        return result;
     }
 
     private prevRowTotals: DataRow = null;
