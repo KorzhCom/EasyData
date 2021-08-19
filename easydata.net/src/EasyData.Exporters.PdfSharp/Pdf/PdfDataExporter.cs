@@ -184,7 +184,7 @@ namespace EasyData.Export
                     var col = data.Cols[i];
                     var dfmt = col.DisplayFormat;
                     var gfct = col.GroupFooterColumnTemplate;
-                    var type = col.Type;
+                    var type = col.DataType;
                     string value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
                         value = string.Format(provider, dfmt, row[i]);

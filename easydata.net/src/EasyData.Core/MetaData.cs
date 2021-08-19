@@ -70,6 +70,8 @@ namespace EasyData
 
         public const ulong KeepCurrent = 4096;
 
+        public const ulong HumanReadable = 8192;
+
         public static BitOptions ClientSideContent => Defaults.Without(KeepCurrent);
     }
 
@@ -555,7 +557,7 @@ namespace EasyData
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
                            FileShare.None, 4096, true))
             {
-                await SaveToJsonStreamAsync(stream, options, ct).ConfigureAwait(false);
+                await SaveToJsonStreamAsync(stream, options.With(MetaDataReadWriteOptions.HumanReadable), ct).ConfigureAwait(false);
             }
         }
 
@@ -603,6 +605,9 @@ namespace EasyData
         {
             using (var streamWriter = new StreamWriter(stream)) {
                 using (JsonWriter jsonWriter = new JsonTextWriter(streamWriter)) {
+                    if (options.Contains(MetaDataReadWriteOptions.HumanReadable)) {
+                        jsonWriter.Formatting = Formatting.Indented;
+                    }
                     await WriteToJsonAsync(jsonWriter, options, ct).ConfigureAwait(false);
                 }
             }

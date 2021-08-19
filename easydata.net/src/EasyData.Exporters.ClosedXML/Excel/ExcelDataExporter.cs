@@ -139,27 +139,47 @@ namespace EasyData.Export
                     if (ignoredCols.Contains(i))
                         continue;
 
-                    var dfmt = data.Cols[i].DisplayFormat;
-                    var type = data.Cols[i].Type;
-                    var gfct = data.Cols[i].GroupFooterColumnTemplate;
+                    var column = data.Cols[i];
 
+                    var dfmt = column.DisplayFormat;
+                    var groupFooterTemplate = data.Cols[i].GroupFooterColumnTemplate;
 
-                    string value;
+                    var cell = ws.Cell($"{rowCellLetter}{cellNum}");
+
+                    object value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
                         value = string.Format(provider, dfmt, row[i]);
                     }
                     else {
-                        value = ExportHelpers.GetFormattedValue(row[i], type, settings, dfmt);;
+                        value = row[i]; 
                     }
 
-                    if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) { 
-                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
+                    if (value != null && isExtra && !string.IsNullOrEmpty(groupFooterTemplate)) {
+                        var formattedValue = ExportHelpers.GetFormattedValue(row[i], column.DataType, settings, dfmt);
+                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
                     }
 
-                    ws.Cell($"{rowCellLetter}{cellNum}").DataType = XLDataType.Text;
-                    ws.Cell($"{rowCellLetter}{cellNum}").Value = value ?? "";
+                    cell.Value = value ?? "";
+
+                    // setting the cell's format
+                    var excelDataType = MapDataType(column.DataType);
+                    cell.DataType = excelDataType;
+                    if (excelDataType == XLDataType.DateTime) {
+                        var format = Utils.GetExcelDateFormat(column.DataType, mappedSettings, dfmt);
+                        if (!string.IsNullOrEmpty(format))
+                            cell.Style.DateFormat.Format = format;
+                    }
+                    else if (excelDataType == XLDataType.Number) {
+                        var format = Utils.GetExcelNumberFormat(mappedSettings, dfmt);
+                        if (!string.IsNullOrEmpty(format))
+                            cell.Style.NumberFormat.Format = format;
+                    }
+
+                    cell.Style.Alignment.Horizontal = MapAlignment(column.Style.Alignment);
+
                     if (isExtra)
-                        ws.Cell($"{rowCellLetter}{cellNum}").Style.Font.Bold = true;
+                        cell.Style.Font.Bold = true;
+                    
                     rowCellLetter++;
                 }
 
@@ -190,37 +210,17 @@ namespace EasyData.Export
             cellNum--;
 
             // Setup formats
-            var letter = startLetter;
-            for (int i = 0; i < data.Cols.Count; i++) {
-                if (ignoredCols.Contains(i))
-                    continue;
+            //var letter = startLetter;
+            //for (int i = 0; i < data.Cols.Count; i++) {
+            //    if (ignoredCols.Contains(i))
+            //        continue;
 
-                var col = data.Cols[i];
-                var type = col.Type;
-                var dfmt = col.DisplayFormat;
-                var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
-                var dataType = MapDataType(type);
-                colRange.DataType = XLDataType.Text;
-                /* UNCOMMENT
-                if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.ContainsKey(dfmt)) {
-                    colRange.DataType = XLDataType.Text;
-                }
-                else {
-                    colRange.DataType = dataType;
-                    if (dataType == XLDataType.DateTime) {
-                        var format = Utils.GetDateFormat(type, mappedSettings, dfmt);
-                        colRange.Style.DateFormat.Format = format;
-                    }
-                    else if (!string.IsNullOrEmpty(dfmt)) {
-                        var format = Utils.GetExcelDisplayFormat(mappedSettings, dfmt);
-                        colRange.Style.NumberFormat.Format = format;
-                    }
-                }
-                */
-
-                colRange.Style.Alignment.Horizontal = MapAlignment(col.Style.Alignment);
-                letter++;
-            }
+            //    var col = data.Cols[i];
+            //    var type = col.Type;
+            //    var dfmt = col.DisplayFormat;
+            //    var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
+            //    letter++;
+            //}
 
             // Setup styles
             var rngTable = ws.Range($"{startLetter}{startNum}:{endCellLetter}{cellNum}");
@@ -287,7 +287,7 @@ namespace EasyData.Export
                 case ColumnAlignment.Right:
                     return XLAlignmentHorizontalValues.Right;
                 default:
-                    return XLAlignmentHorizontalValues.Left;
+                    return XLAlignmentHorizontalValues.General;
             }
         }
 
@@ -301,7 +301,9 @@ namespace EasyData.Export
                     return XLDataType.DateTime;
                 case DataType.Time:
                     return XLDataType.TimeSpan;
+                case DataType.Autoinc:
                 case DataType.Byte:
+                case DataType.Word:
                 case DataType.Currency:
                 case DataType.Int32:
                 case DataType.Int64:

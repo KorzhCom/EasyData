@@ -44,7 +44,7 @@ namespace EasyData.Export
                 var dfmt = cols[i].DisplayFormat;
                 if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
                     var format = GetFormat(dfmt);
-                    if (format.StartsWith("S")) {
+                    if (format.StartsWith("S", StringComparison.InvariantCultureIgnoreCase)) {
                         result.Add(dfmt, new SequenceFormat(format, settings.Culture));
                     }
                 }
