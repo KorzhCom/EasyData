@@ -76,8 +76,11 @@ export class AggregationSettings {
 
     public addGroup(settings: GroupSettings) {
         const cols = settings.columns || this.colStore.getColumnIds(settings.from, settings.to);
-        if (!this.colStore.validateColumns(cols) || !this.areUnusedColumns(cols))
-            throw "Invalid group of columns";
+        if (!this.colStore.validateColumns(cols))
+            throw "Invalid columns: " + cols;
+
+        if (!this.areUnusedColumns(cols))
+            throw "Can't add same columns to different groups/aggregates";
 
         this.groups.push({ columns: cols, aggregates: null, ...settings })
         return this;
@@ -89,7 +92,7 @@ export class AggregationSettings {
             : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
 
         if (!this.areUnusedColumns([colId]) || !this.colStore.validateAggregate(colId, funcId))
-            throw "Invalid aggregate function for such column";
+            throw 'Invalid aggregation function for the column: ' + colId;
 
         this.aggregates.push({ colId, funcId });
         return this;
@@ -154,12 +157,24 @@ export class AggregationSettings {
     }
 
     public drop() {
+        console.warn('"drop()" method is obsolete. Use "clear()" instead');
+        this.clear();
+    }
+
+    public clear() {
         this.groups = [];
         this.aggregates = [];
         this.useGrandTotals = false;
         this.useCounts = false;
+        return this;
     }
 
+    /**
+     * Checks if all columns from the list passed in the parameter are "unused".
+     * Here "unused column" means a column that is included neither in any group nor in the aggregates list.
+     * @param cols - the array of column IDs
+     * @returns true if all columns in the list are not used anywhere, othervise - fals 
+     */
     private areUnusedColumns(cols: string[]): boolean {
         for (const group of this.groups) {
             const interCols = group.columns
