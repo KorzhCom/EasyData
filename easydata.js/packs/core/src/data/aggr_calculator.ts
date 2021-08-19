@@ -79,7 +79,7 @@ export class AggregationSettings {
         if (!this.colStore.validateColumns(cols))
             throw "Invalid columns: " + cols;
 
-        if (!this.areUnusedColumns(cols))
+        if (this.hasColumnsInUse(cols))
             throw "Can't add same columns to different groups/aggregates";
 
         this.groups.push({ columns: cols, aggregates: null, ...settings })
@@ -91,7 +91,7 @@ export class AggregationSettings {
             ? colIndexOrId
             : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
 
-        if (!this.areUnusedColumns([colId]) || !this.colStore.validateAggregate(colId, funcId))
+        if (this.hasColumnsInUse([colId]) || !this.colStore.validateAggregate(colId, funcId))
             throw 'Invalid aggregation function for the column: ' + colId;
 
         this.aggregates.push({ colId, funcId });
@@ -175,21 +175,21 @@ export class AggregationSettings {
      * @param cols - the array of column IDs
      * @returns true if all columns in the list are not used anywhere, othervise - fals 
      */
-    private areUnusedColumns(cols: string[]): boolean {
+    private hasColumnsInUse(cols: string[]): boolean {
         for (const group of this.groups) {
             const interCols = group.columns
                 .filter(c => cols.indexOf(c) >= 0);
 
             if (interCols.length > 0)
-                return false;
+                return true;
         }
 
         for(const aggr of this.aggregates) {
             if (cols.indexOf(aggr.colId) >= 0)
-                return false;
+                return true;
         }
 
-        return true;
+        return false;
     }
 
     public saveToData(): AggregationData {
