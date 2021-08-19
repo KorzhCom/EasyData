@@ -287,7 +287,7 @@ namespace EasyData.Export
                 case ColumnAlignment.Right:
                     return XLAlignmentHorizontalValues.Right;
                 default:
-                    return XLAlignmentHorizontalValues.Left;
+                    return XLAlignmentHorizontalValues.General;
             }
         }
 
