@@ -301,7 +301,9 @@ namespace EasyData.Export
                     return XLDataType.DateTime;
                 case DataType.Time:
                     return XLDataType.TimeSpan;
+                case DataType.Autoinc:
                 case DataType.Byte:
+                case DataType.Word:
                 case DataType.Currency:
                 case DataType.Int32:
                 case DataType.Int64:
