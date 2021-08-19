@@ -104,7 +104,7 @@ namespace EasyData.Export
                         continue;
 
                     string colName = data.Cols[i].Label;
-                    DataType type = data.Cols[i].Type;
+                    DataType type = data.Cols[i].DataType;
 
                     if (i > 0) val.Append(mappedSettings.Separator);
                     val.Append(GetFormattedValue(colName, DataType.String, mappedSettings, null));
@@ -123,7 +123,7 @@ namespace EasyData.Export
 
                     var dfmt = data.Cols[i].DisplayFormat;
                     var gfct = data.Cols[i].GroupFooterColumnTemplate;
-                    DataType type = data.Cols[i].Type;
+                    DataType type = data.Cols[i].DataType;
 
                     if (i > 0) rowContent.Append(mappedSettings.Separator);
 
