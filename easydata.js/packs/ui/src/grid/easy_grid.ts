@@ -589,6 +589,7 @@ export class EasyGrid {
         const aggrCols = settings.getAggregates().map(c => c.colId);
 
         const key = this.buildGroupKey(group, row);
+
         aggrContainer.getAggregates(level, key)
             .then((values) => {
                 for(const aggrColId of aggrCols) {
@@ -607,25 +608,26 @@ export class EasyGrid {
                         ? this.dataTable.columns.getIndex(column.dataColumn.id)
                         : -1;
 
-                    if (!column.isRowNum && column.dataColumn) {
-                        if (group.columns.indexOf(column.dataColumn.id) >= 0
-                            || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                    if (!column.isRowNum) {
+                        if (column.dataColumn) {
+                            if (group.columns.indexOf(column.dataColumn.id) >= 0
+                                || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                                val = row.getValue(colIndex);
+                            };
+                        }
+    
+                        if (column.dataColumn.isAggr || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                             val = row.getValue(colIndex);
-                        };
-                    }
+                        }
+            
+                        const groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate || '{{GroupValue}} ({{GroupCount}})';
 
-                    if (!column.isRowNum && (column.dataColumn.isAggr 
-                        || aggrCols.indexOf(column.dataColumn.id) >= 0)) {
-                        val = row.getValue(colIndex);
-                    }
-        
-                    if (!column.isRowNum && column.dataColumn.groupFooterColumnTemplate) {
                         const cellDiv = this.renderCell(column, colIndex, val, rowElement);
                         const innerCell = (cellDiv.firstChild as HTMLElement);
                         val = innerCell.innerHTML;
                         if (val)
-                            val = this.applyGroupColumnTemplate(column.dataColumn.groupFooterColumnTemplate, val, values[settings.COUNT_FIELD_NAME]);
-                    }
+                            val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[settings.COUNT_FIELD_NAME]);
+                    }    
 
                     const cellDiv = this.renderCell(column, colIndex, val, rowElement);
                     rowElement.appendChild(cellDiv);
