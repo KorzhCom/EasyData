@@ -31,7 +31,7 @@ namespace EasyData
 
         public string Label { get; set; }
 
-        public DataType Type { get; set; }
+        public DataType DataType { get; set; }
 
         public string AttrId { get; set; }
 
@@ -58,8 +58,12 @@ namespace EasyData
         [JsonProperty("label")]
         public string Label { get; set; }
 
+        [Obsolete("Use DataType instead")]
+        [JsonIgnore]
+        public DataType Type => DataType;
+
         [JsonProperty("type")]
-        public DataType Type { get; }
+        public DataType DataType { get; }
 
         [JsonProperty("originAttrId")]
         public string OrginAttrId { get; }
@@ -81,7 +85,7 @@ namespace EasyData
             IsAggr = desc.IsAggr;
             OrginAttrId = desc.AttrId;
             Label = desc.Label;
-            Type = desc.Type;
+            DataType = desc.DataType;
             DisplayFormat = desc.DisplayFormat;
             GroupFooterColumnTemplate = desc.GroupFooterColumnTemplate;
         }

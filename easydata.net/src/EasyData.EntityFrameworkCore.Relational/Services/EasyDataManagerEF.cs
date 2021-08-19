@@ -88,7 +88,7 @@ namespace EasyData.Services
                     Label = DataUtils.PrettifyName(prop.Name),
                     AttrId = attr?.Id,
                     DisplayFormat = dfmt,
-                    Type = dataType
+                    DataType = dataType
                 }));
             } 
 

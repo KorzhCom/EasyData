@@ -20,10 +20,10 @@ namespace EasyData.Export
             return "";
         }
 
-        public static string GetExcelDisplayFormat(IDataExportSettings settings, string displayFormat)
+        public static string GetExcelNumberFormat(IDataExportSettings settings, string dataFormat)
         {
-            if (_formatRegex.IsMatch(displayFormat)) {
-                return _formatRegex.Replace(displayFormat, m => {
+            if (_formatRegex.IsMatch(dataFormat)) {
+                return _formatRegex.Replace(dataFormat, m => {
                     var format = m.Groups[1].Value;
       
                     var type = char.ToUpperInvariant(format[0]);
@@ -49,13 +49,13 @@ namespace EasyData.Export
                 });
             }
 
-            return displayFormat;
+            return dataFormat;
         }
 
-        public static string GetDateFormat(DataType dataType, IDataExportSettings settings, string displayFormat)
+        public static string GetExcelDateFormat(DataType dataType, IDataExportSettings settings, string dataFormat)
         {
-            if (!string.IsNullOrEmpty(displayFormat)) {
-                var dfmt = _formatRegex.Match(displayFormat).Groups[1].Value;
+            if (!string.IsNullOrEmpty(dataFormat)) {
+                var dfmt = _formatRegex.Match(dataFormat).Groups[1].Value;
                 if (dfmt == "d") {
                     return BuildShortDateTimeFormat(settings.Culture, DataType.Date);
                 }
@@ -76,28 +76,43 @@ namespace EasyData.Export
 
         private static string BuildShortDateTimeFormat(CultureInfo culture, DataType type)
         {
+            string format;
             if (type == DataType.Date) {
-                return culture.DateTimeFormat.ShortDatePattern;
+                format = culture.DateTimeFormat.ShortDatePattern;
             }
             else if (type == DataType.Time) {
-                return culture.DateTimeFormat.ShortTimePattern;
+                format = culture.DateTimeFormat.ShortTimePattern;
             }
-            
-            return culture.DateTimeFormat.ShortDatePattern + " "
-                    + culture.DateTimeFormat.ShortTimePattern;
+            else {
+                format = culture.DateTimeFormat.ShortDatePattern + " "
+                        + culture.DateTimeFormat.ShortTimePattern;
+            }
+
+            return ConvertToExcelDateFormat(format);
         }
 
         private static string BuildLongDateTimeFormat(CultureInfo culture, DataType type)
         {
+            string format;
             if (type == DataType.Date) {
-                return culture.DateTimeFormat.LongDatePattern;
+                format = culture.DateTimeFormat.LongDatePattern;
             }
             else if (type == DataType.Time) {
-                return culture.DateTimeFormat.LongTimePattern;
+                format = culture.DateTimeFormat.LongTimePattern;
+            }
+            else {
+                format = culture.DateTimeFormat.LongDatePattern + " "
+                        + culture.DateTimeFormat.LongTimePattern;
             }
 
-            return culture.DateTimeFormat.LongDatePattern + " "
-                    + culture.DateTimeFormat.LongTimePattern;
+            return ConvertToExcelDateFormat(format);
+        }
+
+        private static string ConvertToExcelDateFormat(string dateFormat)
+        {
+            var result = dateFormat.Replace("tt", "AM/PM");
+            result = result.Replace("t", "A/P");
+            return result;
         }
 
         private static Regex _forbidSymbols = new Regex(string.Format("[{0}]", Regex.Escape(@":\/?*[]""")));
