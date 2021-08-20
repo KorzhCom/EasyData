@@ -131,7 +131,7 @@ namespace EasyData.Export
             var endHeaderNum = cellNum;
             var endCellLetter = startLetter;
 
-            Task WriteRowAsync(EasyDataRow row, bool isExtra = false, 
+            Task WriteRowAsync(EasyDataRow row, bool isExtraRow = false, 
                 Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
                 var rowCellLetter = startLetter;
@@ -154,15 +154,18 @@ namespace EasyData.Export
                         value = row[i]; 
                     }
 
-                    if (value != null && isExtra && !string.IsNullOrEmpty(groupFooterTemplate)) {
+                    var excelDataType = XLDataType.Text;
+                    if (value != null && isExtraRow && !string.IsNullOrEmpty(groupFooterTemplate)) {
                         var formattedValue = ExportHelpers.GetFormattedValue(row[i], column.DataType, settings, dfmt);
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
                     }
+                    else { 
+                        excelDataType = MapDataType(column.DataType);
+                    }
 
-                    cell.Value = value ?? "";
+                    cell.Value = value;
 
                     // setting the cell's format
-                    var excelDataType = MapDataType(column.DataType);
                     cell.DataType = excelDataType;
                     if (excelDataType == XLDataType.DateTime) {
                         var format = Utils.GetExcelDateFormat(column.DataType, mappedSettings, dfmt);
@@ -177,7 +180,7 @@ namespace EasyData.Export
 
                     cell.Style.Alignment.Horizontal = MapAlignment(column.Style.Alignment);
 
-                    if (isExtra)
+                    if (isExtraRow)
                         cell.Style.Font.Bold = true;
                     
                     rowCellLetter++;
