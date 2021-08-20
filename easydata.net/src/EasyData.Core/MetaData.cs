@@ -313,6 +313,9 @@ namespace EasyData
             // Byte
             DisplayFormats.AddOrUpdate(DataType.Byte, "3-digit", "{0:D3}");
 
+            // Word
+            DisplayFormats.AddOrUpdate(DataType.Word, "5-digit", "{0:D5}");
+
             // Int32
             DisplayFormats.AddOrUpdate(DataType.Int32, "5-digit", "{0:D5}");
             DisplayFormats.AddOrUpdate(DataType.Int32, "10-digit", "{0:D10}");
