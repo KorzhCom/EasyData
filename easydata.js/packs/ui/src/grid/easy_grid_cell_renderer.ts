@@ -36,7 +36,8 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
 
     if(typeof value == 'number') {
         if (column.dataColumn && column.dataColumn.displayFormat
-            && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+            && DFMT_REGEX.test(column.dataColumn.displayFormat)) 
+        {
             strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
                 return i18n.numberToStr(value, $1);
             });

@@ -620,13 +620,20 @@ export class EasyGrid {
                             val = row.getValue(colIndex);
                         }
             
-                        const groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate || '{{GroupValue}} ({{GroupCount}})';
+                        let groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
 
-                        const cellDiv = this.renderCell(column, colIndex, val, rowElement);
-                        const innerCell = (cellDiv.firstChild as HTMLElement);
-                        val = innerCell.innerHTML;
-                        if (val)
-                            val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[settings.COUNT_FIELD_NAME]);
+                        if (!groupFooterTemplate && settings.hasCounts) {
+                            groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
+                        }
+
+                        if (groupFooterTemplate) {
+                            const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                            const innerCell = (cellDiv.firstChild as HTMLElement);
+                            val = innerCell.innerHTML;
+                            if (val) {
+                                val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[settings.COUNT_FIELD_NAME]);
+                            }
+                        }
                     }    
 
                     const cellDiv = this.renderCell(column, colIndex, val, rowElement);
