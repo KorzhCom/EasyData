@@ -548,7 +548,6 @@ export class EasyGrid {
     }
 
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
-
         const settings = this.options.aggregates.settings;
         const group = (level > 0)
             ?  settings.getGroups()[level - 1]
@@ -609,8 +608,11 @@ export class EasyGrid {
                         : -1;
 
                     if (!column.isRowNum) {
+                        let isLastGroupColumn = false;
                         if (column.dataColumn) {
-                            if (group.columns.indexOf(column.dataColumn.id) >= 0
+                            const groupIndex = group.columns.indexOf(column.dataColumn.id); 
+                            isLastGroupColumn = groupIndex == group.columns.length - 1;
+                            if (groupIndex >= 0
                                 || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                                 val = row.getValue(colIndex);
                             };
@@ -622,7 +624,8 @@ export class EasyGrid {
             
                         let groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
 
-                        if (!groupFooterTemplate && settings.hasCounts) {
+                        //set the default template for the first grouping column
+                        if (!groupFooterTemplate && settings.hasCounts() && isLastGroupColumn) {
                             groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
                         }
 
