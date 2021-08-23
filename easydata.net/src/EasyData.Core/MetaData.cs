@@ -18,6 +18,8 @@ namespace EasyData
             Size = 100;
         }
 
+        public string Id { get; set; }
+
         public MetaEntity Parent { get; set; }
 
         private string _caption;
@@ -254,8 +256,14 @@ namespace EasyData
         public MetaEntityAttr CreateEntityAttr(MetaEntityAttrDescriptor desc)
         {
             var attr = CreateEntityAttrCore(desc.Parent, desc.Kind);
-            if (!string.IsNullOrEmpty(desc.Expression))
+
+            if (!string.IsNullOrEmpty(desc.Id)) {
+                attr.Id = desc.Id;
+            }
+            else if (!string.IsNullOrEmpty(desc.Expression)) { 
                 attr.Id = DataUtils.ComposeKey(desc.Parent?.Id, desc.Expression);
+            }
+
             attr.Expr = desc.Expression;
             attr.Caption = desc.Caption;
             attr.DataType = desc.DataType;
