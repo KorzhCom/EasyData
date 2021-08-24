@@ -88,7 +88,6 @@ export class EasyGrid {
     public readonly options: EasyGridOptions;
 
     constructor(options: EasyGridOptions) {
-
         if (options && options.paging) {
             options.paging = utils.assign(this.defaultDataGridOptions.paging,
                 options.paging);
@@ -649,9 +648,15 @@ export class EasyGrid {
     }
 
     private buildGroupKey(group: GroupData, row: DataRow) {
+        const aggrSettings = this.options.aggregates.settings;
+        const caseInsensitive = aggrSettings && aggrSettings.caseInsensitiveGroups;
         let result: any = {}
-        for(const colId of group.columns) {
-            result[colId] = row.getValue(colId);
+        for (const colId of group.columns) {
+            let keyVal =  row.getValue(colId);
+            if (caseInsensitive) {
+                keyVal = keyVal.toLowerCase();
+            }
+            result[colId] = keyVal;
         }
         return result;
     }

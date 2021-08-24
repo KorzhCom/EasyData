@@ -70,6 +70,8 @@ export class AggregationSettings {
 
     private useCounts = false;
 
+    public caseInsensitiveGroups = false;
+
     constructor(private colStore: AggregationColumnStore) {
         this.COUNT_FIELD_NAME = '__count';
     }
