@@ -603,12 +603,12 @@ export class EasyGrid {
                     const colIndex = !column.isRowNum
                         ? this.dataTable.columns.getIndex(column.dataColumn.id)
                         : -1;
-
     
                     if (!column.isRowNum) {
                         let isLastGroupColumn = false;
                         if (column.dataColumn) {
                             const groupColIndex = group.columns.indexOf(column.dataColumn.id);
+                            const aggrColIndex = aggrCols.indexOf(column.dataColumn.id);
                             if (level > 0) {
                                 isLastGroupColumn = groupColIndex == group.columns.length - 1;
                             } 
@@ -617,16 +617,11 @@ export class EasyGrid {
                                 isLastGroupColumn = colIndex == 0;
                             }
 
-                            if (groupColIndex >= 0
-                                || aggrCols.indexOf(column.dataColumn.id) >= 0) {
+                            if (groupColIndex >= 0 || aggrColIndex >= 0) {
                                 val = row.getValue(colIndex);
                             };
                         }
-    
-                        if (column.dataColumn.isAggr || aggrCols.indexOf(column.dataColumn.id) >= 0) {
-                            val = row.getValue(colIndex);
-                        }
-            
+           
                         let groupFooterTemplate = '';
                         
                         if (level > 0) {
