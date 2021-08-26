@@ -8,7 +8,8 @@ function addEasyDataUITexts() {
         ButtonOK: "OK",
         ButtonCancel: "Cancel",
         ButtonApply: 'Apply',
-        ButtonNow: 'Now'
+        ButtonNow: 'Now',
+        LblTotal: 'Total'
     });
 }
 
