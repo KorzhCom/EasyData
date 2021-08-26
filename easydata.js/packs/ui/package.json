@@ -35,6 +35,7 @@
         "@easydata/core": "^1.3.0"
     },
     "devDependencies": {
+        "@types/node": "12.7.8",
         "@types/jasmine": "^3.3.12",
         "@types/jsdom": "12.2.4",
         "autoprefixer": "^9.7.2",
