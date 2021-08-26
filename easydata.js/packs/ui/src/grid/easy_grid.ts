@@ -292,7 +292,6 @@ export class EasyGrid {
                 this.firstRender = false;
             }, 100);    
         }
-
     }
 
     protected updateHeight() {
@@ -317,10 +316,10 @@ export class EasyGrid {
                 return;
             }
             else if (this.containerInitialHeight > 0) {
+                // comment for now since it does not work in all cases
                 // const bodyHeight = this.containerInitialHeight - this.headerDiv.offsetHeight - this.footerDiv.offsetHeight;
                 // domel(this.bodyDiv)
                 //     .setStyle('height', `${bodyHeight}px`);
-
             }
             resolve();
         })
@@ -328,8 +327,7 @@ export class EasyGrid {
             if (this.options.fixHeightOnFirstRender && this.firstRender) {
                 this.slot.style.height = `${this.slot.offsetHeight}px`
             }
-        });
-        
+        });        
     }
 
     protected renderHeader() {
@@ -507,8 +505,8 @@ export class EasyGrid {
     private prevRowTotals: DataRow = null;
 
     private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
-        const settings = this.options.aggregates.settings;
-        if (this.prevRowTotals && settings.hasGroups()) {
+        const aggrSettings = this.options.aggregates.settings;
+        if (this.prevRowTotals && aggrSettings.hasGroups()) {
             let changeLevel = -1;
             for (let level = 1; level <= groups.length; level++) {
                 const group = groups[level - 1];
@@ -525,14 +523,14 @@ export class EasyGrid {
           
             if (changeLevel !== -1) {
                 for (let level = groups.length; level >= changeLevel; level--) {
-                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
+                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());                    
                     const tr = this.renderTotalsRow(level, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
             }
         }
 
-        if (isLast && settings.hasGrandTotals()) {
+        if (isLast && aggrSettings.hasGrandTotals() && aggrSettings.hasAggregates()) {
             const tr = this.renderTotalsRow(0, newRow);
             this.bodyCellContainerDiv.appendChild(tr);
         }
@@ -547,10 +545,10 @@ export class EasyGrid {
     }
 
     private renderTotalsRow(level: number, row: DataRow): HTMLElement {
-        const settings = this.options.aggregates.settings;
+        const aggrSettings = this.options.aggregates.settings;
         const group = (level > 0)
-            ?  settings.getGroups()[level - 1]
-            : { columns: [], aggregates: settings.getAggregates() };
+            ?  aggrSettings.getGroups()[level - 1]
+            : { columns: [], aggregates: aggrSettings.getAggregates() };
 
         const rowBuilder = domel('div')
                 .addClass(`${this.cssPrefix}-row`)
@@ -584,13 +582,13 @@ export class EasyGrid {
         });
         
         const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
-        const aggrCols = settings.getAggregates().map(c => c.colId);
+        const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
 
         const key = this.buildGroupKey(group, row);
 
         aggrContainer.getAggregates(level, key)
             .then((values) => {
-                for(const aggrColId of aggrCols) {
+                for (const aggrColId of aggrCols) {
                     row.setValue(aggrColId, values[aggrColId]);
                 }
 
@@ -606,12 +604,20 @@ export class EasyGrid {
                         ? this.dataTable.columns.getIndex(column.dataColumn.id)
                         : -1;
 
+    
                     if (!column.isRowNum) {
                         let isLastGroupColumn = false;
                         if (column.dataColumn) {
-                            const groupIndex = group.columns.indexOf(column.dataColumn.id); 
-                            isLastGroupColumn = groupIndex == group.columns.length - 1;
-                            if (groupIndex >= 0
+                            const groupColIndex = group.columns.indexOf(column.dataColumn.id);
+                            if (level > 0) {
+                                isLastGroupColumn = groupColIndex == group.columns.length - 1;
+                            } 
+                            else {
+                                //if it's a grand total row consider first column as the last group column
+                                isLastGroupColumn = colIndex == 0;
+                            }
+
+                            if (groupColIndex >= 0
                                 || aggrCols.indexOf(column.dataColumn.id) >= 0) {
                                 val = row.getValue(colIndex);
                             };
@@ -621,20 +627,21 @@ export class EasyGrid {
                             val = row.getValue(colIndex);
                         }
             
-                        let groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
-
-                        //set the default template for the first grouping column
-                        if (!groupFooterTemplate && settings.hasCounts() && isLastGroupColumn) {
-                            groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
-                        }
+                        let groupFooterTemplate = '';
+                        
+                        if (level > 0) {
+                            groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;  
+                            //set the default template for the last grouping column
+                            if (!groupFooterTemplate && aggrSettings.hasCounts() && isLastGroupColumn) {
+                                groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
+                            }
+                        } 
 
                         if (groupFooterTemplate) {
                             const cellDiv = this.renderCell(column, colIndex, val, rowElement);
                             const innerCell = (cellDiv.firstChild as HTMLElement);
                             val = innerCell.innerHTML;
-                            if (val) {
-                                val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[settings.COUNT_FIELD_NAME]);
-                            }
+                            val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[aggrSettings.COUNT_FIELD_NAME]);
                         }
                     }    
 
@@ -741,7 +748,6 @@ export class EasyGrid {
     }
 
     protected renderFooter() {
-
         this.footerDiv = domel('div')
                     .addClass(`${this.cssPrefix}-footer`)
                     .toDOM();
@@ -753,13 +759,10 @@ export class EasyGrid {
                 const pageInfoBlock = this.renderPageInfoBlock(count);
                 this.footerDiv.appendChild(pageInfoBlock);
             });
-        }
-
-       
+        }       
     }
 
     protected renderPageInfoBlock(count: number): HTMLDivElement {
-
         const pageInfoDiv = domel('div')
             .addClass(`${this.cssPrefix}-page-info`)
             .toDOM()
@@ -789,11 +792,9 @@ export class EasyGrid {
     }
 
     protected showProgress() {
-
     }
 
     protected hideProgress() {
-
     }
 
     protected getLocalIndexByGlobal(index: number) {
@@ -1108,7 +1109,6 @@ export class EasyGrid {
                 .toDOM();
     
     private showLandingSlot(pageX: number, pageY: number) {
-
         const colElems = this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`) as NodeListOf<HTMLElement>;
         const cols: HTMLElement[] = [];
 
