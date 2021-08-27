@@ -1,11 +1,15 @@
-export interface CalculateOptions {
+export interface AggrCalculationError extends Error {
+    level? : number;
+}
+export interface AggrCalculationOptions {
     maxLevel?: number;
-    resultsObtained?(level?: number);
+    resultObtained?(result?: any, level?: number);
+    errorOccurred?(error:AggrCalculationError);    
 }
 
 export interface AggregatesCalculator {
     getAggrContainer(): AggregatesContainer;
-    calculate(options?: CalculateOptions): Promise<void>;
+    calculate(options?: AggrCalculationOptions): Promise<void>;
 }
 
 export interface GroupKeys {
