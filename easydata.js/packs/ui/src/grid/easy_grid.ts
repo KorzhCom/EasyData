@@ -416,6 +416,18 @@ export class EasyGrid {
         return colDiv; 
     }
 
+    private strictCompare(value1: any, value2: any) : boolean {
+        return value1 !== value2;
+    }
+
+    private caseInsensitiveCompare(value1: any, value2: any) : boolean {
+        const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
+        const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
+        return val1 !== val2;
+    }
+
+    private compareValues : (value1: any, value2: any) => boolean = this.strictCompare;
+
     protected renderBody() {
         this.bodyDiv = domel('div')
             .addClass(`${this.cssPrefix}-body`)
@@ -430,6 +442,12 @@ export class EasyGrid {
             .addClass(`${this.cssPrefix}-cell-container`)
             .toDOM();
 
+        const showAggrs = this.canShowAggregates();
+
+        this.compareValues = this.strictCompare;
+        if (showAggrs && this.options.aggregates.settings.caseInsensitiveGroups) {
+            this.compareValues = this.caseInsensitiveCompare;    
+        }
 
         if (this.dataTable) {
             this.showProgress();
@@ -445,7 +463,6 @@ export class EasyGrid {
                     this.prevRowTotals = null;
 
                     if (rows.length) {
-                        const showAggrs = this.canShowAggregates();
                         const groups = showAggrs 
                             ? this.options.aggregates.settings.getGroups() 
                             : [];
@@ -511,7 +528,7 @@ export class EasyGrid {
             for (let level = 1; level <= groups.length; level++) {
                 const group = groups[level - 1];
                 for(const col of group.columns) {
-                    if (this.prevRowTotals.getValue(col) !== newRow.getValue(col)) {
+                    if (this.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
                         changeLevel = level;
                         break;
                     }
@@ -575,7 +592,7 @@ export class EasyGrid {
             }
                            
             if (colIndex == this.dataTable.columns.count - 1) {
-                val = 'Calculating...'
+                val = '.  .  .  .  .  .'
             }
 
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
