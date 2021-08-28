@@ -115,6 +115,9 @@ namespace EasyData
             if (propName == "defval") {
                 defaultValue = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
             }
+            else if (propName == "multiline") {
+                Multiline = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
+            }
             else {
                 await base.ReadOnePropFromJsonAsync(reader, propName, ct).ConfigureAwait(false);
             }
@@ -133,6 +136,11 @@ namespace EasyData
 
             await writer.WritePropertyNameAsync("defval", ct).ConfigureAwait(false);
             await writer.WriteValueAsync(defaultValue, ct).ConfigureAwait(false);
+
+            if (Multiline) {
+                await writer.WritePropertyNameAsync("multiline", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(Multiline, ct).ConfigureAwait(false);
+            }
         }
     }
 }

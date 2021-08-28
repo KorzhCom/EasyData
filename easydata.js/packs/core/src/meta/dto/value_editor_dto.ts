@@ -21,4 +21,6 @@ export interface ValueEditorDTO {
     values?: {id: string, text: string}[];
     /** The accept. */
     accept?: string;
+    /** The multiline. */
+    multiline?: boolean;
 }

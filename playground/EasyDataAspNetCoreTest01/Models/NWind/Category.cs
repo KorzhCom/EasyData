@@ -20,11 +20,9 @@ namespace EasyDataBasicDemo.Models
         [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
         public string CategoryName { get; set; }
 
-        [MetaEntityAttr(Editable = false)]
         public string Description { get; set; }
 
         [ScaffoldColumn(false)]
-        [MetaEntityAttr(ShowOnCreate = true)]
         public byte[] Picture { get; set; } 
 
     }

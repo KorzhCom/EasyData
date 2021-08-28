@@ -363,6 +363,27 @@ export class EntityEditFormBuilder {
             });
     }
 
+    private setupTextArea(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+        domel(parent)
+            .addChild('textarea', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+
+                b.attr('name', attr.id)
+                 .rows(5)
+
+                if (attr.dataType == DataType.Bool) {
+                    if (value)
+                        b.attr('checked', '');
+                } else {
+                    b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
+                    .value(dataUtils.IsDefinedAndNotNull(value)
+                            ? value.toString()
+                            : '');
+                }
+            });
+    }
+
     private addFormField(parent: HTMLElement, attr: MetaEntityAttr) {
         let value = this.params.values && attr.kind !== EntityAttrKind.Lookup
             ? this.params.values.getValue(attr.id)
@@ -405,7 +426,12 @@ export class EntityEditFormBuilder {
 
             case EditorTag.Edit:
             default:
-                this.setupTextField(parent, attr, readOnly, value);
+                if (editor.multiline) {
+                    this.setupTextArea(parent, attr, readOnly, value);
+                }
+                else {
+                    this.setupTextField(parent, attr, readOnly, value);
+                }
                 break;
         }
     }

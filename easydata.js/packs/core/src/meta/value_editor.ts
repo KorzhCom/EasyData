@@ -38,6 +38,11 @@ export class ValueEditor {
      */
     public accept?: string;
 
+    /**
+     * The accept
+     */
+    public multiline?: boolean;
+
       /**
      * The values.
      */
@@ -67,6 +72,7 @@ export class ValueEditor {
             this.defValue = data.defval;
             this.resType = data.rtype;
             this.accept = data.accept;
+            this.multiline = data.multiline;
             if (data.subType) {
                 this.resType = data.subType;
             }
