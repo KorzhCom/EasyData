@@ -1,6 +1,6 @@
 import { mask } from './mask'
 
-type elementType = "div" | "button" | "a" | "img" | "input" | string;
+type elementType = "div" | "button" | "a" | "img" | "input" | "textarea" | string;
 
 export class DomElementBuilder<TElement extends HTMLElement>  {
 
@@ -22,6 +22,7 @@ export class DomElementBuilder<TElement extends HTMLElement>  {
     public addChild(tag: "a", childBuilder?: (builder: DomElementBuilder<HTMLAnchorElement>) => void): this
     public addChild(tag: "img", childBuilder?: (builder: DomElementBuilder<HTMLImageElement>) => void) : this
     public addChild(tag: "input", childBuilder?: (builder: DomInputElementBuilder) => void) : this
+    public addChild(tag: "textarea", childBuilder?: (builder: DomTextAreaElementBuilder) => void): this
     public addChild(tag: "select", childBuilder?: (builder: DomSelectElementBuilder) => void) : this
     public addChild(tag: string, childBuilder?: (builder: DomElementBuilder<HTMLElement>) => void): this 
     public addChild(tag: elementType, childBuilder?: (builder: any) => void): this {
@@ -179,6 +180,38 @@ export class DomElementBuilder<TElement extends HTMLElement>  {
 
 }
 
+export class DomTextAreaElementBuilder extends DomElementBuilder<HTMLTextAreaElement> {
+
+    constructor(element?: HTMLTextAreaElement, parent?: HTMLElement) {
+        if (element) {
+            super(element, parent);
+        }
+        else {
+            super("textarea", parent);
+        }
+    }
+
+    public name(value: string) {
+        this.element.name = value;
+        return this;
+    }
+
+    public rows(rows: number) {
+        this.element.rows = rows;
+        return this;
+    }
+
+    public cols(cols: number) {
+        this.element.cols = cols;
+        return this;
+    }
+
+    public value(value: string) {
+        this.element.value = value;
+        return this;
+    }
+}
+
 export class DomInputElementBuilder extends DomElementBuilder<HTMLInputElement> {
 
     constructor(element?: HTMLInputElement, parent?: HTMLElement) {
@@ -249,12 +282,14 @@ export class DomSelectElementBuilder extends DomElementBuilder<HTMLSelectElement
         return this;
     }
 }
+
 export function domel(tag: "div" | HTMLDivElement, parent?: HTMLElement): DomElementBuilder<HTMLDivElement>
 export function domel(tag: "span" | HTMLSpanElement, parent?: HTMLElement): DomElementBuilder<HTMLSpanElement>
 export function domel(tag: "a" | HTMLAnchorElement, parent?: HTMLElement): DomElementBuilder<HTMLAnchorElement>
 export function domel(tag: "button" | HTMLButtonElement, parent?: HTMLElement): DomElementBuilder<HTMLButtonElement>
 export function domel(tag: "img" | HTMLImageElement, parent?: HTMLElement): DomElementBuilder<HTMLImageElement>
 export function domel(tag: "input" | HTMLInputElement, parent?: HTMLElement): DomInputElementBuilder
+export function domel(tag: "textarea" | HTMLTextAreaElement, parent?: HTMLElement): DomTextAreaElementBuilder
 export function domel(tag: "select" | HTMLInputElement, parent?: HTMLElement): DomSelectElementBuilder
 export function domel(tag: string, parent?: HTMLElement): DomElementBuilder<HTMLElement>
 export function domel(tag: elementType | HTMLElement, parent?: HTMLElement) {
@@ -277,10 +312,12 @@ export function domel(tag: elementType | HTMLElement, parent?: HTMLElement) {
     else if (tag === "input" || tag instanceof HTMLInputElement) {
         return new DomInputElementBuilder(tag instanceof HTMLInputElement ? tag : null, parent);
     }
+    else if (tag === "textarea" || tag instanceof HTMLTextAreaElement) {
+        return new DomTextAreaElementBuilder(tag instanceof HTMLTextAreaElement ? tag : null, parent);
+    }
     else if (tag === "select" || tag instanceof HTMLSelectElement) {
         return new DomSelectElementBuilder(tag instanceof HTMLSelectElement ? tag : null, parent);
     }
 
     return new DomElementBuilder(tag, parent);
 }
-

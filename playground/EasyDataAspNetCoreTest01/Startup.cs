@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 using Korzh.DbUtils;
 using EasyData.Services;
+using EasyData;
 
 namespace EasyDataBasicDemo
 {
@@ -57,6 +58,12 @@ namespace EasyDataBasicDemo
                     options.UseModelTuner(model =>
                     {
                         model.DisplayFormats.SetDefault(EasyData.DataType.DateTime, "Long date & time");
+
+                        var categoryDesc = model.FindEntityAttr("Category.Description");
+                        categoryDesc.DefaultEditor = new TextValueEditor($"TVE_MULTI_{categoryDesc.Id}")
+                        {
+                            Multiline = true
+                        };
                     });
                     options.UseDbContext<AppDbContext>(opts => opts.SkipForeignKeys = false);
                 });

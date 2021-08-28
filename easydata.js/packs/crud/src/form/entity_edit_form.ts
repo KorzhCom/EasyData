@@ -69,7 +69,7 @@ export class EntityEditForm {
         return new Promise((resolve, reject) => {
             const filePromises: Promise<any>[] = [];
             const inputs = Array.from(this.html
-                .querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select'));
+                .querySelectorAll<HTMLInputElement | HTMLSelectElement  | HTMLTextAreaElement>('input, select, textarea'));
             let obj = {};
             for (const input of inputs) {
                 const property = input.name.substring(input.name.lastIndexOf('.') + 1);
