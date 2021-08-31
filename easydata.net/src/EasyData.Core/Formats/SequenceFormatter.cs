@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace EasyData
 {
-    public class SequenceFormat : IFormatProvider, ICustomFormatter
+    public class SequenceFormatter : IFormatProvider, ICustomFormatter
     {
 
         private readonly CultureInfo _culture;
@@ -13,12 +13,11 @@ namespace EasyData
 
         private readonly Dictionary<long, string> _values;
 
-        public SequenceFormat(string format) : this(format, CultureInfo.InvariantCulture)
-        { 
-            
+        public SequenceFormatter(string format) : this(format, CultureInfo.InvariantCulture)
+        {            
         }
 
-        public SequenceFormat(string format, CultureInfo culture)
+        public SequenceFormatter(string format, CultureInfo culture)
         {
             if (!format.StartsWith("S"))
                 throw new FormatException(string.Format("The format of '{0}' is invalid.", format));
@@ -71,27 +70,31 @@ namespace EasyData
 
         public string Format(string fmt, object arg, IFormatProvider formatProvider)
         {
-            // Provide default formatting if arg is not an Int64.
-            if (!fmt.StartsWith("S") || fmt != _format || !_appliedTypes.Contains(arg.GetType())) {
-                try {
-                    return HandleOtherFormats(fmt, arg);
+            if (arg != null) {
+                // Provide default formatting if arg is not an Int64.
+                if (!fmt.StartsWith("S") || fmt != _format || !_appliedTypes.Contains(arg.GetType())) {
+                    try {
+                        return HandleOtherFormats(fmt, arg);
+                    }
+                    catch (FormatException e) {
+                        throw new FormatException(String.Format("The format of '{0}' is invalid.", fmt), e);
+                    }
                 }
-                catch (FormatException e) {
-                    throw new FormatException(String.Format("The format of '{0}' is invalid.", fmt), e);
-                }
-            }
 
-            if (arg is bool boolVal) {
-                if (_values.TryGetValue((boolVal) ? 1 : 0, out var result))
-                    return result;
+                if (arg is bool boolVal) {
+                    if (_values.TryGetValue((boolVal) ? 1 : 0, out var result))
+                        return result;
+                }
+                else {
+                    var longVal = (long)Convert.ChangeType(arg, typeof(long));
+                    if (_values.TryGetValue(longVal, out var result))
+                        return result;
+                }
+
+                return arg.ToString();
             }
-            else {
-                var longVal = (long)Convert.ChangeType(arg, typeof(long));
-                if (_values.TryGetValue(longVal, out var result))
-                    return result;
-            }
-  
-            return arg.ToString();
+            else 
+                return "";
         }
 
         private string HandleOtherFormats(string format, object arg)
