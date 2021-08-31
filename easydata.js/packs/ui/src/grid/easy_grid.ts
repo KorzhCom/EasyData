@@ -515,7 +515,8 @@ export class EasyGrid {
             return false;
 
         const aggrSettings = this.options.aggregates.settings;
-        const result = (aggrSettings.hasAggregates() || aggrSettings.hasCounts()) && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
+        const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount()) 
+                        && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
         return result;
     }
 
@@ -644,7 +645,7 @@ export class EasyGrid {
                         if (level > 0) {
                             groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;  
                             //set the default template for the last grouping column
-                            if (!groupFooterTemplate && aggrSettings.hasCounts() && isLastGroupColumn) {
+                            if (!groupFooterTemplate && aggrSettings.hasRecordCount() && isLastGroupColumn) {
                                 groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
                             }
                         } 
