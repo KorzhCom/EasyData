@@ -246,7 +246,7 @@ namespace EasyData.Export
                 if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
                     var format = Utils.GetFormat(dfmt);
                     if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
+                        result.Add(dfmt, new SequenceFormatter(format, settings.Culture));
                     }
                 }
 
