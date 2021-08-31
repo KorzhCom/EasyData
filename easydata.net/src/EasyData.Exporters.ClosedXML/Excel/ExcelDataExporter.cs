@@ -212,19 +212,6 @@ namespace EasyData.Export
 
             cellNum--;
 
-            // Setup formats
-            //var letter = startLetter;
-            //for (int i = 0; i < data.Cols.Count; i++) {
-            //    if (ignoredCols.Contains(i))
-            //        continue;
-
-            //    var col = data.Cols[i];
-            //    var type = col.Type;
-            //    var dfmt = col.DisplayFormat;
-            //    var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
-            //    letter++;
-            //}
-
             // Setup styles
             var rngTable = ws.Range($"{startLetter}{startNum}:{endCellLetter}{cellNum}");
             var rowNum = 1;
