@@ -78,7 +78,7 @@ export class AggregationSettings {
     public caseSensitiveGroups = false;
 
     constructor(private colStore: AggregationColumnStore) {
-        this.COUNT_FIELD_NAME = '__count';
+        this.COUNT_FIELD_NAME = 'GRPRECCNT';
     }
 
     public addGroup(settings: GroupSettings) {
