@@ -212,19 +212,6 @@ namespace EasyData.Export
 
             cellNum--;
 
-            // Setup formats
-            //var letter = startLetter;
-            //for (int i = 0; i < data.Cols.Count; i++) {
-            //    if (ignoredCols.Contains(i))
-            //        continue;
-
-            //    var col = data.Cols[i];
-            //    var type = col.Type;
-            //    var dfmt = col.DisplayFormat;
-            //    var colRange = ws.Range($"{letter}{endHeaderNum}:{letter}{cellNum}");
-            //    letter++;
-            //}
-
             // Setup styles
             var rngTable = ws.Range($"{startLetter}{startNum}:{endCellLetter}{cellNum}");
             var rowNum = 1;
@@ -272,7 +259,7 @@ namespace EasyData.Export
                 if (!string.IsNullOrEmpty(dfmt) && !result.ContainsKey(dfmt)) {
                     var format = Utils.GetFormat(dfmt);
                     if (format.StartsWith("S")) {
-                        result.Add(dfmt, new SequenceFormat(format, settings.Culture));
+                        result.Add(dfmt, new SequenceFormatter(format, settings.Culture));
                     }
                 }
 

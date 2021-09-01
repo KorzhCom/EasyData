@@ -444,9 +444,9 @@ export class EasyGrid {
 
         const showAggrs = this.canShowAggregates();
 
-        this.compareValues = this.strictCompare;
-        if (showAggrs && this.options.aggregates.settings.caseInsensitiveGroups) {
-            this.compareValues = this.caseInsensitiveCompare;    
+        this.compareValues = this.caseInsensitiveCompare;    
+        if (showAggrs && this.options.aggregates.settings.caseSensitiveGroups) {
+            this.compareValues = this.strictCompare;
         }
 
         if (this.dataTable) {
@@ -515,7 +515,8 @@ export class EasyGrid {
             return false;
 
         const aggrSettings = this.options.aggregates.settings;
-        const result = (aggrSettings.hasAggregates() || aggrSettings.hasCounts()) && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
+        const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount()) 
+                        && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
         return result;
     }
 
@@ -644,7 +645,7 @@ export class EasyGrid {
                         if (level > 0) {
                             groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;  
                             //set the default template for the last grouping column
-                            if (!groupFooterTemplate && aggrSettings.hasCounts() && isLastGroupColumn) {
+                            if (!groupFooterTemplate && aggrSettings.hasRecordCount() && isLastGroupColumn) {
                                 groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
                             }
                         } 
@@ -668,7 +669,7 @@ export class EasyGrid {
 
     private buildGroupKey(group: GroupData, row: DataRow) {
         const aggrSettings = this.options.aggregates.settings;
-        const caseInsensitive = aggrSettings && aggrSettings.caseInsensitiveGroups;
+        const caseInsensitive = aggrSettings && !aggrSettings.caseSensitiveGroups;
         let result: any = {}
         for (const colId of group.columns) {
             let keyVal =  row.getValue(colId);

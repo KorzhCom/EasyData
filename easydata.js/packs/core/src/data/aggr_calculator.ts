@@ -54,7 +54,8 @@ export interface AggregationColumnStore {
 export interface AggregationData {
     groups: Array<GroupData>,
     ugt: boolean;
-    uc: boolean;
+    urc: boolean;
+    csg: boolean;
     aggregates: Array<AggregateInfo>;
 }
 
@@ -72,12 +73,12 @@ export class AggregationSettings {
 
     private useGrandTotals = false;
 
-    private useCounts = false;
+    private useRecordCount = false;
 
-    public caseInsensitiveGroups = false;
+    public caseSensitiveGroups = false;
 
     constructor(private colStore: AggregationColumnStore) {
-        this.COUNT_FIELD_NAME = '__count';
+        this.COUNT_FIELD_NAME = 'GRPRECCNT';
     }
 
     public addGroup(settings: GroupSettings) {
@@ -110,7 +111,7 @@ export class AggregationSettings {
     }
 
     public addCounts() {
-        this.useCounts = true;
+        this.useRecordCount = true;
         return this;
     }
 
@@ -153,13 +154,13 @@ export class AggregationSettings {
         return this.useGrandTotals;
     }
 
-    public hasCounts(): boolean {
-        return this.useCounts;
+    public hasRecordCount(): boolean {
+        return this.useRecordCount;
     }
 
     public isEmpty(): boolean {
         return !(this.hasAggregates() || this.hasGroups() || 
-                 this.hasAggregates() || this.hasCounts());
+                 this.hasAggregates() || this.hasRecordCount());
     }
 
     public drop() {
@@ -171,7 +172,8 @@ export class AggregationSettings {
         this.groups = [];
         this.aggregates = [];
         this.useGrandTotals = false;
-        this.useCounts = false;
+        this.useRecordCount = false;
+        this.caseSensitiveGroups = false;
         return this;
     }
 
@@ -199,7 +201,7 @@ export class AggregationSettings {
     }
 
     public needAggrCalculation() : boolean {
-        return (this.hasAggregates() || this.hasCounts())
+        return (this.hasAggregates() || this.hasRecordCount())
                 && (this.hasGrandTotals() || this.hasGroups());
     }
 
@@ -207,15 +209,17 @@ export class AggregationSettings {
         return {
             groups: Array.from(this.groups),
             ugt: this.useGrandTotals,
-            uc: this.useCounts,
+            urc: this.useRecordCount,
+            csg: this.caseSensitiveGroups,
             aggregates: Array.from(this.aggregates)
         }
     }
 
     public loadFromData(data: AggregationData) {
         if (data) {
-            this.useGrandTotals = data.ugt || false;
-            this.useCounts = data.uc || false;
+            if (typeof data.ugt !== 'undefined') this.useGrandTotals = data.ugt;
+            if (typeof data.urc !== 'undefined') this.useRecordCount = data.urc;
+            if (typeof data.csg !== 'undefined') this.caseSensitiveGroups = data.csg;
 
             if (data.groups) {
                 this.groups = Array.from(data.groups);
