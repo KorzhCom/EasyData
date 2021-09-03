@@ -364,23 +364,15 @@ export class EntityEditFormBuilder {
     }
 
     private setupTextArea(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+        // feature: modify size in value editor ??
         domel(parent)
             .addChild('textarea', b => {
                 if (readOnly)
                     b.attr('readonly', '');
 
                 b.attr('name', attr.id)
-                 .rows(5)
-
-                if (attr.dataType == DataType.Bool) {
-                    if (value)
-                        b.attr('checked', '');
-                } else {
-                    b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
-                    .value(dataUtils.IsDefinedAndNotNull(value)
-                            ? value.toString()
-                            : '');
-                }
+                
+                b.setStyle('height', `120px`)
             });
     }
 
