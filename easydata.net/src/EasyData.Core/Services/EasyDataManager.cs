@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace EasyData.Services
 {
 
-    public class EasyDataManagerException: Exception
+    public class EasyDataManagerException : Exception
     {
         public EasyDataManagerException(string message) : base(message)
         { }
@@ -28,7 +28,7 @@ namespace EasyData.Services
         { }
     }
 
-    public abstract class EasyDataManager: IDisposable
+    public abstract class EasyDataManager : IDisposable
     {
 
         protected readonly IServiceProvider Services;
@@ -46,7 +46,8 @@ namespace EasyData.Services
 
         public async Task<MetaData> GetModelAsync(string modelId, CancellationToken ct = default)
         {
-            if (Model.Id !=modelId) {
+            if (Model.Id != modelId)
+            {
                 //TODO: Try to load model from cache
 
                 await LoadModelAsync(modelId, ct);
@@ -56,18 +57,96 @@ namespace EasyData.Services
         }
 
 
-        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default) 
+        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default)
         {
+            UpdateMetaWithOptions();
             Options.ModelTuner?.Invoke(Model);
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Update Meta data with properties from options.
+        /// </summary>
+        private void UpdateMetaWithOptions()
+        {
+            foreach (var metaBuilder in Options.EntityMetaBuilders)
+            {
+                for (int i = Model.EntityRoot.SubEntities.Count - 1; i >= 0; i--)
+                {
+                    var entity = Model.EntityRoot.SubEntities[i];
+
+                    if (metaBuilder.ClrType.Equals(entity.ClrType))
+                    {
+                        if (!metaBuilder.Enabled ?? true)
+                        {
+                            Model.EntityRoot.SubEntities.RemoveAt(i);
+                        }
+                        UpdateEntityMeta(metaBuilder, entity);
+                        Model.EntityRoot.SubEntities[i] = entity;
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update single entity meta information.
+        /// </summary>
+        /// <param name="metaFrom">Meta builder to copy from.</param>
+        /// <param name="metaTo">Meta Entity to copy to.</param>
+        private void UpdateEntityMeta(IEntityMetaBuilder metaFrom, MetaEntity metaTo)
+        {
+            metaTo.Description = metaFrom.Description ?? metaTo.Description;
+            metaTo.Name = metaFrom.DisplayName ?? metaTo.Name;
+            metaTo.NamePlural = metaFrom.DisplayNamePlural ?? metaTo.NamePlural;
+
+            // Update entity meta attributes
+            foreach (var attributeBuilder in metaFrom.AttributeMetaBuilders)
+            {
+                for (int i = metaTo.Attributes.Count - 1; i >= 0; i--)
+                {
+                    var attribute = metaTo.Attributes[i];
+
+                    if (attributeBuilder.PropertyInfo.Name.Equals(attribute.PropInfo.Name))
+                    {
+                        if (!attributeBuilder.IsEnabled ?? true)
+                        {
+                            metaTo.Attributes.RemoveAt(i);
+                        }
+
+                        UdpateEntityAttributeMeta(attributeBuilder, attribute);
+                        metaTo.Attributes[i] = attribute;
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update sungle entity attribute meta information.
+        /// </summary>
+        /// <param name="metaFrom">Meta builder to copy from</param>
+        /// <param name="metaTo">Meta Entity Attribute to copy to.</param>
+        private void UdpateEntityAttributeMeta(EntityAttributeMetaBuilder metaFrom, MetaEntityAttr metaTo)
+        {
+            metaTo.Caption = metaFrom.DisplayName ?? metaTo.Caption;
+            metaTo.DisplayFormat = metaFrom.DisplayFormat ?? metaTo.DisplayFormat;
+            metaTo.Description = metaFrom.Description ?? metaTo.Description;
+            metaTo.IsEditable = metaFrom.IsEditable ?? metaTo.IsEditable;
+            metaTo.Index = metaFrom.Index ?? metaTo.Index;
+            metaTo.ShowInLookup = metaFrom.ShowInLookup ?? metaTo.ShowInLookup;
+            metaTo.ShowOnView = metaFrom.ShowOnView ?? metaTo.ShowOnView;
+            metaTo.ShowOnEdit = metaFrom.ShowOnEdit ?? metaTo.ShowOnEdit;
+            metaTo.ShowOnCreate = metaFrom.ShowOnCreate ?? metaTo.ShowOnCreate;
+            metaTo.Sorting = metaFrom.Sorting ?? metaTo.Sorting;
+        }
+
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(
-            string modelId, string entityContainer, 
+            string modelId, string entityContainer,
             IEnumerable<EasyFilter> filters = null,
             IEnumerable<EasySorter> sorters = null,
-            bool isLookup = false, 
-            int? offset = null, int? fetch = null, 
+            bool isLookup = false,
+            int? offset = null, int? fetch = null,
             CancellationToken ct = default);
 
         public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
@@ -76,7 +155,7 @@ namespace EasyData.Services
 
         public abstract Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
 
-        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default); 
+        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default);
 
         public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 

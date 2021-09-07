@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
+
 namespace EasyData.Services
 {
     public delegate EasyDataManager EasyDataManagerResolver(IServiceProvider services, EasyDataOptions options);
@@ -9,7 +11,18 @@ namespace EasyData.Services
     {
         public string Endpoint { get; set; } = "/api/easydata";
 
-        public EasyDataManagerResolver ManagerResolver {get; private set;}
+        public EasyDataManagerResolver ManagerResolver { get; private set; }
+
+        /// <summary>
+        /// Store meta information.
+        /// </summary>
+        protected readonly Dictionary<string, MetaEntity> TableEntity = new Dictionary<string, MetaEntity>();
+
+        /// <summary>
+        /// The metadata of entities and their relations.
+        /// </summary>
+        protected MetaData Model { get; private set; } = new MetaData();
+
 
         /// <summary>
         /// Defines the function which creates and returns an instance of EasyQuery manager. 
@@ -37,7 +50,7 @@ namespace EasyData.Services
         /// <param name="services">The DI services.</param>
         public EasyDataOptions(IServiceProvider services)
         {
-           
+
         }
 
         /// <summary>
@@ -81,7 +94,7 @@ namespace EasyData.Services
         /// </summary>
         /// <typeparam name="TFilter">The filter type</typeparam>
         /// <param name="filterClass">The filter class name</param>
-        public void RegisterFilter<TFilter>(string filterClass) where TFilter: EasyFilter
+        public void RegisterFilter<TFilter>(string filterClass) where TFilter : EasyFilter
         {
             _filterClasses[filterClass] = typeof(TFilter);
         }
@@ -101,5 +114,24 @@ namespace EasyData.Services
             ModelTuner = tuner;
         }
 
+        /// <summary>
+        /// Entity meta builders.
+        /// </summary>
+        public List<IEntityMetaBuilder> EntityMetaBuilders => entityMetaBuilders;
+
+        private List<IEntityMetaBuilder> entityMetaBuilders = new List<IEntityMetaBuilder>();
+
+        /// <summary>
+        /// Set enetity meta options.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type.</typeparam>
+        /// <returns>Entity meta builder instance.</returns>
+        public EntityMetaBuilder<TEntity> Entity<TEntity>()
+        {
+            var entityBuilder = new EntityMetaBuilder<TEntity>();
+
+            entityMetaBuilders.Add(entityBuilder);
+            return entityBuilder;
+        }
     }
 }
