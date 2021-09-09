@@ -64,7 +64,6 @@ export interface AggregationData {
  * Group, aggregate columns, grand totals, etc.
  */
 export class AggregationSettings {
-
     public readonly COUNT_FIELD_NAME: string;
      
     private aggregates: Array<AggregateInfo> = []
