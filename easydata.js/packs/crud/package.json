@@ -21,8 +21,10 @@
     },
     "keywords": [
         "database",
-        "data filter",
-        "crud"
+        "crud",  
+        "paging",
+        "data table",
+        "data filter"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",

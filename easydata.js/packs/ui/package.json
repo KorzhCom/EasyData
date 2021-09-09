@@ -20,14 +20,15 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
+	"database",
+	"crud",
+	"paging",
+        "data filter",
         "data grid",
-        "data wdigets",
         "data dialogs",
         "data forms",
-        "value editors",
         "search box",
-        "calendar widget",
-        "data filtering"
+        "calendar widget"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",

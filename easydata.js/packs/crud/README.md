@@ -9,15 +9,16 @@ You simply describe your data: entities (tables), attributes (fields), relations
 
 ## What is @easydata/crud package?
 
-This package is a part EasyData.JS library. It contains UI widgets and views for implementing UI for CRUD (create/retrieve/update/delete) operations over your database.
+This package is a part EasyData.JS library. 
+It contains UI widgets and views for implementing UI for CRUD (create/read/update/delete) operations over your database.
 
 ## How to start?
 
-As it was said before, @easydata NPM packages make up the client-side part of EasyData. It means you need something on your server-side to utilize EasyData in your project. The possible options are:
+@easydata NPM packages make up the client-side part of EasyData. It means that you need something on your server-side to utilize EasyData in your project. The possible options are:
 
 ### 1. ASP.NET Core projects
 
-To start with ASP.NET Core backend you can simply visit [EasyData repository on GitHub](https://github.com/KorzhCom/EasyData/), try one of the samples included in that repository. After that, you can follow [the instructions](https://github.com/KorzhCom/EasyData/blob/master/README.md) published there to use EasyData with your own project.
+To start with ASP.NET Core backend you can simply clone [EasyData repository on GitHub](https://github.com/KorzhCom/EasyData/) and try one of the sample projects included in that repository. After that, you can follow [the instruction](https://github.com/KorzhCom/EasyData/blob/master/README.md) published there to apply EasyData to your own project.
 
 ### 2. Any other backend platform.
 
@@ -27,7 +28,9 @@ Please [submit an issue on GitHub](https://github.com/KorzhCom/EasyData/issues) 
 
 ## Documentation
 
-We've just made the first release of the library, so there is only a [README document on GitHub](https://github.com/KorzhCom/EasyData/blob/master/README.md) with some basic instructions and some [sample projects](https://github.com/KorzhCom/EasyData/tree/master/samples) you can try to run and to play with.
+ * [GitHub repo README] (https://github.com/KorzhCom/EasyData/blob/master/README.md) 
+ * [An overview and some basic instructions](https://korzh.com/blog/crud-asp-net-core-with-easydata)
+ * [Sample projects](https://github.com/KorzhCom/EasyData/tree/master/samples) (for ASP.NET Core only for now)
 
 ## License
 This package (together with all other packages in @easydata) is distributed under MIT license.
