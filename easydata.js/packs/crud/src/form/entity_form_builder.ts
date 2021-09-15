@@ -25,7 +25,6 @@ export type FormBuildParams = {
 };
 
 export class EntityEditFormBuilder {
-
     private form: EntityEditForm;
 
     constructor(private context: DataContext, private params?: FormBuildParams) {
@@ -203,7 +202,6 @@ export class EntityEditFormBuilder {
     }
 
     private setupDateTimeField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
-
         const horizClass = isIE
             ? 'kfrm-fields-ie is-horizontal'
             : 'kfrm-fields is-horizontal';
@@ -488,8 +486,7 @@ export class EntityEditFormBuilder {
 
         this.form['setHtmlInt'](formHtml);
 
-        for (const attr of this.context.getActiveEntity().attributes) {
-           
+        for (const attr of this.context.getActiveEntity().attributes) {           
             if (this.params.isEditForm) {
                 if (!attr.showOnEdit)
                     continue;

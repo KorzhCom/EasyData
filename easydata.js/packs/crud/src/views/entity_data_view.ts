@@ -128,7 +128,6 @@ export class EntityDataView {
     }
 
     private addClickHandler() {
-
         const activeEntity = this.context.getActiveEntity();
         const form = new EntityEditFormBuilder(this.context)
             .onSubmit(() => dlg.submit())
@@ -235,7 +234,7 @@ export class EntityDataView {
 
     private processError(error) {
         this.dlg.open({
-            title: 'Ooops, smth went wrong',
+            title: 'Ooops, something went wrong',
             body: error.message,
             closable: true,
             cancelable: false
@@ -248,5 +247,4 @@ export class EntityDataView {
                 this.grid.refresh();
             });
     }
-
 }
