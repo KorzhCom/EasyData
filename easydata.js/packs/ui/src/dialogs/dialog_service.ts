@@ -8,6 +8,8 @@ export interface DialogOptions {
     width?: number | string;
     height?: number | string;
     arrangeParents?: boolean;
+    submitButtonText?: string;
+    cancelButtonText?: string;
     beforeOpen?: () => void;
     onSubmit?: () => boolean | void;
     onCancel?: () => void;
