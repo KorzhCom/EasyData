@@ -161,7 +161,7 @@ namespace EasyData.EntityFrameworkCore
             INavigation navigation, ref int attrCounter)
         {
             // do not process collections for now
-#if NET5_0 ||  NET6_0
+#if NET
             if (navigation.IsCollection)
                 return;
 #else
