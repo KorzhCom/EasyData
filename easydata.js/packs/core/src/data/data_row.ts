@@ -1,7 +1,6 @@
 import { DataColumn, DataColumnList } from "./data_column";
 
 export class DataRow {
-
     constructor(
         private columns: DataColumnList, 
         private values: any[]) {}
@@ -15,7 +14,6 @@ export class DataRow {
     }
 
     public getValue(colIdOrIndex: number | string): any {
-
         let index: number;
         if (typeof colIdOrIndex === "string") {
             index = this.columns.getIndex(colIdOrIndex);
@@ -34,7 +32,6 @@ export class DataRow {
     }
 
     public setValue(colIdOrIndex: number | string, value: any): any {
-
         let index: number;
         if (typeof colIdOrIndex === "string") {
             index = this.columns.getIndex(colIdOrIndex);
@@ -50,6 +47,5 @@ export class DataRow {
             throw new RangeError("Out of range: " + index);
 
         this.values[index] = value;
-    }
-    
+    }    
 }
