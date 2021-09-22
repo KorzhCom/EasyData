@@ -490,7 +490,6 @@ export class EasyGrid {
                     return rows.length;
                 })
                 .catch(error => { console.error(error); return 0 });
-
         }
 
         this.bodyViewportDiv.addEventListener('scroll', ev => {
