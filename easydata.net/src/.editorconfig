@@ -1,0 +1,4 @@
+
+# Style for C# code
+[*.cs]
+csharp_new_line_before_open_brace = types,methods,indexers,events,anonymous_methods,anonymous_types,object_collection_array_initalizers,local_functions
