@@ -214,7 +214,6 @@ namespace EasyData
             DataType.Word,
             DataType.Int32,
             DataType.Int64,
-            DataType.Bool,
             DataType.Autoinc
         });
 
