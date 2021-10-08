@@ -507,8 +507,11 @@ namespace EasyData
         /// </exception>
         protected override void InsertItem(int index, MetaEntity item)
         {
-            if (item == this._parentEntity)
+            if (item == _parentEntity)
                 throw new ArgumentException("Can't add an entity to itself");
+            if (item.Parent != null && item.Parent != _parentEntity) {
+                item.Parent.SubEntities.Remove(item);
+            }
             base.InsertItem(index, item);
             OnEntityInsertion(item, index);
         }

@@ -95,17 +95,19 @@ namespace EasyData.Export
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add(sheetName);
 
-            var startLetter = 'B';
-            var startNum = 2;
-            var cellNum = startNum;
-     
+            var startColNum = 2;
+            var startColId = 'B';
+
+            var cellNum = startColNum;
+
+            var xlColID = GetExcelColumnId(startColNum);
             if (mappedSettings.ShowDatasetInfo) {
                 if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
-                    ws.Cell($"{startLetter}{cellNum}").Value = mappedSettings.Title;
+                    ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Title;
                     cellNum++;
                 }
                 if (!string.IsNullOrWhiteSpace(mappedSettings.Description)) {
-                    ws.Cell($"{startLetter}{cellNum}").Value = mappedSettings.Description;
+                    ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Description;
                     cellNum++;
                 }
 
@@ -115,26 +117,26 @@ namespace EasyData.Export
 
             // filling cols
             if (settings.ShowColumnNames) {
-                var colCellLetter = startLetter;
+                var colNum = 2;
                 for (int i = 0; i < data.Cols.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
 
+                    xlColID = GetExcelColumnId(colNum);
                     var colName = data.Cols[i].Label;
-                    ws.Cell($"{colCellLetter}{cellNum}").Value = colName;
-                    colCellLetter++;
+                    ws.Cell($"{xlColID}{cellNum}").Value = colName;
+                    colNum++;
                 }
                 cellNum++;
             }
 
 
             var endHeaderNum = cellNum;
-            var endCellLetter = startLetter;
+            var endColId = GetExcelColumnId(data.Cols.Count - 1 + startColNum);
 
             Task WriteRowAsync(EasyDataRow row, bool isExtraRow = false, 
                 Dictionary<string, object> extraData = null, CancellationToken cancellationToken = default)
             {
-                var rowCellLetter = startLetter;
                 for (int i = 0; i < row.Count; i++) {
                     if (ignoredCols.Contains(i))
                         continue;
@@ -144,7 +146,9 @@ namespace EasyData.Export
                     var dfmt = column.DisplayFormat;
                     var groupFooterTemplate = data.Cols[i].GroupFooterColumnTemplate;
 
-                    var cell = ws.Cell($"{rowCellLetter}{cellNum}");
+                    xlColID = GetExcelColumnId(i + startColNum);
+
+                    var cell = ws.Cell($"{xlColID}{cellNum}");
 
                     object value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
@@ -182,11 +186,7 @@ namespace EasyData.Export
 
                     if (isExtraRow)
                         cell.Style.Font.Bold = true;
-                    
-                    rowCellLetter++;
                 }
-
-                endCellLetter = --rowCellLetter;
 
                 cellNum++;
 
@@ -213,7 +213,7 @@ namespace EasyData.Export
             cellNum--;
 
             // Setup styles
-            var rngTable = ws.Range($"{startLetter}{startNum}:{endCellLetter}{cellNum}");
+            var rngTable = ws.Range($"{startColId}{startColNum}:{endColId}{cellNum}");
             var rowNum = 1;
             if (mappedSettings.ShowDatasetInfo) {
                 if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
@@ -233,7 +233,7 @@ namespace EasyData.Export
             }
 
             if (settings.ShowColumnNames) {
-                var rngHeaders = rngTable.Range($"{startLetter}{rowNum + 1}:{endCellLetter}{rowNum + 1}"); // The address is relative to rngTable (NOT the worksheet)
+                var rngHeaders = rngTable.Range($"{startColId}{rowNum + 1}:{endColId}{rowNum + 1}"); // The address is relative to rngTable (NOT the worksheet)
                 rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 rngHeaders.Style.Font.Bold = true;
                 rngHeaders.Style.Fill.BackgroundColor = XLColor.Aqua;
@@ -241,7 +241,7 @@ namespace EasyData.Export
             rngTable.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
             rngTable.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
-            ws.Columns(2, 2 + (int)(endCellLetter - startLetter)).AdjustToContents();
+            ws.Columns(2, 2 + data.Cols.Count - 1).AdjustToContents();
 
             using (MemoryStream memoryStream = new MemoryStream()) {
                 wb.SaveAs(memoryStream);
@@ -249,6 +249,22 @@ namespace EasyData.Export
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
+        }
+
+
+        private static string GetExcelColumnId(int num)
+        {
+            var shift1 = (num - 1) / 26;
+            var shift2 = (num - 1) % 26;
+
+            if (shift1 == 0) {
+                return ((char)('A' + shift2)).ToString();
+            }
+            else if (shift1 == 1) {
+                return ((char)('A' + shift1 - 1)).ToString() + (char)('A' + shift2);
+            }
+            else
+                throw new InvalidOperationException($"Can't get ID for {num}'s column");
         }
 
         private Dictionary<string, IFormatProvider> GetPredefinedFormatters(IReadOnlyList<EasyDataCol> cols, IDataExportSettings settings)
