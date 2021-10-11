@@ -6,6 +6,10 @@ using System.Text;
 
 namespace EasyData.Services
 {
+    /// <summary>
+    /// Build entity meta information.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type.</typeparam>
     public class EntityMetaBuilder<TEntity> : IEntityMetaBuilder
     {
         /// <summary>
@@ -80,7 +84,7 @@ namespace EasyData.Services
         /// </summary>
         /// <param name="propertySelector">Property expression.</param>
         /// <returns>Property meta builder instance.</returns>
-        public EntityPropertyMetaBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
+        public EntityPropertyMetaBuilder Property(Expression<Func<TEntity, object>> propertySelector)
         {
             PropertyInfo property;
             if (propertySelector.Body is MemberExpression) {

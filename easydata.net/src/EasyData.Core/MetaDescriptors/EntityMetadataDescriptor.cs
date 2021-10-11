@@ -4,8 +4,14 @@ using System.Text;
 
 namespace EasyData.MetaDescriptors
 {
+    /// <summary>
+    /// Contains metadata information about entity.
+    /// </summary>
     public class EntityMetadataDescriptor
     {
+        /// <summary>
+        /// Set of entity properties metadata.
+        /// </summary>
         public HashSet<EntityPropertyMetadataDescriptor> MetadataProperties { get; private set; } = new HashSet<EntityPropertyMetadataDescriptor>(new PropertyComparer());
 
         /// <summary>
@@ -33,12 +39,14 @@ namespace EasyData.MetaDescriptors
         /// </summary>
         public Type ClrType { get; set; }
 
+        /// <summary>
+        /// Compare entity properties metadata.
+        /// </summary>
         private class PropertyComparer : IEqualityComparer<EntityPropertyMetadataDescriptor>
         {
             public bool Equals(EntityPropertyMetadataDescriptor x, EntityPropertyMetadataDescriptor y)
             {
-                if (x == null || y == null)
-                {
+                if (x == null || y == null) {
                     return false;
                 }
 

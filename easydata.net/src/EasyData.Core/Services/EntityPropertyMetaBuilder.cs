@@ -6,6 +6,9 @@ using System.Text;
 
 namespace EasyData.Services
 {
+    /// <summary>
+    /// Build entity property meta information.
+    /// </summary>
     public class EntityPropertyMetaBuilder
     {
         /// <summary>

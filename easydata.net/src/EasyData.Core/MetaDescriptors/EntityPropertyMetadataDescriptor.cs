@@ -6,7 +6,7 @@ using System.Text;
 namespace EasyData.MetaDescriptors
 {
     /// <summary>
-    /// Contains metadata information about a property in an entity.
+    /// Contains metadata information about property in an entity.
     /// </summary>
     public class EntityPropertyMetadataDescriptor
     {
