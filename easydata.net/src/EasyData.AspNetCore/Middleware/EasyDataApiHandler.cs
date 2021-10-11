@@ -72,7 +72,7 @@ namespace EasyData.AspNetCore
         /// <param name="model">The data model.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task WriteGetModelResponseAsync(JsonWriter jsonWriter, MetaData model, CancellationToken ct)
+        protected virtual async Task WriteGetModelResponseAsync(JsonWriter jsonWriter, Metadata model, CancellationToken ct)
         {
             await jsonWriter.WritePropertyNameAsync("model", ct);
             await model.WriteToJsonAsync(jsonWriter, MetaDataReadWriteOptions.ClientSideContent, ct);

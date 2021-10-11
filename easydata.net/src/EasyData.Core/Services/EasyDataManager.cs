@@ -37,8 +37,8 @@ namespace EasyData.Services
 
         protected readonly EasyDataOptions Options;
 
-        protected ConcurrentDictionary<string, MetaData> MetadataSchemas { get; private set; } =
-            new ConcurrentDictionary<string, MetaData>();
+        protected ConcurrentDictionary<string, Metadata> MetadataSchemas { get; private set; } =
+            new ConcurrentDictionary<string, Metadata>();
 
         /// <summary>
         /// Default Entities metadata.
@@ -51,7 +51,7 @@ namespace EasyData.Services
             Options = options;
         }
 
-        public async Task<MetaData> GetModelAsync(string modelId, CancellationToken ct = default)
+        public async Task<Metadata> GetModelAsync(string modelId, CancellationToken ct = default)
         {
             if (MetadataSchemas.TryGetValue(modelId, out var model)) {
                 return model;
@@ -75,10 +75,10 @@ namespace EasyData.Services
         /// <param name="modelId">Id of the model.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Metadata schema.</returns>
-        protected async Task<MetaData> InitializeMetadataSchemaAsync(
+        protected async Task<Metadata> InitializeMetadataSchemaAsync(
             string modelId, CancellationToken ct = default)
         {
-            var model = new MetaData()
+            var model = new Metadata()
             {
                 Id = modelId
             };
@@ -101,11 +101,11 @@ namespace EasyData.Services
         /// <summary>
         /// Load metadata with properties.
         /// </summary>
-        /// <param name="metaData">Metadata object.</param>
+        /// <param name="metadata">Metadata object.</param>
         /// <param name="ct">Cancellation token.</param>
-        public virtual Task LoadModelAsync(MetaData metaData, CancellationToken ct = default)
+        public virtual Task LoadModelAsync(Metadata metadata, CancellationToken ct = default)
         {
-            Options.ModelTuner?.Invoke(metaData);
+            Options.ModelTuner?.Invoke(metadata);
             return Task.CompletedTask;
         }
 
@@ -155,11 +155,11 @@ namespace EasyData.Services
         /// <summary>
         /// Update Model meta data with the properties from options and meta descriptors.
         /// </summary>
-        /// <param name="metaData">Metadata object.</param>
-        private void UpdateModelMetaWithCustomMeta(MetaData metaData)
+        /// <param name="metadata">Metadata object.</param>
+        private void UpdateModelMetaWithCustomMeta(Metadata metadata)
         {
             foreach (var entityDescriptor in EntityMetadataDescriptors) {
-                var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(
+                var entity = metadata.EntityRoot.SubEntities.FirstOrDefault(
                     e => entityDescriptor.ClrType == e.ClrType);
 
                 if (entity == null) {
@@ -169,7 +169,7 @@ namespace EasyData.Services
 
                 // Remove from list if the entity is disabled in descriptor
                 if (entityDescriptor.IsEnabled == false) {
-                    metaData.EntityRoot.SubEntities.Remove(entity);
+                    metadata.EntityRoot.SubEntities.Remove(entity);
                     continue;
                 }
 

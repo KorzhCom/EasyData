@@ -9,13 +9,13 @@ using System.Text;
 
 namespace EasyData.EntityFrameworkCore
 {
-    public class MetaDataLoaderEF : DbContextMetaDataLoader
+    public class MetadataLoaderEF : DbContextMetaDataLoader
     {
         protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities = new Dictionary<IEntityType, MetaEntity>();
 
-        protected readonly MetaData Model;
+        protected readonly Metadata Model;
 
-        public MetaDataLoaderEF(DbContext context, MetaData model, DbContextMetaDataLoaderOptions options) : base(context, options)
+        public MetadataLoaderEF(DbContext context, Metadata model, DbContextMetaDataLoaderOptions options) : base(context, options)
         {
             Model = model;
         }

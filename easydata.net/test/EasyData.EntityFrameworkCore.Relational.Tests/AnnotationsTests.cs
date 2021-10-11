@@ -15,7 +15,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public void MetaEnityAttributeTest()
         {
             var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
+            var meta = new Metadata();
 
             meta.LoadFromDbContext(dbContext);
 
@@ -30,7 +30,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public void MetaEntityAttrAttributeTest()
         {
             var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
+            var meta = new Metadata();
 
             meta.LoadFromDbContext(dbContext);
 

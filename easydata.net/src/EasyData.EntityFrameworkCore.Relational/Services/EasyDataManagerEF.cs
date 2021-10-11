@@ -27,12 +27,12 @@ namespace EasyData.Services
                 ?? throw new ArgumentNullException($"DbContext is not registered in services: {typeof(TDbContext)}");
         }
 
-        public override Task LoadModelAsync(MetaData metaData, CancellationToken ct = default)
+        public override Task LoadModelAsync(Metadata metadata, CancellationToken ct = default)
         {
             var loaderOptions = new DbContextMetaDataLoaderOptions();
             Options.MetaDataLoaderOptionsBuilder?.Invoke(loaderOptions);
-            metaData.LoadFromDbContext(DbContext, loaderOptions);
-            return base.LoadModelAsync(metaData, ct);
+            metadata.LoadFromDbContext(DbContext, loaderOptions);
+            return base.LoadModelAsync(metadata, ct);
         }
 
         public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId,
@@ -224,7 +224,7 @@ namespace EasyData.Services
 
         private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext,
             Type entityType,
-            MetaData metaData,
+            Metadata metadata,
             IEnumerable<EasyFilter> filters,
             IEnumerable<EasySorter> sorters,
             bool isLookup, int? offset,
@@ -235,13 +235,13 @@ namespace EasyData.Services
                        .Single(m => m.Name == "ListAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, metaData, filters, sorters, isLookup, offset, fetch, ct });
+                       .Invoke(this, new object[] { dbContext, metadata, filters, sorters, isLookup, offset, fetch, ct });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
         }
 
-        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, MetaData metaData, IEnumerable<EasyFilter> filters, bool isLookup,
+        private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, Metadata metadata, IEnumerable<EasyFilter> filters, bool isLookup,
             CancellationToken ct)
         {
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
@@ -249,7 +249,7 @@ namespace EasyData.Services
                        .Single(m => m.Name == "CountAllEntitiesAsync"
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, metaData, filters, isLookup, ct });
+                       .Invoke(this, new object[] { dbContext, metadata, filters, isLookup, ct });
 
             await task.ConfigureAwait(false);
             return (long)((dynamic)task).Result;
@@ -261,14 +261,14 @@ namespace EasyData.Services
         }
 
         private async Task<List<object>> ListAllEntitiesAsync<T>(DbContext dbContext,
-            MetaData metaData,
+            Metadata metadata,
             IEnumerable<EasyFilter> filters,
             IEnumerable<EasySorter> sorters,
             bool isLookup,
             int? offset, int? fetch, CancellationToken ct) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
-            var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
+            var entity = metadata.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
             if (filters != null) {
                 foreach (var filter in filters) {
                     query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
@@ -302,10 +302,10 @@ namespace EasyData.Services
             return await query.Cast<object>().ToListAsync(ct);
         }
 
-        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, MetaData metaData, IEnumerable<EasyFilter> filters, bool isLookup, CancellationToken ct) where T : class
+        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, Metadata metadata, IEnumerable<EasyFilter> filters, bool isLookup, CancellationToken ct) where T : class
         {
             var query = dbContext.Set<T>().AsQueryable();
-            var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
+            var entity = metadata.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
             foreach (var filter in filters) {
                 query = (IQueryable<T>)filter.Apply(entity, isLookup, query);
             }
