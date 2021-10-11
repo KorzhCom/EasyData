@@ -25,11 +25,9 @@ interface ChunkMap {
 }
 
 export class EasyDataTable {
-
     public id: string;
 
     private _chunkSize: number = 1000;
-
 
     constructor(options?: EasyDataTableOptions) {
         options = options || {};
