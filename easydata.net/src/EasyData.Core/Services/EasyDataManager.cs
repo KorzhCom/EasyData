@@ -95,6 +95,7 @@ namespace EasyData.Services
 
             // Update loaded model metadata with entity descriptors and options
             UpdateModelMetaWithCustomMeta(model);
+            model.Process();
             return model;
         }
 
@@ -224,12 +225,6 @@ namespace EasyData.Services
             metaToUpdate.ShowInLookup = propertyDescriptor.ShowInLookup ?? metaToUpdate.ShowInLookup;
             metaToUpdate.Sorting = propertyDescriptor.Sorting ?? metaToUpdate.Sorting;
             metaToUpdate.DisplayFormat = propertyDescriptor.DisplayFormat ?? metaToUpdate.DisplayFormat;
-
-            // HIDE blob fields by default
-            if (metaToUpdate.DataType == DataType.Blob) {
-                return;
-            }
-
             metaToUpdate.ShowOnView = propertyDescriptor.ShowOnView ?? metaToUpdate.ShowOnView;
             metaToUpdate.ShowOnEdit = propertyDescriptor.ShowOnEdit ?? metaToUpdate.ShowOnEdit;
             metaToUpdate.ShowOnCreate = propertyDescriptor.ShowOnCreate ?? metaToUpdate.ShowOnCreate;

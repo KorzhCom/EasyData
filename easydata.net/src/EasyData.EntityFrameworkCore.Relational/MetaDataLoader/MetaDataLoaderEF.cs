@@ -149,14 +149,11 @@ namespace EasyData.EntityFrameworkCore
             var valueEditorId = $"VE_{entityName}_{propertyMeta.Name}";
 
             if (propertyMeta.ClrType.IsEnum) {
-                SetConstListValueEditor(property, valueEditorId);
+                SetConstListValueEditor(property, valueEditorId, propertyMeta);
             }
 
             if (property.DataType == DataType.Blob) {
                 SetFileValueEditor(property, valueEditorId);
-                property.ShowOnCreate = false;
-                property.ShowOnEdit = false;
-                property.ShowOnView = false;
             }
 
             // Update caption if display attribute is set
@@ -173,17 +170,18 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         /// <param name="property">Meta entity attribute instance.</param>
         /// <param name="editorId">Id of the editor.</param>
-        protected static void SetConstListValueEditor(MetaEntityAttr property, string editorId)
+        /// <param name="propertyMeta">Property metadata.</param>
+        protected static void SetConstListValueEditor(MetaEntityAttr property, string editorId, IProperty propertyMeta)
         {
             var editor = new ConstListValueEditor(editorId);
-            var fields = property.PropInfo.PropertyType.GetFields();
+            var fields = propertyMeta.ClrType.GetFields();
 
             foreach (var field in fields.Where(f => !f.Name.Equals("value__"))) {
                 editor.Values.Add(field.GetRawConstantValue().ToString(), field.Name);
             }
 
             property.DefaultEditor = editor;
-            property.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.PropInfo.PropertyType);
+            property.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(propertyMeta.ClrType);
         }
 
         /// <summary>
