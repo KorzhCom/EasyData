@@ -115,7 +115,7 @@ namespace EasyData.Export
             return result;
         }
 
-        private static Regex _forbidSymbols = new Regex(string.Format("[{0}]", Regex.Escape(@":\/?*[]""")));
+        private static Regex _forbidSymbols = new Regex(@"[\[\]\\\:\?\*\""/]");
 
         public static string ToExcelSheetName(string title)
         {
