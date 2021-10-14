@@ -13,13 +13,11 @@ import * as crudUtils from '../utils/utils';
 import { DateTimeValidator } from '../validators/datetime_validator';
 
 export class EntityEditForm {
-
     private errorsDiv: HTMLElement;
 
     private html: HTMLElement;
 
-    constructor(private context: DataContext){
-        
+    constructor(private context: DataContext) {        
     }
 
     private validators: Validator[] = [ new DateTimeValidator() ];
@@ -34,7 +32,6 @@ export class EntityEditForm {
     }
 
     public validate(): boolean {
-
         this.clearErrors();
 
         const inputs = Array.from(this.html.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select'));
@@ -114,7 +111,6 @@ export class EntityEditForm {
     }
 
     private mapValue(type: DataType, value: string) {
-
         if (dataUtils.getDateDataTypes().indexOf(type) >= 0) {
             if (type !== DataType.Time && value && value.length) {
                 const editFormat =  crudUtils.getEditDateTimeFormat(type);
@@ -160,6 +156,5 @@ export class EntityEditForm {
         }
 
         return result;
-    }
-  
+    }  
 }

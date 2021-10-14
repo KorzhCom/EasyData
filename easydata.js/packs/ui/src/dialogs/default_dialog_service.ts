@@ -7,7 +7,6 @@ import { domel } from '../utils/dom_elem_builder';
 const cssPrefix = "kdlg";
 
 export class DefaultDialogService implements DialogService {
-
     private static openDialogs: Dialog[] = [];
 
     public openConfirm(title?: string, content?: string): Promise<boolean>;
@@ -158,11 +157,9 @@ export class DefaultDialogService implements DialogService {
             dialog.close();
         }
     }
-
 }
 
 export class DefaultDialog implements Dialog {
-
     protected slot: HTMLElement;
     protected windowElement: HTMLElement;
     protected headerElement: HTMLElement;
@@ -171,7 +168,6 @@ export class DefaultDialog implements Dialog {
     protected alertElement: HTMLElement;
 
     constructor(private options: DialogOptions) {
-
         const id = utils.generateId('dlg');
         this.slot = 
             domel('div', document.body)
@@ -228,7 +224,7 @@ export class DefaultDialog implements Dialog {
 
                         b.addChild('button', b => b
                             .addClass('kfrm-button', 'is-info')
-                            .addText(i18n.getText('ButtonOK'))
+                            .addText(options.submitButtonText || i18n.getText('ButtonOK'))
                             .on('click', (e) => {
                                 this.submitHandler();
                             })
@@ -238,7 +234,7 @@ export class DefaultDialog implements Dialog {
                         if (options.cancelable !== false)
                             b.addChild('button', builder => builder
                                 .addClass('kfrm-button')
-                                .addText(i18n.getText('ButtonCancel'))
+                                .addText(options.cancelButtonText || i18n.getText('ButtonCancel'))
                                 .on('click', (e) => {
                                     this.cancelHandler();
                                 })

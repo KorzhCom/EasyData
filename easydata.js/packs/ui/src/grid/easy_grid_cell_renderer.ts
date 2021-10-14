@@ -55,7 +55,6 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
     if (column.align == GridColumnAlign.NONE) {
         builder.addClass(`${cssPrefix}-cell-value-align-right`);
     }
-
 }
 
 const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
