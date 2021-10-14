@@ -2,46 +2,63 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
+using EasyData.MetaDescriptors;
 using Xunit;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
     public class AnnotationsTests
     {
+        private readonly List<EntityMetadataDescriptor> _entityMetadataDescriptors;
 
-        [Fact]
-        public void MetaEnityAttributeTest()
+        /// <summary>
+        /// Get db context and entity meta attributes.
+        /// </summary>
+        public AnnotationsTests()
         {
-            var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
-
-            meta.LoadFromDbContext(dbContext);
-
-            meta.EntityRoot.SubEntities.Should().HaveCount(1);
-
-            var entity = meta.EntityRoot.SubEntities.First();
-            entity.Name.Should().Be("Test");
-            entity.Description.Should().Be("Test Description");
+            DbContext dbContext = AttributeTestDbContext.Create();
+            var loader = new DefaultMetaDataLoader(dbContext);
+            _entityMetadataDescriptors = loader.GetDefaultMetaAttributes().ToList();
         }
 
+        /// <summary>
+        /// Test getting entity meta attributes.
+        /// </summary>
+        [Fact]
+        public void MetaEntityAttributeTest()
+        {
+            _entityMetadataDescriptors.Should().HaveCount(2);
+
+            var firstDescriptor = _entityMetadataDescriptors[0];
+            var secondDescriptor = _entityMetadataDescriptors[1];
+
+            firstDescriptor.IsEnabled.Should().BeFalse();
+
+            secondDescriptor.DisplayName.Should().Be("Test");
+            secondDescriptor.Description.Should().Be("Test Description");
+        }
+
+        /// <summary>
+        /// Test getting entity property meta attributes.
+        /// </summary>
         [Fact]
         public void MetaEntityAttrAttributeTest()
         {
-            var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
+            var firstDescriptor = _entityMetadataDescriptors[0];
+            var secondDescriptor = _entityMetadataDescriptors[1];
 
-            meta.LoadFromDbContext(dbContext);
+            firstDescriptor.MetadataProperties.Should().HaveCount(4);
+            secondDescriptor.MetadataProperties.Should().HaveCount(11);
 
-            var entity = meta.EntityRoot.SubEntities.First();
-            entity.Attributes.Should().HaveCount(10);
+            var attr = secondDescriptor.MetadataProperties
+                .FirstOrDefault(p => p.PropertyInfo.Name == "Region");
 
-            var attr = entity.FindAttributeById("CustomerAttributeTest.Region");
             attr.ShowOnView.Should().BeFalse();
             attr.ShowInLookup.Should().BeTrue();
             attr.IsEditable.Should().BeFalse();
-            attr.Caption.Should().Be("Test");
+            attr.DisplayName.Should().Be("Test");
         }
     }
 }

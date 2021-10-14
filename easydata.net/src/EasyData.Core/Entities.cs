@@ -24,13 +24,13 @@ namespace EasyData
             SubEntities = CreateEntityStore();
         }
 
-        protected MetaData _model { get; set; }
+        protected Metadata _model { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Korzh.EasyData.MetaEntity"/> class.
         /// </summary>
         /// <param name="model">The mofrl.</param>
-        protected internal MetaEntity(MetaData model)
+        protected internal MetaEntity(Metadata model)
         {
             _model = model;
             Attributes = CreateEntityAttrStore();
@@ -141,7 +141,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual MetaData Model => _model ?? Parent?.Model;
+        public virtual Metadata Model => _model ?? Parent?.Model;
 
         /// <summary>
         /// Called when the entity is inserted into model.
@@ -493,7 +493,7 @@ namespace EasyData
 
         /// <summary>Gets the model.</summary>
         /// <value>The model.</value>
-        protected MetaData Model => _parentEntity.Model;
+        protected Metadata Model => _parentEntity.Model;
 
         /// <summary>
         /// Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"/> at the specified index.

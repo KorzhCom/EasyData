@@ -257,7 +257,7 @@ namespace EasyData
         /// Check current editor in model and adds it into Editors list if necessary.
         /// </summary>
         /// <param name="model">The model.</param>
-        public void CheckInModel(MetaData model)
+        public void CheckInModel(Metadata model)
         {
             if (model.Editors.IndexById(this.Id) < 0) {
                 model.Editors.Add(this);
@@ -267,7 +267,7 @@ namespace EasyData
         /// <summary>
         /// Gets the model which this editor belongs to
         /// </summary>
-        public MetaData Model { get; internal set; }
+        public Metadata Model { get; internal set; }
 
         #region JSON serialization
 
@@ -527,7 +527,7 @@ namespace EasyData
         /// Initializes a new instance of the <see cref="ValueEditorStore"/> class.
         /// </summary>
         /// <param name="model">The model.</param>
-        public ValueEditorStore(MetaData model)
+        public ValueEditorStore(Metadata model)
         {
             Model = model;
         }
@@ -536,7 +536,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public MetaData Model { get; private set; }
+        public Metadata Model { get; private set; }
 
         /// <summary>
         /// Inserts an element into the <see cref="T:System.Collections.ObjectModel.Collection`1"></see> at the specified index.

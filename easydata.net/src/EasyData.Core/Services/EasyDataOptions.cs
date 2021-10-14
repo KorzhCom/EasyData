@@ -9,7 +9,7 @@ namespace EasyData.Services
     {
         public string Endpoint { get; set; } = "/api/easydata";
 
-        public EasyDataManagerResolver ManagerResolver {get; private set;}
+        public EasyDataManagerResolver ManagerResolver { get; private set; }
 
         /// <summary>
         /// Defines the function which creates and returns an instance of EasyQuery manager. 
@@ -37,7 +37,7 @@ namespace EasyData.Services
         /// <param name="services">The DI services.</param>
         public EasyDataOptions(IServiceProvider services)
         {
-           
+
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace EasyData.Services
         /// <param name="filterClass">The filter class.</param>
         /// <param name="model">The model</param>
         /// <returns></returns>
-        public EasyFilter ResolveFilter(string filterClass, MetaData model)
+        public EasyFilter ResolveFilter(string filterClass, Metadata model)
         {
             if (!_filterClasses.TryGetValue(filterClass, out var filterType))
                 return null;
@@ -81,7 +81,7 @@ namespace EasyData.Services
         /// </summary>
         /// <typeparam name="TFilter">The filter type</typeparam>
         /// <param name="filterClass">The filter class name</param>
-        public void RegisterFilter<TFilter>(string filterClass) where TFilter: EasyFilter
+        public void RegisterFilter<TFilter>(string filterClass) where TFilter : EasyFilter
         {
             _filterClasses[filterClass] = typeof(TFilter);
         }
@@ -90,16 +90,35 @@ namespace EasyData.Services
         /// Gets the model tuner - an action which is called after the model loading and allows to "tune" your model before sending it to the client-side.
         /// </summary>
         /// <value>The model tuner.</value>
-        public Action<MetaData> ModelTuner { get; private set; }
+        public Action<Metadata> ModelTuner { get; private set; }
 
         /// <summary>
         /// Defines the model tuner. See more about the model tuner in <see cref="ModelTuner"/> property description
         /// </summary>
         /// <param name="tuner">The model tuner.</param>
-        public void UseModelTuner(Action<MetaData> tuner)
+        public void UseModelTuner(Action<Metadata> tuner)
         {
             ModelTuner = tuner;
         }
 
+        /// <summary>
+        /// Entity meta builders.
+        /// </summary>
+        public IEnumerable<IEntityMetaBuilder> EntityMetaBuilders => entityMetaBuilders;
+
+        private List<IEntityMetaBuilder> entityMetaBuilders = new List<IEntityMetaBuilder>();
+
+        /// <summary>
+        /// Set entity meta options.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type.</typeparam>
+        /// <returns>Entity meta builder instance.</returns>
+        public EntityMetaBuilder<TEntity> Entity<TEntity>()
+        {
+            var entityBuilder = new EntityMetaBuilder<TEntity>();
+
+            entityMetaBuilders.Add(entityBuilder);
+            return entityBuilder;
+        }
     }
 }

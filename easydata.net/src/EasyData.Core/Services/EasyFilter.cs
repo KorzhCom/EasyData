@@ -7,9 +7,9 @@ namespace EasyData.Services
 {
     public abstract class EasyFilter
     {
-        protected readonly MetaData Model;
+        protected readonly Metadata Model;
 
-        public EasyFilter(MetaData model)
+        public EasyFilter(Metadata model)
         {
             Model = model;
         }
