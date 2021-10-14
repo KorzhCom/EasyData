@@ -21,6 +21,7 @@ on:
   pull_request:
     branches: 
       - master 
+      - dev 
     paths: 
       - .github/workflows/netcore-build.yml
       - easydata.net/** 
