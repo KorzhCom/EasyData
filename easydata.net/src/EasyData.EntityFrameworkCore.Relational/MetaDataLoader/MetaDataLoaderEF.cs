@@ -204,7 +204,7 @@ namespace EasyData.EntityFrameworkCore
         protected void ProcessNavigationProperty(MetaEntity entity, INavigation navigation, ref int propertyCounter)
         {
             // Do not need to process collections
-#if NET5_0
+#if NET
             if (navigation.IsCollection)
             {
                 return;
