@@ -1,6 +1,10 @@
+
 cd .\EasyDataAspNetCoreTest01 
+
+@echo ---- installing NPM packages for EasyDataAspNetCoreTest01 ----
 call npm install 
 
+@echo ---- setting symlinks to the @easydata source code ----
 cd node_modules
 mkdir @easydata
 cd @easydata
@@ -14,7 +18,11 @@ cd ..\..\..
 
 
 cd .\EasyDataAspNetCoreTest02 
+
+@echo ---- installing NPM packages for EasyDataAspNetCoreTest02 ----
 call npm install 
+
+@echo ---- setting symlinks to the @easydata source code ----
 cd node_modules
 mkdir @easydata
 cd @easydata
@@ -26,3 +34,5 @@ cd ..\..\..
 
 
 cd ..
+
+@echo ----- ALL DONE! ---- 
