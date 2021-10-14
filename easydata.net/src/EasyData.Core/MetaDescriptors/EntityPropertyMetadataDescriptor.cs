@@ -38,13 +38,11 @@ namespace EasyData.MetaDescriptors
         /// <summary>
         /// The index of the property.
         /// </summary>
-        /// <remarks>TODO: figure out the purpose of the field.</remarks>
         public int? Index { get; set; }
 
         /// <summary>
         /// Define whether property is shown in LookUp editor.
         /// </summary>
-        /// <remarks>TODO: figure out the purpose of the field.</remarks>
         public bool? ShowInLookup { get; set; }
 
         /// <summary>
@@ -65,7 +63,6 @@ namespace EasyData.MetaDescriptors
         /// <summary>
         /// The sorting order.
         /// </summary>
-        /// <remarks>TODO: figure out the purpose of the field.</remarks>
         public int? Sorting { get; set; }
 
         /// <summary>
