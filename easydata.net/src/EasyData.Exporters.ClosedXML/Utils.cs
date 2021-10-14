@@ -68,7 +68,7 @@ namespace EasyData.Export
                 else if (dfmt == "F") {
                     return BuildLongDateTimeFormat(settings.Culture, DataType.DateTime);
                 }
-                return dfmt;
+                return ConvertToExcelDateFormat(dfmt);
             }
 
             return BuildShortDateTimeFormat(settings.Culture, dataType);
