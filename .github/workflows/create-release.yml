@@ -19,6 +19,11 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
+      - name: Setup .NET 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
