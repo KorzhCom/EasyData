@@ -13,7 +13,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public void LoadFromDbContextTest()
         {
             var dbContext = TestDbContext.Create();
-            var meta = new Metadata();
+            var meta = new MetaData();
 
             meta.LoadFromDbContext(dbContext);
 

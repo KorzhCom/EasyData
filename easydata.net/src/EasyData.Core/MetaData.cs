@@ -77,7 +77,7 @@ namespace EasyData
         public static BitOptions ClientSideContent => Defaults.Without(KeepCurrent);
     }
 
-    public class Metadata
+    public class MetaData
     {
         /// <summary>
         /// Read-only constant that represent the latest format version of data model definition JSON files
@@ -102,9 +102,9 @@ namespace EasyData
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Metadata"/> class.
+        /// Initializes a new instance of the <see cref="MetaData"/> class.
         /// </summary>
-        public Metadata()
+        public MetaData()
         {
             Id = Guid.NewGuid().ToString();
 
@@ -121,10 +121,10 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Initializes the <see cref="Metadata"/> class.
+        /// Initializes the <see cref="MetaData"/> class.
         /// Registers the main value editors types.
         /// </summary>
-        static Metadata()
+        static MetaData()
         {
             ValueEditor.RegisterCreator(new BasicValueEditorsCreator());
         }
@@ -189,9 +189,9 @@ namespace EasyData
         /// Clones the model object
         /// </summary>
         /// <returns>A duplicate of original DataModel object</returns>
-        public Metadata Clone()
+        public MetaData Clone()
         {
-            var model = Activator.CreateInstance(this.GetType()) as Metadata;
+            var model = Activator.CreateInstance(this.GetType()) as MetaData;
             using (MemoryStream buffer = new MemoryStream(2000000)) {
                 SaveToJsonStream(buffer);
                 buffer.Position = 0;

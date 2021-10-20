@@ -53,7 +53,7 @@ namespace EasyData.Services
         /// <param name="filterClass">The filter class.</param>
         /// <param name="model">The model</param>
         /// <returns></returns>
-        public EasyFilter ResolveFilter(string filterClass, Metadata model)
+        public EasyFilter ResolveFilter(string filterClass, MetaData model)
         {
             if (!_filterClasses.TryGetValue(filterClass, out var filterType))
                 return null;
@@ -90,13 +90,13 @@ namespace EasyData.Services
         /// Gets the model tuner - an action which is called after the model loading and allows to "tune" your model before sending it to the client-side.
         /// </summary>
         /// <value>The model tuner.</value>
-        public Action<Metadata> ModelTuner { get; private set; }
+        public Action<MetaData> ModelTuner { get; private set; }
 
         /// <summary>
         /// Defines the model tuner. See more about the model tuner in <see cref="ModelTuner"/> property description
         /// </summary>
         /// <param name="tuner">The model tuner.</param>
-        public void UseModelTuner(Action<Metadata> tuner)
+        public void UseModelTuner(Action<MetaData> tuner)
         {
             ModelTuner = tuner;
         }

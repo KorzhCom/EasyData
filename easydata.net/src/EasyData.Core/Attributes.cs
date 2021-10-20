@@ -291,7 +291,7 @@ namespace EasyData
         /// Gets the model.
         /// </summary>
         /// <value>The model.</value>
-        public virtual Metadata Model => Entity?.Model;
+        public virtual MetaData Model => Entity?.Model;
 
         public EntityAttrKind Kind { get; internal set; }
 
@@ -776,7 +776,7 @@ namespace EasyData
 
         /// <summary>Gets the DataModel object this entity attribute belongs to</summary>
         /// <value>The model.</value>
-        public Metadata Model
+        public MetaData Model
         {
             get { return _entity != null ? _entity.Model : null; }
         }

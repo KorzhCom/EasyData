@@ -9,7 +9,7 @@ namespace EasyData.Services
     static class ModelProcessor
     {
         // Do model processing.
-        public static void Process(this Metadata model)
+        public static void Process(this MetaData model)
         {
             // Process blob attributes.
             foreach (var entity in model.EntityRoot.SubEntities) {

@@ -13,9 +13,9 @@ namespace EasyData.EntityFrameworkCore
     {
         protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities = new Dictionary<IEntityType, MetaEntity>();
 
-        protected readonly Metadata Model;
+        protected readonly MetaData Model;
 
-        public MetadataLoaderEF(DbContext context, Metadata model, DbContextMetaDataLoaderOptions options) : base(context, options)
+        public MetadataLoaderEF(DbContext context, MetaData model, DbContextMetaDataLoaderOptions options) : base(context, options)
         {
             Model = model;
         }

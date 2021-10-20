@@ -40,7 +40,7 @@ namespace EasyData.AspNetCore.Tests
             response.Content.Headers.ContentType
                     .ToString().Should().StartWith("application/json");
 
-            var model = new Metadata();
+            var model = new MetaData();
 
             var jsonReader = new JsonTextReader(new StreamReader(await response.Content.ReadAsStreamAsync()));
             var responseObj = JObject.Load(jsonReader);

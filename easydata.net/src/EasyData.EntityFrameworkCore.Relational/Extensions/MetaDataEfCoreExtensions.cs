@@ -13,7 +13,7 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         /// <param name="model">A DbModel object.</param>
         /// <param name="context">A DbContext object to load the model from.</param>
-        public static void LoadFromDbContext(this Metadata model, DbContext context)
+        public static void LoadFromDbContext(this MetaData model, DbContext context)
         {
             LoadFromDbContext(model, context, new DbContextMetaDataLoaderOptions());
         }
@@ -25,7 +25,7 @@ namespace EasyData.EntityFrameworkCore
         /// <param name="model">A DbModel object.</param>
         /// <param name="context">A DbContext object to load the model from.</param>
         /// <param name="options">Different options</param>
-        public static void LoadFromDbContext(this Metadata model, DbContext context, DbContextMetaDataLoaderOptions options)
+        public static void LoadFromDbContext(this MetaData model, DbContext context, DbContextMetaDataLoaderOptions options)
         {
             var loader = new MetadataLoaderEF(context, model, options);
             loader.LoadFromDbContext();

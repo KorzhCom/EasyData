@@ -13,7 +13,7 @@ namespace EasyData.Services
 
         private string _filterText;
 
-        public SubstringFilter(Metadata model): base(model) {}
+        public SubstringFilter(MetaData model): base(model) {}
 
         public override object Apply(MetaEntity entity, bool isLookup, object data)
         {
