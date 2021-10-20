@@ -427,12 +427,11 @@ export namespace utils {
 
    
     function safeParseInt(str: string) {
+        const res = parseInt(str);
+        if (!isNaN(res))
+            throw `"${str}" is not a valid number`;
 
-        let isnum = /^\d+$/.test(str);
-        if (!isnum)
-            throw "Is not a valid number";
-
-        return parseInt(str);
+        return res;
     }
 
     function getDaysInMonth(month, year) {
@@ -442,45 +441,60 @@ export namespace utils {
     // ------------- date/time functions -------------------
     // TO DO: improve to process all datetime cases
     export function strToDateTime(value: string, format: string): Date {
-
         if (!value || value.length == 0)
             return new Date();
 
-        const normalized      = value.replace(/[^a-zA-Z0-9_]/g, '-');
-        const normalizedFormat= format.replace(/[^a-zA-Z0-9_]/g, '-');
-        const formatItems     = normalizedFormat.split('-');
-        const dateItems       = normalized.split('-');
+        const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+        const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+        const formatItems = normalizedFormat.split('-');
+        const dateItems = normalizedValue.split('-');
     
         const monthIndex  = formatItems.indexOf("MM");
-        const dayIndex    = formatItems.indexOf("dd");
-        const yearIndex   = formatItems.indexOf("yyyy");
-        const hourIndex     = formatItems.indexOf("HH");
+        const dayIndex = formatItems.indexOf("dd");
+        const yearIndex = formatItems.indexOf("yyyy");
+        const hourIndex = formatItems.indexOf("HH");
         const minutesIndex  = formatItems.indexOf("mm");
         const secondsIndex  = formatItems.indexOf("ss");
     
         const today = new Date();
     
         try {
-            const year  = yearIndex > -1 && yearIndex < dateItems.length   ? safeParseInt(dateItems[yearIndex])   : today.getFullYear();
-            const month = monthIndex > -1 && monthIndex < dateItems.length ? safeParseInt(dateItems[monthIndex]) - 1 : today.getMonth() - 1;
+            const year  = yearIndex > -1 && yearIndex < dateItems.length   
+                ? safeParseInt(dateItems[yearIndex])   
+                : today.getFullYear();
+
+            const month = monthIndex > -1 && monthIndex < dateItems.length 
+                ? safeParseInt(dateItems[monthIndex]) - 1 
+                : today.getMonth() - 1;
+
             if (month > 11)
-                throw '';
+                throw `Wrong month number (${month + 1}) in date ${value}`;
 
-            const day = dayIndex > -1 && dayIndex < dateItems.length     ? safeParseInt(dateItems[dayIndex]) : today.getDate();
+            const day = dayIndex > -1 && dayIndex < dateItems.length     
+                ? safeParseInt(dateItems[dayIndex]) 
+                : today.getDate();
+
             if (day > getDaysInMonth(month, year)) 
-                throw '';
+                throw `Wrong day number (${day}) in date ${value}`;
         
-            const hour    = hourIndex > -1 && hourIndex < dateItems.length         ? safeParseInt(dateItems[hourIndex]) : 0;
+            const hour = hourIndex > -1 && hourIndex < dateItems.length
+                ? safeParseInt(dateItems[hourIndex]) 
+                : 0;
+
             if (hour > 23) 
-                throw '';
+                throw `Wrong hour number (${hour}) in date ${value}`;
 
-            const minute  = minutesIndex > -1 && minutesIndex < dateItems.length   ? safeParseInt(dateItems[minutesIndex]) : 0;
+            const minute  = minutesIndex > -1 && minutesIndex < dateItems.length 
+                ? safeParseInt(dateItems[minutesIndex]) 
+                : 0;
             if (minute > 59)
-                throw '';
+                throw `Wrong minute number (${minute}) in date ${value}`;
 
-            const second  = secondsIndex > -1 && secondsIndex < dateItems.length   ? safeParseInt(dateItems[secondsIndex]) : 0;
+            const second  = secondsIndex > -1 && secondsIndex < dateItems.length 
+                ? safeParseInt(dateItems[secondsIndex]) 
+                : 0;
             if (second > 59)
-                throw '';
+                throw `Wrong second number (${second}) in date ${value}`;
 
             return new Date(year,month,day,hour,minute,second);
         }
