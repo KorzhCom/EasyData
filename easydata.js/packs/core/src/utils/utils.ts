@@ -424,11 +424,10 @@ export namespace utils {
     function getNowTicks(): number {
         return (621355968e9 + (new Date()).getTime() * 1e4)
     }
-
-   
+  
     function safeParseInt(str: string) {
         const res = parseInt(str);
-        if (!isNaN(res))
+        if (isNaN(res))
             throw `"${str}" is not a valid number`;
 
         return res;
@@ -468,58 +467,62 @@ export namespace utils {
                 : today.getMonth() - 1;
 
             if (month > 11)
-                throw `Wrong month number (${month + 1}) in date ${value}`;
+                throw '';
 
             const day = dayIndex > -1 && dayIndex < dateItems.length     
                 ? safeParseInt(dateItems[dayIndex]) 
                 : today.getDate();
 
             if (day > getDaysInMonth(month, year)) 
-                throw `Wrong day number (${day}) in date ${value}`;
+                throw '';
         
             const hour = hourIndex > -1 && hourIndex < dateItems.length
                 ? safeParseInt(dateItems[hourIndex]) 
                 : 0;
 
             if (hour > 23) 
-                throw `Wrong hour number (${hour}) in date ${value}`;
+                throw '';
 
             const minute  = minutesIndex > -1 && minutesIndex < dateItems.length 
                 ? safeParseInt(dateItems[minutesIndex]) 
                 : 0;
             if (minute > 59)
-                throw `Wrong minute number (${minute}) in date ${value}`;
+                throw '';
 
             const second  = secondsIndex > -1 && secondsIndex < dateItems.length 
                 ? safeParseInt(dateItems[secondsIndex]) 
                 : 0;
             if (second > 59)
-                throw `Wrong second number (${second}) in date ${value}`;
+                throw '';
 
             return new Date(year,month,day,hour,minute,second);
         }
         catch {
-            throw "Is not a valid date time."
+            throw `${value} is not a valid date.`
         }
     }
 
     export function strToTime(str: string): Date {
-
         const timeItems = str.split(':');
 
-        const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
-        if (hour > 23)
-            throw '';
-
-        const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
-        if (minute > 59)
-            throw '';
-
-        const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
-        if (second > 59)
-            throw '';
-
-        return new Date(0, 0, 0, hour, minute, second);
+        try{
+            const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+            if (hour > 23)
+                throw '';
+    
+            const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+            if (minute > 59)
+                throw '';
+    
+            const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
+            if (second > 59)
+                throw '';
+    
+            return new Date(0, 0, 0, hour, minute, second);    
+        }
+        catch {
+            throw `${str} is not a valid time.`
+        }
     }
 
     const DT_FORMAT_RGEX = /\[([^\]]+)]|y{4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
