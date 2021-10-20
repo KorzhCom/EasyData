@@ -86,7 +86,7 @@ namespace EasyData.Services
             await LoadModelAsync(model, ct);
 
             if (EntityMetadataDescriptors == null) {
-                EntityMetadataDescriptors = GetDefaultMetadataDescriptors(ct)?.Result.ToList();
+                EntityMetadataDescriptors = GetDefaultMetadataDescriptorsAsync(ct)?.Result.ToList();
 
                 if (EntityMetadataDescriptors != null) {
                     UpdateMetadataDescriptorsWithOptions();
@@ -255,7 +255,7 @@ namespace EasyData.Services
         /// </summary>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Default entities metadata.</returns>
-        public abstract Task<IEnumerable<EntityMetadataDescriptor>> GetDefaultMetadataDescriptors(CancellationToken ct = default);
+        public abstract Task<IEnumerable<EntityMetadataDescriptor>> GetDefaultMetadataDescriptorsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

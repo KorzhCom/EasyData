@@ -104,9 +104,9 @@ namespace EasyData.Services
         /// <summary>
         /// Entity meta builders.
         /// </summary>
-        public IEnumerable<IEntityMetaBuilder> EntityMetaBuilders => entityMetaBuilders;
+        public IEnumerable<IEntityMetaBuilder> EntityMetaBuilders => _entityMetaBuilders;
 
-        private List<IEntityMetaBuilder> entityMetaBuilders = new List<IEntityMetaBuilder>();
+        private List<IEntityMetaBuilder> _entityMetaBuilders = new List<IEntityMetaBuilder>();
 
         /// <summary>
         /// Set entity meta options.
@@ -117,7 +117,7 @@ namespace EasyData.Services
         {
             var entityBuilder = new EntityMetaBuilder<TEntity>();
 
-            entityMetaBuilders.Add(entityBuilder);
+            _entityMetaBuilders.Add(entityBuilder);
             return entityBuilder;
         }
     }

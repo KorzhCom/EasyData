@@ -317,7 +317,7 @@ namespace EasyData.Services
         /// </summary>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Default meta attributes.</returns>
-        public override Task<IEnumerable<EntityMetadataDescriptor>> GetDefaultMetadataDescriptors(CancellationToken ct = default)
+        public override Task<IEnumerable<EntityMetadataDescriptor>> GetDefaultMetadataDescriptorsAsync(CancellationToken ct = default)
         {
             return Task.Run(() => {
                 var loader = new DefaultMetaDataLoader(DbContext);
