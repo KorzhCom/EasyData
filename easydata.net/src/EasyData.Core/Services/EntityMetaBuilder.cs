@@ -15,7 +15,7 @@ namespace EasyData.Services
         /// <summary>
         /// Entity properties meta information.
         /// </summary>
-        private List<EntityPropertyMetaBuilder> _propertyMetaBuilders = new List<EntityPropertyMetaBuilder>();
+        private readonly List<EntityPropertyMetaBuilder> _propertyMetaBuilders = new List<EntityPropertyMetaBuilder>();
 
         /// <inheritdoc />
         public string DisplayName { get; private set; }

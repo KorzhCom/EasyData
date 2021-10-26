@@ -102,23 +102,17 @@ namespace EasyData.Services
         }
 
         /// <summary>
-        /// Entity meta builders.
+        /// Store metadata.
         /// </summary>
-        public IEnumerable<IEntityMetaBuilder> EntityMetaBuilders => _entityMetaBuilders;
-
-        private List<IEntityMetaBuilder> _entityMetaBuilders = new List<IEntityMetaBuilder>();
+        public MetadataBuilder MetadataBuilder { get; } = new MetadataBuilder();
 
         /// <summary>
-        /// Set entity meta options.
+        /// Build metadata.
         /// </summary>
-        /// <typeparam name="TEntity">Entity type.</typeparam>
-        /// <returns>Entity meta builder instance.</returns>
-        public EntityMetaBuilder<TEntity> Entity<TEntity>()
+        /// <param name="builder"></param>
+        public void UseMetaBuilder(Action<MetadataBuilder> builder)
         {
-            var entityBuilder = new EntityMetaBuilder<TEntity>();
-
-            _entityMetaBuilders.Add(entityBuilder);
-            return entityBuilder;
+            builder(MetadataBuilder);
         }
     }
 }

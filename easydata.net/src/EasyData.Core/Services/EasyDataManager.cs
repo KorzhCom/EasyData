@@ -86,15 +86,11 @@ namespace EasyData.Services
             await LoadModelAsync(model, ct);
 
             if (EntityMetadataDescriptors == null) {
-                EntityMetadataDescriptors = GetDefaultMetadataDescriptorsAsync(ct)?.Result.ToList();
-
-                if (EntityMetadataDescriptors != null) {
-                    UpdateMetadataDescriptorsWithOptions();
-                }
+                EntityMetadataDescriptors = (await GetDefaultMetadataDescriptorsAsync(ct)).ToList();
             }
 
             // Update loaded model metadata with entity descriptors and options
-            UpdateModelMetaWithCustomMeta(model);
+            model.UpdateWithCustomMetadata(EntityMetadataDescriptors, Options);
             model.Process();
             return model;
         }
@@ -108,126 +104,6 @@ namespace EasyData.Services
         {
             Options.ModelTuner?.Invoke(metaData);
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Update Entity descriptors with metadata defined in options.
-        /// </summary>
-        private void UpdateMetadataDescriptorsWithOptions()
-        {
-            foreach (var entityBuilder in Options.EntityMetaBuilders) {
-                var entityDescriptor = EntityMetadataDescriptors.FirstOrDefault(
-                    e => entityBuilder.ClrType == e.ClrType);
-
-                if (entityDescriptor == null) {
-                    // TODO: should we throw an exception?
-                    continue;
-                }
-
-                entityDescriptor.Description = entityBuilder.Description ?? entityDescriptor.Description;
-                entityDescriptor.DisplayName = entityBuilder.DisplayName ?? entityDescriptor.DisplayName;
-                entityDescriptor.DisplayNamePlural = entityBuilder.DisplayNamePlural ?? entityDescriptor.DisplayNamePlural;
-                entityDescriptor.IsEnabled = entityBuilder.IsEnabled ?? entityDescriptor.IsEnabled;
-
-                foreach (var propertyBuilder in entityBuilder.PropertyMetaBuilders) {
-                    var propertyDescriptor = entityDescriptor.MetadataProperties.FirstOrDefault(
-                        p => p.PropertyInfo.Name.Equals(propertyBuilder.PropertyInfo.Name));
-
-                    if (propertyDescriptor == null) {
-                        // TODO: should we throw an exception?
-                        continue;
-                    }
-
-                    propertyDescriptor.DisplayName = propertyBuilder.DisplayName ?? propertyDescriptor.DisplayName;
-                    propertyDescriptor.DisplayFormat = propertyBuilder.DisplayFormat ?? propertyDescriptor.DisplayFormat;
-                    propertyDescriptor.Description = propertyBuilder.Description ?? propertyDescriptor.Description;
-                    propertyDescriptor.IsEditable = propertyBuilder.IsEditable ?? propertyDescriptor.IsEditable;
-                    propertyDescriptor.Index = propertyBuilder.Index ?? propertyDescriptor.Index;
-                    propertyDescriptor.ShowInLookup = propertyBuilder.ShowInLookup ?? propertyDescriptor.ShowInLookup;
-                    propertyDescriptor.ShowOnView = propertyBuilder.ShowOnView ?? propertyDescriptor.ShowOnView;
-                    propertyDescriptor.ShowOnEdit = propertyBuilder.ShowOnEdit ?? propertyDescriptor.ShowOnEdit;
-                    propertyDescriptor.ShowOnCreate = propertyBuilder.ShowOnCreate ?? propertyDescriptor.ShowOnCreate;
-                    propertyDescriptor.Sorting = propertyBuilder.Sorting ?? propertyDescriptor.Sorting;
-                    propertyDescriptor.IsEnabled = propertyBuilder.IsEnabled ?? propertyDescriptor.IsEnabled;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Update Model meta data with the properties from options and meta descriptors.
-        /// </summary>
-        /// <param name="metaData">Metadata object.</param>
-        private void UpdateModelMetaWithCustomMeta(MetaData metaData)
-        {
-            foreach (var entityDescriptor in EntityMetadataDescriptors) {
-                var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(
-                    e => entityDescriptor.ClrType == e.ClrType);
-
-                if (entity == null) {
-                    // TODO: should we throw an exception?
-                    continue;
-                }
-
-                // Remove from list if the entity is disabled in descriptor
-                if (entityDescriptor.IsEnabled == false) {
-                    metaData.EntityRoot.SubEntities.Remove(entity);
-                    continue;
-                }
-
-                UpdateEntityMetaWithCustomDescriptor(entityDescriptor, entity);
-            }
-        }
-
-        /// <summary>
-        /// Update single entity meta information with custom entity descriptor.
-        /// </summary>
-        /// <param name="updateSource">Meta descriptor update source.</param>
-        /// <param name="updateTarget">Meta Entity to update.</param>
-        private static void UpdateEntityMetaWithCustomDescriptor(EntityMetadataDescriptor updateSource,
-            MetaEntity updateTarget)
-        {
-            updateTarget.Description = updateSource.Description ?? updateTarget.Description;
-            updateTarget.Name = updateSource.DisplayName ?? updateTarget.Name;
-            updateTarget.NamePlural = updateSource.DisplayNamePlural ?? updateTarget.NamePlural;
-
-            // Update entity meta attributes
-            foreach (var propertyDescriptor in updateSource.MetadataProperties) {
-                var property = updateTarget.Attributes.FirstOrDefault(
-                    attr => attr.PropInfo.Name.Equals(propertyDescriptor.PropertyInfo.Name));
-
-                if (property == null) {
-                    // TODO: should we throw an exception?
-                    continue;
-                }
-
-                // Remove from list if the attribute is disabled in options
-                if (propertyDescriptor.IsEnabled == false) {
-                    updateTarget.Attributes.Remove(property);
-                    continue;
-                }
-
-                UpdateEntityPropertyMetaWithCustomDescriptor(propertyDescriptor, property);
-            }
-        }
-
-        /// <summary>
-        /// Update single entity property meta information with custom property descriptor.
-        /// </summary>
-        /// <param name="propertyDescriptor">Custom entity property descriptor.</param>
-        /// <param name="metaToUpdate">Meta Entity property to update.</param>
-        private static void UpdateEntityPropertyMetaWithCustomDescriptor(
-            EntityPropertyMetadataDescriptor propertyDescriptor, MetaEntityAttr metaToUpdate)
-        {
-            metaToUpdate.Caption = propertyDescriptor.DisplayName ?? metaToUpdate.Caption;
-            metaToUpdate.Description = propertyDescriptor.Description ?? metaToUpdate.Description;
-            metaToUpdate.IsEditable = propertyDescriptor.IsEditable ?? metaToUpdate.IsEditable;
-            metaToUpdate.Index = propertyDescriptor.Index ?? metaToUpdate.Index;
-            metaToUpdate.ShowInLookup = propertyDescriptor.ShowInLookup ?? metaToUpdate.ShowInLookup;
-            metaToUpdate.Sorting = propertyDescriptor.Sorting ?? metaToUpdate.Sorting;
-            metaToUpdate.DisplayFormat = propertyDescriptor.DisplayFormat ?? metaToUpdate.DisplayFormat;
-            metaToUpdate.ShowOnView = propertyDescriptor.ShowOnView ?? metaToUpdate.ShowOnView;
-            metaToUpdate.ShowOnEdit = propertyDescriptor.ShowOnEdit ?? metaToUpdate.ShowOnEdit;
-            metaToUpdate.ShowOnCreate = propertyDescriptor.ShowOnCreate ?? metaToUpdate.ShowOnCreate;
         }
 
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(
