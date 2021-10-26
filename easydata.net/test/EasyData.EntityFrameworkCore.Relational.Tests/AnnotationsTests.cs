@@ -53,7 +53,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             secondDescriptor.MetadataProperties.Should().HaveCount(11);
 
             var attr = secondDescriptor.MetadataProperties
-                .FirstOrDefault(p => p.PropertyInfo.Name == "Region");
+                .First(p => p.PropertyInfo.Name == "Region");
 
             attr.ShowOnView.Should().BeFalse();
             attr.ShowInLookup.Should().BeTrue();
