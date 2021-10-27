@@ -164,8 +164,16 @@ It is also possible to use Fluent API to keep all model classes without any addi
 app.UseEndpoints(endpoints => {
     endpoints.MapEasyData(options => {
         options.UseDbContext<ApplicationDbContext>();
-        options.Entity<Customer>().SetDisplayName("Client").SetDisplayNamePlural("Clients")
-            .Property(c => c.Country).SetDescription("Country where the client lives");
+        options.UseMetaBuilder(builder => {
+            builder.Entity<Customer>()
+                .SetDisplayName("Client")
+                .SetDisplayNamePlural("Clients")
+                .Property(c => c.Country)
+                    .SetDescription("Country where the client lives");
+
+            builder.Entity<Order>()
+             .     .     .     .     .
+        });
     });
 });
 ```

@@ -15,7 +15,7 @@ namespace EasyData.Services
         /// <summary>
         /// Entity properties meta information.
         /// </summary>
-        private List<EntityPropertyMetaBuilder> propertyMetaBuilders = new List<EntityPropertyMetaBuilder>();
+        private readonly List<EntityPropertyMetaBuilder> _propertyMetaBuilders = new List<EntityPropertyMetaBuilder>();
 
         /// <inheritdoc />
         public string DisplayName { get; private set; }
@@ -33,7 +33,7 @@ namespace EasyData.Services
         public Type ClrType => typeof(TEntity);
 
         /// <inheritdoc />
-        public List<EntityPropertyMetaBuilder> PropertyMetaBuilders => propertyMetaBuilders;
+        public List<EntityPropertyMetaBuilder> PropertyMetaBuilders => _propertyMetaBuilders;
 
         /// <summary>
         /// Set entity display name.
@@ -96,7 +96,7 @@ namespace EasyData.Services
             }
 
             var propertyBuilder = new EntityPropertyMetaBuilder(property);
-            propertyMetaBuilders.Add(propertyBuilder);
+            _propertyMetaBuilders.Add(propertyBuilder);
             return propertyBuilder;
         }
     }
