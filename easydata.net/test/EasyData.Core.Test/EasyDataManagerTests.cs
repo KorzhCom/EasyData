@@ -174,6 +174,12 @@ namespace EasyData.Core.Test
             Assert.Equal(modelEntityPropertyMeta.Caption, caption);
             Assert.Equal(modelEntityPropertyMeta.Description, entityPropertyMetadataDescriptor.Description);
             Assert.Equal(modelEntityPropertyMeta.Index, entityPropertyMetaBuilder.Index);
+            Assert.Equal(modelEntityPropertyMeta.ShowInLookup, entityPropertyMetaBuilder.ShowInLookup);
+            Assert.Equal(modelEntityPropertyMeta.IsEditable, entityPropertyMetaBuilder.IsEditable);
+            Assert.Equal(modelEntityPropertyMeta.Sorting, entityPropertyMetaBuilder.Sorting);
+            Assert.Equal(modelEntityPropertyMeta.ShowOnView, entityPropertyMetaBuilder.ShowOnView);
+            Assert.Equal(modelEntityPropertyMeta.ShowOnEdit, entityPropertyMetaBuilder.ShowOnEdit);
+            Assert.Equal(modelEntityPropertyMeta.ShowOnCreate, entityPropertyMetaBuilder.ShowOnCreate);
         }
 
         /// <summary>
