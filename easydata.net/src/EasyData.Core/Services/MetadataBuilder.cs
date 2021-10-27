@@ -6,6 +6,9 @@ using System.Text;
 
 namespace EasyData.Services
 {
+    /// <summary>
+    /// Build entity metadata.
+    /// </summary>
     public class MetadataBuilder
     {
         /// <summary>
@@ -34,8 +37,5 @@ namespace EasyData.Services
             _entityMetaBuilders.Add(entityBuilder);
             return entityBuilder;
         }
-
     }
-
-
 }

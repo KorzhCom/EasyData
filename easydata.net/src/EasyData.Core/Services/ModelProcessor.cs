@@ -36,19 +36,19 @@ namespace EasyData.Services
         /// <summary>
         /// Update Model metadata with the meta from options and meta descriptors.
         /// </summary>
-        public static void UpdateWithCustomMetadata(this MetaData model, List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
+        public static void MergeWithCustomMetadata(this MetaData model, List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
         {
             if (descriptors != null) {
-                UpdateMetadataDescriptorsWithOptions(descriptors, options);
+                MergeMetadataDescriptorsWithOptions(descriptors, options);
             }
 
-            UpdateModelWithMetadataDescriptors(model, descriptors);
+            MergeModelWithMetadataDescriptors(model, descriptors);
         }
 
         /// <summary>
         /// Update metadata descriptors with metadata defined in options.
         /// </summary>
-        private static void UpdateMetadataDescriptorsWithOptions(List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
+        private static void MergeMetadataDescriptorsWithOptions(List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
         {
             foreach (var entityBuilder in options.MetadataBuilder.EntityMetaBuilders) {
                 var entityDescriptor = descriptors.FirstOrDefault(
@@ -91,7 +91,7 @@ namespace EasyData.Services
         /// <summary>
         /// Update Model metadata with metadata descriptors.
         /// </summary>
-        private static void UpdateModelWithMetadataDescriptors(MetaData metaData, List<EntityMetadataDescriptor> descriptors)
+        private static void MergeModelWithMetadataDescriptors(MetaData metaData, List<EntityMetadataDescriptor> descriptors)
         {
             foreach (var entityDescriptor in descriptors) {
                 var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(

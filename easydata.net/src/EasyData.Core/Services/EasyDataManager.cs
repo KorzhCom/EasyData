@@ -90,7 +90,7 @@ namespace EasyData.Services
             }
 
             // Update loaded model metadata with entity descriptors and options
-            model.UpdateWithCustomMetadata(EntityMetadataDescriptors, Options);
+            model.MergeWithCustomMetadata(EntityMetadataDescriptors, Options);
             model.Process();
             return model;
         }
