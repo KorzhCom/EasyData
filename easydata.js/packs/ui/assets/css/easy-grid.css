@@ -2,7 +2,6 @@
     outline: none;    
 }
 
-
 .keg-container {
     overflow: hidden;
 }
@@ -72,16 +71,12 @@
 
 .keg-cell, .keg-header-cell {
     display: flex;
-/*
-    flex: 1;
-    min-width: 150px;
-*/
 }
 
 .keg-header-cell {
     position: relative;
     align-items: center;
-    padding: 2px 15px;
+    padding: 0 4px 0 10px;
 }
 
 .keg-header-cell-resize {
@@ -92,7 +87,6 @@
     height: 100%;
     width: 8px;
     top: 0;
-    /*cursor: ew-resize;*/
     right: -4px;
 }
 
@@ -116,7 +110,7 @@
 }
 
 .keg-cell {
-    padding: 0 15px;
+    padding: 0 4px 0 10px;
     border-right-width: 1px;
     border-right: solid transparent;
     align-items: center;

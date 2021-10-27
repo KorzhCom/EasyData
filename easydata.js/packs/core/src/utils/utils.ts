@@ -424,15 +424,13 @@ export namespace utils {
     function getNowTicks(): number {
         return (621355968e9 + (new Date()).getTime() * 1e4)
     }
-
-   
+  
     function safeParseInt(str: string) {
+        const res = parseInt(str);
+        if (isNaN(res))
+            throw `"${str}" is not a valid number`;
 
-        let isnum = /^\d+$/.test(str);
-        if (!isnum)
-            throw "Is not a valid number";
-
-        return parseInt(str);
+        return res;
     }
 
     function getDaysInMonth(month, year) {
@@ -442,70 +440,89 @@ export namespace utils {
     // ------------- date/time functions -------------------
     // TO DO: improve to process all datetime cases
     export function strToDateTime(value: string, format: string): Date {
-
         if (!value || value.length == 0)
             return new Date();
 
-        const normalized      = value.replace(/[^a-zA-Z0-9_]/g, '-');
-        const normalizedFormat= format.replace(/[^a-zA-Z0-9_]/g, '-');
-        const formatItems     = normalizedFormat.split('-');
-        const dateItems       = normalized.split('-');
+        const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+        const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+        const formatItems = normalizedFormat.split('-');
+        const dateItems = normalizedValue.split('-');
     
         const monthIndex  = formatItems.indexOf("MM");
-        const dayIndex    = formatItems.indexOf("dd");
-        const yearIndex   = formatItems.indexOf("yyyy");
-        const hourIndex     = formatItems.indexOf("HH");
+        const dayIndex = formatItems.indexOf("dd");
+        const yearIndex = formatItems.indexOf("yyyy");
+        const hourIndex = formatItems.indexOf("HH");
         const minutesIndex  = formatItems.indexOf("mm");
         const secondsIndex  = formatItems.indexOf("ss");
     
         const today = new Date();
     
         try {
-            const year  = yearIndex > -1 && yearIndex < dateItems.length   ? safeParseInt(dateItems[yearIndex])   : today.getFullYear();
-            const month = monthIndex > -1 && monthIndex < dateItems.length ? safeParseInt(dateItems[monthIndex]) - 1 : today.getMonth() - 1;
+            const year  = yearIndex > -1 && yearIndex < dateItems.length   
+                ? safeParseInt(dateItems[yearIndex])   
+                : today.getFullYear();
+
+            const month = monthIndex > -1 && monthIndex < dateItems.length 
+                ? safeParseInt(dateItems[monthIndex]) - 1 
+                : today.getMonth() - 1;
+
             if (month > 11)
                 throw '';
 
-            const day = dayIndex > -1 && dayIndex < dateItems.length     ? safeParseInt(dateItems[dayIndex]) : today.getDate();
+            const day = dayIndex > -1 && dayIndex < dateItems.length     
+                ? safeParseInt(dateItems[dayIndex]) 
+                : today.getDate();
+
             if (day > getDaysInMonth(month, year)) 
                 throw '';
         
-            const hour    = hourIndex > -1 && hourIndex < dateItems.length         ? safeParseInt(dateItems[hourIndex]) : 0;
+            const hour = hourIndex > -1 && hourIndex < dateItems.length
+                ? safeParseInt(dateItems[hourIndex]) 
+                : 0;
+
             if (hour > 23) 
                 throw '';
 
-            const minute  = minutesIndex > -1 && minutesIndex < dateItems.length   ? safeParseInt(dateItems[minutesIndex]) : 0;
+            const minute  = minutesIndex > -1 && minutesIndex < dateItems.length 
+                ? safeParseInt(dateItems[minutesIndex]) 
+                : 0;
             if (minute > 59)
                 throw '';
 
-            const second  = secondsIndex > -1 && secondsIndex < dateItems.length   ? safeParseInt(dateItems[secondsIndex]) : 0;
+            const second  = secondsIndex > -1 && secondsIndex < dateItems.length 
+                ? safeParseInt(dateItems[secondsIndex]) 
+                : 0;
             if (second > 59)
                 throw '';
 
             return new Date(year,month,day,hour,minute,second);
         }
         catch {
-            throw "Is not a valid date time."
+            throw `${value} is not a valid date.`
         }
     }
 
     export function strToTime(str: string): Date {
-
         const timeItems = str.split(':');
 
-        const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
-        if (hour > 23)
-            throw '';
-
-        const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
-        if (minute > 59)
-            throw '';
-
-        const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
-        if (second > 59)
-            throw '';
-
-        return new Date(0, 0, 0, hour, minute, second);
+        try{
+            const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+            if (hour > 23)
+                throw '';
+    
+            const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+            if (minute > 59)
+                throw '';
+    
+            const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
+            if (second > 59)
+                throw '';
+    
+            return new Date(0, 0, 0, hour, minute, second);    
+        }
+        catch {
+            throw `${str} is not a valid time.`
+        }
     }
 
     const DT_FORMAT_RGEX = /\[([^\]]+)]|y{4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
