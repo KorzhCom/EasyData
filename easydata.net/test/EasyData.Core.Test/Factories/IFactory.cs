@@ -4,8 +4,15 @@ using System.Text;
 
 namespace EasyData.Core.Test.Factories
 {
+    /// <summary>
+    /// Define methods to create test object instances.
+    /// </summary>
+    /// <typeparam name="T">Type of instance to create.</typeparam>
     interface IFactory<out T>
     {
-        T Object { get; }
+        /// <summary>
+        /// Create test object instance.
+        /// </summary>
+        T Create();
     }
 }

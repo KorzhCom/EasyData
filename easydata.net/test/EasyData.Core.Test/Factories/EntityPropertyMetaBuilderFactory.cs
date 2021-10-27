@@ -6,13 +6,17 @@ using EasyData.Services;
 
 namespace EasyData.Core.Test.Factories
 {
-    class EntityPropertyMetaBuilderFactory: IFactory<EntityPropertyMetaBuilder>
+    /// <summary>
+    /// Test <see cref="EntityPropertyMetaBuilder"/> factory.
+    /// </summary>
+    class EntityPropertyMetaBuilderFactory : IFactory<EntityPropertyMetaBuilder>
     {
-        public EntityPropertyMetaBuilder Object { get; }
+        private PropertyInfo _propertyInfo;
 
-        public EntityPropertyMetaBuilderFactory(PropertyInfo propertyInfo)
+        /// <inheritdoc />
+        public EntityPropertyMetaBuilder Create()
         {
-            var entityPropertyMetaBuilder = new EntityPropertyMetaBuilder(propertyInfo);
+            var entityPropertyMetaBuilder = new EntityPropertyMetaBuilder(_propertyInfo);
             entityPropertyMetaBuilder.SetDisplayName(Faker.Lorem.Sentence());
             entityPropertyMetaBuilder.SetDescription(Faker.Lorem.Sentence());
             entityPropertyMetaBuilder.SetDisplayFormat(Faker.Lorem.GetFirstWord());
@@ -25,7 +29,16 @@ namespace EasyData.Core.Test.Factories
             entityPropertyMetaBuilder.SetShowOnEdit(Faker.Boolean.Random());
             entityPropertyMetaBuilder.SetSorting(Faker.RandomNumber.Next());
 
-            Object = entityPropertyMetaBuilder;
+            return entityPropertyMetaBuilder;
+        }
+
+        /// <summary>
+        /// Create new factory instance.
+        /// </summary>
+        /// <param name="propertyInfo">Proprepty information.</param>
+        public EntityPropertyMetaBuilderFactory(PropertyInfo propertyInfo)
+        {
+            _propertyInfo = propertyInfo;
         }
     }
 }

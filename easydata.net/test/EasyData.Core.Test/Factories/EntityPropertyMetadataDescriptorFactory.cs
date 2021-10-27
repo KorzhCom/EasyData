@@ -5,11 +5,13 @@ using EasyData.MetaDescriptors;
 
 namespace EasyData.Core.Test.Factories
 {
-    class EntityPropertyMetadataDescriptorFactory: IFactory<EntityPropertyMetadataDescriptor>
+    /// <summary>
+    /// Test <see cref="EntityPropertyMetadataDescriptor"/> factory.
+    /// </summary>
+    class EntityPropertyMetadataDescriptorFactory : IFactory<EntityPropertyMetadataDescriptor>
     {
-        public EntityPropertyMetadataDescriptor Object { get; }
-
-        public EntityPropertyMetadataDescriptorFactory()
+        /// <inheritdoc />
+        public EntityPropertyMetadataDescriptor Create()
         {
             var entityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptor
             {
@@ -26,7 +28,7 @@ namespace EasyData.Core.Test.Factories
                 Sorting = Faker.RandomNumber.Next()
             };
 
-            Object = entityPropertyMetadataDescriptor;
+            return entityPropertyMetadataDescriptor;
         }
     }
 }

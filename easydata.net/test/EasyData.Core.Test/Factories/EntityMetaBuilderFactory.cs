@@ -5,11 +5,13 @@ using EasyData.Services;
 
 namespace EasyData.Core.Test.Factories
 {
+    /// <summary>
+    /// Test <see cref="EntityMetaBuilder<typeparamref name="T"/>"/> factory.
+    /// </summary>
     class EntityMetaBuilderFactory<T>: IFactory<EntityMetaBuilder<T>>
     {
-        public EntityMetaBuilder<T> Object { get; }
-
-        public EntityMetaBuilderFactory()
+        /// <inheritdoc />
+        public EntityMetaBuilder<T> Create()
         {
             var entityMetaBuilder = new EntityMetaBuilder<T>();
             entityMetaBuilder.SetDescription(Faker.Lorem.Sentence());
@@ -17,7 +19,7 @@ namespace EasyData.Core.Test.Factories
             entityMetaBuilder.SetDisplayNamePlural(Faker.Lorem.Sentence());
             entityMetaBuilder.SetEnabled(Faker.Boolean.Random());
 
-            Object = entityMetaBuilder;
+            return entityMetaBuilder;
         }
     }
 }
