@@ -10,7 +10,6 @@ export class HttpResponseError extends Error {
 }
 
 export class HttpClient {
-
     public defaultHeaders: HttpHeaders;
 
     public customPayload: [string];
@@ -46,7 +45,6 @@ export class HttpClient {
     }
 
     public send<T = any>(method: HttpMethod, url: string, data?: any, options?: HttpRequestOptions):  HttpActionResult<T> {
-
         options = options || {};
 
         const dataType = options.dataType || 'json';
