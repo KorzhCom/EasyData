@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Xunit;
 
 namespace EasyData.Core.Test
@@ -120,9 +121,9 @@ namespace EasyData.Core.Test
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var modelEntityMeta = model.Result.EntityRoot.SubEntities.First();
 
-            Assert.Equal(modelEntityMeta.Name, displayName);
-            Assert.Equal(modelEntityMeta.Description, entityMetadataDescriptor.Description);
-            Assert.Equal(modelEntityMeta.NamePlural, entityMetaBuilder.DisplayNamePlural);
+            modelEntityMeta.Name.Should().Be(displayName);
+            modelEntityMeta.Description.Should().Be(entityMetadataDescriptor.Description);
+            modelEntityMeta.NamePlural.Should().Be(entityMetaBuilder.DisplayNamePlural);
         }
 
         /// <summary>
@@ -171,15 +172,15 @@ namespace EasyData.Core.Test
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var modelEntityPropertyMeta = model.Result.EntityRoot.SubEntities.First().Attributes.First();
 
-            Assert.Equal(modelEntityPropertyMeta.Caption, caption);
-            Assert.Equal(modelEntityPropertyMeta.Description, entityPropertyMetadataDescriptor.Description);
-            Assert.Equal(modelEntityPropertyMeta.Index, entityPropertyMetaBuilder.Index);
-            Assert.Equal(modelEntityPropertyMeta.ShowInLookup, entityPropertyMetaBuilder.ShowInLookup);
-            Assert.Equal(modelEntityPropertyMeta.IsEditable, entityPropertyMetaBuilder.IsEditable);
-            Assert.Equal(modelEntityPropertyMeta.Sorting, entityPropertyMetaBuilder.Sorting);
-            Assert.Equal(modelEntityPropertyMeta.ShowOnView, entityPropertyMetaBuilder.ShowOnView);
-            Assert.Equal(modelEntityPropertyMeta.ShowOnEdit, entityPropertyMetaBuilder.ShowOnEdit);
-            Assert.Equal(modelEntityPropertyMeta.ShowOnCreate, entityPropertyMetaBuilder.ShowOnCreate);
+            modelEntityPropertyMeta.Caption.Should().Be(caption);
+            modelEntityPropertyMeta.Description.Should().Be(entityPropertyMetadataDescriptor.Description);
+            modelEntityPropertyMeta.Index.Should().Be(entityPropertyMetaBuilder.Index);
+            modelEntityPropertyMeta.ShowInLookup.Should().Be((bool)entityPropertyMetaBuilder.ShowInLookup);
+            modelEntityPropertyMeta.IsEditable.Should().Be((bool)entityPropertyMetaBuilder.IsEditable);
+            modelEntityPropertyMeta.Sorting.Should().Be(entityPropertyMetaBuilder.Sorting);
+            modelEntityPropertyMeta.ShowOnView.Should().Be((bool)entityPropertyMetaBuilder.ShowOnView);
+            modelEntityPropertyMeta.ShowOnEdit.Should().Be((bool) entityPropertyMetaBuilder.ShowOnEdit);
+            modelEntityPropertyMeta.ShowOnCreate.Should().Be((bool) entityPropertyMetaBuilder.ShowOnCreate);
         }
 
         /// <summary>
@@ -205,7 +206,8 @@ namespace EasyData.Core.Test
 
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var entities = model.Result.EntityRoot.SubEntities;
-            Assert.Empty(entities);
+
+            entities.Should().BeEmpty();
         }
 
         /// <summary>
@@ -228,7 +230,8 @@ namespace EasyData.Core.Test
 
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var entities = model.Result.EntityRoot.SubEntities;
-            Assert.Empty(entities);
+
+            entities.Should().BeEmpty();
         }
 
         /// <summary>
@@ -268,7 +271,7 @@ namespace EasyData.Core.Test
 
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var properties = model.Result.EntityRoot.SubEntities.First().Attributes;
-            Assert.Empty(properties);
+            properties.Should().BeEmpty();
         }
 
         /// <summary>
@@ -302,7 +305,7 @@ namespace EasyData.Core.Test
 
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var properties = model.Result.EntityRoot.SubEntities.First().Attributes;
-            Assert.Empty(properties);
+            properties.Should().BeEmpty();
         }
 
         /// <summary>
@@ -328,7 +331,7 @@ namespace EasyData.Core.Test
 
             var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
             var modelEntityMeta = model.Result.EntityRoot.SubEntities.First();
-            Assert.Equal(modelEntityMeta.Name, metaEntity.Name);
+            modelEntityMeta.Name.Should().Be(metaEntity.Name);
         }
     }
 }

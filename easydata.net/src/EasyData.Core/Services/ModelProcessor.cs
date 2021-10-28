@@ -14,10 +14,10 @@ namespace EasyData.Services
         {
             // Process blob attributes.
             foreach (var entity in model.EntityRoot.SubEntities) {
-                entity.Attributes
-                    .Where(attr => attr.DataType == DataType.Blob)
-                    .ToList()
-                    .ForEach(ProcessBlob);
+                foreach (var attr in entity.Attributes
+                             .Where(a => a.DataType == DataType.Blob)) {
+                    ProcessBlob(attr);
+                }
             }
         }
 

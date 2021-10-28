@@ -49,15 +49,15 @@ namespace EasyData.Core.Test
             var firstEntityBuilder = _options.MetadataBuilder.EntityMetaBuilders.ToList()[0];
             var secondEntityBuilder = _options.MetadataBuilder.EntityMetaBuilders.ToList()[1];
 
-            Assert.Equal(firstEntityBuilder.DisplayName, displayName);
-            Assert.Equal(firstEntityBuilder.DisplayNamePlural, displayNamePlural);
-            Assert.Equal(firstEntityBuilder.Description, description);
-            Assert.Equal(firstEntityBuilder.IsEnabled, enabled);
+            firstEntityBuilder.DisplayName.Should().Be(displayName);
+            firstEntityBuilder.DisplayNamePlural.Should().Be(displayNamePlural);
+            firstEntityBuilder.Description.Should().Be(description);
+            firstEntityBuilder.IsEnabled.Should().Be(enabled);
 
-            Assert.Equal(secondEntityBuilder.DisplayName, secondDisplayName);
-            Assert.Null(secondEntityBuilder.DisplayNamePlural);
-            Assert.Null(secondEntityBuilder.Description);
-            Assert.Null(secondEntityBuilder.IsEnabled);
+            secondEntityBuilder.DisplayName.Should().Be(secondDisplayName);
+            secondEntityBuilder.DisplayNamePlural.Should().BeNull();
+            secondEntityBuilder.Description.Should().BeNull();
+            secondEntityBuilder.IsEnabled.Should().BeNull();
         }
 
         /// <summary>
@@ -100,27 +100,27 @@ namespace EasyData.Core.Test
             var firstPropertyBuilder = _options.MetadataBuilder.EntityMetaBuilders.First().PropertyMetaBuilders.ToList()[0];
             var secondPropertyBuilder = _options.MetadataBuilder.EntityMetaBuilders.First().PropertyMetaBuilders.ToList()[1];
 
-            Assert.Equal(firstPropertyBuilder.DisplayName, displayName);
-            Assert.Equal(firstPropertyBuilder.Description, description);
-            Assert.Equal(firstPropertyBuilder.ShowInLookup, showInLookup);
-            Assert.Equal(firstPropertyBuilder.IsEditable, editable);
-            Assert.Equal(firstPropertyBuilder.ShowOnCreate, showOnCreate);
-            Assert.Equal(firstPropertyBuilder.Sorting, sorting);
-            Assert.Equal(firstPropertyBuilder.IsEnabled, enabled);
-            Assert.Equal(firstPropertyBuilder.ShowOnView, showOnView);
-            Assert.Equal(firstPropertyBuilder.Index, index);
-            Assert.Equal(firstPropertyBuilder.ShowOnEdit, showOnEdit);
+            firstPropertyBuilder.DisplayName.Should().Be(displayName);
+            firstPropertyBuilder.Description.Should().Be(description);
+            firstPropertyBuilder.ShowInLookup.Should().Be(showInLookup);
+            firstPropertyBuilder.IsEditable.Should().Be(editable);
+            firstPropertyBuilder.ShowOnCreate.Should().Be(showOnCreate);
+            firstPropertyBuilder.Sorting.Should().Be(sorting);
+            firstPropertyBuilder.IsEnabled.Should().Be(enabled);
+            firstPropertyBuilder.ShowOnView.Should().Be(showOnView);
+            firstPropertyBuilder.Index.Should().Be(index);
+            firstPropertyBuilder.ShowOnEdit.Should().Be(showOnEdit);
 
-            Assert.Equal(secondPropertyBuilder.Description, secondDescription);
-            Assert.Null(secondPropertyBuilder.DisplayName);
-            Assert.Null(secondPropertyBuilder.ShowInLookup);
-            Assert.Null(secondPropertyBuilder.IsEditable);
-            Assert.Null(secondPropertyBuilder.ShowOnCreate);
-            Assert.Null(secondPropertyBuilder.Sorting);
-            Assert.Null(secondPropertyBuilder.IsEnabled);
-            Assert.Null(secondPropertyBuilder.ShowOnView);
-            Assert.Null(secondPropertyBuilder.Index);
-            Assert.Null(secondPropertyBuilder.ShowOnEdit);
+            secondPropertyBuilder.Description.Should().Be(secondDescription);
+            secondPropertyBuilder.DisplayName.Should().BeNull();
+            secondPropertyBuilder.ShowInLookup.Should().BeNull();
+            secondPropertyBuilder.IsEditable.Should().BeNull();
+            secondPropertyBuilder.ShowOnCreate.Should().BeNull();
+            secondPropertyBuilder.Sorting.Should().BeNull();
+            secondPropertyBuilder.IsEnabled.Should().BeNull();
+            secondPropertyBuilder.ShowOnView.Should().BeNull();
+            secondPropertyBuilder.Index.Should().BeNull();
+            secondPropertyBuilder.ShowOnEdit.Should().BeNull();
         }
     }
 }
