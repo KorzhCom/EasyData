@@ -25,7 +25,7 @@ namespace EasyData.Services
         /// Process blob type attributes.
         /// </summary>
         /// <param name="attribute">Entity attribute metadata.</param>
-        public static void ProcessBlob(MetaEntityAttr attribute)
+        private static void ProcessBlob(MetaEntityAttr attribute)
         {
             // Hide blob types.
             attribute.ShowOnCreate = false;
