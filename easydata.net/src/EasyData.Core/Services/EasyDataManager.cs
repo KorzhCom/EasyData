@@ -37,7 +37,7 @@ namespace EasyData.Services
 
         protected readonly EasyDataOptions Options;
 
-        protected ConcurrentDictionary<string, MetaData> MetadataSchemas { get; private set; } =
+        protected static ConcurrentDictionary<string, MetaData> MetadataSchemas { get; private set; } =
             new ConcurrentDictionary<string, MetaData>();
 
         /// <summary>
