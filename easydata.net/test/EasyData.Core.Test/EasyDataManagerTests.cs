@@ -19,7 +19,6 @@ namespace EasyData.Core.Test
     {
         private readonly Mock<EasyDataManager> _easyDataManagerMock;
         private readonly EasyDataOptions _easyDataOptions;
-        private const string _modelId = "_default";
 
         /// <summary>
         /// Create EasyData manager mock and provide test options.
@@ -118,7 +117,7 @@ namespace EasyData.Core.Test
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
             // Get model entity and test
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default");
             var modelEntityMeta = model.Result.EntityRoot.SubEntities.First();
 
             modelEntityMeta.Name.Should().Be(displayName);
@@ -169,7 +168,7 @@ namespace EasyData.Core.Test
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
             // Get model entity property and test
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default2");
             var modelEntityPropertyMeta = model.Result.EntityRoot.SubEntities.First().Attributes.First();
 
             modelEntityPropertyMeta.Caption.Should().Be(caption);
@@ -204,7 +203,7 @@ namespace EasyData.Core.Test
             entityMetadataDescriptor.ClrType = typeof(Category);
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default3");
             var entities = model.Result.EntityRoot.SubEntities;
 
             entities.Should().BeEmpty();
@@ -228,7 +227,7 @@ namespace EasyData.Core.Test
             entityMetadataDescriptor.IsEnabled = false;
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default4");
             var entities = model.Result.EntityRoot.SubEntities;
 
             entities.Should().BeEmpty();
@@ -269,7 +268,7 @@ namespace EasyData.Core.Test
             entityMetaBuilder.PropertyMetaBuilders.Add(entityPropertyMetaBuilder);
             UpdateOptionsWithEntityMetaBuilder(entityMetaBuilder);
 
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default5");
             var properties = model.Result.EntityRoot.SubEntities.First().Attributes;
             properties.Should().BeEmpty();
         }
@@ -303,7 +302,7 @@ namespace EasyData.Core.Test
             entityMetadataDescriptor.MetadataProperties.Add(entityPropertyMetadataDescriptor);
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default6");
             var properties = model.Result.EntityRoot.SubEntities.First().Attributes;
             properties.Should().BeEmpty();
         }
@@ -320,7 +319,7 @@ namespace EasyData.Core.Test
                 Name = Faker.Lorem.Sentence()
             };
             UpdateModelWithEntityMeta(metaEntity);
-            _ = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            _ = _easyDataManagerMock.Object.GetModelAsync("__default7");
 
             var updatedMetaEntity = new MetaEntity(new MetaData())
             {
@@ -329,7 +328,7 @@ namespace EasyData.Core.Test
             };
             UpdateModelWithEntityMeta(updatedMetaEntity);
 
-            var model = _easyDataManagerMock.Object.GetModelAsync(_modelId);
+            var model = _easyDataManagerMock.Object.GetModelAsync("__default7");
             var modelEntityMeta = model.Result.EntityRoot.SubEntities.First();
             modelEntityMeta.Name.Should().Be(metaEntity.Name);
         }
