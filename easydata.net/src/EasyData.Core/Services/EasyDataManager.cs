@@ -37,13 +37,13 @@ namespace EasyData.Services
 
         protected readonly EasyDataOptions Options;
 
-        protected static ConcurrentDictionary<string, MetaData> MetadataSchemas { get; private set; } =
+        protected static ConcurrentDictionary<string, MetaData> MetadataSchemas { get; } =
             new ConcurrentDictionary<string, MetaData>();
 
         /// <summary>
         /// Default Entities metadata.
         /// </summary>
-        protected List<EntityMetadataDescriptor> EntityMetadataDescriptors { get; private set; }
+        protected List<IEntityMetadataDescriptor> EntityMetadataDescriptors { get; private set; }
 
         public EasyDataManager(IServiceProvider services, EasyDataOptions options)
         {
@@ -131,7 +131,7 @@ namespace EasyData.Services
         /// </summary>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Default entities metadata.</returns>
-        public abstract Task<IEnumerable<EntityMetadataDescriptor>> GetDefaultMetadataDescriptorsAsync(CancellationToken ct = default);
+        public abstract Task<IEnumerable<IEntityMetadataDescriptor>> GetDefaultMetadataDescriptorsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

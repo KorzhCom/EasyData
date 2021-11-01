@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using EasyData.MetaDescriptors;
 using Xunit;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using EasyData.Services;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
     public class AnnotationsTests
     {
-        private readonly List<EntityMetadataDescriptor> _entityMetadataDescriptors;
+        private readonly List<IEntityMetadataDescriptor> _entityMetadataDescriptors;
 
         /// <summary>
         /// Get db context and entity meta attributes.

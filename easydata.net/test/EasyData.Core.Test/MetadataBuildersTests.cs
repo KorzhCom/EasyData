@@ -46,8 +46,8 @@ namespace EasyData.Core.Test
                     .SetDisplayName(secondDisplayName);
             });
 
-            var firstEntityBuilder = _options.MetadataBuilder.EntityMetaBuilders.ToList()[0];
-            var secondEntityBuilder = _options.MetadataBuilder.EntityMetaBuilders.ToList()[1];
+            var firstEntityBuilder = _options.MetadataBuilder.EntityMetadataDescriptors.ToList()[0];
+            var secondEntityBuilder = _options.MetadataBuilder.EntityMetadataDescriptors.ToList()[1];
 
             firstEntityBuilder.DisplayName.Should().Be(displayName);
             firstEntityBuilder.DisplayNamePlural.Should().Be(displayNamePlural);
@@ -57,7 +57,6 @@ namespace EasyData.Core.Test
             secondEntityBuilder.DisplayName.Should().Be(secondDisplayName);
             secondEntityBuilder.DisplayNamePlural.Should().BeNull();
             secondEntityBuilder.Description.Should().BeNull();
-            secondEntityBuilder.IsEnabled.Should().BeNull();
         }
 
         /// <summary>
@@ -97,8 +96,8 @@ namespace EasyData.Core.Test
                     .SetDescription(secondDescription);
             });
 
-            var firstPropertyBuilder = _options.MetadataBuilder.EntityMetaBuilders.First().PropertyMetaBuilders.ToList()[0];
-            var secondPropertyBuilder = _options.MetadataBuilder.EntityMetaBuilders.First().PropertyMetaBuilders.ToList()[1];
+            var firstPropertyBuilder = _options.MetadataBuilder.EntityMetadataDescriptors.First().MetadataProperties.ToList()[0];
+            var secondPropertyBuilder = _options.MetadataBuilder.EntityMetadataDescriptors.First().MetadataProperties.ToList()[1];
 
             firstPropertyBuilder.DisplayName.Should().Be(displayName);
             firstPropertyBuilder.Description.Should().Be(description);
@@ -117,7 +116,6 @@ namespace EasyData.Core.Test
             secondPropertyBuilder.IsEditable.Should().BeNull();
             secondPropertyBuilder.ShowOnCreate.Should().BeNull();
             secondPropertyBuilder.Sorting.Should().BeNull();
-            secondPropertyBuilder.IsEnabled.Should().BeNull();
             secondPropertyBuilder.ShowOnView.Should().BeNull();
             secondPropertyBuilder.Index.Should().BeNull();
             secondPropertyBuilder.ShowOnEdit.Should().BeNull();

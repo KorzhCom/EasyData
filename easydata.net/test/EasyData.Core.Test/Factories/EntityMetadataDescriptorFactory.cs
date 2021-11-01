@@ -6,14 +6,14 @@ using EasyData.MetaDescriptors;
 namespace EasyData.Core.Test.Factories
 {
     /// <summary>
-    /// Test <see cref="EntityMetadataDescriptor"/> factory.
+    /// Test <see cref="EntityMetadataDescriptor{T}"/> factory.
     /// </summary>
-    class EntityMetadataDescriptorFactory : IFactory<EntityMetadataDescriptor>
+    class EntityMetadataDescriptorFactory<T> : IFactory<EntityMetadataDescriptor<T>>
     {
         /// <inheritdoc />
-        public EntityMetadataDescriptor Create()
+        public EntityMetadataDescriptor<T> Create()
         {
-            var entityMetadataDescriptor = new EntityMetadataDescriptor
+            var entityMetadataDescriptor = new EntityMetadataDescriptor<T>
             {
                 DisplayName = Faker.Lorem.Sentence(),
                 DisplayNamePlural = Faker.Lorem.Sentence(),

@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EasyData.MetaDescriptors;
 
 namespace EasyData.Services
 {
     /// <summary>
     /// Store entity's meta properties.
     /// </summary>
-    public interface IEntityMetaBuilder
+    public interface IEntityMetadataDescriptor
     {
         /// <summary>
         /// Entity name to display.
         /// </summary>
-        string DisplayName { get; }
+        string DisplayName { get; set; }
 
         /// <summary>
         /// Entity plural name to display.
         /// </summary>
-        string DisplayNamePlural { get; }
+        string DisplayNamePlural { get; set; }
 
         /// <summary>
         /// Define whether the entity is enabled.
         /// </summary>
-        bool? IsEnabled { get; }
+        bool IsEnabled { get; set; }
 
         /// <summary>
         /// Entity description.
         /// </summary>
-        string Description { get; }
+        string Description { get; set; }
 
         /// <summary>
         /// Entity type.
@@ -37,6 +38,6 @@ namespace EasyData.Services
         /// <summary>
         /// Entity properties meta information.
         /// </summary>
-        List<EntityPropertyMetaBuilder> PropertyMetaBuilders { get; }
+        HashSet<EntityPropertyMetadataDescriptor> MetadataProperties { get; }
     }
 }

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EasyData.MetaDescriptors;
 
 namespace EasyData.Services
 {
     // Do final data model processing.
-    static class ModelProcessor
+    internal static class ModelProcessor
     {
         // Do model processing.
         public static void Process(this MetaData model)
@@ -36,7 +35,7 @@ namespace EasyData.Services
         /// <summary>
         /// Update Model metadata with the meta from options and meta descriptors.
         /// </summary>
-        public static void MergeWithCustomMetadata(this MetaData model, List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
+        public static void MergeWithCustomMetadata(this MetaData model, List<IEntityMetadataDescriptor> descriptors, EasyDataOptions options)
         {
             if (descriptors != null) {
                 MergeMetadataDescriptorsWithOptions(descriptors, options);
@@ -48,42 +47,42 @@ namespace EasyData.Services
         /// <summary>
         /// Update metadata descriptors with metadata defined in options.
         /// </summary>
-        private static void MergeMetadataDescriptorsWithOptions(List<EntityMetadataDescriptor> descriptors, EasyDataOptions options)
+        private static void MergeMetadataDescriptorsWithOptions(IReadOnlyCollection<IEntityMetadataDescriptor> descriptors, EasyDataOptions options)
         {
-            foreach (var entityBuilder in options.MetadataBuilder.EntityMetaBuilders) {
+            foreach (var entityMetadataDescriptor in options.MetadataBuilder.EntityMetadataDescriptors) {
                 var entityDescriptor = descriptors.FirstOrDefault(
-                    e => entityBuilder.ClrType == e.ClrType);
+                    e => entityMetadataDescriptor.ClrType == e.ClrType);
 
                 if (entityDescriptor == null) {
                     // TODO: should we throw an exception?
                     continue;
                 }
 
-                entityDescriptor.Description = entityBuilder.Description ?? entityDescriptor.Description;
-                entityDescriptor.DisplayName = entityBuilder.DisplayName ?? entityDescriptor.DisplayName;
-                entityDescriptor.DisplayNamePlural = entityBuilder.DisplayNamePlural ?? entityDescriptor.DisplayNamePlural;
-                entityDescriptor.IsEnabled = entityBuilder.IsEnabled ?? entityDescriptor.IsEnabled;
+                entityDescriptor.Description = entityMetadataDescriptor.Description ?? entityDescriptor.Description;
+                entityDescriptor.DisplayName = entityMetadataDescriptor.DisplayName ?? entityDescriptor.DisplayName;
+                entityDescriptor.DisplayNamePlural = entityMetadataDescriptor.DisplayNamePlural ?? entityDescriptor.DisplayNamePlural;
+                entityDescriptor.IsEnabled = entityMetadataDescriptor.IsEnabled;
 
-                foreach (var propertyBuilder in entityBuilder.PropertyMetaBuilders) {
+                foreach (var entityPropertyMetadataDescriptor in entityMetadataDescriptor.MetadataProperties) {
                     var propertyDescriptor = entityDescriptor.MetadataProperties.FirstOrDefault(
-                        p => p.PropertyInfo.Name.Equals(propertyBuilder.PropertyInfo.Name));
+                        p => p.PropertyInfo.Name.Equals(entityPropertyMetadataDescriptor.PropertyInfo.Name));
 
                     if (propertyDescriptor == null) {
                         // TODO: should we throw an exception?
                         continue;
                     }
 
-                    propertyDescriptor.DisplayName = propertyBuilder.DisplayName ?? propertyDescriptor.DisplayName;
-                    propertyDescriptor.DisplayFormat = propertyBuilder.DisplayFormat ?? propertyDescriptor.DisplayFormat;
-                    propertyDescriptor.Description = propertyBuilder.Description ?? propertyDescriptor.Description;
-                    propertyDescriptor.IsEditable = propertyBuilder.IsEditable ?? propertyDescriptor.IsEditable;
-                    propertyDescriptor.Index = propertyBuilder.Index ?? propertyDescriptor.Index;
-                    propertyDescriptor.ShowInLookup = propertyBuilder.ShowInLookup ?? propertyDescriptor.ShowInLookup;
-                    propertyDescriptor.ShowOnView = propertyBuilder.ShowOnView ?? propertyDescriptor.ShowOnView;
-                    propertyDescriptor.ShowOnEdit = propertyBuilder.ShowOnEdit ?? propertyDescriptor.ShowOnEdit;
-                    propertyDescriptor.ShowOnCreate = propertyBuilder.ShowOnCreate ?? propertyDescriptor.ShowOnCreate;
-                    propertyDescriptor.Sorting = propertyBuilder.Sorting ?? propertyDescriptor.Sorting;
-                    propertyDescriptor.IsEnabled = propertyBuilder.IsEnabled ?? propertyDescriptor.IsEnabled;
+                    propertyDescriptor.DisplayName = entityPropertyMetadataDescriptor.DisplayName ?? propertyDescriptor.DisplayName;
+                    propertyDescriptor.DisplayFormat = entityPropertyMetadataDescriptor.DisplayFormat ?? propertyDescriptor.DisplayFormat;
+                    propertyDescriptor.Description = entityPropertyMetadataDescriptor.Description ?? propertyDescriptor.Description;
+                    propertyDescriptor.IsEditable = entityPropertyMetadataDescriptor.IsEditable ?? propertyDescriptor.IsEditable;
+                    propertyDescriptor.Index = entityPropertyMetadataDescriptor.Index ?? propertyDescriptor.Index;
+                    propertyDescriptor.ShowInLookup = entityPropertyMetadataDescriptor.ShowInLookup ?? propertyDescriptor.ShowInLookup;
+                    propertyDescriptor.ShowOnView = entityPropertyMetadataDescriptor.ShowOnView ?? propertyDescriptor.ShowOnView;
+                    propertyDescriptor.ShowOnEdit = entityPropertyMetadataDescriptor.ShowOnEdit ?? propertyDescriptor.ShowOnEdit;
+                    propertyDescriptor.ShowOnCreate = entityPropertyMetadataDescriptor.ShowOnCreate ?? propertyDescriptor.ShowOnCreate;
+                    propertyDescriptor.Sorting = entityPropertyMetadataDescriptor.Sorting ?? propertyDescriptor.Sorting;
+                    propertyDescriptor.IsEnabled = entityPropertyMetadataDescriptor.IsEnabled;
                 }
             }
         }
@@ -91,7 +90,7 @@ namespace EasyData.Services
         /// <summary>
         /// Update Model metadata with metadata descriptors.
         /// </summary>
-        private static void MergeModelWithMetadataDescriptors(MetaData metaData, List<EntityMetadataDescriptor> descriptors)
+        private static void MergeModelWithMetadataDescriptors(MetaData metaData, List<IEntityMetadataDescriptor> descriptors)
         {
             foreach (var entityDescriptor in descriptors) {
                 var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(

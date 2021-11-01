@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using EasyData.MetaDescriptors;
 
 namespace EasyData.Services
 {
@@ -12,30 +13,29 @@ namespace EasyData.Services
     public class MetadataBuilder
     {
         /// <summary>
-        /// Entity meta builders.
+        /// Entity metadata descriptors.
         /// </summary>
-        public IEnumerable<IEntityMetaBuilder> EntityMetaBuilders => _entityMetaBuilders;
+        public IEnumerable<IEntityMetadataDescriptor> EntityMetadataDescriptors => _entityMetadataDescriptors;
 
-        private readonly List<IEntityMetaBuilder> _entityMetaBuilders = new List<IEntityMetaBuilder>();
+        private readonly List<IEntityMetadataDescriptor> _entityMetadataDescriptors = new List<IEntityMetadataDescriptor>();
 
         /// <summary>
         /// Set entity meta options.
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
-        /// <returns>Entity meta builder instance.</returns>
-        public EntityMetaBuilder<TEntity> Entity<TEntity>()
+        /// <returns>Entity metadata descriptor instance.</returns>
+        public EntityMetadataDescriptor<TEntity> Entity<TEntity>()
         {
-            var builder = _entityMetaBuilders.FirstOrDefault(b => b.ClrType == typeof(TEntity));
+            var descriptor = _entityMetadataDescriptors.FirstOrDefault(b => b.ClrType == typeof(TEntity));
 
-            // Return entity builder if it has already been created with specified entity type
-            if (builder != null) {
-                return (EntityMetaBuilder<TEntity>)builder;
+            // Return entity metadata descriptor if it has already been created with specified entity type
+            if (descriptor != null) {
+                return (EntityMetadataDescriptor<TEntity>)descriptor;
             }
 
-            var entityBuilder = new EntityMetaBuilder<TEntity>();
-
-            _entityMetaBuilders.Add(entityBuilder);
-            return entityBuilder;
+            var entityMetadataDescriptor = new EntityMetadataDescriptor<TEntity>();
+            _entityMetadataDescriptors.Add(entityMetadataDescriptor);
+            return entityMetadataDescriptor;
         }
     }
 }

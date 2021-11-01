@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using EasyData.Services;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -19,13 +20,10 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         /// <param name="entityType">Type of the entity.</param>
         /// <returns>Entity metadata descriptor.</returns>
-        protected EntityMetadataDescriptor ProcessEntityType(Type entityType)
+        protected IEntityMetadataDescriptor ProcessEntityType(Type entityType)
         {
-            var entity = new EntityMetadataDescriptor
-            {
-                ClrType = entityType
-            };
-
+            var descriptorType = typeof(EntityMetadataDescriptor<>).MakeGenericType(entityType);
+            var entity = (IEntityMetadataDescriptor)Activator.CreateInstance(descriptorType);
             var annotation = (MetaEntityAttribute)entityType.GetCustomAttribute(typeof(MetaEntityAttribute));
 
             if (annotation != null) {
@@ -82,7 +80,7 @@ namespace EasyData.EntityFrameworkCore
         /// Get default meta attributes.
         /// </summary>
         /// <returns>Collection of Entity metadata descriptors.</returns>
-        public IEnumerable<EntityMetadataDescriptor> GetDefaultMetaAttributes()
+        public IEnumerable<IEntityMetadataDescriptor> GetDefaultMetaAttributes()
         {
             return GetEntityTypes(DbContext.Model).Select(entityType => ProcessEntityType(entityType.ClrType));
         }

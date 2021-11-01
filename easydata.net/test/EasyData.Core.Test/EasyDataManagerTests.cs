@@ -64,26 +64,26 @@ namespace EasyData.Core.Test
         }
 
         /// <summary>
-        /// Update EasyData options with entity metadata builder.
+        /// Update EasyData options with entity metadata descriptor.
         /// </summary>
-        /// <param name="entityMetaBuilder">Entity metadata builder.</param>
-        private void UpdateOptionsWithEntityMetaBuilder(IEntityMetaBuilder entityMetaBuilder)
+        /// <param name="entityMetadataDescriptor">Entity metadata descriptor.</param>
+        private void UpdateOptionsWithEntityMetadataDescriptor(IEntityMetadataDescriptor entityMetadataDescriptor)
         {
-            var builders = (List<IEntityMetaBuilder>)_easyDataOptions.MetadataBuilder.EntityMetaBuilders;
-            builders.Add(entityMetaBuilder);
+            var descriptors = (List<IEntityMetadataDescriptor>)_easyDataOptions.MetadataBuilder.EntityMetadataDescriptors;
+            descriptors.Add(entityMetadataDescriptor);
         }
 
         /// <summary>
         /// Update manager with entity metadata descriptor.
         /// </summary>
         /// <param name="entityMetadataDescriptor">Entity metadata descriptor.</param>
-        private void UpdateManagerWithEntityMetadataDescriptor(EntityMetadataDescriptor entityMetadataDescriptor)
+        private void UpdateManagerWithEntityMetadataDescriptor(IEntityMetadataDescriptor entityMetadataDescriptor)
         {
-            IEnumerable<EntityMetadataDescriptor> getDescriptors() => new List<EntityMetadataDescriptor> { entityMetadataDescriptor };
+            IEnumerable<IEntityMetadataDescriptor> GetDescriptors() => new List<IEntityMetadataDescriptor> { entityMetadataDescriptor };
 
             _easyDataManagerMock
                 .Setup(mock => mock.GetDefaultMetadataDescriptorsAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(getDescriptors()));
+                .Returns(Task.FromResult(GetDescriptors()));
         }
 
         /// <summary>
@@ -103,17 +103,14 @@ namespace EasyData.Core.Test
 
             UpdateModelWithEntityMeta(metaEntity);
 
-            // Create test entity meta builder and put it to the EasyData options
-            var entityMetaBuilder = new EntityMetaBuilderFactory<Category>().Create();
-            entityMetaBuilder.SetEnabled(true).SetDescription(null).SetDisplayName(null);
-
-            UpdateOptionsWithEntityMetaBuilder(entityMetaBuilder);
+            // Create test entity meta descriptor and put it to the EasyData options
+            var optionsEntityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            optionsEntityMetadataDescriptor.SetEnabled(true).SetDescription(null).SetDisplayName(null);
+            UpdateOptionsWithEntityMetadataDescriptor(optionsEntityMetadataDescriptor);
 
             // Create test entity metadata descriptor and put it to the EasyData manager
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
-            entityMetadataDescriptor.DisplayName = null;
-
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            entityMetadataDescriptor.SetDisplayName(null);
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
             // Get model entity and test
@@ -122,7 +119,7 @@ namespace EasyData.Core.Test
 
             modelEntityMeta.Name.Should().Be(displayName);
             modelEntityMeta.Description.Should().Be(entityMetadataDescriptor.Description);
-            modelEntityMeta.NamePlural.Should().Be(entityMetaBuilder.DisplayNamePlural);
+            modelEntityMeta.NamePlural.Should().Be(optionsEntityMetadataDescriptor.DisplayNamePlural);
         }
 
         /// <summary>
@@ -148,21 +145,20 @@ namespace EasyData.Core.Test
             metaEntity.Attributes.Add(metaEntityProperty);
             UpdateModelWithEntityMeta(metaEntity);
 
-            // Create test entity property meta builder and put it to the EasyData options
-            var entityMetaBuilder = new EntityMetaBuilderFactory<Category>().Create();
-            entityMetaBuilder.SetEnabled(true);
-            var entityPropertyMetaBuilder = new EntityPropertyMetaBuilderFactory(propertyInfo).Create();
-            entityPropertyMetaBuilder.SetEnabled(true).SetDescription(null).SetDisplayName(null);
-            entityMetaBuilder.PropertyMetaBuilders.Add(entityPropertyMetaBuilder);
-
-            UpdateOptionsWithEntityMetaBuilder(entityMetaBuilder);
+            // Create test entity property metadata descriptor and put it to the EasyData options
+            var optionsEntityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            optionsEntityMetadataDescriptor.SetEnabled(true);
+            var optionsEntityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptorFactory().Create();
+            optionsEntityPropertyMetadataDescriptor.SetEnabled(true).SetDescription(null).SetDisplayName(null);
+            optionsEntityPropertyMetadataDescriptor.PropertyInfo = propertyInfo;
+            optionsEntityMetadataDescriptor.MetadataProperties.Add(optionsEntityPropertyMetadataDescriptor);
+            UpdateOptionsWithEntityMetadataDescriptor(optionsEntityMetadataDescriptor);
 
             // Create test entity property metadata descriptor and put it to the EasyData manager
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
             var entityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptorFactory().Create();
+            entityPropertyMetadataDescriptor.SetDisplayName(null);
             entityPropertyMetadataDescriptor.PropertyInfo = propertyInfo;
-            entityPropertyMetadataDescriptor.DisplayName = null;
             entityMetadataDescriptor.MetadataProperties.Add(entityPropertyMetadataDescriptor);
 
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
@@ -173,13 +169,13 @@ namespace EasyData.Core.Test
 
             modelEntityPropertyMeta.Caption.Should().Be(caption);
             modelEntityPropertyMeta.Description.Should().Be(entityPropertyMetadataDescriptor.Description);
-            modelEntityPropertyMeta.Index.Should().Be(entityPropertyMetaBuilder.Index);
-            modelEntityPropertyMeta.ShowInLookup.Should().Be((bool)entityPropertyMetaBuilder.ShowInLookup);
-            modelEntityPropertyMeta.IsEditable.Should().Be((bool)entityPropertyMetaBuilder.IsEditable);
-            modelEntityPropertyMeta.Sorting.Should().Be(entityPropertyMetaBuilder.Sorting);
-            modelEntityPropertyMeta.ShowOnView.Should().Be((bool)entityPropertyMetaBuilder.ShowOnView);
-            modelEntityPropertyMeta.ShowOnEdit.Should().Be((bool) entityPropertyMetaBuilder.ShowOnEdit);
-            modelEntityPropertyMeta.ShowOnCreate.Should().Be((bool) entityPropertyMetaBuilder.ShowOnCreate);
+            modelEntityPropertyMeta.Index.Should().Be(optionsEntityPropertyMetadataDescriptor.Index);
+            modelEntityPropertyMeta.ShowInLookup.Should().Be((bool)optionsEntityPropertyMetadataDescriptor.ShowInLookup);
+            modelEntityPropertyMeta.IsEditable.Should().Be((bool)optionsEntityPropertyMetadataDescriptor.IsEditable);
+            modelEntityPropertyMeta.Sorting.Should().Be(optionsEntityPropertyMetadataDescriptor.Sorting);
+            modelEntityPropertyMeta.ShowOnView.Should().Be((bool)optionsEntityPropertyMetadataDescriptor.ShowOnView);
+            modelEntityPropertyMeta.ShowOnEdit.Should().Be((bool)optionsEntityPropertyMetadataDescriptor.ShowOnEdit);
+            modelEntityPropertyMeta.ShowOnCreate.Should().Be((bool)optionsEntityPropertyMetadataDescriptor.ShowOnCreate);
         }
 
         /// <summary>
@@ -195,12 +191,11 @@ namespace EasyData.Core.Test
 
             UpdateModelWithEntityMeta(metaEntity);
 
-            var entityMetaBuilder = new EntityMetaBuilderFactory<Category>().Create();
-            entityMetaBuilder.SetEnabled(false);
-            UpdateOptionsWithEntityMetaBuilder(entityMetaBuilder);
+            var optionsEntityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            optionsEntityMetadataDescriptor.SetEnabled(false);
+            UpdateOptionsWithEntityMetadataDescriptor(optionsEntityMetadataDescriptor);
 
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
             var model = _easyDataManagerMock.Object.GetModelAsync("__default3");
@@ -222,9 +217,8 @@ namespace EasyData.Core.Test
 
             UpdateModelWithEntityMeta(metaEntity);
 
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
-            entityMetadataDescriptor.IsEnabled = false;
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            entityMetadataDescriptor.SetEnabled(false);
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
             var model = _easyDataManagerMock.Object.GetModelAsync("__default4");
@@ -245,7 +239,7 @@ namespace EasyData.Core.Test
             {
                 ClrType = typeof(Category)
             };
-            var entityPropertyMeta = new MetaEntityAttr()
+            var entityPropertyMeta = new MetaEntityAttr
             {
                 PropInfo = propertyInfo
             };
@@ -254,19 +248,19 @@ namespace EasyData.Core.Test
             UpdateModelWithEntityMeta(metaEntity);
 
 
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
             var entityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptorFactory().Create();
             entityPropertyMetadataDescriptor.PropertyInfo = propertyInfo;
             entityMetadataDescriptor.MetadataProperties.Add(entityPropertyMetadataDescriptor);
             UpdateManagerWithEntityMetadataDescriptor(entityMetadataDescriptor);
 
-            var entityMetaBuilder = new EntityMetaBuilderFactory<Category>().Create();
-            entityMetaBuilder.SetEnabled(true);
-            var entityPropertyMetaBuilder = new EntityPropertyMetaBuilderFactory(propertyInfo).Create();
-            entityPropertyMetaBuilder.SetEnabled(false);
-            entityMetaBuilder.PropertyMetaBuilders.Add(entityPropertyMetaBuilder);
-            UpdateOptionsWithEntityMetaBuilder(entityMetaBuilder);
+            var optionsEntityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
+            optionsEntityMetadataDescriptor.SetEnabled(true);
+            var optionsEntityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptorFactory().Create();
+            optionsEntityPropertyMetadataDescriptor.SetEnabled(false);
+            optionsEntityPropertyMetadataDescriptor.PropertyInfo = propertyInfo;
+            optionsEntityMetadataDescriptor.MetadataProperties.Add(optionsEntityPropertyMetadataDescriptor);
+            UpdateOptionsWithEntityMetadataDescriptor(optionsEntityMetadataDescriptor);
 
             var model = _easyDataManagerMock.Object.GetModelAsync("__default5");
             var properties = model.Result.EntityRoot.SubEntities.First().Attributes;
@@ -293,8 +287,7 @@ namespace EasyData.Core.Test
             metaEntity.Attributes.Add(entityPropertyMeta);
             UpdateModelWithEntityMeta(metaEntity);
 
-            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory().Create();
-            entityMetadataDescriptor.ClrType = typeof(Category);
+            var entityMetadataDescriptor = new EntityMetadataDescriptorFactory<Category>().Create();
             entityMetadataDescriptor.IsEnabled = true;
             var entityPropertyMetadataDescriptor = new EntityPropertyMetadataDescriptorFactory().Create();
             entityPropertyMetadataDescriptor.PropertyInfo = propertyInfo;
