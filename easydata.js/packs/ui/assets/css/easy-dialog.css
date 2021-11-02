@@ -101,9 +101,12 @@
 }
 
 .kdlg-footer {
-    min-height: 10px;
+	min-height: 10px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+    height: auto;
+    color: initial;
+    margin: unset;
 }
 
 .kdlg-footer.has-border {
@@ -114,7 +117,7 @@
     color: #363636;
     flex-grow: 1;
     flex-shrink: 0;
-    font-size: 1.6rem;
+    font-size: 1.6em;
     line-height: 1;
     margin: 0;
     padding: 0;

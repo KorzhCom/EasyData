@@ -114,9 +114,10 @@ namespace EasyData
                 return DataType.Bool;
             if (systemType == typeof(byte[]))
                 return DataType.Blob;
-            if (systemType == typeof(Guid))
+            if (systemType == typeof(Guid) || systemType == typeof(Guid?))
                 return DataType.Guid;
-            if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))
+            if (systemType == typeof(byte) || systemType == typeof(char) || systemType == typeof(sbyte) 
+                || systemType == typeof(byte?) || systemType == typeof(char?) || systemType == typeof(sbyte?))
                 return DataType.Byte;
             if (systemType == typeof(DateTime) || systemType == typeof(DateTime?)
                      || systemType == typeof(DateTimeOffset) || systemType == typeof(DateTimeOffset?))
@@ -125,17 +126,28 @@ namespace EasyData
                 return DataType.Time;
             if (systemType == typeof(decimal) || systemType == typeof(decimal?))
                 return DataType.Currency;
-            if (systemType == typeof(double) || systemType == typeof(Single) || systemType == typeof(float) || systemType == typeof(double?) || systemType == typeof(Single?) || systemType == typeof(float?))
+            if (systemType == typeof(double) || systemType == typeof(float) 
+                || systemType == typeof(double?) || systemType == typeof(float?))
                 return DataType.Float;
-            if (systemType == typeof(short) || systemType == typeof(ushort) || systemType == typeof(short?) || systemType == typeof(ushort?))
+            if (systemType == typeof(short) || systemType == typeof(ushort) 
+                || systemType == typeof(short?) || systemType == typeof(ushort?))
                 return DataType.Word;
-            if (systemType == typeof(int) || systemType == typeof(uint) || systemType == typeof(int?) || systemType == typeof(uint?))
+            if (systemType == typeof(int) || systemType == typeof(uint) 
+                || systemType == typeof(int?) || systemType == typeof(uint?))
                 return DataType.Int32;
-            if (systemType == typeof(long) || systemType == typeof(ulong) || systemType == typeof(long?) || systemType == typeof(ulong?))
+            if (systemType == typeof(long) || systemType == typeof(ulong) 
+                || systemType == typeof(long?) || systemType == typeof(ulong?))
                 return DataType.Int64;
             if (systemType == typeof(string))
                 return DataType.String;
-            
+
+#if NET6_0
+            if (systemType == typeof(DateOnly) || systemType == typeof(DateOnly?))
+                return DataType.Date;
+            if (systemType == typeof(TimeOnly) || systemType == typeof(TimeOnly?))
+                return DataType.Time;
+#endif
+
             return DataType.Unknown;
         }
 
