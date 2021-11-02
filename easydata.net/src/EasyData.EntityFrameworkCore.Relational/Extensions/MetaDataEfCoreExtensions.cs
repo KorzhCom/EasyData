@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EasyData.EntityFrameworkCore.MetaDataLoader;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyData.EntityFrameworkCore
@@ -27,7 +28,7 @@ namespace EasyData.EntityFrameworkCore
         /// <param name="options">Different options</param>
         public static void LoadFromDbContext(this MetaData model, DbContext context, DbContextMetaDataLoaderOptions options)
         {
-            var loader = new MetadataLoaderEF(context, model, options);
+            var loader = new DbContextMetaDataLoader(context, model, options);
             loader.LoadFromDbContext();
         }
     }

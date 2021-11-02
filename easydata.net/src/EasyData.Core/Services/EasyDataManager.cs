@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyData.MetaDescriptors;
+
 using Newtonsoft.Json.Linq;
 
 namespace EasyData.Services
@@ -37,13 +35,8 @@ namespace EasyData.Services
 
         protected readonly EasyDataOptions Options;
 
-        protected static ConcurrentDictionary<string, MetaData> MetadataSchemas { get; } =
-            new ConcurrentDictionary<string, MetaData>();
+        protected MetaData Model { get; private set; } = new MetaData();
 
-        /// <summary>
-        /// Default Entities metadata.
-        /// </summary>
-        protected List<IEntityMetadataDescriptor> EntityMetadataDescriptors { get; private set; }
 
         public EasyDataManager(IServiceProvider services, EasyDataOptions options)
         {
@@ -53,56 +46,19 @@ namespace EasyData.Services
 
         public async Task<MetaData> GetModelAsync(string modelId, CancellationToken ct = default)
         {
-            if (MetadataSchemas.TryGetValue(modelId, out var model)) {
-                return model;
+            if (Model.Id != modelId) {
+                //TODO: Try to load model from cache
+
+                await LoadModelAsync(modelId, ct);
             }
 
-            // Initialize model if not in storage
-            model = await InitializeMetadataSchemaAsync(modelId, ct);
-
-            // See if there was a model created with specified id (maybe from a parallel thread).
-            if (!MetadataSchemas.TryAdd(modelId, model)) {
-                // Discard the created model, use the one from dictionary.
-                model = MetadataSchemas[modelId];
-            }
-
-            return model;
+            return Model;
         }
 
-        /// <summary>
-        /// Create a new model instance.
-        /// </summary>
-        /// <param name="modelId">Id of the model.</param>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>Metadata schema.</returns>
-        protected async Task<MetaData> InitializeMetadataSchemaAsync(
-            string modelId, CancellationToken ct = default)
+
+        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default)
         {
-            var model = new MetaData()
-            {
-                Id = modelId
-            };
-
-            await LoadModelAsync(model, ct);
-
-            if (EntityMetadataDescriptors == null) {
-                EntityMetadataDescriptors = (await GetDefaultMetadataDescriptorsAsync(ct)).ToList();
-            }
-
-            // Update loaded model metadata with entity descriptors and options
-            model.MergeWithCustomMetadata(EntityMetadataDescriptors, Options);
-            model.Process();
-            return model;
-        }
-
-        /// <summary>
-        /// Load metadata with properties.
-        /// </summary>
-        /// <param name="metaData">Metadata object.</param>
-        /// <param name="ct">Cancellation token.</param>
-        public virtual Task LoadModelAsync(MetaData metaData, CancellationToken ct = default)
-        {
-            Options.ModelTuner?.Invoke(metaData);
+            Options.ModelTuner?.Invoke(Model);
             return Task.CompletedTask;
         }
 
@@ -125,13 +81,6 @@ namespace EasyData.Services
         public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 
         public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get default metadata configuration for entities.
-        /// </summary>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>Default entities metadata.</returns>
-        public abstract Task<IEnumerable<IEntityMetadataDescriptor>> GetDefaultMetadataDescriptorsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

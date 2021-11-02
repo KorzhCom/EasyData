@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using EasyData.EntityFrameworkCore.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EasyData.EntityFrameworkCore
@@ -44,6 +44,21 @@ namespace EasyData.EntityFrameworkCore
         /// Gets or sets a value indicating whether entities must keep order of DbSet declarations.
         /// </summary>
         public bool KeepDbSetDeclarationOrder { get; set; } = false;
+
+
+        /// <summary>
+        /// Store metadata.
+        /// </summary>
+        public MetadataBuilder MetadataBuilder { get; } = new MetadataBuilder();
+
+        /// <summary>
+        /// Build metadata.
+        /// </summary>
+        /// <param name="builder"></param>
+        public void UseMetaBuilder(Action<MetadataBuilder> builder)
+        {
+            builder(MetadataBuilder);
+        }
 
     }
 }

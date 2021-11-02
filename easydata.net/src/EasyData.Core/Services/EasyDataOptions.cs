@@ -100,19 +100,5 @@ namespace EasyData.Services
         {
             ModelTuner = tuner;
         }
-
-        /// <summary>
-        /// Store metadata.
-        /// </summary>
-        public MetadataBuilder MetadataBuilder { get; } = new MetadataBuilder();
-
-        /// <summary>
-        /// Build metadata.
-        /// </summary>
-        /// <param name="builder"></param>
-        public void UseMetaBuilder(Action<MetadataBuilder> builder)
-        {
-            builder(MetadataBuilder);
-        }
     }
 }
