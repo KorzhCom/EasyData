@@ -9,6 +9,9 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
     public class DbContextMetaDataLoaderTests
     {
+        /// <summary>
+        /// Test getting all entities.
+        /// </summary>
         [Fact]
         public void LoadFromDbContextTest()
         {
@@ -19,7 +22,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
 
             meta.EntityRoot.SubEntities.Should().HaveCount(8);
 
-            Dictionary<string, int> entityAttrCount = new Dictionary<string, int>()
+            var entityAttrCount = new Dictionary<string, int>()
             {
                 ["Category"] = 4,
                 ["Customer"] = 11,
