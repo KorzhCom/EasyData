@@ -74,11 +74,11 @@ namespace EasyData.EntityFrameworkCore.Services
         }
 
 
-        ///// <summary>
-        ///// Get entity attribute metadata descriptor.
-        ///// </summary>
-        ///// <param name="propertySelector">Property expression.</param>
-        ///// <returns>Attribute metadata builder instance.</returns>
+        /// <summary>
+        /// Get entity attribute metadata builder.
+        /// </summary>
+        /// <param name="propertySelector">Property expression.</param>
+        /// <returns>Attribute metadata builder instance.</returns>
         public EntityAttributeMetaBuilder Attribute(Expression<Func<T, object>> propertySelector)
         {
             PropertyInfo propertyInfo;
