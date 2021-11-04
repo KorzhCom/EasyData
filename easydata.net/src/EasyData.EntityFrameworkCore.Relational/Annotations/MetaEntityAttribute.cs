@@ -12,7 +12,7 @@ namespace EasyData.EntityFrameworkCore
 
         public bool Enabled { get; set; } = true;
 
-        public bool Editable { get; set; } = true;
+        public bool? Editable { get; set; }
 
         public string DisplayName { get; set; }
 

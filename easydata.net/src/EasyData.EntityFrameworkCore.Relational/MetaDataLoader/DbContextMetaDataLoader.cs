@@ -129,7 +129,9 @@ namespace EasyData.EntityFrameworkCore
                     entity.NamePlural = annotation.DisplayNamePlural;
                 }
 
-                entity.IsEditable = annotation.Editable;
+                if (annotation.Editable.HasValue) {
+                    entity.IsEditable = annotation.Editable.Value;
+                }
             }
 
             TableEntity.Add(tableName, entity);
