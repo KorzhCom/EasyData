@@ -1,3 +1,5 @@
+/* EasyData dialogs */
+
 .kdlg-modal, .kdlg-modal-background {
     bottom: 0;
     left: 0;
@@ -75,10 +77,8 @@
 }
 
 
-
 .kdlg-footer, .kdlg-header {
     align-items: center;
-    /*background-color: #f5f5f5;*/
     background-color: #fff;
     display: flex;
     flex-shrink: 0;
@@ -229,7 +229,7 @@
 /** alerts end **/
 
 
-/** progress starts **/
+/** progress start **/
 .kdlg-progress-line {
     width: 100%;
     overflow: hidden;
@@ -260,4 +260,4 @@
       to {  left: 120%;}
   }
 
-/** progress ends **/
+/** progress end **/
