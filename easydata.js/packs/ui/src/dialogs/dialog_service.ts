@@ -10,21 +10,23 @@ export interface DialogOptions {
     arrangeParents?: boolean;
     submitButtonText?: string;
     cancelButtonText?: string;
-    beforeOpen?: () => void;
-    onSubmit?: () => boolean | void;
-    onCancel?: () => void;
-    onDestroy?: () => void;
+    beforeOpen?: (dialog: Dialog) => void;
+    onShow?: (dialog: Dialog) => void;
+    onSubmit?: (dialog: Dialog) => boolean | void;
+    onCancel?: (dialog: Dialog) => void;
+    onDestroy?: (dialog: Dialog) => void;
 }
 
 export interface ProgressDialogOptions {
     title: string,
     content?: string,
     determinated?: boolean;
-    beforeOpen?: () => void;
-    onSubmit?: () => void;
+    beforeOpen?: (dialog: Dialog) => void;
+    onShow?: (dialog: Dialog) => void;
+    onSubmit?: (dialog: Dialog) => void;
     width?: number | string;
     height?: number | string;
-    onDestroy?: () => void;
+    onDestroy?: (dialog: Dialog) => void;
 };
 
 export interface Dialog {
@@ -38,7 +40,7 @@ export interface Dialog {
     clearAlert();
 }
 
-export interface PorgressDialog extends Dialog {
+export interface ProgressDialog extends Dialog {
     updateContent(content: string);
     updateProgress(progress: number);
 }
@@ -52,7 +54,7 @@ export interface DialogService {
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): void;
     openPrompt(title?: string, content?: string, defVal?: string, callback?: (result: string) => void): Promise<string> | void;
 
-    openProgress(options: ProgressDialogOptions): PorgressDialog;
+    openProgress(options: ProgressDialogOptions): ProgressDialog;
 
     open(options: DialogOptions): Dialog;
 

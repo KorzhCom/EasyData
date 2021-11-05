@@ -1,6 +1,6 @@
 import { i18n, utils } from '@easydata/core';
 
-import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, PorgressDialog } from './dialog_service';
+import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, ProgressDialog } from './dialog_service';
 
 import { domel } from '../utils/dom_elem_builder';
 
@@ -110,17 +110,18 @@ export class DefaultDialogService implements DialogService {
     }
 
     public open(options: DialogOptions) {
+        const dialog = new DefaultDialog(options);
+
         const onDestroy = options.onDestroy;
-        options.onDestroy = () => {
+        options.onDestroy = (dlg) => {
             this.untrack(dlg);
-            onDestroy && onDestroy();
+            onDestroy && onDestroy(dlg);
         }
 
-        const dlg = new DefaultDialog(options);
-        dlg.open();
+        dialog.open();
 
-        this.track(dlg);
-        return dlg;
+        this.track(dialog);
+        return dialog;
     }
 
     private untrack(dlg: Dialog) {
@@ -135,17 +136,17 @@ export class DefaultDialogService implements DialogService {
     }
 
     public openProgress(options: ProgressDialogOptions) {
+        const dialog = new DefaultProgressDialog(options);
         const onDestroy = options.onDestroy;
-        options.onDestroy = () => {
+        options.onDestroy = (dlg) => {
             this.untrack(dlg);
-            onDestroy && onDestroy();
+            onDestroy && onDestroy(dlg);
         }
 
-        const dlg = new DefaultProgressDialog(options);
-        dlg.open();
+        dialog.open();
 
-        this.track(dlg);
-        return dlg;
+        this.track(dialog);
+        return dialog;
     }
 
     public getAllDialogs() {
@@ -262,7 +263,7 @@ export class DefaultDialog implements Dialog {
 
     public open() {
         if (this.options.beforeOpen) {
-            this.options.beforeOpen();
+            this.options.beforeOpen(this);
         }
 
         domel(this.slot).show();
@@ -349,12 +350,12 @@ export class DefaultDialog implements Dialog {
         }
         
         if (this.options.onDestroy) {
-            this.options.onDestroy();
+            this.options.onDestroy(this);
         }
     }
 
     private submitHandler = (): boolean => {
-        if (this.options.onSubmit && this.options.onSubmit() === false) {
+        if (this.options.onSubmit && this.options.onSubmit(this) === false) {
             return false;
         }
 
@@ -364,7 +365,7 @@ export class DefaultDialog implements Dialog {
 
     private cancelHandler = () => {
         if (this.options.onCancel) {
-            this.options.onCancel();
+            this.options.onCancel(this);
         }
 
         this.destroy();
@@ -409,7 +410,7 @@ export class DefaultDialog implements Dialog {
 }
 
 
-export class DefaultProgressDialog extends DefaultDialog implements PorgressDialog {
+export class DefaultProgressDialog extends DefaultDialog implements ProgressDialog {
 
     protected contentElement: HTMLElement;
     protected progressElement: HTMLElement;
