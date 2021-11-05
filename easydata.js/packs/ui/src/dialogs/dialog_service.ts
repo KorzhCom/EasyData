@@ -34,6 +34,8 @@ export interface Dialog {
     cancel(): void;
     close(): void;
     getRootElement(): HTMLElement;
+    getSubmitButtonElement(): HTMLButtonElement | null;
+    getCancelButtonElement(): HTMLButtonElement | null;
     disableButtons();
     enableButtons();
     showAlert(text: string, reason?: string, replace?: boolean);

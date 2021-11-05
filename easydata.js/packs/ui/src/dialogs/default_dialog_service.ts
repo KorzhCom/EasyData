@@ -200,6 +200,10 @@ export class DefaultDialog implements Dialog {
                             .focus()
                         );
                 })
+                .addChild('div', b => {
+                    b .addClass(`${cssPrefix}-alert-container`);
+                    this.alertElement = b.toDOM();
+                })
                 .addChild('section', b =>  { 
                     this.bodyElement = b
                         .addClass(`${cssPrefix}-body`)
@@ -212,10 +216,6 @@ export class DefaultDialog implements Dialog {
                         b.addChildElement(options.body);
                     }
                 })
-                .addChild('div', b => this.alertElement = b
-                    .addClass(`${cssPrefix}-alert-container`)
-                    .toDOM()
-                )
                 .addChild('footer', b => {
                         this.footerElement = b
                             .addClass(`${cssPrefix}-footer`, 'align-right')
