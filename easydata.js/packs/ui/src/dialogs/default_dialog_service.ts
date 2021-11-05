@@ -289,6 +289,10 @@ export class DefaultDialog implements Dialog {
         if (this.options.submitOnEnter) {
             window.addEventListener('keydown', this.keydownHandler, false);
         }
+
+        if (this.options.onShow) {
+            this.options.onShow(this);
+        }
     }
 
     public submit() {
@@ -406,12 +410,10 @@ export class DefaultDialog implements Dialog {
             }
         }
     }
-
 }
 
 
 export class DefaultProgressDialog extends DefaultDialog implements ProgressDialog {
-
     protected contentElement: HTMLElement;
     protected progressElement: HTMLElement;
 
