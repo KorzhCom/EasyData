@@ -91,20 +91,18 @@ export class HttpClient {
       
         request.open();
 
-        return new HttpActionResult<T>(request, new Promise<T>((resolve, reject) => {
-        
+        return new HttpActionResult<T>(request, new Promise<T>((resolve, reject) => {        
             if (options.responseType)
                 xhr.responseType = options.responseType;
 
             xhr.onreadystatechange = () => {
-
                 if (xhr.readyState != 4) {
                     return;
                 }
                 
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const status = xhr.status;
-                if (status >= 300 || status < 200) {
+                if (status >= 400) {
                     const rtPromise = (xhr.responseType === 'arraybuffer' 
                         || xhr.responseType === 'blob')
                         ? HttpClient.decodeArrayBuffer(xhr.response)

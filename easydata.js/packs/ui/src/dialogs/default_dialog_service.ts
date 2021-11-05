@@ -160,6 +160,7 @@ export class DefaultDialogService implements DialogService {
 }
 
 export class DefaultDialog implements Dialog {
+    protected dialogId: string;
     protected slot: HTMLElement;
     protected windowElement: HTMLElement;
     protected headerElement: HTMLElement;
@@ -168,11 +169,11 @@ export class DefaultDialog implements Dialog {
     protected alertElement: HTMLElement;
 
     constructor(private options: DialogOptions) {
-        const id = utils.generateId('dlg');
+        const dialogId = utils.generateId('dlg');
         this.slot = 
             domel('div', document.body)
             .attr('tab-index', '-1')
-            .data('dialog-id', id)
+            .data('dialog-id', dialogId)
             .addClass(`${cssPrefix}-modal`, 'is-active')
             .focus()
             .addChild('div', b => b
@@ -222,7 +223,8 @@ export class DefaultDialog implements Dialog {
                         if (options.submitable === false)
                             return;
 
-                        b.addChild('button', b => b
+                        b.addChild('button', bb => bb
+                            .id(dialogId + '-btn-submit')
                             .addClass('kfrm-button', 'is-info')
                             .addText(options.submitButtonText || i18n.getText('ButtonOK'))
                             .on('click', (e) => {
@@ -232,7 +234,8 @@ export class DefaultDialog implements Dialog {
                         );
 
                         if (options.cancelable !== false)
-                            b.addChild('button', builder => builder
+                            b.addChild('button', bb => bb
+                                .id(dialogId + '-btn-cancel')
                                 .addClass('kfrm-button')
                                 .addText(options.cancelButtonText || i18n.getText('ButtonCancel'))
                                 .on('click', (e) => {
@@ -247,6 +250,14 @@ export class DefaultDialog implements Dialog {
 
     public getRootElement() {
         return this.slot;
+    }
+
+    public getSubmitButtonElement() : HTMLButtonElement | null {
+        return document.getElementById(this.dialogId + '-btn-submit') as HTMLButtonElement;
+    }
+
+    public getCancelButtonElement() : HTMLButtonElement | null {
+        return document.getElementById(this.dialogId + '-btn-cancel') as HTMLButtonElement;
     }
 
     public open() {
@@ -327,7 +338,6 @@ export class DefaultDialog implements Dialog {
     }
 
     protected destroy() {
-
         if (this.options.arrangeParents) {
             this.arrangeParents(false);
         }
