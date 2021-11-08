@@ -1,6 +1,6 @@
 import { i18n, utils } from '@easydata/core';
 
-import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, ProgressDialog } from './dialog_service';
+import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, ProgressDialog, DialogSet, DialogFooterAlignment } from './dialog_service';
 
 import { domel } from '../utils/dom_elem_builder';
 
@@ -21,7 +21,7 @@ export class DefaultDialogService implements DialogService {
             submitable: true,
             cancelable: true,
             body: template
-        }
+        };
 
         if (callback) {
             options.onSubmit = () => {
@@ -29,7 +29,7 @@ export class DefaultDialogService implements DialogService {
             };
             options.onCancel = () => {
                 callback(false);
-            }
+            };
 
             this.open(options);
             return;
@@ -38,10 +38,10 @@ export class DefaultDialogService implements DialogService {
         return new Promise<boolean>((resolve) => {
             options.onSubmit = () => {
                 resolve(true);
-            }
+            };
             options.onCancel = () => {
                 resolve(false);
-            }
+            };
             this.open(options);
         });
     }
@@ -72,7 +72,7 @@ export class DefaultDialogService implements DialogService {
                 }
                 input.focus();
             }
-        }
+        };
 
         const processInput = (callback) => {
             const input = document.getElementById(`${cssPrefix}-dialog-form-input`) as HTMLInputElement;
@@ -84,7 +84,7 @@ export class DefaultDialogService implements DialogService {
 
             input.classList.add('eqjs-invalid');
             return false;
-        }
+        };
 
         if (callback) {
             options.onSubmit = () => { 
@@ -92,7 +92,7 @@ export class DefaultDialogService implements DialogService {
             };
             options.onCancel = () => {
                 callback("");
-            }
+            };
 
             this.open(options);
             return;
@@ -101,10 +101,10 @@ export class DefaultDialogService implements DialogService {
         return new Promise<string>((resolve) => {
             options.onSubmit = () => {
                 return processInput(resolve);
-            }
+            };
             options.onCancel = () => {
                 resolve("");
-            }
+            };
             this.open(options);
         });
     }
@@ -116,12 +116,16 @@ export class DefaultDialogService implements DialogService {
         options.onDestroy = (dlg) => {
             this.untrack(dlg);
             onDestroy && onDestroy(dlg);
-        }
+        };
 
         dialog.open();
 
         this.track(dialog);
         return dialog;
+    }
+
+    public createSet(options: DialogOptions[]): DialogSet {
+        return new DefaultDialogSet(options, this);
     }
 
     private untrack(dlg: Dialog) {
@@ -141,7 +145,7 @@ export class DefaultDialogService implements DialogService {
         options.onDestroy = (dlg) => {
             this.untrack(dlg);
             onDestroy && onDestroy(dlg);
-        }
+        };
 
         dialog.open();
 
@@ -170,11 +174,11 @@ export class DefaultDialog implements Dialog {
     protected alertElement: HTMLElement;
 
     constructor(private options: DialogOptions) {
-        const dialogId = utils.generateId('dlg');
+        this.dialogId = utils.generateId('dlg');
         this.slot = 
             domel('div', document.body)
             .attr('tab-index', '-1')
-            .data('dialog-id', dialogId)
+            .data('dialog-id', this.dialogId)
             .addClass(`${cssPrefix}-modal`, 'is-active')
             .focus()
             .addChild('div', b => b
@@ -217,15 +221,24 @@ export class DefaultDialog implements Dialog {
                     }
                 })
                 .addChild('footer', b => {
+                        let alignClass = null;
+                        if (options.footerAlignment == DialogFooterAlignment.Center) {
+                            alignClass = 'align-center';
+                        }
+                        else if (!options.footerAlignment || options.footerAlignment == DialogFooterAlignment.Right) {
+                            alignClass = 'align-right';
+                        }
                         this.footerElement = b
-                            .addClass(`${cssPrefix}-footer`, 'align-right')
+                            .addClass(`${cssPrefix}-footer`)
                             .toDOM();
+
+                        b.addClass(alignClass)
 
                         if (options.submitable === false)
                             return;
 
                         b.addChild('button', bb => bb
-                            .id(dialogId + '-btn-submit')
+                            .id(this.dialogId + '-btn-submit')
                             .addClass('kfrm-button', 'is-info')
                             .addText(options.submitButtonText || i18n.getText('ButtonOK'))
                             .on('click', (e) => {
@@ -236,7 +249,7 @@ export class DefaultDialog implements Dialog {
 
                         if (options.cancelable !== false)
                             b.addChild('button', bb => bb
-                                .id(dialogId + '-btn-cancel')
+                                .id(this.dialogId + '-btn-cancel')
                                 .addClass('kfrm-button')
                                 .addText(options.cancelButtonText || i18n.getText('ButtonCancel'))
                                 .on('click', (e) => {
@@ -343,6 +356,9 @@ export class DefaultDialog implements Dialog {
     }
 
     protected destroy() {
+        const elem = document.querySelectorAll(`[data-dialog-id="${this.dialogId}"]`); 
+        if (elem.length <= 0) return;
+
         if (this.options.arrangeParents) {
             this.arrangeParents(false);
         }
@@ -482,5 +498,52 @@ export class DefaultProgressDialog extends DefaultDialog implements ProgressDial
             return 0;
 
         return num;
+    }
+}
+
+export class DefaultDialogSet {
+    private currentDialog: Dialog = null;
+    private currentIndex: number = 0;
+
+    constructor(private options: DialogOptions[], private dialogService: DialogService) {
+        this.options = options;
+        this.dialogService = dialogService;
+    }
+
+    public getCurrent(): Dialog {
+        return this.currentDialog;
+    }
+    public openNext(): Dialog {
+        return this.open(this.currentIndex + 1);
+    }
+
+    public openPrev(): Dialog {
+        return this.open(this.currentIndex - 1);
+    }
+
+    public open(page: number): Dialog {
+        if (page < 0) {
+            this.currentIndex = 0;
+        } else if (page >= this.options.length) {
+            this.currentIndex = this.options.length - 1;
+        } else {
+            this.currentIndex = page;
+        }
+
+        if (this.currentDialog) {
+            try {
+                this.currentDialog.close();
+            } catch (e) {}
+        }
+
+        this.currentDialog = this.dialogService.open(this.options[this.currentIndex]);
+        return this.currentDialog;
+    }
+
+    public close(): void {
+        if (this.currentDialog) {
+            this.currentDialog.close();
+            this.currentDialog = null;
+        }
     }
 }

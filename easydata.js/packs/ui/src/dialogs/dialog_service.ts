@@ -1,3 +1,9 @@
+export enum DialogFooterAlignment {
+    Left = 1,
+    Center = 2,
+    Right = 3
+}
+
 export interface DialogOptions {
     title: string;
     body: string | HTMLElement;
@@ -10,6 +16,7 @@ export interface DialogOptions {
     arrangeParents?: boolean;
     submitButtonText?: string;
     cancelButtonText?: string;
+    footerAlignment?: DialogFooterAlignment;
     beforeOpen?: (dialog: Dialog) => void;
     onShow?: (dialog: Dialog) => void;
     onSubmit?: (dialog: Dialog) => boolean | void;
@@ -18,8 +25,8 @@ export interface DialogOptions {
 }
 
 export interface ProgressDialogOptions {
-    title: string,
-    content?: string,
+    title: string;
+    content?: string;
     determinated?: boolean;
     beforeOpen?: (dialog: Dialog) => void;
     onShow?: (dialog: Dialog) => void;
@@ -27,7 +34,7 @@ export interface ProgressDialogOptions {
     width?: number | string;
     height?: number | string;
     onDestroy?: (dialog: Dialog) => void;
-};
+}
 
 export interface Dialog {
     submit(): void;
@@ -47,6 +54,14 @@ export interface ProgressDialog extends Dialog {
     updateProgress(progress: number);
 }
 
+export interface DialogSet {
+    getCurrent(): Dialog;
+    openNext(): Dialog;
+    openPrev(): Dialog;
+    open(page: number): Dialog;
+    close(): void;
+}
+
 export interface DialogService {
     openConfirm(title?: string, content?: string): Promise<boolean>;
     openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): void;
@@ -60,7 +75,9 @@ export interface DialogService {
 
     open(options: DialogOptions): Dialog;
 
+    createSet(options: DialogOptions[]): DialogSet;
+
     getAllDialogs(): Dialog[];
 
-    closeAllDialogs();
+    closeAllDialogs(): void;
 }

@@ -91,6 +91,10 @@
     justify-content: flex-end;
 }
 
+.kdlg-footer.align-center {
+    justify-content: center;
+}
+
 .kdlg-header {
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
