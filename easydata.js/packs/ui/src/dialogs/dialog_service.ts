@@ -16,12 +16,20 @@ export interface DialogOptions {
     arrangeParents?: boolean;
     submitButtonText?: string;
     cancelButtonText?: string;
-    footerAlignment?: DialogFooterAlignment;
-    beforeOpen?: (dialog: Dialog) => void;
-    onShow?: (dialog: Dialog) => void;
-    onSubmit?: (dialog: Dialog) => boolean | void;
-    onCancel?: (dialog: Dialog) => void;
-    onDestroy?: (dialog: Dialog) => void;
+    footerAlignment?: DialogFooterAlignment; 
+
+    /** 
+     * Contains the key for for Google's reCAPTCHA.
+     * If this option is set, the Submit button will have special attributes  
+     * (data-sitekey, data-callback) and CSS class 'g-recaptcha' 
+     * */
+    recaptchaSiteKey?: string;
+    
+    beforeOpen?: (dialog?: Dialog) => void;
+    onShow?: (dialog?: Dialog) => void;
+    onSubmit?: (dialog?: Dialog, token?: string) => boolean | void;
+    onCancel?: (dialog?: Dialog) => void;
+    onDestroy?: (dialog?: Dialog) => void;
 }
 
 export interface ProgressDialogOptions {

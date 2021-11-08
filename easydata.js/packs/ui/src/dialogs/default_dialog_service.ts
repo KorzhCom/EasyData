@@ -6,6 +6,8 @@ import { domel } from '../utils/dom_elem_builder';
 
 const cssPrefix = "kdlg";
 
+declare var grecaptcha;
+
 export class DefaultDialogService implements DialogService {
     private static openDialogs: Dialog[] = [];
 
@@ -175,6 +177,7 @@ export class DefaultDialog implements Dialog {
 
     constructor(private options: DialogOptions) {
         this.dialogId = utils.generateId('dlg');
+           
         this.slot = 
             domel('div', document.body)
             .attr('tab-index', '-1')
@@ -222,12 +225,13 @@ export class DefaultDialog implements Dialog {
                 })
                 .addChild('footer', b => {
                         let alignClass = null;
-                        if (options.footerAlignment == DialogFooterAlignment.Center) {
+                        if (options.footerAlignment && options.footerAlignment == DialogFooterAlignment.Center) {
                             alignClass = 'align-center';
                         }
-                        else if (!options.footerAlignment || options.footerAlignment == DialogFooterAlignment.Right) {
+                        else {
                             alignClass = 'align-right';
                         }
+
                         this.footerElement = b
                             .addClass(`${cssPrefix}-footer`)
                             .toDOM();
@@ -237,15 +241,35 @@ export class DefaultDialog implements Dialog {
                         if (options.submitable === false)
                             return;
 
-                        b.addChild('button', bb => bb
-                            .id(this.dialogId + '-btn-submit')
+                        b.addChild('button', bb => {
+                            bb.id(this.dialogId + '-btn-submit')
                             .addClass('kfrm-button', 'is-info')
-                            .addText(options.submitButtonText || i18n.getText('ButtonOK'))
-                            .on('click', (e) => {
-                                this.submitHandler();
-                            })
-                            .focus()
-                        );
+                            .addText(options.submitButtonText || i18n.getText('ButtonOK'));
+
+                            if (options.recaptchaSiteKey) {
+                                bb.data('sitekey', options.recaptchaSiteKey);
+                                bb.addClass('g-recaptcha');
+                                bb.on('click', (e) => {
+                                    if (grecaptcha) {
+                                        grecaptcha.ready(() => {
+                                            grecaptcha.execute(options.recaptchaSiteKey, {action: 'submit'})
+                                                .then((token) => {
+                                                    this.submitHandler(token);
+                                                });
+                                        });    
+                                    }
+                                    else {
+                                       this.submitHandler(); 
+                                    }
+                                });
+                            }
+                            else {
+                                bb.on('click', (e) => {
+                                    this.submitHandler();
+                                });
+                            }
+                            bb.focus();
+                        });
 
                         if (options.cancelable !== false)
                             b.addChild('button', bb => bb
@@ -302,6 +326,14 @@ export class DefaultDialog implements Dialog {
         if (this.options.submitOnEnter) {
             window.addEventListener('keydown', this.keydownHandler, false);
         }
+
+        //clear alert on change in any input element 
+        this.slot.querySelectorAll('input')
+        .forEach(element =>  
+            element.addEventListener('input', () => {
+                this.clearAlert();
+            })
+        );
 
         if (this.options.onShow) {
             this.options.onShow(this);
@@ -374,8 +406,8 @@ export class DefaultDialog implements Dialog {
         }
     }
 
-    private submitHandler = (): boolean => {
-        if (this.options.onSubmit && this.options.onSubmit(this) === false) {
+    private submitHandler = (token?: any): boolean => {
+        if (this.options.onSubmit && this.options.onSubmit(this, token) === false) {
             return false;
         }
 
