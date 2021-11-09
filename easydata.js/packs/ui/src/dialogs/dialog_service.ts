@@ -4,7 +4,7 @@ export enum DialogFooterAlignment {
     Right = 3
 }
 
-export interface DialogOptions {
+export interface DialogOptions {    
     title: string;
     body: string | HTMLElement;
     submitable?: boolean;
@@ -30,6 +30,9 @@ export interface DialogOptions {
     onSubmit?: (dialog?: Dialog, token?: string) => boolean | void;
     onCancel?: (dialog?: Dialog) => void;
     onDestroy?: (dialog?: Dialog) => void;
+
+    /** This function is called on each 'input' event in any <input> element inside the form */
+    onInput?: (dialog: Dialog) => void;
 }
 
 export interface ProgressDialogOptions {

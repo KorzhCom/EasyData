@@ -332,6 +332,9 @@ export class DefaultDialog implements Dialog {
         .forEach(element =>  
             element.addEventListener('input', () => {
                 this.clearAlert();
+                if (this.options.onInput) {
+                    this.options.onInput(this);
+                }
             })
         );
 
@@ -556,16 +559,19 @@ export class DefaultDialogSet {
     public open(page: number): Dialog {
         if (page < 0) {
             this.currentIndex = 0;
-        } else if (page >= this.options.length) {
+        } 
+        else if (page >= this.options.length) {
             this.currentIndex = this.options.length - 1;
-        } else {
+        } 
+        else {
             this.currentIndex = page;
         }
 
         if (this.currentDialog) {
             try {
                 this.currentDialog.close();
-            } catch (e) {}
+            } 
+            catch (e) {}
         }
 
         this.currentDialog = this.dialogService.open(this.options[this.currentIndex]);
