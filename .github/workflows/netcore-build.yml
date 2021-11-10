@@ -63,7 +63,7 @@ jobs:
       run: dotnet pack EasyData.sln -o ./easydata.net/packs --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test EasyData.Dev.sln --no-restore --verbosity normal
+      run: dotnet test EasyData.Dev.sln --no-restore --verbosity minimal
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
