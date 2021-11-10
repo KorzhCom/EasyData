@@ -78,6 +78,7 @@ fieldset .kfrm-fields > label {
 .kfrm-fields.label-above > label:not(.checkbox) {
     padding: 0.5em 0 0 0;
     margin-bottom: -0.5em;
+    font-weight: 500;
 }
 
 .kfrm-fields.label-align-right > label:not(.checkbox) {
