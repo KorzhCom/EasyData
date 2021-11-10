@@ -220,14 +220,14 @@ namespace EasyData
         {
             switch (dataType)
             {
-                case DataType.Date: return internalDateFormat;
-                case DataType.Time: return internalTimeFormat;
-                default:
-                    if (shortTime)
-                        return internalDateFormat + " " + internalShortTimeFormat;
-                    else
-                        return internalDateFormat + " " + internalTimeFormat; ;
+                case DataType.Date: 
+                    return internalDateFormat;
+                case DataType.Time: 
+                    return internalTimeFormat;
+                default: 
+                    return $"{internalDateFormat} {(shortTime ? internalShortTimeFormat : internalTimeFormat)}";
             }
+
         }
 
         private static IFormatProvider _internalFormatProvider = null;
