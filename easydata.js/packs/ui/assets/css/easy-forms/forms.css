@@ -66,6 +66,10 @@
     padding: .5em 0;
 }
 
+.kfrm-fields .label-compact {
+    font-size: 0.9em;
+}
+
 fieldset .kfrm-fields > label {
     padding: 0;
     margin: 0;
@@ -158,12 +162,6 @@ fieldset .kfrm-fields > label {
     margin-bottom: 1em;
 }
 
-/*  
-  .kfrm-field-ie > * {
-      font-size: 16px;
-  }
-*/
-
 .kfrm-field-ie > *:nth-child(1) {
     margin-right: 20px;
 }
@@ -172,61 +170,60 @@ fieldset .kfrm-fields > label {
     padding: .5em 0;
 }
 
-/*
-  .kfrm-field-ie > *:nth-child(2):not(.kfrm-select):not(.kfrm-fields-ie) {
-    padding: .5em;
-  }
-*/
-  .kfrm-fields-ie.col-ie-1-1 > .kfrm-field-ie > *:nth-child(1) {
-    flex: 0 0 50%;
-  }
+.kfrm-fields-ie.col-ie-1-1 > .kfrm-field-ie > *:nth-child(1) {
+  flex: 0 0 50%;
+}
 
-  .kfrm-fields-ie.col-ie-1-2 > .kfrm-field-ie > *:nth-child(1) {
-    flex: 0 0 33.3333%;
-  }
+.kfrm-fields-ie.col-ie-1-2 > .kfrm-field-ie > *:nth-child(1) {
+  flex: 0 0 33.3333%;
+}
 
-  .kfrm-fields-ie.col-ie-1-3 > .kfrm-field-ie > *:nth-child(1) {
-    flex: 0 0 25%;
-  }
+.kfrm-fields-ie.col-ie-1-3 > .kfrm-field-ie > *:nth-child(1) {
+  flex: 0 0 25%;
+}
 
-  .kfrm-fields-ie.col-ie-1-4 > .kfrm-field-ie > *:nth-child(1) {
-    flex: 0 0 20%;
-  }
+.kfrm-fields-ie.col-ie-1-4 > .kfrm-field-ie > *:nth-child(1) {
+  flex: 0 0 20%;
+}
 
+.kfrm-fields-ie.label-align-right .kfrm-field-ie > *:nth-child(1) {
+  text-align: right;
+}
 
-  .kfrm-fields-ie.label-align-right .kfrm-field-ie > *:nth-child(1) {
-    text-align: right;
-  }
+.kfrm-fields-ie.label-above .kfrm-field-ie > *:nth-child(1):not(.checkbox) {
+  padding: 0.5em 0 0 0;
+  margin-bottom: -0.5em;
+}
 
-  .kfrm-fields-ie.label-above .kfrm-field-ie > *:nth-child(1):not(.checkbox) {
-      padding: 0.5em 0 0 0;
-      margin-bottom: -0.5em;
-  }
+.kfrm-field-ie > label:not(.checkbox), .kfrm-fields-ie > label:not(.checkbox) {
+  font-weight: 600;
+}
 
-  .kfrm-field-ie > label:not(.checkbox), .kfrm-fields-ie > label:not(.checkbox) {
-      font-weight: 600;
-  }
+.kfrm-fields-ie.is-horizontal {
+  display: flex;
+  padding: 0 !important;
+  flex-direction: row;
+}
 
-  .kfrm-fields-ie.is-horizontal {
-    display: flex;
-    padding: 0 !important;
-    flex-direction: row;
-  }
+.kfrm-fields-ie.kfrm-fields-ie.is-horizontal > *:not(.kfrm-select) {
+  padding: .5em;
+}
 
-  .kfrm-fields-ie.kfrm-fields-ie.is-horizontal > *:not(.kfrm-select) {
-    padding: .5em;
-  }
-
-  .kfrm-fields-ie.is-horizontal > *:not(:first-child) {
-    margin-left: 1em;
-  }
+.kfrm-fields-ie.is-horizontal > *:not(:first-child) {
+  margin-left: 1em;
+}
 
 .kfrm-fields-ie > label {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .kfrm-field > label {
-    padding-right: 0.5em;
+  padding-right: 0.5em;
+}
+
+.kfrm-callout {
+  font-size: 1.2em;
+  text-align: center;
 }
 /* FORMS END */
