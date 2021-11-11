@@ -43,7 +43,6 @@ namespace EasyData.EntityFrameworkCore
         { 
             TableEntity.Clear();
 
-
             var entityTypes = GetEntityTypes(context.Model);
 
             if (Options.KeepDbSetDeclarationOrder) {
@@ -108,6 +107,9 @@ namespace EasyData.EntityFrameworkCore
             entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
+            var primaryKey = entityType.FindPrimaryKey();
+            entity.IsEditable = primaryKey != null;
+
             entity.ClrType = entityType.ClrType;
 
             var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
@@ -125,6 +127,10 @@ namespace EasyData.EntityFrameworkCore
 
                 if (!string.IsNullOrEmpty(annotation.DisplayNamePlural)) {
                     entity.NamePlural = annotation.DisplayNamePlural;
+                }
+
+                if (annotation.Editable.HasValue) {
+                    entity.IsEditable = annotation.Editable.Value;
                 }
             }
 
@@ -242,7 +248,6 @@ namespace EasyData.EntityFrameworkCore
                     }
                 }
             }
-
         }
 
         private bool ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
