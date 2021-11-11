@@ -4,7 +4,7 @@ using Xunit;
 using FluentAssertions;
 using System.Collections.Generic;
 
-namespace EasyData.Core.Test
+namespace EasyData.Core.Tests
 {
     public class DataUtilsTests
     {

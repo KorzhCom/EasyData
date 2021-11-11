@@ -3,7 +3,7 @@ using Xunit;
 
 using FluentAssertions;
 
-namespace EasyData.Core.Test
+namespace EasyData.Core.Tests
 {
     public class BitOptionsTests
     {
