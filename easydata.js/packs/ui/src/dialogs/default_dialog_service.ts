@@ -1,4 +1,4 @@
-import { i18n, utils } from '@easydata/core';
+import { i18n, utils, liquid } from '@easydata/core';
 
 import { DialogService, DialogOptions, Dialog, ProgressDialogOptions, ProgressDialog, DialogSet, DialogFooterAlignment } from './dialog_service';
 
@@ -111,8 +111,8 @@ export class DefaultDialogService implements DialogService {
         });
     }
 
-    public open(options: DialogOptions) {
-        const dialog = new DefaultDialog(options);
+    public open(options: DialogOptions, data? : any) {
+        const dialog = new DefaultDialog(options, data);
 
         const onDestroy = options.onDestroy;
         options.onDestroy = (dlg) => {
@@ -174,10 +174,12 @@ export class DefaultDialog implements Dialog {
     protected bodyElement: HTMLElement;
     protected footerElement: HTMLElement;
     protected alertElement: HTMLElement;
+    protected data?: any;
 
-    constructor(private options: DialogOptions) {
+    constructor(private options: DialogOptions, data? : any) {
         this.dialogId = utils.generateId('dlg');
-           
+        this.data = data;
+
         this.slot = 
             domel('div', document.body)
             .attr('tab-index', '-1')
@@ -217,7 +219,8 @@ export class DefaultDialog implements Dialog {
                         .toDOM();
 
                     if (typeof options.body === 'string') {
-                        b.addHtml(options.body)
+                        const html = liquid.renderLiquidTemplate(options.body, data);
+                        b.addHtml(html);
                     }
                     else {
                         b.addChildElement(options.body);
@@ -548,15 +551,15 @@ export class DefaultDialogSet {
     public getCurrent(): Dialog {
         return this.currentDialog;
     }
-    public openNext(): Dialog {
-        return this.open(this.currentIndex + 1);
+    public openNext(data? : any): Dialog {
+        return this.open(this.currentIndex + 1, data);
     }
 
-    public openPrev(): Dialog {
-        return this.open(this.currentIndex - 1);
+    public openPrev(data?: any): Dialog {
+        return this.open(this.currentIndex - 1, data);
     }
 
-    public open(page: number): Dialog {
+    public open(page: number, data?: any): Dialog {
         if (page < 0) {
             this.currentIndex = 0;
         } 
@@ -574,7 +577,8 @@ export class DefaultDialogSet {
             catch (e) {}
         }
 
-        this.currentDialog = this.dialogService.open(this.options[this.currentIndex]);
+        const dlgOptions = this.options[this.currentIndex];
+        this.currentDialog = this.dialogService.open(dlgOptions, data);
         return this.currentDialog;
     }
 

@@ -4,7 +4,6 @@ import { i18n } from '../i18n/i18n';
 
 
 export namespace utils {
-
     export function getAllDataTypes(): DataType[] {
         return Object.values(DataType) as DataType[];
     }

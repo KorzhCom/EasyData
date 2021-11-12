@@ -67,9 +67,9 @@ export interface ProgressDialog extends Dialog {
 
 export interface DialogSet {
     getCurrent(): Dialog;
-    openNext(): Dialog;
-    openPrev(): Dialog;
-    open(page: number): Dialog;
+    openNext(data?: any): Dialog;
+    openPrev(data? : any): Dialog;
+    open(page: number, data?: any): Dialog;
     close(): void;
 }
 
@@ -84,7 +84,7 @@ export interface DialogService {
 
     openProgress(options: ProgressDialogOptions): ProgressDialog;
 
-    open(options: DialogOptions): Dialog;
+    open(options: DialogOptions, data? : any): Dialog;
 
     createSet(options: DialogOptions[]): DialogSet;
 
