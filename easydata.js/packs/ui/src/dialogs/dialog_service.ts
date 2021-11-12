@@ -51,6 +51,7 @@ export interface Dialog {
     submit(): void;
     cancel(): void;
     close(): void;
+    getData(): any;
     getRootElement(): HTMLElement;
     getSubmitButtonElement(): HTMLButtonElement | null;
     getCancelButtonElement(): HTMLButtonElement | null;

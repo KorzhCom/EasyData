@@ -289,6 +289,10 @@ export class DefaultDialog implements Dialog {
             .toDOM();
     }
 
+    public getData(): any {
+        return this.data;
+    }
+
     public getRootElement() {
         return this.slot;
     }
@@ -471,7 +475,7 @@ export class DefaultProgressDialog extends DefaultDialog implements ProgressDial
     protected contentElement: HTMLElement;
     protected progressElement: HTMLElement;
 
-    constructor(options: ProgressDialogOptions) {
+    constructor(options: ProgressDialogOptions, data? : any) {
         let contentElement: HTMLDivElement;
         let progressElement: HTMLDivElement;
         const body = domel('div')
@@ -507,7 +511,7 @@ export class DefaultProgressDialog extends DefaultDialog implements ProgressDial
             cancelable: false,
             closable: false,
             onDestroy: options.onDestroy
-        });
+        }, data);
 
         this.contentElement = contentElement;
         this.progressElement = progressElement;
