@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Builder
             this IEndpointRouteBuilder builder, 
             Action<EasyDataOptions> optionsTuner = null) where THandler : EasyDataApiHandler
         {
-            var options = new EasyDataOptions(builder.ServiceProvider);
+            var options = new EasyDataOptions();
             optionsTuner?.Invoke(options);
 
             options.Endpoint = options.Endpoint.ToString().TrimEnd('/');

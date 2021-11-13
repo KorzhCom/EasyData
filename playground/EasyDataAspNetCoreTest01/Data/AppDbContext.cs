@@ -31,6 +31,9 @@ namespace EasyDataBasicDemo
 
         public DbSet<Customer> Customers { get; set; }
 
+        public virtual DbSet<CityEntity> Cities { get; set; }
+
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +43,12 @@ namespace EasyDataBasicDemo
             modelBuilder.Entity<OrderDetail>()
                 .ToTable("Order_Details")
                 .HasKey(od => new { od.OrderID, od.ProductID });
+
+            //to use the following view you will need to run an extra SQL command over the testing DB:
+            //CREATE VIEW [dbo].[AllCities] AS SELECT Country, City FROM [Customers]
+            modelBuilder.Entity<CityEntity>()
+                .ToTable("AllCities")
+                .HasNoKey();
         }
     }
 }

@@ -260,7 +260,7 @@ namespace EasyData.Export
             if (shift1 == 0) {
                 return ((char)('A' + shift2)).ToString();
             }
-            else if (shift1 == 1) {
+            else if (shift1 <= 26) {
                 return ((char)('A' + shift1 - 1)).ToString() + (char)('A' + shift2);
             }
             else

@@ -672,7 +672,7 @@ export class EasyGrid {
         let result: any = {}
         for (const colId of group.columns) {
             let keyVal =  row.getValue(colId);
-            if (caseInsensitive) {
+            if (caseInsensitive && typeof(keyVal) === 'string') {
                 keyVal = keyVal.toLowerCase();
             }
             result[colId] = keyVal;
