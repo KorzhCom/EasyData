@@ -29,9 +29,9 @@ namespace EasyData.EntityFrameworkCore.MetaDataLoader
             if (annotation != null) {
                 descriptor.IsEnabled = annotation.Enabled;
                 descriptor.DisplayName = annotation.DisplayName;
-                descriptor.DisplayNamePlural = annotation.DisplayName;
                 descriptor.Description = annotation.Description;
                 descriptor.DisplayNamePlural = annotation.DisplayNamePlural;
+                descriptor.IsEditable = annotation.Editable ?? descriptor.IsEditable;
             }
 
             var attributes = entityType.GetProperties();

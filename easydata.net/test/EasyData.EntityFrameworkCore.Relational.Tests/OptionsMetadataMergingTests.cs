@@ -32,11 +32,12 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
             var optionsDisplayName = Faker.Lorem.Sentence();
             var optionsDisplayNamePlural = Faker.Lorem.Sentence();
+            var editable = Faker.Boolean.Random();
 
             dbContextMetaDataLoaderOptionsLoaderOptions.UseMetaBuilder(builder =>
             {
                 builder.Entity<Category>().SetDisplayName(optionsDisplayName)
-                    .SetDisplayNamePlural(optionsDisplayNamePlural);
+                    .SetDisplayNamePlural(optionsDisplayNamePlural).SetEditable(editable);
             });
 
             var metaData = new MetaData();
@@ -46,6 +47,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             entity.Name.Should().Be(optionsDisplayName);
             entity.NamePlural.Should().Be(optionsDisplayNamePlural);
             entity.Description.Should().Be("Categories description");
+            entity.IsEditable.Should().Be(editable);
         }
 
         /// <summary>

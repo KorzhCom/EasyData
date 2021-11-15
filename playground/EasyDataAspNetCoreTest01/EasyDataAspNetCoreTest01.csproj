@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>EasyDataBasicDemo01</AssemblyName>
+    <RootNamespace>EasyDataBasicDemo01</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

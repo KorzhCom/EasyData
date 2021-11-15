@@ -7,17 +7,23 @@ import { DataType } from '../../types/data_type';
 export interface MetaEntityDTO {
     /** The id. */
     id: string;
+
     /** The name. */
     name: string;
-    /**
-     * The name in plural form
-     */
+
+    /** The name in the plural form */
     namePlur?: string;
+
     /** The description. */
     desc?: string;
-    /** List of sub-entities. */
+
+    /** IsEditable */
+    ied?: boolean;
+
+    /** The list of sub-entities. */
     ents?: MetaEntityDTO[];
-    /** List of attributes.*/
+
+    /** The list of attributes.*/
     attrs?: MetaEntityAttrDTO[];
 }
 

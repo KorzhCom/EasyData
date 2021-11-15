@@ -38,6 +38,11 @@ namespace EasyData.MetaDescriptors
         public string Description { get; set; }
 
         /// <summary>
+        /// Whether the entity is editable or not.
+        /// </summary>
+        public bool? IsEditable { get; set; }
+
+        /// <summary>
         /// Entity type.
         /// </summary>
         public Type ClrType { get; set; }
