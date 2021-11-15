@@ -37,6 +37,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
 
             entity.Name.Should().Be("Test");
             entity.Description.Should().Be("Test Description");
+            entity.IsEditable.Should().Be(true);
         }
 
         /// <summary>

@@ -27,6 +27,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var description = Faker.Lorem.Sentence();
             var enabled = Faker.Boolean.Random();
             var secondDisplayName = Faker.Lorem.Sentence();
+            var editable = Faker.Boolean.Random();
 
             _options.UseMetaBuilder(builder =>
             {
@@ -34,7 +35,8 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
                     .SetDisplayName(displayName)
                     .SetDisplayNamePlural(displayNamePlural)
                     .SetDescription(description)
-                    .SetEnabled(enabled);
+                    .SetEnabled(enabled)
+                    .SetEditable(editable);
 
                 builder.Entity<Customer>()
                     .SetDisplayName(secondDisplayName);
@@ -47,10 +49,12 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             firstEntityMetadataDescriptor.DisplayNamePlural.Should().Be(displayNamePlural);
             firstEntityMetadataDescriptor.Description.Should().Be(description);
             firstEntityMetadataDescriptor.IsEnabled.Should().Be(enabled);
+            firstEntityMetadataDescriptor.IsEditable.Should().Be(editable);
 
             secondEntityMetadataDescriptor.DisplayName.Should().Be(secondDisplayName);
             secondEntityMetadataDescriptor.DisplayNamePlural.Should().BeNull();
             secondEntityMetadataDescriptor.Description.Should().BeNull();
+            secondEntityMetadataDescriptor.IsEditable.Should().BeNull(); ;
         }
 
         /// <summary>

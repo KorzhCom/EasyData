@@ -70,6 +70,11 @@ namespace EasyData
         /// <value>Entity name</value>
         public string NamePlural { get; set; }
 
+        /// <summary>
+        /// Gets ot sets a value indicating whether this entity is editable
+        /// </summary>
+        public bool IsEditable { get; set; } = true;
+
 
         /// <summary>
         /// Gets or sets the type of the entity.
@@ -91,7 +96,7 @@ namespace EasyData
         public string TypeName { get; set; }
 
         /// <summary>
-        /// Gets or sets the index of Entity
+        /// Gets or sets the index of the entity
         /// </summary>
         public int Index { get; set; } = int.MaxValue;
 
@@ -375,6 +380,11 @@ namespace EasyData
                 await writer.WritePropertyNameAsync("udata", ct).ConfigureAwait(false);
                 await writer.WriteValueAsync(UserData.ToString(), ct).ConfigureAwait(false);
             }
+
+            if (!IsEditable) {
+                await writer.WritePropertyNameAsync("ied", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(IsEditable, ct).ConfigureAwait(false);
+            }
         }
 
         /// <summary>Reads the entity content from JSON (asynchronous way).</summary>
@@ -438,6 +448,9 @@ namespace EasyData
                     break;
                 case "udata":
                     UserData = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
+                    break;
+                case "ied":
+                    IsEditable = (await reader.ReadAsBooleanAsync(ct).ConfigureAwait(false)).Value;
                     break;
                 default:
                     await reader.SkipAsync(ct).ConfigureAwait(false);

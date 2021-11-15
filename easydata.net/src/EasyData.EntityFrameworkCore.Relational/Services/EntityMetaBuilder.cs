@@ -73,6 +73,16 @@ namespace EasyData.EntityFrameworkCore.Services
             return this;
         }
 
+        /// <summary>
+        /// Set entity availability for editing.
+        /// </summary>
+        /// <param name="editable">Editable or not.</param>
+        /// <returns>Current instance of the class.</returns>
+        public EntityMetaBuilder<T> SetEditable(bool editable)
+        {
+            EntityMetadataDescriptor.IsEditable = editable;
+            return this;
+        }
 
         /// <summary>
         /// Get entity attribute metadata builder.

@@ -63,6 +63,7 @@ namespace EasyData.EntityFrameworkCore.Services
                 entityDescriptor.DisplayName = entityMetadataDescriptor.DisplayName ?? entityDescriptor.DisplayName;
                 entityDescriptor.DisplayNamePlural = entityMetadataDescriptor.DisplayNamePlural ?? entityDescriptor.DisplayNamePlural;
                 entityDescriptor.IsEnabled = entityMetadataDescriptor.IsEnabled;
+                entityDescriptor.IsEditable = entityMetadataDescriptor.IsEditable ?? entityDescriptor.IsEditable;
 
                 foreach (var entityAttributeMetadataDescriptor in entityMetadataDescriptor.MetadataAttributes) {
                     var attributeDescriptor = entityDescriptor.MetadataAttributes.FirstOrDefault(
@@ -111,6 +112,7 @@ namespace EasyData.EntityFrameworkCore.Services
                 entity.Description = entityDescriptor.Description ?? entity.Description;
                 entity.Name = entityDescriptor.DisplayName ?? entity.Name;
                 entity.NamePlural = entityDescriptor.DisplayNamePlural ?? entity.NamePlural;
+                entity.IsEditable = entityDescriptor.IsEditable ?? entity.IsEditable;
 
                 // Update entity meta attributes
                 foreach (var attributeDescriptor in entityDescriptor.MetadataAttributes) {

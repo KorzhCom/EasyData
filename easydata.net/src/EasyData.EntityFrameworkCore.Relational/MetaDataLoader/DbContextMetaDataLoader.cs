@@ -123,6 +123,9 @@ namespace EasyData.EntityFrameworkCore.MetaDataLoader
         {
             var entity = Model.CreateEntity();
 
+            var primaryKey = entityType.FindPrimaryKey();
+            entity.IsEditable = primaryKey != null;
+
             // Set some default values
             entity.Id = GetEntityId(entityType.ClrType);
             entity.ClrType = entityType.ClrType;

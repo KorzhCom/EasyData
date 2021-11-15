@@ -34,8 +34,7 @@ namespace EasyData.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyDataOptions"/> class.
         /// </summary>
-        /// <param name="services">The DI services.</param>
-        public EasyDataOptions(IServiceProvider services)
+        public EasyDataOptions()
         {
 
         }
@@ -64,12 +63,15 @@ namespace EasyData.Services
         private readonly Dictionary<string, Type> _filterClasses = new Dictionary<string, Type>();
 
         /// <summary>
-        /// 
+        /// Registers filter
         /// </summary>
         /// <param name="filterClass"></param>
         /// <param name="filterType"></param>
         public void RegisterFilter(string filterClass, Type filterType)
         {
+            if (string.IsNullOrEmpty(filterClass))
+                throw new ArgumentException($"Filter class should not be null or empty");
+
             if (!typeof(EasyFilter).IsAssignableFrom(filterType))
                 throw new ArgumentException($"Filter type should be inherited form '{typeof(EasyFilter)}'");
 
@@ -82,9 +84,7 @@ namespace EasyData.Services
         /// <typeparam name="TFilter">The filter type</typeparam>
         /// <param name="filterClass">The filter class name</param>
         public void RegisterFilter<TFilter>(string filterClass) where TFilter : EasyFilter
-        {
-            _filterClasses[filterClass] = typeof(TFilter);
-        }
+            => RegisterFilter(filterClass, typeof(TFilter));
 
         /// <summary>
         /// Gets the model tuner - an action which is called after the model loading and allows to "tune" your model before sending it to the client-side.
