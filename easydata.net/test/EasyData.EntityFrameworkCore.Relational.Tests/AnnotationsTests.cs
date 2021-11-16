@@ -2,39 +2,51 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
+using EasyData.EntityFrameworkCore.MetaDataLoader;
 using Xunit;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using EasyData.MetaDescriptors;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
     public class AnnotationsTests
     {
+        private readonly MetaData _metaData;
 
-        [Fact]
-        public void MetaEnityAttributeTest()
+        /// <summary>
+        /// Get db context and entity meta attributes.
+        /// </summary>
+        public AnnotationsTests()
         {
-            var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
+            DbContext dbContext = AttributeTestDbContext.Create();
 
-            meta.LoadFromDbContext(dbContext);
-
-            meta.EntityRoot.SubEntities.Should().HaveCount(1);
-
-            var entity = meta.EntityRoot.SubEntities.First();
-            entity.Name.Should().Be("Test");
-            entity.Description.Should().Be("Test Description");
+            _metaData = new MetaData();
+            _metaData.LoadFromDbContext(dbContext);
         }
 
+        /// <summary>
+        /// Test getting entity meta attributes.
+        /// </summary>
+        [Fact]
+        public void MetaEntityAttributeTest()
+        {
+            _metaData.EntityRoot.SubEntities.Should().HaveCount(1);
+
+            var entity = _metaData.EntityRoot.SubEntities.First();
+
+            entity.Name.Should().Be("Test");
+            entity.Description.Should().Be("Test Description");
+            entity.IsEditable.Should().Be(true);
+        }
+
+        /// <summary>
+        /// Test getting entity property meta attributes.
+        /// </summary>
         [Fact]
         public void MetaEntityAttrAttributeTest()
         {
-            var dbContext = AttributeTestDbContext.Create();
-            var meta = new MetaData();
-
-            meta.LoadFromDbContext(dbContext);
-
-            var entity = meta.EntityRoot.SubEntities.First();
+            var entity = _metaData.EntityRoot.SubEntities.First();
             entity.Attributes.Should().HaveCount(10);
 
             var attr = entity.FindAttributeById("CustomerAttributeTest.Region");
