@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace EasyData.Services
 {
 
-    public class EasyDataManagerException: Exception
+    public class EasyDataManagerException : Exception
     {
         public EasyDataManagerException(string message) : base(message)
         { }
@@ -28,7 +28,7 @@ namespace EasyData.Services
         { }
     }
 
-    public abstract class EasyDataManager: IDisposable
+    public abstract class EasyDataManager : IDisposable
     {
 
         protected readonly IServiceProvider Services;
@@ -46,7 +46,7 @@ namespace EasyData.Services
 
         public async Task<MetaData> GetModelAsync(string modelId, CancellationToken ct = default)
         {
-            if (Model.Id !=modelId) {
+            if (Model.Id != modelId) {
                 //TODO: Try to load model from cache
 
                 await LoadModelAsync(modelId, ct);
@@ -56,18 +56,18 @@ namespace EasyData.Services
         }
 
 
-        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default) 
+        public virtual Task LoadModelAsync(string modelId, CancellationToken ct = default)
         {
             Options.ModelTuner?.Invoke(Model);
             return Task.CompletedTask;
         }
 
         public abstract Task<EasyDataResultSet> GetEntitiesAsync(
-            string modelId, string entityContainer, 
+            string modelId, string entityContainer,
             IEnumerable<EasyFilter> filters = null,
             IEnumerable<EasySorter> sorters = null,
-            bool isLookup = false, 
-            int? offset = null, int? fetch = null, 
+            bool isLookup = false,
+            int? offset = null, int? fetch = null,
             CancellationToken ct = default);
 
         public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
@@ -76,7 +76,7 @@ namespace EasyData.Services
 
         public abstract Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
 
-        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default); 
+        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default);
 
         public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 

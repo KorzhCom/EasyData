@@ -157,6 +157,28 @@ Here we change the default display name for this field, make it non-editable (si
 
 `MetaEntityAttr` annotation also has `ShowOnCreate` and `ShowOnEdit` properties that allow you to show/hide the field from the "Create Record" or "Edit Record" dialog, respectively.
 
+
+### Fluent API
+It is also possible to use Fluent API to keep all model classes without any additional attributes:
+```c#
+app.UseEndpoints(endpoints => {
+    endpoints.MapEasyData(options => {
+        options.UseDbContext<ApplicationDbContext>(opts => {
+            opts.UseMetaBuilder(builder => {
+                builder.Entity<Customer>()
+                    .SetDisplayName("Client")
+                    .SetDisplayNamePlural("Clients")
+                    .Property(c => c.Country)
+                        .SetDescription("Country where the client lives");
+
+                builder.Entity<Order>()
+                .     .     .     .     .
+            });
+        });
+    });
+});
+```
+
 ### Changing the default endpoint
 
 The default EasyData API endpoint is `/api/easydata/` but it’s very easy to change it to any possible path. 

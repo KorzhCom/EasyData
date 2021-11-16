@@ -50,6 +50,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         }
     }
 
+    [MetaEntity(DisplayNamePlural = "Categories", Description = "Categories description")]
     public class Category
     {
 
@@ -59,6 +60,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
 
         public string CategoryName { get; set; }
 
+        [MetaEntityAttr(Index=2)]
         public string Description { get; set; }
 
         [ScaffoldColumn(false)]

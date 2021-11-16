@@ -9,7 +9,7 @@ namespace EasyData.Services
     {
         public string Endpoint { get; set; } = "/api/easydata";
 
-        public EasyDataManagerResolver ManagerResolver {get; private set;}
+        public EasyDataManagerResolver ManagerResolver { get; private set; }
 
         /// <summary>
         /// Defines the function which creates and returns an instance of EasyQuery manager. 
@@ -36,7 +36,7 @@ namespace EasyData.Services
         /// </summary>
         public EasyDataOptions()
         {
-           
+
         }
 
         /// <summary>
@@ -100,6 +100,5 @@ namespace EasyData.Services
         {
             ModelTuner = tuner;
         }
-
     }
 }
