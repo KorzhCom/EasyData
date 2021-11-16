@@ -394,35 +394,43 @@ export class EntityEditFormBuilder {
             .addChild('label', b => b
                 .attr('for', attr.id)
                 .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `)
-            );
+            ).addChild('div');
+
+        let fieldHolder = parent.lastChild as HTMLElement;
 
         if (attr.kind === EntityAttrKind.Lookup) {
-            this.setupLookupField(parent, attr, readOnly, value);
-            return;
+            this.setupLookupField(fieldHolder, attr, readOnly, value);
+        }
+        else {
+            switch (editor.tag) {
+                case EditorTag.DateTime:
+                    this.setupDateTimeField(fieldHolder, attr, readOnly, value);
+                    break;
+    
+                case EditorTag.List:
+                    this.setupListField(fieldHolder, attr, readOnly, editor.values, value);
+                    break;
+    
+                case EditorTag.File:
+                    this.setupFileField(fieldHolder, attr, readOnly, editor.accept);
+                    break;
+    
+                case EditorTag.Edit:
+                default:
+                    if (editor.multiline) {
+                        this.setupTextArea(fieldHolder, attr, readOnly, value);
+                    }
+                    else {
+                        this.setupTextField(fieldHolder, attr, readOnly, value);
+                    }
+                    break;
+            }
         }
 
-        switch (editor.tag) {
-            case EditorTag.DateTime:
-                this.setupDateTimeField(parent, attr, readOnly, value);
-                break;
-
-            case EditorTag.List:
-                this.setupListField(parent, attr, readOnly, editor.values, value);
-                break;
-
-            case EditorTag.File:
-                this.setupFileField(parent, attr, readOnly, editor.accept);
-                break;
-
-            case EditorTag.Edit:
-            default:
-                if (editor.multiline) {
-                    this.setupTextArea(parent, attr, readOnly, value);
-                }
-                else {
-                    this.setupTextField(parent, attr, readOnly, value);
-                }
-                break;
+        if (attr.description) {
+            domel(fieldHolder).addChild('small', b => b
+                .addText(attr.description)
+            );
         }
     }
 

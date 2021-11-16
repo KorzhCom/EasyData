@@ -393,6 +393,12 @@ export class EasyGrid {
                 .text(column.label);
         }
 
+        if (column.description) {
+            domel('div', colDiv)
+                .addClass('question-mark')
+                .title(column.description);
+        }
+        
         if (this.options.allowDragDrop) {
             eqDragManager.registerDraggableItem({
                 element: colDiv,
@@ -672,7 +678,7 @@ export class EasyGrid {
         let result: any = {}
         for (const colId of group.columns) {
             let keyVal =  row.getValue(colId);
-            if (caseInsensitive && typeof(keyVal) === 'string') {
+            if (caseInsensitive) {
                 keyVal = keyVal.toLowerCase();
             }
             result[colId] = keyVal;

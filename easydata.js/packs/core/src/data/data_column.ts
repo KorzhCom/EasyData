@@ -15,33 +15,50 @@ export interface DataColumnStyle
 }
 
 export interface DataColumnDescriptor {
+    /** Represents internal column id. */
     id: string;
+    /** Represents original internal column id. */
     originAttrId?: string;
+    /** The type of data represented by column. */
     type?: DataType;
+    /** Name to use for this column in the UI. */
     label: string;
     isAggr?: boolean;
+    /** The display format for the column. */
     dfmt?: string;
     gfct?: string;
+    /** The style of the column to display in UI. */
     style?: DataColumnStyle;
+    /** Detailed description of the column. */
+    description: string | null;
 }
 
 export class DataColumn {
 
+    /** The type of data represented by column. */
     public readonly type: DataType;
 
+    /** Represents internal column id. */
     public readonly id: string;
 
     public readonly isAggr: boolean;
 
+    /** Represents original internal column id. */
     public readonly originAttrId?: string;
 
+    /** Name to use for this column in the UI. */
     public label: string;
 
+    /** The display format for the column. */
     public displayFormat?: string;
 
     public groupFooterColumnTemplate?: string;
 
+    /** The style of the column to display in UI. */
     public style?: DataColumnStyle;
+
+    /** Column description. */
+    public description: string | null;
 
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
@@ -61,6 +78,7 @@ export class DataColumn {
         this.displayFormat = desc.dfmt;
         this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
+        this.description = desc.description;
     }
 }
 
