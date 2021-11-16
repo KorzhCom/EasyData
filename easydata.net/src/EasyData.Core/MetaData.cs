@@ -295,7 +295,6 @@ namespace EasyData
             return new MetaEntityAttr(parent, kind);
         }
 
-
         protected internal void TryRunWithMainSyncContext(Action action)
         {
             if (MainSyncContext != null) {
