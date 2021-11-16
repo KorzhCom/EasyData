@@ -40,6 +40,7 @@ export class EntityDataView {
         this.dlg = new DefaultDialogService();
 
         const ent = this.context.getActiveEntity();
+        
         this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
         if (this.options.showBackToEntities) {
             domel(this.slot)
@@ -107,9 +108,11 @@ export class EntityDataView {
         if (column.isRowNum) {
             column.width = 110;
             return (value: any, column: GridColumn, cell: HTMLElement, rowEl: HTMLElement) => {
-                domel('div', cell)
-                    .addClass(`keg-cell-value`)
-                    .addChild('a', b => b
+                const b = domel('div', cell)
+                    .addClass(`keg-cell-value`);
+                
+                if (this.context.getActiveEntity().isEditable) {
+                    b.addChild('a', b => b
                         .attr('href', 'javascript:void(0)')
                         .text(i18n.getText('EditBtn'))
                         .on('click', (ev) =>  this.editClickHandler(ev as MouseEvent, 
@@ -123,6 +126,7 @@ export class EntityDataView {
                             this.deleteClickHandler(ev as MouseEvent, 
                                 parseInt(rowEl.getAttribute('data-row-idx'))))
                     );
+                }
             }
         }
     }
@@ -198,7 +202,9 @@ export class EntityDataView {
     }
 
     private rowDbClickHandler(ev: RowClickEvent) {
-        this.showEditForm(ev.row);
+        if (this.context.getActiveEntity().isEditable) {
+            this.showEditForm(ev.row);
+        }
     }
 
     private deleteClickHandler(ev: MouseEvent, rowIndex: number) {

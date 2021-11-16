@@ -35,6 +35,7 @@ export * from './i18n/i18n'
 export * from './utils/easy_guid'
 export * from './utils/string_utils'
 export * from './utils/utils'
+export * from './utils/liquid'
 
 import './i18n/load_default_locale_settings'
 

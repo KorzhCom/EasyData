@@ -3,12 +3,12 @@ using Xunit;
 
 using FluentAssertions;
 
-namespace EasyData.Core.Test
+namespace EasyData.Core.Tests
 {
     public class BitOptionsTests
     {
         [Fact]
-        public void WithTest()
+        public void With_should_add_option()
         {
             var options = new BitOptions();
             options.With(MetaDataReadWriteOptions.Entities);
@@ -18,7 +18,7 @@ namespace EasyData.Core.Test
         }
 
         [Fact]
-        public void WithoutTest()
+        public void Without_should_remove_option()
         {
             var options = new BitOptions();
             options.Without(MetaDataReadWriteOptions.Entities);
@@ -28,7 +28,7 @@ namespace EasyData.Core.Test
         }
 
         [Fact]
-        public void Contains()
+        public void Contains_should_check_option()
         {
             var options = (BitOptions)(MetaDataReadWriteOptions.Entities | MetaDataReadWriteOptions.Description);
 

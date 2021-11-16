@@ -157,6 +157,28 @@ Here we change the default display name for this field, make it non-editable (si
 
 `MetaEntityAttr` annotation also has `ShowOnCreate` and `ShowOnEdit` properties that allow you to show/hide the field from the "Create Record" or "Edit Record" dialog, respectively.
 
+
+### Fluent API
+It is also possible to use Fluent API to keep all model classes without any additional attributes:
+```c#
+app.UseEndpoints(endpoints => {
+    endpoints.MapEasyData(options => {
+        options.UseDbContext<ApplicationDbContext>(opts => {
+            opts.UseMetaBuilder(builder => {
+                builder.Entity<Customer>()
+                    .SetDisplayName("Client")
+                    .SetDisplayNamePlural("Clients")
+                    .Property(c => c.Country)
+                        .SetDescription("Country where the client lives");
+
+                builder.Entity<Order>()
+                .     .     .     .     .
+            });
+        });
+    });
+});
+```
+
 ### Changing the default endpoint
 
 The default EasyData API endpoint is `/api/easydata/` but it’s very easy to change it to any possible path. 
@@ -233,7 +255,7 @@ With this format EasyData will show only digits (no grouping by thousands) and w
 
 ## FAQ
 
-__Q:__ **What versions of .NET and ASP.NET (Core) does EasyQuery support?**
+__Q:__ **What versions of .NET and ASP.NET (Core) does EasyData support?**
 
 __A:__ Currently, EasyData supports .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
 

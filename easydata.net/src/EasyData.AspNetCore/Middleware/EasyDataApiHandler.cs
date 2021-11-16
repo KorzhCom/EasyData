@@ -54,7 +54,6 @@ namespace EasyData.AspNetCore
         {
             try {
                 var model = await Manager.GetModelAsync(modelId, ct);
-                model.Id = "EasyData";
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                     await WriteGetModelResponseAsync(jsonWriter, model, cancellationToken);
                 }, ct);
@@ -87,7 +86,7 @@ namespace EasyData.AspNetCore
             bool isLookup = false;
 
             IEnumerable<EasyFilter> filters = null;
-         
+
             bool needTotal = false;
 
             JObject requestParams;
@@ -140,7 +139,7 @@ namespace EasyData.AspNetCore
             return result;
         }
 
-     
+
         protected virtual async Task WriteGetEntitiesResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total, CancellationToken ct)
         {
             if (total.HasValue) {
@@ -175,8 +174,7 @@ namespace EasyData.AspNetCore
         public virtual async Task HandleCreateEntityAsync(string modelId, string entityContainer, CancellationToken ct = default)
         {
             using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
-            using (var jsReader = new JsonTextReader(reader)) 
-            {
+            using (var jsReader = new JsonTextReader(reader)) {
                 var props = await JObject.LoadAsync(jsReader);
                 var result = await Manager.CreateEntityAsync(modelId, entityContainer, props);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
@@ -218,7 +216,7 @@ namespace EasyData.AspNetCore
                 await WriteDeleteEntityResponseAsync(jsonWriter, cancellationToken);
             }, ct);
         }
-        
+
         protected virtual Task WriteDeleteEntityResponseAsync(JsonWriter jsonWriter, CancellationToken ct)
         {
             return Task.CompletedTask;
@@ -260,7 +258,7 @@ namespace EasyData.AspNetCore
         {
             context.Response.ContentType = "application/json; charset=utf-8";
             using (var responseWriter = new HttpResponseStreamWriter(context.Response.Body, _utf8NoBom)) {
-                using (JsonWriter jsonWriter = new JsonTextWriter(responseWriter)){
+                using (JsonWriter jsonWriter = new JsonTextWriter(responseWriter)) {
                     await jsonWriter.WriteStartObjectAsync(ct);
                     await jsonWriter.WritePropertyNameAsync("result", ct);
                     await jsonWriter.WriteValueAsync(result, ct);

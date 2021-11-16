@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore", "easy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.EntityFrameworkCore.Relational", "easydata.net\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj", "{6932386C-2619-41F9-B72B-95C989CEA605}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core.Test", "easydata.net\test\EasyData.Core.Test\EasyData.Core.Test.csproj", "{33EF6180-5CD8-4E00-A015-3715E92B049E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Core.Tests", "easydata.net\test\EasyData.Core.Test\EasyData.Core.Tests.csproj", "{33EF6180-5CD8-4E00-A015-3715E92B049E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.AspNetCore.Tests", "easydata.net\test\EasyData.AspNetCore.Tests\EasyData.AspNetCore.Tests.csproj", "{E3DC30EE-52B0-4CEC-959B-71A4DC01DAB7}"
 EndProject

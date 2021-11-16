@@ -10,7 +10,7 @@ namespace EasyData.EntityFrameworkCore
     public class DbContextMetaDataLoaderException : Exception
     {
         /// <summary>
-        /// nitializes a new instance of the <see cref="DbContextMetaDataLoaderException" /> class.
+        /// Initializes a new instance of the <see cref="DbContextMetaDataLoaderException" /> class.
         /// </summary>
         /// <param name="message">The error message.</param>
         public DbContextMetaDataLoaderException(string message) : base(message)

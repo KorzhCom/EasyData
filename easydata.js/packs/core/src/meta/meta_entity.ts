@@ -31,6 +31,9 @@ export class MetaEntity {
     /** The description of entity. */
     public description: string;
 
+    /** Returns false if this entity is read-only */
+    public isEditable: boolean = true;
+
     /**
      * List of Attributes that belong to this entity.
      */
@@ -65,6 +68,8 @@ export class MetaEntity {
             this.captionPlural = dto.namePlur;
             this.caption = dto.name;
             this.description = dto.desc;
+            if (typeof(dto.ied) !== 'undefined')
+                this.isEditable = dto.ied;
             
             this.subEntities = new Array<MetaEntity>();
             if (dto.ents) {

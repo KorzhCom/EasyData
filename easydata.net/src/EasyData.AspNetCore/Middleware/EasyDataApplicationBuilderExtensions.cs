@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UseEasyData<THandler>(this IApplicationBuilder app, Action<EasyDataOptions> optionsTuner = null) where THandler : EasyDataApiHandler
         {
-            var options = new EasyDataOptions(app.ApplicationServices);
+            var options = new EasyDataOptions();
             optionsTuner?.Invoke(options);
             return app.UseMiddleware<EasyDataMiddleware<THandler>>(options);
         }

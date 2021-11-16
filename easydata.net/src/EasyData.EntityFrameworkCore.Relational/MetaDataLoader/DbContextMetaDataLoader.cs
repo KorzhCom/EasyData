@@ -1,359 +1,336 @@
-﻿using System.Linq;
-using System.Reflection;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
+using EasyData.EntityFrameworkCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace EasyData.EntityFrameworkCore
+namespace EasyData.EntityFrameworkCore.MetaDataLoader
 {
+    /// <summary>
+    /// Load data model.
+    /// </summary>
     public class DbContextMetaDataLoader
-
     {
-        protected readonly DbContextMetaDataLoaderOptions Options = new DbContextMetaDataLoaderOptions();
-
-        protected readonly Dictionary<string, MetaEntity> TableEntity = new Dictionary<string, MetaEntity>();
-
         protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities = new Dictionary<IEntityType, MetaEntity>();
-
         protected readonly MetaData Model;
+        protected DbContextMetaDataLoaderOptions Options;
+        protected DbContext DbContext;
 
-        public DbContextMetaDataLoader(MetaData model): this(model, null)
-        {
-        }
-
-        public DbContextMetaDataLoader(MetaData model, DbContextMetaDataLoaderOptions options)
+        public DbContextMetaDataLoader(DbContext context, MetaData model, DbContextMetaDataLoaderOptions options)
         {
             Model = model;
-
-            if (options != null) {
-                Options = options;
-            }
+            DbContext = context;
+            Options = options;
         }
 
-        protected virtual IEnumerable<IEntityType> GetEntityTypes(IModel contextModel)
-        {   
-            return contextModel.GetEntityTypes()
-               .Where(entityType => ApplyFilters(entityType));
+        /// <summary>
+        /// Get entity types from db context.
+        /// </summary>
+        /// <param name="contextModel">Db context Metadata.</param>
+        /// <returns>Collection of entity types.</returns>
+        protected IEnumerable<IEntityType> GetEntityTypes(IModel contextModel)
+        {
+            return contextModel.GetEntityTypes().Where(ApplyFilters);
         }
 
-        public virtual void LoadFromDbContext(DbContext context)
-        { 
-            TableEntity.Clear();
+        /// <summary>
+        /// Apply filter to each entity type.
+        /// </summary>
+        /// <param name="entityType">Entity type.</param>
+        private bool ApplyFilters(IEntityType entityType)
+        {
+            return Options.Filters.All(filter => filter.Invoke(entityType));
+        }
 
-
-            var entityTypes = GetEntityTypes(context.Model);
+        /// <summary>
+        /// Load model from the database context.
+        /// </summary>
+        public void LoadFromDbContext()
+        {
+            var entityTypes = GetEntityTypes(DbContext.Model);
 
             if (Options.KeepDbSetDeclarationOrder) {
                 // EF Core keeps information about entity types 
                 // in alphabetical order.
                 // To make it possible to keep the original order
                 // we have to get all DbSet<> types manually
-                var dbSetTypes = context.GetType()
+                var dbSetTypes = DbContext.GetType()
                     .GetProperties()
-                    .Where(p => p.PropertyType.IsGenericType 
+                    .Where(p => p.PropertyType.IsGenericType
                         && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
                     .Select(p => p.PropertyType.GetGenericArguments()[0])
                     .ToList();
 
                 entityTypes = entityTypes.OrderBy(t => dbSetTypes.IndexOf(t.ClrType));
             }
+            entityTypes = entityTypes.ToList();
 
             foreach (var entityType in entityTypes) {
-                var entity = ProcessEntityType(context.Model, entityType);
-                if (entity is null)
-                    continue;
+                var entity = ProcessEntity(entityType);
 
                 entity.Attributes.Reorder();
                 entity.SubEntities.Reorder();
 
                 Model.EntityRoot.SubEntities.Add(entity);
-
                 EntityTypeEntities[entityType] = entity;
             }
 
+            //Process navigation properties
             foreach (var entityType in entityTypes) {
-                if (EntityTypeEntities.TryGetValue(entityType, out var entity)) {
-                    var navigations = entityType.GetNavigations();
+                if (!EntityTypeEntities.TryGetValue(entityType, out var entity)) {
+                    continue;
+                }
 
-                    int attrCount = entity.Attributes
-                        .Select(attr => attr.Index)
-                        .DefaultIfEmpty(0).Max() + 1;
+                var navigations = entityType.GetNavigations();
 
-                    foreach (var navigation in navigations) {
-                        ProcessNavigationProperty(entity, entityType, context.Model, navigation, ref attrCount);
-                    }
+                var attrCount = entity.Attributes
+                    .Select(attr => attr.Index)
+                    .DefaultIfEmpty(0).Max() + 1;
+
+                foreach (var navigation in navigations) {
+                    ProcessNavigationProperty(entity, navigation, ref attrCount);
                 }
             }
 
             Model.EntityRoot.Attributes.Reorder();
             Model.EntityRoot.SubEntities.Reorder();
+
+            // Update model metadata with attributes and options
+            var attributeMetadataDescriptors = AttributesMetadataLoader.GetMetaAttributes(entityTypes);
+            Model.MergeWithCustomMetadata(attributeMetadataDescriptors.ToList(), Options);
+            Model.Process();
         }
 
-        protected string GetEntityId(IEntityType entityType)
+        /// <summary>
+        /// Generate entity id based on the name of the entity.
+        /// </summary>
+        /// <param name="entityType">Type of the entity.</param>
+        /// <returns>Generated ID.</returns>
+        protected static string GetEntityId(Type entityType)
         {
             var entityName = Utils.GetEntityNameByType(entityType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
-  
-        #region auxiliary functions for LoadFromDbContext
-        protected virtual MetaEntity ProcessEntityType(IModel contextModel, IEntityType entityType)
+        /// <summary>
+        /// Process entity.
+        /// </summary>
+        /// <param name="entityType">Type of the entity.</param>
+        protected MetaEntity ProcessEntity(IEntityType entityType)
         {
             var entity = Model.CreateEntity();
-            var tableName = entityType.GetTableName();
-            entity.Id = GetEntityId(entityType);
-            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType));
+
+            var primaryKey = entityType.FindPrimaryKey();
+            entity.IsEditable = primaryKey != null;
+
+            // Set some default values
+            entity.Id = GetEntityId(entityType.ClrType);
+            entity.ClrType = entityType.ClrType;
+            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entity.ClrType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
-            entity.ClrType = entityType.ClrType;
-
-            var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
-            if (annotation != null) {
-                if (!annotation.Enabled)
-                    return null;
-
-                if (!string.IsNullOrEmpty(annotation.DisplayName)) {
-                    entity.Name = entity.NamePlural = annotation.DisplayName;
-                }
-
-                if (!string.IsNullOrEmpty(annotation.Description)) {
-                    entity.Description = annotation.Description;
-                }
-
-                if (!string.IsNullOrEmpty(annotation.DisplayNamePlural)) {
-                    entity.NamePlural = annotation.DisplayNamePlural;
-                }
-            }
-
-            TableEntity.Add(tableName, entity);
-
+            // Process scalar properties
             var properties = entityType.GetProperties().ToList();
-            int attrCounter = 0;
+            var propertyCounter = 0;
+
             foreach (var property in properties) {
                 if (Options.SkipForeignKeys && property.IsForeignKey())
                     continue;
 
-                var entityAttr = CreateEntityAttribute(entity, entityType, property);
-                if (entityAttr != null) {
-                 
-                    if (entityAttr.Index == int.MaxValue) {
-                        entityAttr.Index = attrCounter;
-                    }
+                var entityProperty = ProcessProperty(entity, property);
 
-                    attrCounter++;
-
-                    ProcessEntityAttr(entityAttr, entity, property);
+                if (entityProperty.Index == int.MaxValue) {
+                    entityProperty.Index = propertyCounter;
                 }
+
+                propertyCounter++;
+                entity.Attributes.Add(entityProperty);
             }
 
             return entity;
         }
 
-        protected virtual void ProcessEntityAttr(MetaEntityAttr entityAttr, MetaEntity entity, IProperty property)
+        /// <summary>
+        /// Process scalar entity property.
+        /// </summary>
+        /// <param name="entity">Property parent entity.</param>
+        /// <param name="propertyMeta">Property metadata.</param>
+        /// <returns></returns>
+        protected MetaEntityAttr ProcessProperty(MetaEntity entity, IProperty propertyMeta)
         {
-            entity.Attributes.Add(entityAttr);
-        }
-
-        protected virtual void ProcessNavigationProperty(MetaEntity entity, IEntityType entityType, IModel contextModel,
-            INavigation navigation, ref int attrCounter)
-        {
-            // do not process collections for now
-#if NET
-            if (navigation.IsCollection)
-                return;
-#else
-            if (navigation.IsCollection())
-                return;
-#endif
-
-            var foreignKey = navigation.ForeignKey;
-            var property = foreignKey.Properties.First();
-
-            if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
-                var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { 
-                    Parent = entity, 
-                    Kind = EntityAttrKind.Lookup 
-                });
-                lookUpAttr.Id = DataUtils.ComposeKey(entity.Id, navigation.Name);
-                lookUpAttr.Caption = DataUtils.PrettifyName(navigation.Name);
-
-                lookUpAttr.PropInfo = navigation.PropertyInfo;
-
-                if (property.ClrType.IsEnum) {
-                    lookUpAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
-                }
-
-                var enabled = ApplyMetaEntityAttrAttribute(lookUpAttr, navigation.PropertyInfo);
-                if (!enabled)
-                    return;
-
-                var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
-                var dataAttr = entity.FindAttributeById(dataAttrId);
-                if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entity, entityType, property);
-                    if (dataAttr == null)
-                        return;
-
-                    if (dataAttr.Index == int.MaxValue) {
-                        dataAttr.Index = attrCounter;
-                    }
-
-                    attrCounter++;
-                    entity.Attributes.Add(dataAttr);
-                }
-                lookUpAttr.DataAttr = dataAttr;
-                lookUpAttr.IsNullable = dataAttr.IsNullable;
-
-                lookUpAttr.LookupEntity = lookupEntity;
-
-                var principalKey = foreignKey.PrincipalKey;
-                var principalProp = principalKey.Properties.First();
-                var lookupDataAttrId = DataUtils.ComposeKey(lookupEntity.Id, principalProp.Name);
-                var lookupDataAttr = lookupEntity.FindAttributeById(lookupDataAttrId);
-                if (lookupDataAttr != null) {
-                    lookUpAttr.LookupDataAttribute = lookupDataAttr;
-
-                    if (lookupDataAttr.Index == int.MaxValue) {
-                        lookupDataAttr.Index = attrCounter;
-                    }
-
-                    // hide lookup data field of lookup field on managing data
-                    lookupDataAttr.ShowOnEdit = lookupDataAttr.ShowOnCreate = false;
-
-                    attrCounter++;
-                    entity.Attributes.Add(lookUpAttr);
-                }
-
-                var hasDisplayAttrs = lookupEntity.Attributes.Any(attr => attr.ShowInLookup);
-                if (!hasDisplayAttrs) {
-                    var attrs = lookupEntity.Attributes.Where(attr => attr.Caption.ToLowerInvariant().Contains("name")
-                        && attr.DataType == DataType.String && attr.Kind != EntityAttrKind.Lookup);
-
-                    if (!attrs.Any()) {
-                        attrs = lookupEntity.Attributes.Where(attr => attr.DataType == DataType.String
-                            && attr.Kind != EntityAttrKind.Lookup);
-                    }
-
-                    foreach(var attr in attrs) {
-                        attr.ShowInLookup = true;
-                    }
-                }
-            }
-
-        }
-
-        private bool ApplyMetaEntityAttrAttribute(MetaEntityAttr entityAttr, PropertyInfo prop)
-        {
-            var annotation = (MetaEntityAttrAttribute)prop.GetCustomAttribute(typeof(MetaEntityAttrAttribute));
-            if (annotation != null) {
-                if (!annotation.Enabled)
-                    return false;
-
-                if (!string.IsNullOrEmpty(annotation.DisplayName)) {
-                    entityAttr.Caption = annotation.DisplayName;
-                }
-
-                if (!string.IsNullOrEmpty(annotation.Description)) {
-                    entityAttr.Description = annotation.Description;
-                }
-
-                entityAttr.DisplayFormat = annotation.DisplayFormat;
-                entityAttr.IsEditable = annotation.Editable;
-                entityAttr.ShowInLookup = annotation.ShowInLookup;
-                entityAttr.ShowOnView = annotation.ShowOnView;
-                entityAttr.ShowOnEdit = annotation.ShowOnEdit;
-                entityAttr.ShowOnCreate = annotation.ShowOnCreate;
-                entityAttr.Sorting = annotation.Sorting;
-
-                if (annotation.Index != int.MaxValue) {
-                    entityAttr.Index = annotation.Index;
-                }
-            }
-
-            return true;
-        }
-
-        protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
-        {
-            var entityName = Utils.GetEntityNameByType(entityType);
-            var propertyName = property.Name;
-            var columnName = property.GetColumnName();
-
-            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
+            var property = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
             {
                 Parent = entity
             });
 
-            entityAttr.Id = DataUtils.ComposeKey(entityName, propertyName);
-            entityAttr.Expr = columnName;
-            entityAttr.Caption = propertyName;
-            entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
+            var entityName = Utils.GetEntityNameByType(entity.ClrType);
 
-            entityAttr.PropInfo = property.PropertyInfo;
-            entityAttr.PropName = property.Name;
+            // Set some defaults values
+            property.Id = DataUtils.ComposeKey(entityName, propertyMeta.Name);
+            property.Expr = propertyMeta.GetColumnName();
+            property.Caption = DataUtils.PrettifyName(propertyMeta.Name);
+            property.DataType = DataUtils.GetDataTypeBySystemType(propertyMeta.ClrType);
+            property.PropInfo = propertyMeta.PropertyInfo;
+            property.PropName = propertyMeta.Name;
+            property.IsPrimaryKey = propertyMeta.IsPrimaryKey();
+            property.IsForeignKey = propertyMeta.IsForeignKey();
+            property.IsNullable = propertyMeta.IsNullable;
 
-            entityAttr.IsPrimaryKey = property.IsPrimaryKey();
-            entityAttr.IsForeignKey = property.IsForeignKey();
+            // Set default value editors
+            var valueEditorId = $"VE_{entityName}_{propertyMeta.Name}";
 
-            entityAttr.IsNullable = property.IsNullable;
-
-            if (entityAttr.DataType == DataType.Blob) {
-                // HIDE blob fields by default
-                entityAttr.ShowOnCreate = false;
-                entityAttr.ShowOnEdit = false;
+            if (propertyMeta.ClrType.IsEnum) {
+                SetConstListValueEditor(property, valueEditorId, propertyMeta);
             }
 
-            var veId = $"VE_{entityName}_{propertyName}";
-            if (property.ClrType.IsEnum) {
-                var editor = new ConstListValueEditor(veId);
-                FieldInfo[] fields = property.ClrType.GetFields();
-                foreach (var field in fields.Where(f => !f.Name.Equals("value__"))) {
-                    editor.Values.Add(field.GetRawConstantValue().ToString(), field.Name);
-                }
-                entityAttr.DefaultEditor = editor;
-                entityAttr.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
+            if (property.DataType == DataType.Blob) {
+                SetFileValueEditor(property, valueEditorId);
             }
 
-            var propInfo = property.PropertyInfo;
-            if (propInfo != null) {         
-                if (propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
-                    entityAttr.Caption = displayAttr.Name;
-                }
-                else {
-                    entityAttr.Caption = DataUtils.PrettifyName(entityAttr.Caption);
-                }
-
-                var enabled = ApplyMetaEntityAttrAttribute(entityAttr, propInfo);
-                if (!enabled)
-                    return null;
+            // Update caption if display attribute is set
+            var propInfo = propertyMeta.PropertyInfo;
+            if (propInfo != null && propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
+                property.Caption = displayAttr.Name;
             }
 
-            if (entityAttr.DataType == DataType.Blob) {
-                // DO NOT show blob fields in GRID
-                entityAttr.ShowOnView = false;
-
-                var editor = new FileValueEditor(veId);
-                entityAttr.DefaultEditor = editor;
-            }
-
-            return entityAttr;
-
+            return property;
         }
 
-        private bool ApplyFilters(IEntityType entityType)
+        /// <summary>
+        /// Set ConstListValueEditor for the property.
+        /// </summary>
+        /// <param name="property">Meta entity attribute instance.</param>
+        /// <param name="editorId">Id of the editor.</param>
+        /// <param name="propertyMeta">Property metadata.</param>
+        protected static void SetConstListValueEditor(MetaEntityAttr property, string editorId, IProperty propertyMeta)
         {
-            foreach (var filter in Options.Filters) {
-                if (!filter.Invoke(entityType)) {
-                    return false;
-                }
+            var editor = new ConstListValueEditor(editorId);
+            var fields = propertyMeta.ClrType.GetFields();
+
+            foreach (var field in fields.Where(f => !f.Name.Equals("value__"))) {
+                editor.Values.Add(field.GetRawConstantValue().ToString(), field.Name);
             }
 
-            return true;
+            property.DefaultEditor = editor;
+            property.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(propertyMeta.ClrType);
         }
 
-#endregion
+        /// <summary>
+        /// Set FileValueEditor for the property.
+        /// </summary>
+        /// <param name="property">Meta entity attribute instance.</param>
+        /// <param name="editorId">Id of the editor.</param>
+        protected static void SetFileValueEditor(MetaEntityAttr property, string editorId)
+        {
+            var editor = new FileValueEditor(editorId);
+            property.DefaultEditor = editor;
+        }
+
+        /// <summary>
+        /// Process entity navigation properties.
+        /// </summary>
+        /// <param name="entity">Entity to which property is related to.</param>
+        /// <param name="navigation">Navigation property.</param>
+        /// <param name="propertyCounter">Entity property counter.</param>
+        protected void ProcessNavigationProperty(MetaEntity entity, INavigation navigation, ref int propertyCounter)
+        {
+            // Do not need to process collections
+#if NET
+            if (navigation.IsCollection)
+            {
+                return;
+            }
+#else
+            if (navigation.IsCollection()) {
+                return;
+            }
+#endif
+
+            var foreignKey = navigation.ForeignKey;
+
+            // Check if there is a lookup entity in the store
+            if (!EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
+                return;
+            }
+
+            var lookupProperty = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
+            {
+                Parent = entity,
+                Kind = EntityAttrKind.Lookup
+            });
+
+            // Set some defaults values
+            lookupProperty.Id = DataUtils.ComposeKey(entity.Id, navigation.Name);
+            lookupProperty.Caption = DataUtils.PrettifyName(navigation.Name);
+            lookupProperty.PropInfo = navigation.PropertyInfo;
+
+            var property = foreignKey.Properties.First();
+
+            if (property.ClrType.IsEnum) {
+                lookupProperty.DisplayFormat = DataUtils.ComposeDisplayFormatForEnum(property.ClrType);
+            }
+
+            // Get scalar property from the FK
+            var foreignKeyScalarPropertyId = DataUtils.ComposeKey(entity.Id, property.Name);
+            var foreignKeyScalarProperty = entity.FindAttributeById(foreignKeyScalarPropertyId);
+
+            if (foreignKeyScalarProperty == null) {
+                foreignKeyScalarProperty = ProcessProperty(entity, property);
+
+                if (foreignKeyScalarProperty.Index == int.MaxValue) {
+                    foreignKeyScalarProperty.Index = propertyCounter;
+                }
+
+                propertyCounter++;
+                entity.Attributes.Add(foreignKeyScalarProperty);
+            }
+
+            lookupProperty.DataAttr = foreignKeyScalarProperty;
+            lookupProperty.IsNullable = foreignKeyScalarProperty.IsNullable;
+            lookupProperty.LookupEntity = lookupEntity;
+
+            var principalKey = foreignKey.PrincipalKey;
+            var principalProperty = principalKey.Properties.First();
+
+            var lookupScalarPropertyId = DataUtils.ComposeKey(lookupEntity.Id, principalProperty.Name);
+            var lookupScalarProperty = lookupEntity.FindAttributeById(lookupScalarPropertyId);
+
+            if (lookupScalarProperty != null) {
+                lookupProperty.LookupDataAttribute = lookupScalarProperty;
+
+                if (lookupScalarProperty.Index == int.MaxValue) {
+                    lookupScalarProperty.Index = propertyCounter;
+                }
+
+                // hide lookup data field of lookup field on managing data
+                lookupScalarProperty.ShowOnEdit = false;
+                lookupScalarProperty.ShowOnCreate = false;
+
+                propertyCounter++;
+                entity.Attributes.Add(lookupProperty);
+            }
+
+            var hasDisplayAttrs = lookupEntity.Attributes.Any(attr => attr.ShowInLookup);
+
+            if (hasDisplayAttrs) {
+                return;
+            }
+
+            var attrs = lookupEntity.Attributes.Where(attr => attr.Caption.ToLowerInvariant().Contains("name")
+                && attr.DataType == DataType.String && attr.Kind != EntityAttrKind.Lookup);
+
+            if (!attrs.Any()) {
+                attrs = lookupEntity.Attributes.Where(attr => attr.DataType == DataType.String
+                    && attr.Kind != EntityAttrKind.Lookup);
+            }
+
+            foreach (var attr in attrs) {
+                attr.ShowInLookup = true;
+            }
+
+        }
     }
 }

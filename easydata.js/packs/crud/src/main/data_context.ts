@@ -55,6 +55,10 @@ export class DataContext {
         this.setDefaultEndpoints(this.options.endpoint || '/api/easydata')
     }
 
+    public getActiveEntity() {
+        return this.activeEntity;
+    }
+
     public setActiveEntity(entityId: string) {
         this.activeEntity = this.model.getRootEntity().subEntities
                 .filter(e => e.id == entityId)[0];
@@ -102,11 +106,6 @@ export class DataContext {
             });
     }
 
-
-    public getActiveEntity() {
-        return this.activeEntity;
-    }
-
     public getHttpClient() {
         return this.http;
     }
@@ -114,8 +113,7 @@ export class DataContext {
     public getEntities() {
         this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
-            .then(result => {
-                
+            .then(result => {                
                 for(const col of result.table.columns.getItems()) {
                     this.data.columns.add(col);
                 }
