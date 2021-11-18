@@ -30,7 +30,7 @@ export interface DataColumnDescriptor {
     /** The style of the column to display in UI. */
     style?: DataColumnStyle;
     /** Detailed description of the column. */
-    description: string | null;
+    desc: string | null;
 }
 
 export class DataColumn {
@@ -78,7 +78,7 @@ export class DataColumn {
         this.displayFormat = desc.dfmt;
         this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
-        this.description = desc.description;
+        this.description = desc.desc;
     }
 }
 

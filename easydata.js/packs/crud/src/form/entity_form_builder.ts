@@ -394,41 +394,41 @@ export class EntityEditFormBuilder {
             .addChild('label', b => b
                 .attr('for', attr.id)
                 .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `)
-            ).addChild('div');
-
-        let fieldHolder = parent.lastChild as HTMLElement;
+            );
+        
+        const fieldSlot = domel('div', parent).toDOM()
 
         if (attr.kind === EntityAttrKind.Lookup) {
-            this.setupLookupField(fieldHolder, attr, readOnly, value);
+            this.setupLookupField(fieldSlot, attr, readOnly, value);
         }
         else {
             switch (editor.tag) {
                 case EditorTag.DateTime:
-                    this.setupDateTimeField(fieldHolder, attr, readOnly, value);
+                    this.setupDateTimeField(fieldSlot, attr, readOnly, value);
                     break;
     
                 case EditorTag.List:
-                    this.setupListField(fieldHolder, attr, readOnly, editor.values, value);
+                    this.setupListField(fieldSlot, attr, readOnly, editor.values, value);
                     break;
     
                 case EditorTag.File:
-                    this.setupFileField(fieldHolder, attr, readOnly, editor.accept);
+                    this.setupFileField(fieldSlot, attr, readOnly, editor.accept);
                     break;
     
                 case EditorTag.Edit:
                 default:
                     if (editor.multiline) {
-                        this.setupTextArea(fieldHolder, attr, readOnly, value);
+                        this.setupTextArea(fieldSlot, attr, readOnly, value);
                     }
                     else {
-                        this.setupTextField(fieldHolder, attr, readOnly, value);
+                        this.setupTextField(fieldSlot, attr, readOnly, value);
                     }
                     break;
             }
         }
 
         if (attr.description) {
-            domel(fieldHolder).addChild('small', b => b
+            domel(fieldSlot).addChild('small', b => b
                 .addText(attr.description)
             );
         }

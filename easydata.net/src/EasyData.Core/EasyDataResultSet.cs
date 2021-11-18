@@ -96,7 +96,7 @@ namespace EasyData
         /// <summary>
         /// Detailed description of the property.
         /// </summary>
-        [JsonProperty("description")]
+        [JsonProperty("desc")]
         public string Description { get; set; }
 
         /// <summary>
