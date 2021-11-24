@@ -101,7 +101,8 @@ namespace EasyData
         }
     }
 
-    public interface IEasyDataResultSet {
+    public interface IEasyDataResultSet
+    {
         /// <summary>
         /// Gets columns
         /// </summary>
