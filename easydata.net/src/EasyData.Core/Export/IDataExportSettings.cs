@@ -62,5 +62,7 @@ namespace EasyData.Export
         bool IncludeGrandTotals { get; set; }
 
         bool IncludeSubTotals { get; set;}
+
+        int AggrColumnsCount { get; set; }
     }
 }
