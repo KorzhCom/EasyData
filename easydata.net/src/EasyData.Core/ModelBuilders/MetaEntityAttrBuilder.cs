@@ -1,30 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using EasyData.MetaDescriptors;
 
-namespace EasyData.EntityFrameworkCore.Services
+namespace EasyData
 {
     /// <summary>
     /// Builder for entity attribute metadata.
     /// </summary>
-    public class EntityAttributeMetaBuilder
+    public class MetaEntityAttrBuilder
     {
-        /// <summary>
-        /// Store entity attribute metadata.
-        /// </summary>
-        public EntityAttributeMetadataDescriptor EntityAttributeMetadataDescriptor { get; }
+
+        public MetaEntityAttr Attribute { get; private set; }
 
         /// <summary>
-        /// Initialize entity attribute descriptor.
+        /// Initialize entity attribute builder.
         /// </summary>
-        public EntityAttributeMetaBuilder(PropertyInfo propertyInfo)
+        public MetaEntityAttrBuilder(MetaEntityAttr attr)
         {
-            EntityAttributeMetadataDescriptor = new EntityAttributeMetadataDescriptor
-            {
-                PropertyInfo = propertyInfo
-            };
+            Attribute = attr;
         }
 
         /// <summary>
@@ -32,9 +23,12 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="enabled">Enable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetEnabled(bool enabled)
+        public MetaEntityAttrBuilder SetEnabled(bool enabled)
         {
-            EntityAttributeMetadataDescriptor.IsEnabled = enabled;
+            //TODO: Check if we really need this
+            if (!enabled) { 
+                Attribute.Entity?.Attributes.Remove(Attribute);
+            }
             return this;
         }
 
@@ -43,9 +37,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDisplayName(string displayName)
+        public MetaEntityAttrBuilder SetDisplayName(string displayName)
         {
-            EntityAttributeMetadataDescriptor.DisplayName = displayName;
+            Attribute.Caption = displayName;
             return this;
         }
 
@@ -54,9 +48,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="displayFormat">Display format to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDisplayFormat(string displayFormat)
+        public MetaEntityAttrBuilder SetDisplayFormat(string displayFormat)
         {
-            EntityAttributeMetadataDescriptor.DisplayFormat = displayFormat;
+            Attribute.DisplayFormat = displayFormat;
             return this;
         }
 
@@ -65,9 +59,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDescription(string description)
+        public MetaEntityAttrBuilder SetDescription(string description)
         {
-            EntityAttributeMetadataDescriptor.Description = description;
+            Attribute.Description = description;
             return this;
         }
 
@@ -76,9 +70,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetEditable(bool editable)
+        public MetaEntityAttrBuilder SetEditable(bool editable)
         {
-            EntityAttributeMetadataDescriptor.IsEditable = editable;
+            Attribute.IsEditable = editable;
             return this;
         }
 
@@ -87,9 +81,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="index">Index to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetIndex(int index)
+        public MetaEntityAttrBuilder SetIndex(int index)
         {
-            EntityAttributeMetadataDescriptor.Index = index;
+            Attribute.Index = index;
             return this;
         }
 
@@ -98,9 +92,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showInLookup">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowInLookup(bool showInLookup)
+        public MetaEntityAttrBuilder SetShowInLookup(bool showInLookup)
         {
-            EntityAttributeMetadataDescriptor.ShowInLookup = showInLookup;
+            Attribute.ShowInLookup = showInLookup;
             return this;
         }
 
@@ -109,9 +103,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnView">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnView(bool showOnView)
+        public MetaEntityAttrBuilder SetShowOnView(bool showOnView)
         {
-            EntityAttributeMetadataDescriptor.ShowOnView = showOnView;
+            Attribute.ShowOnView = showOnView;
             return this;
         }
 
@@ -120,9 +114,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnEdit">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnEdit(bool showOnEdit)
+        public MetaEntityAttrBuilder SetShowOnEdit(bool showOnEdit)
         {
-            EntityAttributeMetadataDescriptor.ShowOnEdit = showOnEdit;
+            Attribute.ShowOnEdit = showOnEdit;
             return this;
         }
 
@@ -131,9 +125,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnCreate">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnCreate(bool showOnCreate)
+        public MetaEntityAttrBuilder SetShowOnCreate(bool showOnCreate)
         {
-            EntityAttributeMetadataDescriptor.ShowOnCreate = showOnCreate;
+            Attribute.ShowOnCreate = showOnCreate;
             return this;
         }
 
@@ -142,9 +136,9 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="sorting">Sorting to set.</param>
         /// <returns></returns>
-        public EntityAttributeMetaBuilder SetSorting(int sorting)
+        public MetaEntityAttrBuilder SetSorting(int sorting)
         {
-            EntityAttributeMetadataDescriptor.Sorting = sorting;
+            Attribute.Sorting = sorting;
             return this;
         }
     }
