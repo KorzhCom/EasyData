@@ -11,6 +11,8 @@ using Korzh.DbUtils;
 using EasyData.Services;
 using EasyData;
 
+using EasyDataBasicDemo.Models;
+
 namespace EasyDataBasicDemo
 {
     public class Startup
@@ -65,7 +67,21 @@ namespace EasyDataBasicDemo
                             Multiline = true
                         };
                     });
-                    options.UseDbContext<AppDbContext>(opts => opts.SkipForeignKeys = false);
+                    options.UseDbContext<AppDbContext>(opts => {
+                        opts.UseMetaBuilder(builder => {
+                            builder.Entity<Customer>()
+                                .SetDisplayName("Client")
+                                .SetDisplayNamePlural("Clients")
+                                .Attribute(c => c.Country)
+                                    .SetDisplayName("Country name")
+                                    .SetDescription("Country where the client lives");
+
+                            builder.Entity<Order>()
+                                .Attribute(o => o.OrderDate)
+                                    .SetDisplayFormat("{0:yyyy-MM-dd}");
+                        });
+                        opts.SkipForeignKeys = false;
+                    });
                 });
                 //.RequireAuthorization();
 
