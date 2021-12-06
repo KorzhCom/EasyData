@@ -15,38 +15,48 @@ export interface DataColumnStyle
 }
 
 export interface DataColumnDescriptor {
-    /** Represents internal column id. */
+    /** Represents the internal column ID. */
     id: string;
-    /** Represents original internal column id. */
+
+    /** Represents the ID of the metadata attribute this column is based on. */
     originAttrId?: string;
-    /** The type of data represented by column. */
+
+    /** The type of data represented by the column. */
     type?: DataType;
-    /** Name to use for this column in the UI. */
+
+    /** The label that is used for this column in UI. */
     label: string;
+
+    /** Indicates whether this column is an aggregate one. */
     isAggr?: boolean;
+
     /** The display format for the column. */
     dfmt?: string;
+
     gfct?: string;
+
     /** The style of the column to display in UI. */
     style?: DataColumnStyle;
-    /** Detailed description of the column. */
-    desc: string | null;
+
+    /** The detailed column description. */
+    description: string | null;
 }
 
 export class DataColumn {
 
-    /** The type of data represented by column. */
+    /** The type of data represented by the column. */
     public readonly type: DataType;
 
-    /** Represents internal column id. */
+    /** Represents the internal column ID. */
     public readonly id: string;
 
+    /** Indicates whether this column is an aggregate one. */
     public readonly isAggr: boolean;
 
-    /** Represents original internal column id. */
+    /** Represents the ID of the metadata attribute this column is based on. */
     public readonly originAttrId?: string;
 
-    /** Name to use for this column in the UI. */
+    /** The label that is used for this column in UI. */
     public label: string;
 
     /** The display format for the column. */
@@ -57,7 +67,7 @@ export class DataColumn {
     /** The style of the column to display in UI. */
     public style?: DataColumnStyle;
 
-    /** Column description. */
+    /** The column description. */
     public description: string | null;
 
     constructor(desc: DataColumnDescriptor) {
@@ -78,7 +88,7 @@ export class DataColumn {
         this.displayFormat = desc.dfmt;
         this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
-        this.description = desc.desc;
+        this.description = desc.description;
     }
 }
 

@@ -24,34 +24,37 @@ namespace EasyData
     public class EasyDataColDesc
     {
         /// <summary>
-        /// Represents internal property id.
+        /// Represents the internal column ID.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// Index of property.
+        /// Represents the order number of this column among all columns in the result set.
         /// </summary>
         public int Index { get; set; }
 
+        /// <summary>
+        /// Indicates whether this column is an aggregate one.
+        /// </summary>
         public bool IsAggr { get; set; }
 
         /// <summary>
-        /// Name to use for this property in the UI.
+        /// The label that is used for this column in UI.
         /// </summary>
         public string Label { get; set; }
 
         /// <summary>
-        /// Detailed description of the property.
+        /// The detailed column description.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// The type of data represented by property.
+        /// The type of data represented by the property.
         /// </summary>
         public DataType DataType { get; set; }
 
         /// <summary>
-        /// Represents internal property id.
+        /// Represents internal property ID.
         /// </summary>
         public string AttrId { get; set; }
 
@@ -73,47 +76,50 @@ namespace EasyData
     public class EasyDataCol
     {
         /// <summary>
-        /// Represents internal property id.
+        /// Represents the internal column ID.
         /// </summary>
         [JsonProperty("id")]
         public string Id { get; }
 
         /// <summary>
-        /// Index of property.
+        /// Represents the order number of this column among all columns in the result set.
         /// </summary>
         [JsonIgnore]
         public int Index { get; }
 
+        /// <summary>
+        /// Indicates whether this column is an aggregate one.
+        /// </summary>
         [JsonProperty("isAggr")]
         public bool IsAggr { get; }
 
         /// <summary>
-        /// Name to use for this property in the UI.
+        /// The label that is used for this column in UI.
         /// </summary>
         [JsonProperty("label")]
         public string Label { get; set; }
 
         /// <summary>
-        /// Detailed description of the property.
+        /// The detailed column description.
         /// </summary>
-        [JsonProperty("desc")]
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// The type of data represented by property.
+        /// The type of data represented by the property.
         /// </summary>
         [Obsolete("Use DataType instead")]
         [JsonIgnore]
         public DataType Type => DataType;
 
         /// <summary>
-        /// The type of data represented by property.
+        /// The type of data represented by the property.
         /// </summary>
         [JsonProperty("type")]
         public DataType DataType { get; }
 
         /// <summary>
-        /// Represents original internal property id.
+        /// Represents the ID of the metadata attribute this column is based on.
         /// </summary>
         [JsonProperty("originAttrId")]
         public string OrginAttrId { get; }

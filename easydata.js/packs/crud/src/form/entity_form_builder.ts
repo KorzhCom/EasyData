@@ -391,46 +391,49 @@ export class EntityEditFormBuilder {
         }
 
         domel(parent)
-            .addChild('label', b => b
-                .attr('for', attr.id)
-                .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `)
+            .addChild('label', b => {
+                b.attr('for', attr.id);
+                b.addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `);
+
+                if (attr.description) {
+                    b.addChild('div', b => b
+                        .attr('title', attr.description)
+                        .addClass('question-mark')
+                        .setStyle('vertical-align', 'middle')
+                        .setStyle('display', 'inline-block')
+                    );
+                }
+            }
+
             );
         
-        const fieldSlot = domel('div', parent).toDOM()
-
         if (attr.kind === EntityAttrKind.Lookup) {
-            this.setupLookupField(fieldSlot, attr, readOnly, value);
-        }
-        else {
-            switch (editor.tag) {
-                case EditorTag.DateTime:
-                    this.setupDateTimeField(fieldSlot, attr, readOnly, value);
-                    break;
-    
-                case EditorTag.List:
-                    this.setupListField(fieldSlot, attr, readOnly, editor.values, value);
-                    break;
-    
-                case EditorTag.File:
-                    this.setupFileField(fieldSlot, attr, readOnly, editor.accept);
-                    break;
-    
-                case EditorTag.Edit:
-                default:
-                    if (editor.multiline) {
-                        this.setupTextArea(fieldSlot, attr, readOnly, value);
-                    }
-                    else {
-                        this.setupTextField(fieldSlot, attr, readOnly, value);
-                    }
-                    break;
-            }
+            this.setupLookupField(parent, attr, readOnly, value);
+            return;
         }
 
-        if (attr.description) {
-            domel(fieldSlot).addChild('small', b => b
-                .addText(attr.description)
-            );
+        switch (editor.tag) {
+            case EditorTag.DateTime:
+                this.setupDateTimeField(parent, attr, readOnly, value);
+                break;
+
+            case EditorTag.List:
+                this.setupListField(parent, attr, readOnly, editor.values, value);
+                break;
+
+            case EditorTag.File:
+                this.setupFileField(parent, attr, readOnly, editor.accept);
+                break;
+
+            case EditorTag.Edit:
+            default:
+                if (editor.multiline) {
+                    this.setupTextArea(parent, attr, readOnly, value);
+                }
+                else {
+                    this.setupTextField(parent, attr, readOnly, value);
+                }
+                break;
         }
     }
 
