@@ -85,10 +85,13 @@ namespace EasyData.Export
         /// </summary>
         public bool PreserveFormatting { get; set; } = true;
 
-        public bool IncludeGrandTotals { get; set; } = false;
+        //public bool IncludeGrandTotals { get; set; } = false;
 
-        public bool IncludeSubTotals { get; set; } = false;
+        //public bool IncludeSubTotals { get; set; } = false;
 
-        public int AggrColumnsCount { get; set; } = 0;
+        //public int AggrColumnsCount { get; set; } = 0;
+
+        public AggregationSettings AggrSettings { get; set; } = new AggregationSettings();
+
     }
 }
