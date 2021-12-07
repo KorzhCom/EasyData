@@ -59,10 +59,12 @@ namespace EasyData.Export
         /// </summary>
         bool PreserveFormatting { get; set; }
 
-        bool IncludeGrandTotals { get; set; }
+        //bool IncludeGrandTotals { get; set; }
 
-        bool IncludeSubTotals { get; set;}
+        //bool IncludeSubTotals { get; set;}
 
-        int AggrColumnsCount { get; set; }
+        //int AggrColumnsCount { get; set; }
+
+        AggregationSettings AggrSettings { get; set; }
     }
 }
