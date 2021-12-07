@@ -73,7 +73,6 @@ namespace EasyDataBasicDemo
 
                         opts.UseMetaBuilder(builder => {
                             builder.Entity<Customer>()
-                                .SetEnabled(false)
                                 .SetDisplayName("Client")
                                 .SetDisplayNamePlural("Clients")
                                 .Attribute(c => c.Country)

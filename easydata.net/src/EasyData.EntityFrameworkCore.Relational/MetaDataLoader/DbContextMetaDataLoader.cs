@@ -13,8 +13,6 @@ namespace EasyData.EntityFrameworkCore
     {
         protected readonly DbContextMetaDataLoaderOptions Options;
 
-        protected readonly Dictionary<string, MetaEntity> TableEntityMap = new Dictionary<string, MetaEntity>();
-
         protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities = new Dictionary<IEntityType, MetaEntity>();
 
         protected readonly DbContext DbContext;
@@ -35,13 +33,22 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IEntityType> GetEntityTypes()
         {   
             return DbContext.Model.GetEntityTypes()
-               .Where(entityType => ApplyFilters(entityType));
+               .Where(ApplyFilters);
+        }
+
+        private bool ApplyFilters(IEntityType entityType)
+        {
+            foreach (var filter in Options.Filters) {
+                if (!filter.Invoke(entityType)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public virtual void LoadFromDbContext()
         { 
-            TableEntityMap.Clear();
-
             var entityTypes = GetEntityTypes();
 
             if (Options.KeepDbSetDeclarationOrder) {
@@ -86,13 +93,18 @@ namespace EasyData.EntityFrameworkCore
                 }
             }
 
+            if (Options.ModelConfigurator != null) {
+                var builder = new MetadataModelBuilder(Model);
+                Options.ModelConfigurator.Invoke(builder);
+            }
+
             Model.EntityRoot.Attributes.Reorder();
             Model.EntityRoot.SubEntities.Reorder();
         }
 
         protected string GetEntityId(IEntityType entityType)
         {
-            var entityName = Utils.GetEntityNameByType(entityType.GetType());
+            var entityName = Utils.GetEntityNameByType(entityType.ClrType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
@@ -102,7 +114,7 @@ namespace EasyData.EntityFrameworkCore
             var entity = Model.CreateEntity();
             var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
-            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType.GetType()));
+            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType.ClrType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             var primaryKey = entityType.FindPrimaryKey();
@@ -131,8 +143,6 @@ namespace EasyData.EntityFrameworkCore
                     entity.IsEditable = annotation.Editable.Value;
                 }
             }
-
-            TableEntityMap.Add(tableName, entity);
 
             var properties = entityType.GetProperties().ToList();
             int attrCounter = 0;
@@ -280,7 +290,7 @@ namespace EasyData.EntityFrameworkCore
 
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
-            var entityName = Utils.GetEntityNameByType(entityType.GetType());
+            var entityName = Utils.GetEntityNameByType(entityType.ClrType);
             var propertyName = property.Name;
             var columnName = property.GetColumnName();
 
@@ -343,17 +353,6 @@ namespace EasyData.EntityFrameworkCore
 
             return entityAttr;
 
-        }
-
-        private bool ApplyFilters(IEntityType entityType)
-        {
-            foreach (var filter in Options.Filters) {
-                if (!filter.Invoke(entityType)) {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }
