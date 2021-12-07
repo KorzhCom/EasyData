@@ -49,15 +49,15 @@ namespace EasyData.EntityFrameworkCore
         /// <summary>
         /// Store metadata.
         /// </summary>
-        public MetadataBuilder MetadataBuilder { get; } = new MetadataBuilder();
+        public Action<MetadataModelBuilder> ModelConfigurator { get; private set; }
 
         /// <summary>
         /// Build metadata.
         /// </summary>
-        /// <param name="builder"></param>
-        public void UseMetaBuilder(Action<MetadataBuilder> builder)
+        /// <param name="configurator">The procedure that configures the metadata model</param>
+        public void UseMetaBuilder(Action<MetadataModelBuilder> configurator)
         {
-            builder(MetadataBuilder);
+            ModelConfigurator = configurator;
         }
 
     }

@@ -68,6 +68,8 @@ namespace EasyDataBasicDemo
                         };
                     });
                     options.UseDbContext<AppDbContext>(opts => {
+                        opts.SkipForeignKeys = false;
+
                         opts.UseMetaBuilder(builder => {
                             builder.Entity<Customer>()
                                 .SetDisplayName("Client")
@@ -80,7 +82,27 @@ namespace EasyDataBasicDemo
                                 .Attribute(o => o.OrderDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
                         });
-                        opts.SkipForeignKeys = false;
+
+
+                    //    opts.UseMetaBuilder()
+                    //        .Skip<Category>()
+                    //        .Skip<Supplier>()
+                    //        .Entity<Customer>(ecfg => ecfg
+                    //            .SetDisplayName("Client")
+                    //            .SetDisplayNamePlural("Clients")
+                    //            .Attribute(c => c.Country, attrConfig => attrConfig
+                    //                .SetDisplayName("Country name")
+                    //                .SetDescription("Country where the client lives")
+                    //            )
+                    //        )
+                    //        .Entity<Order>(ecfg => ecfg
+                    //            .Attribute(o => o.OrderDate)
+                    //                .SetDisplayFormat("{0:yyyy-MM-dd}")
+                    //        );
+                    //    });
+
+
+
                     });
                 });
                 //.RequireAuthorization();
