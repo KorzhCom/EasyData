@@ -17,7 +17,7 @@ namespace EasyData
 
         //private Dictionary<Type, EntityMetaBuilder> _builders = new Dictionary<Type, Services.EntityMetaBuilder> ();
 
-        protected virtual MetaEntityBuilder<TEntity> GetBuilder<TEntity>()
+        protected virtual IMetaEntityBuilder<TEntity> GetBuilder<TEntity>() where TEntity : class
         {
             var entity = _metadata.EntityRoot.FindEntity(ent => ent.ClrType == typeof(TEntity));
 
@@ -29,14 +29,16 @@ namespace EasyData
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
         /// <returns>Entity metadata descriptor instance.</returns>
-        public MetaEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
+        public IMetaEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
         {
             var entityBuilder = GetBuilder<TEntity>();
 
             // Return entity metadata builder if it has already been created with specified entity type
-            if (entityBuilder != null) {
-                return (MetaEntityBuilder<TEntity>)builder;
+            if (entityBuilder == null) {
+                entityBuilder = new SkipMetaEntityBuilder<TEntity>(this);
             }
+
+            return entityBuilder;
         }
     }
 }

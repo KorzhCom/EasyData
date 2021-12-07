@@ -6,33 +6,32 @@ using System.Reflection;
 namespace EasyData
 {
     /// <summary>
-    /// Builder for entity metadata.
+    /// Represents a special case of an entity builder that
+    /// does not really change any MetaEntity object
+    /// but rather saves information about which entities we need to ignore (skip)
     /// </summary>
-    public class MetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
+    public class SkipMetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
     {
-        public MetaEntity Entity { get; private set; }
+        protected MetadataModelBuilder ModelBuilder { get; private set; }
 
         /// <summary>
-        /// Initialize entity builder
+        /// Initialize the builder
         /// </summary>
-        public MetaEntityBuilder(MetaEntity entity)
+        public SkipMetaEntityBuilder(MetadataModelBuilder modelBuilder)
         {
-            Entity = entity;
+            ModelBuilder = modelBuilder;
         }
 
         /// <summary>
-        /// Set entity display name.
+        /// Does nothing.
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityBuilder<TEntity> SetDisplayName(string displayName)
         {
-            Entity.Name = displayName;
             return this;
         }
 
-
-        //TODO: We should check if really need this SetEnabled procedure
 
         /// <summary>
         /// Set availability for the entity.
@@ -41,66 +40,47 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityBuilder<TEntity> SetEnabled(bool enabled)
         {
-            if (!enabled) {
-                Entity.Parent.SubEntities.Remove(Entity);
-            }
             return this;
         }
 
         /// <summary>
-        /// Set entity plural display name.
+        /// Does nothing
         /// </summary>
         /// <param name="displayNamePlural">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityBuilder<TEntity> SetDisplayNamePlural(string displayNamePlural)
         {
-            Entity.NamePlural = displayNamePlural;
             return this;
         }
 
         /// <summary>
-        /// Set entity description.
+        /// Does nothing
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityBuilder<TEntity> SetDescription(string description)
         {
-            Entity.Description = description;
             return this;
         }
 
         /// <summary>
-        /// Set entity availability for editing.
+        /// Does nothing
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityBuilder<TEntity> SetEditable(bool editable)
         {
-            Entity.IsEditable = editable;
             return this;
         }
 
-        /// <summary>
-        /// Get entity attribute metadata builder.
-        /// </summary>
-        /// <param name="propertySelector">Property expression.</param>
-        /// <returns>Attribute metadata builder instance.</returns>
+        private IMetaEntityAttrBuilder _emptyAttrBuilder;
+
         public IMetaEntityAttrBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
-            PropertyInfo propertyInfo;
-
-            if (propertySelector.Body is MemberExpression expression) {
-                propertyInfo = (PropertyInfo)expression.Member;
+            if (_emptyAttrBuilder == null) { 
+                _emptyAttrBuilder = new SkipMetaEntityAttrBuilder();
             }
-            else {
-                var memberExpression = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
-                propertyInfo = (PropertyInfo)memberExpression.Member;
-            }
-
-            var metaAttr = Entity.FindAttribute(attr => attr.PropInfo.Equals(propertyInfo));
-            var attributeBuilder = new MetaEntityAttrBuilder(metaAttr);
-            return attributeBuilder;
+            return _emptyAttrBuilder;
         }
     }
-
 }

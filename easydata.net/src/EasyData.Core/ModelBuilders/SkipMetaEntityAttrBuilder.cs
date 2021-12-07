@@ -5,17 +5,14 @@ namespace EasyData
     /// <summary>
     /// Builder for entity attribute metadata.
     /// </summary>
-    public class MetaEntityAttrBuilder : IMetaEntityAttrBuilder
+    public class SkipMetaEntityAttrBuilder : IMetaEntityAttrBuilder
     {
-
-        public MetaEntityAttr Attribute { get; private set; }
 
         /// <summary>
         /// Initialize entity attribute builder.
         /// </summary>
-        public MetaEntityAttrBuilder(MetaEntityAttr attr)
+        public SkipMetaEntityAttrBuilder()
         {
-            Attribute = attr;
         }
 
         /// <summary>
@@ -25,10 +22,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetEnabled(bool enabled)
         {
-            //TODO: Check if we really need this
-            if (!enabled) {
-                Attribute.Entity?.Attributes.Remove(Attribute);
-            }
             return this;
         }
 
@@ -39,7 +32,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetDisplayName(string displayName)
         {
-            Attribute.Caption = displayName;
             return this;
         }
 
@@ -50,7 +42,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetDisplayFormat(string displayFormat)
         {
-            Attribute.DisplayFormat = displayFormat;
             return this;
         }
 
@@ -61,7 +52,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetDescription(string description)
         {
-            Attribute.Description = description;
             return this;
         }
 
@@ -72,7 +62,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetEditable(bool editable)
         {
-            Attribute.IsEditable = editable;
             return this;
         }
 
@@ -83,7 +72,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetIndex(int index)
         {
-            Attribute.Index = index;
             return this;
         }
 
@@ -94,7 +82,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetShowInLookup(bool showInLookup)
         {
-            Attribute.ShowInLookup = showInLookup;
             return this;
         }
 
@@ -105,7 +92,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetShowOnView(bool showOnView)
         {
-            Attribute.ShowOnView = showOnView;
             return this;
         }
 
@@ -116,7 +102,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetShowOnEdit(bool showOnEdit)
         {
-            Attribute.ShowOnEdit = showOnEdit;
             return this;
         }
 
@@ -127,7 +112,6 @@ namespace EasyData
         /// <returns>Current instance of the class.</returns>
         public IMetaEntityAttrBuilder SetShowOnCreate(bool showOnCreate)
         {
-            Attribute.ShowOnCreate = showOnCreate;
             return this;
         }
 
@@ -138,7 +122,6 @@ namespace EasyData
         /// <returns></returns>
         public IMetaEntityAttrBuilder SetSorting(int sorting)
         {
-            Attribute.Sorting = sorting;
             return this;
         }
     }
