@@ -5,13 +5,13 @@ namespace EasyData
     /// <summary>
     /// Builder for entity attribute metadata.
     /// </summary>
-    public class SkipMetaEntityAttrBuilder : IMetaEntityAttrBuilder
+    public class VoidMetaEntityAttrBuilder : IMetaEntityAttrBuilder
     {
 
         /// <summary>
         /// Initialize entity attribute builder.
         /// </summary>
-        public SkipMetaEntityAttrBuilder()
+        public VoidMetaEntityAttrBuilder()
         {
         }
 

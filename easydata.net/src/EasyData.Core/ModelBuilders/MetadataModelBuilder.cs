@@ -15,13 +15,27 @@ namespace EasyData
             _metadata = metadata;
         }
 
-        //private Dictionary<Type, EntityMetaBuilder> _builders = new Dictionary<Type, Services.EntityMetaBuilder> ();
+        private Dictionary<Type, object> _builders = new Dictionary<Type, object> ();
 
         protected virtual IMetaEntityBuilder<TEntity> GetBuilder<TEntity>() where TEntity : class
         {
-            var entity = _metadata.EntityRoot.FindEntity(ent => ent.ClrType == typeof(TEntity));
+            if (_builders.TryGetValue(typeof(TEntity), out var builderObj)) {
+                return builderObj as IMetaEntityBuilder<TEntity>;
+            }
+            else {
+                var entity = _metadata.EntityRoot.FindEntity(ent => ent.ClrType == typeof(TEntity));
 
-            return entity != null ? new MetaEntityBuilder<TEntity>(entity) : null;
+                IMetaEntityBuilder<TEntity> builder;
+                if (entity != null) {
+                    builder = new MetaEntityBuilder<TEntity>(entity);
+                }
+                else {
+                    builder = new VoidMetaEntityBuilder<TEntity>(this);
+                }
+                _builders.Add(typeof(TEntity), builder);
+
+                return builder;
+            }
         }
 
         /// <summary>
@@ -31,14 +45,7 @@ namespace EasyData
         /// <returns>Entity metadata descriptor instance.</returns>
         public IMetaEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
         {
-            var entityBuilder = GetBuilder<TEntity>();
-
-            // Return entity metadata builder if it has already been created with specified entity type
-            if (entityBuilder == null) {
-                entityBuilder = new SkipMetaEntityBuilder<TEntity>(this);
-            }
-
-            return entityBuilder;
+            return GetBuilder<TEntity>();
         }
     }
 }

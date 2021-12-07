@@ -10,14 +10,14 @@ namespace EasyData
     /// does not really change any MetaEntity object
     /// but rather saves information about which entities we need to ignore (skip)
     /// </summary>
-    public class SkipMetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
+    public class VoidMetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
     {
         protected MetadataModelBuilder ModelBuilder { get; private set; }
 
         /// <summary>
         /// Initialize the builder
         /// </summary>
-        public SkipMetaEntityBuilder(MetadataModelBuilder modelBuilder)
+        public VoidMetaEntityBuilder(MetadataModelBuilder modelBuilder)
         {
             ModelBuilder = modelBuilder;
         }
@@ -78,7 +78,7 @@ namespace EasyData
         public IMetaEntityAttrBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
             if (_emptyAttrBuilder == null) { 
-                _emptyAttrBuilder = new SkipMetaEntityAttrBuilder();
+                _emptyAttrBuilder = new VoidMetaEntityAttrBuilder();
             }
             return _emptyAttrBuilder;
         }

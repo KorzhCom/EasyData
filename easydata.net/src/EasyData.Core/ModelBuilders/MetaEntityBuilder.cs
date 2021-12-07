@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -12,12 +13,17 @@ namespace EasyData
     {
         public MetaEntity Entity { get; private set; }
 
+        private readonly VoidMetaEntityAttrBuilder _voidAttributeBuilder;
+        private Dictionary<PropertyInfo, IMetaEntityAttrBuilder> _builders = new Dictionary<PropertyInfo, IMetaEntityAttrBuilder>();
+
+
         /// <summary>
         /// Initialize entity builder
         /// </summary>
         public MetaEntityBuilder(MetaEntity entity)
         {
             Entity = entity;
+            _voidAttributeBuilder = new VoidMetaEntityAttrBuilder();
         }
 
         /// <summary>
@@ -80,6 +86,19 @@ namespace EasyData
             return this;
         }
 
+
+        private PropertyInfo GetPropertyInfoBySelector(Expression<Func<TEntity, object>> propertySelector)
+        {
+            if (propertySelector.Body is MemberExpression expression) {
+                return (PropertyInfo)expression.Member;
+            }
+            else {
+                var memberExpression = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
+                return (PropertyInfo)memberExpression.Member;
+            }
+        }
+
+
         /// <summary>
         /// Get entity attribute metadata builder.
         /// </summary>
@@ -87,19 +106,19 @@ namespace EasyData
         /// <returns>Attribute metadata builder instance.</returns>
         public IMetaEntityAttrBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
-            PropertyInfo propertyInfo;
+            PropertyInfo propertyInfo = GetPropertyInfoBySelector(propertySelector);
 
-            if (propertySelector.Body is MemberExpression expression) {
-                propertyInfo = (PropertyInfo)expression.Member;
-            }
-            else {
-                var memberExpression = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
-                propertyInfo = (PropertyInfo)memberExpression.Member;
+            if (!_builders.TryGetValue(propertyInfo, out var attrBuilder)) {
+                var metaAttr = Entity.FindAttribute(attr => attr.PropInfo.Equals(propertyInfo));
+                if (metaAttr != null) {
+                    attrBuilder = new MetaEntityAttrBuilder(metaAttr);
+                }
+                else {
+                    attrBuilder = _voidAttributeBuilder;
+                }
             }
 
-            var metaAttr = Entity.FindAttribute(attr => attr.PropInfo.Equals(propertyInfo));
-            var attributeBuilder = new MetaEntityAttrBuilder(metaAttr);
-            return attributeBuilder;
+            return attrBuilder;
         }
     }
 
