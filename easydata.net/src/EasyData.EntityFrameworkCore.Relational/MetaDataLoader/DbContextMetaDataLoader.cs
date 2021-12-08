@@ -94,7 +94,7 @@ namespace EasyData.EntityFrameworkCore
             }
 
             if (Options.ModelConfigurator != null) {
-                var builder = new MetadataModelBuilder(Model);
+                var builder = new MetadataCustomizer(Model);
                 Options.ModelConfigurator.Invoke(builder);
             }
 
