@@ -14,8 +14,8 @@ namespace EasyData.AspNetCore
     public static class DataAction 
     {
         public const string GetModel = "GetModel";
-        public const string GetEntity = "GetEntity";
-        public const string GetEntities = "GetEntities";
+        public const string FetchRecord = "FetchRecord";
+        public const string FetchDataset = "FetchDataset";
         public const string CreateEntity = "CreateEntity";
         public const string UpdateEntity = "UpdateEntity";
         public const string DeleteEntity = "DeleteEntity";
@@ -43,8 +43,8 @@ namespace EasyData.AspNetCore
         private static readonly Endpoint[] _routing =
             {
                 new Endpoint(DataAction.GetModel, @"^/models/([^/]+?)$", "GET"),
-                new Endpoint(DataAction.GetEntities, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "POST"),
-                new Endpoint(DataAction.GetEntity, @"^/models/([^/]+?)/crud/([^/]+?)/fetch/([^/]+?)$", "GET"),
+                new Endpoint(DataAction.FetchDataset, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "POST"),
+                new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/crud/([^/]+?)/fetch/([^/]+?)$", "GET"),
                 new Endpoint(DataAction.CreateEntity, @"^/models/([^/]+?)/crud/([^/]+?)/create$", "POST"),
                 new Endpoint(DataAction.UpdateEntity,@"^/models/([^/]+?)/crud/([^/]+?)/update/([^/]+?)$", "POST"),
                 new Endpoint(DataAction.DeleteEntity, @"^/models/([^/]+?)/crud/([^/]+?)/delete/([^/]+?)$", "POST")
@@ -99,11 +99,11 @@ namespace EasyData.AspNetCore
                             case DataAction.GetModel:
                                 await handler.HandleGetModelAsync(modelId, ct);
                                 return;
-                            case DataAction.GetEntity:
-                                await handler.HandleGetEntityAsync(modelId, entityTypeName, entityId, ct);
+                            case DataAction.FetchRecord:
+                                await handler.HandleFetchRecordAsync(modelId, entityTypeName, entityId, ct);
                                 return;
-                            case DataAction.GetEntities:
-                                await handler.HandleGetEntitiesAsync(modelId, entityTypeName, ct);
+                            case DataAction.FetchDataset:
+                                await handler.HandleFetchDatasetAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.CreateEntity:
                                 await handler.HandleCreateEntityAsync(modelId, entityTypeName, ct);

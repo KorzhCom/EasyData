@@ -62,23 +62,23 @@ namespace EasyData.Services
             return Task.CompletedTask;
         }
 
-        public abstract Task<EasyDataResultSet> GetEntitiesAsync(
-            string modelId, string entityContainer,
-            IEnumerable<EasyFilter> filters = null,
-            IEnumerable<EasySorter> sorters = null,
-            bool isLookup = false,
-            int? offset = null, int? fetch = null,
-            CancellationToken ct = default);
+        public abstract Task<EasyDataResultSet> FetchDatasetAsync(
+                                                    string modelId, string entityContainer,
+                                                    IEnumerable<EasyFilter> filters = null,
+                                                    IEnumerable<EasySorter> sorters = null,
+                                                    bool isLookup = false,
+                                                    int? offset = null, int? fetch = null,
+                                                    CancellationToken ct = default);
 
-        public abstract Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
+        public abstract Task<long> GetTotalRecordsAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
 
-        public abstract Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
+        public abstract Task<object> FetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 
-        public abstract Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
+        public abstract Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
 
-        public abstract Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default);
+        public abstract Task<object> UpdateRecordAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default);
 
-        public abstract Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
+        public abstract Task DeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default);
 
         public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default);
 

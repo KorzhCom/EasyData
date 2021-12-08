@@ -29,7 +29,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var secondDisplayName = Faker.Lorem.Sentence();
             var editable = Faker.Boolean.Random();
 
-            _options.UseMetaBuilder(builder =>
+            _options.Customize(builder =>
             {
                 builder.Entity<Category>()
                     .SetDisplayName(displayName)
@@ -76,7 +76,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var secondDescription = Faker.Lorem.Sentence();
 
 
-            _options.UseMetaBuilder(builder =>
+            _options.Customize(builder =>
             {
                 builder.Entity<Category>().Attribute(e => e.Description)
                     .SetDisplayName(displayName)
