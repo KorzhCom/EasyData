@@ -5,7 +5,7 @@ namespace EasyData
     /// <summary>
     /// Builder for entity attribute metadata.
     /// </summary>
-    public class MetaEntityAttrBuilder : IMetaEntityAttrBuilder
+    public class MetaEntityAttrCustomizer : IMetaEntityAttrCustomizer
     {
 
         public MetaEntityAttr Attribute { get; private set; }
@@ -13,7 +13,7 @@ namespace EasyData
         /// <summary>
         /// Initialize entity attribute builder.
         /// </summary>
-        public MetaEntityAttrBuilder(MetaEntityAttr attr)
+        public MetaEntityAttrCustomizer(MetaEntityAttr attr)
         {
             Attribute = attr;
         }
@@ -23,7 +23,7 @@ namespace EasyData
         /// </summary>
         /// <param name="enabled">Enable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetEnabled(bool enabled)
+        public IMetaEntityAttrCustomizer SetEnabled(bool enabled)
         {
             //TODO: Check if we really need this
             if (!enabled) {
@@ -37,7 +37,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetDisplayName(string displayName)
+        public IMetaEntityAttrCustomizer SetDisplayName(string displayName)
         {
             Attribute.Caption = displayName;
             return this;
@@ -48,7 +48,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayFormat">Display format to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetDisplayFormat(string displayFormat)
+        public IMetaEntityAttrCustomizer SetDisplayFormat(string displayFormat)
         {
             Attribute.DisplayFormat = displayFormat;
             return this;
@@ -59,7 +59,7 @@ namespace EasyData
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetDescription(string description)
+        public IMetaEntityAttrCustomizer SetDescription(string description)
         {
             Attribute.Description = description;
             return this;
@@ -70,7 +70,7 @@ namespace EasyData
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetEditable(bool editable)
+        public IMetaEntityAttrCustomizer SetEditable(bool editable)
         {
             Attribute.IsEditable = editable;
             return this;
@@ -81,7 +81,7 @@ namespace EasyData
         /// </summary>
         /// <param name="index">Index to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetIndex(int index)
+        public IMetaEntityAttrCustomizer SetIndex(int index)
         {
             Attribute.Index = index;
             return this;
@@ -92,7 +92,7 @@ namespace EasyData
         /// </summary>
         /// <param name="showInLookup">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetShowInLookup(bool showInLookup)
+        public IMetaEntityAttrCustomizer SetShowInLookup(bool showInLookup)
         {
             Attribute.ShowInLookup = showInLookup;
             return this;
@@ -103,7 +103,7 @@ namespace EasyData
         /// </summary>
         /// <param name="showOnView">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetShowOnView(bool showOnView)
+        public IMetaEntityAttrCustomizer SetShowOnView(bool showOnView)
         {
             Attribute.ShowOnView = showOnView;
             return this;
@@ -114,7 +114,7 @@ namespace EasyData
         /// </summary>
         /// <param name="showOnEdit">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetShowOnEdit(bool showOnEdit)
+        public IMetaEntityAttrCustomizer SetShowOnEdit(bool showOnEdit)
         {
             Attribute.ShowOnEdit = showOnEdit;
             return this;
@@ -125,7 +125,7 @@ namespace EasyData
         /// </summary>
         /// <param name="showOnCreate">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrBuilder SetShowOnCreate(bool showOnCreate)
+        public IMetaEntityAttrCustomizer SetShowOnCreate(bool showOnCreate)
         {
             Attribute.ShowOnCreate = showOnCreate;
             return this;
@@ -136,7 +136,7 @@ namespace EasyData
         /// </summary>
         /// <param name="sorting">Sorting to set.</param>
         /// <returns></returns>
-        public IMetaEntityAttrBuilder SetSorting(int sorting)
+        public IMetaEntityAttrCustomizer SetSorting(int sorting)
         {
             Attribute.Sorting = sorting;
             return this;

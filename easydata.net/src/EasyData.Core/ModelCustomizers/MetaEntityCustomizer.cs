@@ -9,21 +9,21 @@ namespace EasyData
     /// <summary>
     /// Builder for entity metadata.
     /// </summary>
-    public class MetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
+    public class MetaEntityCustomizer<TEntity> : IMetaEntityCustomizer<TEntity> where TEntity : class
     {
         public MetaEntity Entity { get; private set; }
 
-        private readonly VoidMetaEntityAttrBuilder _voidAttributeBuilder;
-        private Dictionary<PropertyInfo, IMetaEntityAttrBuilder> _builders = new Dictionary<PropertyInfo, IMetaEntityAttrBuilder>();
+        private readonly MetaEntityAttrVoidCustomizer _voidAttributeBuilder;
+        private Dictionary<PropertyInfo, IMetaEntityAttrCustomizer> _builders = new Dictionary<PropertyInfo, IMetaEntityAttrCustomizer>();
 
 
         /// <summary>
         /// Initialize entity builder
         /// </summary>
-        public MetaEntityBuilder(MetaEntity entity)
+        public MetaEntityCustomizer(MetaEntity entity)
         {
             Entity = entity;
-            _voidAttributeBuilder = new VoidMetaEntityAttrBuilder();
+            _voidAttributeBuilder = new MetaEntityAttrVoidCustomizer();
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDisplayName(string displayName)
+        public IMetaEntityCustomizer<TEntity> SetDisplayName(string displayName)
         {
             Entity.Name = displayName;
             return this;
@@ -45,7 +45,7 @@ namespace EasyData
         /// </summary>
         /// <param name="enabled">Enable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetEnabled(bool enabled)
+        public IMetaEntityCustomizer<TEntity> SetEnabled(bool enabled)
         {
             if (!enabled) {
                 Entity.Parent.SubEntities.Remove(Entity);
@@ -58,7 +58,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayNamePlural">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDisplayNamePlural(string displayNamePlural)
+        public IMetaEntityCustomizer<TEntity> SetDisplayNamePlural(string displayNamePlural)
         {
             Entity.NamePlural = displayNamePlural;
             return this;
@@ -69,7 +69,7 @@ namespace EasyData
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDescription(string description)
+        public IMetaEntityCustomizer<TEntity> SetDescription(string description)
         {
             Entity.Description = description;
             return this;
@@ -80,7 +80,7 @@ namespace EasyData
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetEditable(bool editable)
+        public IMetaEntityCustomizer<TEntity> SetEditable(bool editable)
         {
             Entity.IsEditable = editable;
             return this;
@@ -104,14 +104,14 @@ namespace EasyData
         /// </summary>
         /// <param name="propertySelector">Property expression.</param>
         /// <returns>Attribute metadata builder instance.</returns>
-        public IMetaEntityAttrBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
+        public IMetaEntityAttrCustomizer Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
             PropertyInfo propertyInfo = GetPropertyInfoBySelector(propertySelector);
 
             if (!_builders.TryGetValue(propertyInfo, out var attrBuilder)) {
                 var metaAttr = Entity.FindAttribute(attr => attr.PropInfo.Equals(propertyInfo));
                 if (metaAttr != null) {
-                    attrBuilder = new MetaEntityAttrBuilder(metaAttr);
+                    attrBuilder = new MetaEntityAttrCustomizer(metaAttr);
                 }
                 else {
                     attrBuilder = _voidAttributeBuilder;

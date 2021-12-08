@@ -10,14 +10,14 @@ namespace EasyData
     /// does not really change any MetaEntity object
     /// but rather saves information about which entities we need to ignore (skip)
     /// </summary>
-    public class VoidMetaEntityBuilder<TEntity> : IMetaEntityBuilder<TEntity> where TEntity : class
+    public class MetaEntityVoidCustomizer<TEntity> : IMetaEntityCustomizer<TEntity> where TEntity : class
     {
-        protected MetadataModelBuilder ModelBuilder { get; private set; }
+        protected MetadataCustomizer ModelBuilder { get; private set; }
 
         /// <summary>
         /// Initialize the builder
         /// </summary>
-        public VoidMetaEntityBuilder(MetadataModelBuilder modelBuilder)
+        public MetaEntityVoidCustomizer(MetadataCustomizer modelBuilder)
         {
             ModelBuilder = modelBuilder;
         }
@@ -27,7 +27,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDisplayName(string displayName)
+        public IMetaEntityCustomizer<TEntity> SetDisplayName(string displayName)
         {
             return this;
         }
@@ -38,7 +38,7 @@ namespace EasyData
         /// </summary>
         /// <param name="enabled">Enable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetEnabled(bool enabled)
+        public IMetaEntityCustomizer<TEntity> SetEnabled(bool enabled)
         {
             return this;
         }
@@ -48,7 +48,7 @@ namespace EasyData
         /// </summary>
         /// <param name="displayNamePlural">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDisplayNamePlural(string displayNamePlural)
+        public IMetaEntityCustomizer<TEntity> SetDisplayNamePlural(string displayNamePlural)
         {
             return this;
         }
@@ -58,7 +58,7 @@ namespace EasyData
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetDescription(string description)
+        public IMetaEntityCustomizer<TEntity> SetDescription(string description)
         {
             return this;
         }
@@ -68,17 +68,17 @@ namespace EasyData
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public IMetaEntityBuilder<TEntity> SetEditable(bool editable)
+        public IMetaEntityCustomizer<TEntity> SetEditable(bool editable)
         {
             return this;
         }
 
-        private IMetaEntityAttrBuilder _emptyAttrBuilder;
+        private IMetaEntityAttrCustomizer _emptyAttrBuilder;
 
-        public IMetaEntityAttrBuilder Attribute(Expression<Func<TEntity, object>> propertySelector)
+        public IMetaEntityAttrCustomizer Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
             if (_emptyAttrBuilder == null) { 
-                _emptyAttrBuilder = new VoidMetaEntityAttrBuilder();
+                _emptyAttrBuilder = new MetaEntityAttrVoidCustomizer();
             }
             return _emptyAttrBuilder;
         }
