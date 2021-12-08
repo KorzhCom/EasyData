@@ -139,7 +139,7 @@ namespace EasyData.Services
             var keys = GetKeys(entityType, keyStr);
             var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
             if (entity == null) {
-                throw new EntityNotFoundException(entityContainer, keyStr);
+                throw new RecordNotFoundException(entityContainer, keyStr);
             }
 
             MapProperties(entity, props);
@@ -157,7 +157,7 @@ namespace EasyData.Services
             var keys = GetKeys(entityType, keyStr);
             var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
             if (entity == null) {
-                throw new EntityNotFoundException(entityContainer, keyStr);
+                throw new RecordNotFoundException(entityContainer, keyStr);
             }
 
             DbContext.Remove(entity);

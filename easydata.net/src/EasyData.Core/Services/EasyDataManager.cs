@@ -15,10 +15,10 @@ namespace EasyData.Services
         { }
     }
 
-    public class EntityNotFoundException : Exception
+    public class RecordNotFoundException : Exception
     {
-        public EntityNotFoundException(string entityContainer, string entityKey)
-            : base($"Entity with id {entityKey} is not found in container: {entityContainer}")
+        public RecordNotFoundException(string entityContainer, string recordKey)
+            : base($"Can't found the record with ID {recordKey} in {entityContainer}")
         { }
     }
 
@@ -30,7 +30,6 @@ namespace EasyData.Services
 
     public abstract class EasyDataManager : IDisposable
     {
-
         protected readonly IServiceProvider Services;
 
         protected readonly EasyDataOptions Options;
