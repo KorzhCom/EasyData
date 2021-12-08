@@ -160,64 +160,64 @@ namespace EasyData.AspNetCore
         {
             var result = await Manager.FetchRecordAsync(modelId, entityContainer, keyStr);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
-                await WriteGetEntityResponseAsync(jsonWriter, result, cancellationToken);
+                await WriteFetchRecordResponseAsync(jsonWriter, result, cancellationToken);
             }, ct);
         }
 
-        protected virtual async Task WriteGetEntityResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
+        protected virtual async Task WriteFetchRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
             await jsonWriter.WritePropertyNameAsync("entity", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleCreateEntityAsync(string modelId, string entityContainer, CancellationToken ct = default)
+        public virtual async Task HandleCreateRecordAsync(string modelId, string entityContainer, CancellationToken ct = default)
         {
             using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
             using (var jsReader = new JsonTextReader(reader)) {
                 var props = await JObject.LoadAsync(jsReader);
                 var result = await Manager.CreateRecordAsync(modelId, entityContainer, props);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
-                    await WriteCreateEntityResponseAsync(jsonWriter, result, ct);
+                    await WriteCreateRecordResponseAsync(jsonWriter, result, ct);
                 }, ct);
             }
         }
 
-        protected virtual async Task WriteCreateEntityResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
+        protected virtual async Task WriteCreateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
             await jsonWriter.WritePropertyNameAsync("entity", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleUpdateEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public virtual async Task HandleUpdateRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
         {
             using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
             using (var jsReader = new JsonTextReader(reader)) {
                 var props = await JObject.LoadAsync(jsReader);
                 var result = await Manager.UpdateRecordAsync(modelId, entityContainer, keyStr, props, ct);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
-                    await WriteUpdateEntityResponseAsync(jsonWriter, result, cancellationToken);
+                    await WriteUpdateRecordResponseAsync(jsonWriter, result, cancellationToken);
                 }, ct);
             }
         }
 
-        protected virtual async Task WriteUpdateEntityResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
+        protected virtual async Task WriteUpdateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
             await jsonWriter.WritePropertyNameAsync("entity", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleDeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public virtual async Task HandleDeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
         {
             await Manager.DeleteRecordAsync(modelId, entityContainer, keyStr, ct);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
-                await WriteDeleteEntityResponseAsync(jsonWriter, cancellationToken);
+                await WriteDeleteRecordResponseAsync(jsonWriter, cancellationToken);
             }, ct);
         }
 
-        protected virtual Task WriteDeleteEntityResponseAsync(JsonWriter jsonWriter, CancellationToken ct)
+        protected virtual Task WriteDeleteRecordResponseAsync(JsonWriter jsonWriter, CancellationToken ct)
         {
             return Task.CompletedTask;
         }
@@ -236,7 +236,7 @@ namespace EasyData.AspNetCore
 
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            if (ex is ContainerNotFoundException || ex is EntityNotFoundException)
+            if (ex is ContainerNotFoundException || ex is RecordNotFoundException)
                 HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
             await WriteErrorJsonResponseAsync(HttpContext, ex.InnerException?.Message ?? ex.Message, ct);
