@@ -55,7 +55,7 @@ namespace EasyData.EntityFrameworkCore
         /// Build metadata.
         /// </summary>
         /// <param name="configurator">The procedure that configures the metadata model</param>
-        public void UseMetaBuilder(Action<MetadataModelBuilder> configurator)
+        public void Customize(Action<MetadataModelBuilder> configurator)
         {
             ModelConfigurator = configurator;
         }

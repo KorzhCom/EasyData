@@ -17,7 +17,13 @@ namespace EasyData
 
         private Dictionary<Type, object> _builders = new Dictionary<Type, object> ();
 
-        protected virtual IMetaEntityBuilder<TEntity> GetBuilder<TEntity>() where TEntity : class
+        /// <summary>
+        /// Gets the builder for an entity by its type.
+        /// This is a virtual method that can be overriden in descendants
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type.</typeparam>
+        /// <returns>Entity metadata builder instance.</returns>
+        protected virtual IMetaEntityBuilder<TEntity> GetEntityBuilder<TEntity>() where TEntity : class
         {
             if (_builders.TryGetValue(typeof(TEntity), out var builderObj)) {
                 return builderObj as IMetaEntityBuilder<TEntity>;
@@ -39,13 +45,13 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Set entity meta options.
+        /// Gets the builder for an entity by its type
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
-        /// <returns>Entity metadata descriptor instance.</returns>
+        /// <returns>Entity metadata builder instance.</returns>
         public IMetaEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
         {
-            return GetBuilder<TEntity>();
+            return GetEntityBuilder<TEntity>();
         }
     }
 }
