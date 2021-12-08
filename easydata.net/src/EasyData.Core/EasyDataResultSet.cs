@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 namespace EasyData
 {
 
-    public enum ColumnAlignment 
-    { 
+    public enum ColumnAlignment
+    {
         None,
         Left,
         Center,
@@ -23,22 +23,51 @@ namespace EasyData
 
     public class EasyDataColDesc
     {
+        /// <summary>
+        /// Represents the internal column ID.
+        /// </summary>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Represents the order number of this column among all columns in the result set.
+        /// </summary>
         public int Index { get; set; }
 
+        /// <summary>
+        /// Indicates whether this column is an aggregate one.
+        /// </summary>
         public bool IsAggr { get; set; }
 
+        /// <summary>
+        /// The label that is used for this column in UI.
+        /// </summary>
         public string Label { get; set; }
 
+        /// <summary>
+        /// The detailed column description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// The type of data represented by the property.
+        /// </summary>
         public DataType DataType { get; set; }
 
+        /// <summary>
+        /// Represents internal property ID.
+        /// </summary>
         public string AttrId { get; set; }
 
+        /// <summary>
+        /// The display format for the property.
+        /// </summary>
         public string DisplayFormat { get; set; }
 
         public string GroupFooterColumnTemplate { get; set; }
 
+        /// <summary>
+        /// The style of the property to display in UI.
+        /// </summary>
         public EasyDataColStyle Style { get; set; }
 
 
@@ -46,34 +75,67 @@ namespace EasyData
 
     public class EasyDataCol
     {
+        /// <summary>
+        /// Represents the internal column ID.
+        /// </summary>
         [JsonProperty("id")]
-        public string Id { get;  }
+        public string Id { get; }
 
+        /// <summary>
+        /// Represents the order number of this column among all columns in the result set.
+        /// </summary>
         [JsonIgnore]
-        public int Index { get;  }
+        public int Index { get; }
 
+        /// <summary>
+        /// Indicates whether this column is an aggregate one.
+        /// </summary>
         [JsonProperty("isAggr")]
-        public bool IsAggr { get;  }
+        public bool IsAggr { get; }
 
+        /// <summary>
+        /// The label that is used for this column in UI.
+        /// </summary>
         [JsonProperty("label")]
         public string Label { get; set; }
 
+        /// <summary>
+        /// The detailed column description.
+        /// </summary>
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// The type of data represented by the property.
+        /// </summary>
         [Obsolete("Use DataType instead")]
         [JsonIgnore]
         public DataType Type => DataType;
 
+        /// <summary>
+        /// The type of data represented by the property.
+        /// </summary>
         [JsonProperty("type")]
         public DataType DataType { get; }
 
+        /// <summary>
+        /// Represents the ID of the metadata attribute this column is based on.
+        /// </summary>
         [JsonProperty("originAttrId")]
         public string OrginAttrId { get; }
 
+        /// <summary>
+        /// The display format for the property.
+        /// </summary>
         [JsonProperty("dfmt")]
         public string DisplayFormat { get; set; }
 
         [JsonProperty("gfct")]
         public string GroupFooterColumnTemplate { get; set; }
 
+        /// <summary>
+        /// The style of the property to display in UI.
+        /// </summary>
         [JsonProperty("style")]
         public EasyDataColStyle Style { get; }
 
@@ -85,6 +147,7 @@ namespace EasyData
             IsAggr = desc.IsAggr;
             OrginAttrId = desc.AttrId;
             Label = desc.Label;
+            Description = desc.Description;
             DataType = desc.DataType;
             DisplayFormat = desc.DisplayFormat;
             GroupFooterColumnTemplate = desc.GroupFooterColumnTemplate;
@@ -115,7 +178,7 @@ namespace EasyData
     }
 
 
-    public class EasyDataResultSet: IEasyDataResultSet
+    public class EasyDataResultSet : IEasyDataResultSet
     {
         [JsonProperty("cols")]
         public List<EasyDataCol> Cols { get; } = new List<EasyDataCol>();
