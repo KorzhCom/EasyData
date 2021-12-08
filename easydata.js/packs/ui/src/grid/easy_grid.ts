@@ -393,6 +393,12 @@ export class EasyGrid {
                 .text(column.label);
         }
 
+        if (column.description) {
+            domel('div', colDiv)
+                .addClass('question-mark')
+                .title(column.description);
+        }
+        
         if (this.options.allowDragDrop) {
             eqDragManager.registerDraggableItem({
                 element: colDiv,

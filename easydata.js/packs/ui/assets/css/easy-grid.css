@@ -331,3 +331,11 @@
 .eqjs-chart-content canvas {
     max-height: 100%;
 }
+
+.question-mark {
+    position: relative;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAACE4AAAhOAYwxAOwAAAFgSURBVDhPbdK7K4dRHMfxn1sWUVhcihK/MBKlbMqGKAplMMglk7JJRpOy+R8sJotBiUUiSe6XWNxGpYT3++k5Tw/51Kvfc06/c/2enMzv2K5CCxpRgmecYB+vSJIX/5oCTGINnXjBG+owjXE84gzfSOLAZRxiKG6nU4QpnGIWyY79mIEDa+N2LirRhvK4Tx24Qx+iVOMarhhmHICr7MFJ22GcdB47KLajF8fIt0GcYBujcLur2EBIIa7Q5Eze6hY+ETKCdXzA838hxL4jZB1sOZ4Q4k0+wJ1sogtLSMdKlDnYOtbY8ycNsEzDOLAjFd+CZct04wKeLx3brfCM6ZTiFvWu7MvxTGMIt20slbWNbjWOj2oB54hWNv2wNNbRCU0FJhAGO3AQN/B/SRzgy7mHdfxvqytwYI8dJr1Nv635HFzVcnirXk4z3OoidhElPTjEbfrqsiiDZ7uMf98RJ5P5AUhxQvegD107AAAAAElFTkSuQmCC') no-repeat center;
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+}

@@ -391,11 +391,22 @@ export class EntityEditFormBuilder {
         }
 
         domel(parent)
-            .addChild('label', b => b
-                .attr('for', attr.id)
-                .addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `)
-            );
+            .addChild('label', b => {
+                b.attr('for', attr.id);
+                b.addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `);
 
+                if (attr.description) {
+                    b.addChild('div', b => b
+                        .attr('title', attr.description)
+                        .addClass('question-mark')
+                        .setStyle('vertical-align', 'middle')
+                        .setStyle('display', 'inline-block')
+                    );
+                }
+            }
+
+            );
+        
         if (attr.kind === EntityAttrKind.Lookup) {
             this.setupLookupField(parent, attr, readOnly, value);
             return;
