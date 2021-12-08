@@ -93,9 +93,9 @@ namespace EasyData.EntityFrameworkCore
                 }
             }
 
-            if (Options.ModelConfigurator != null) {
+            if (Options.ModelCustomizer != null) {
                 var builder = new MetadataCustomizer(Model);
-                Options.ModelConfigurator.Invoke(builder);
+                Options.ModelCustomizer.Invoke(builder);
             }
 
             Model.EntityRoot.Attributes.Reorder();

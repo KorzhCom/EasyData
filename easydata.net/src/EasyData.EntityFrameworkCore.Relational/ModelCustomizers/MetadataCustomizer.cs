@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EasyData
+namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
     /// Build entity metadata.

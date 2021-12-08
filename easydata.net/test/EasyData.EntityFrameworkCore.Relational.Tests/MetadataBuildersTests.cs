@@ -17,7 +17,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         }
 
         /// <summary>
-        /// Test building entities metadata.
+        /// Test customizing entities metadata.
         /// </summary>
         [Fact]
         public void TestBuildEntitiesMetadata()
@@ -29,7 +29,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var secondDisplayName = Faker.Lorem.Sentence();
             var editable = Faker.Boolean.Random();
 
-            _options.Customize(builder =>
+            _options.CustomizeModel(builder =>
             {
                 builder.Entity<Category>()
                     .SetDisplayName(displayName)
@@ -42,23 +42,12 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
                     .SetDisplayName(secondDisplayName);
             });
 
-            var firstEntityMetadataDescriptor = _options.MetadataBuilder.EntityMetaBuilders.ToList()[0].EntityMetadataDescriptor;
-            var secondEntityMetadataDescriptor = _options.MetadataBuilder.EntityMetaBuilders.ToList()[1].EntityMetadataDescriptor;
-
-            firstEntityMetadataDescriptor.DisplayName.Should().Be(displayName);
-            firstEntityMetadataDescriptor.DisplayNamePlural.Should().Be(displayNamePlural);
-            firstEntityMetadataDescriptor.Description.Should().Be(description);
-            firstEntityMetadataDescriptor.IsEnabled.Should().Be(enabled);
-            firstEntityMetadataDescriptor.IsEditable.Should().Be(editable);
-
-            secondEntityMetadataDescriptor.DisplayName.Should().Be(secondDisplayName);
-            secondEntityMetadataDescriptor.DisplayNamePlural.Should().BeNull();
-            secondEntityMetadataDescriptor.Description.Should().BeNull();
-            secondEntityMetadataDescriptor.IsEditable.Should().BeNull(); ;
+            _options.ModelCustomizer.Should().NotBeNull();
+            //TODO: Call LoadFromDbContext and check the metadata objects after that
         }
 
         /// <summary>
-        /// Test building entity attributes metadata.
+        /// Test customizing entity attributes metadata.
         /// </summary>
         [Fact]
         public void TestBuildEntityPropertiesMetadata()
@@ -76,7 +65,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var secondDescription = Faker.Lorem.Sentence();
 
 
-            _options.Customize(builder =>
+            _options.CustomizeModel(builder =>
             {
                 builder.Entity<Category>().Attribute(e => e.Description)
                     .SetDisplayName(displayName)
@@ -94,29 +83,9 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
                     .SetDescription(secondDescription);
             });
 
-            var firstEntityAttributeMetadataDescriptor = _options.MetadataBuilder.EntityMetaBuilders.First().EntityMetadataDescriptor.MetadataAttributes.ToList()[0];
-            var secondEntityAttributeMetadataDescriptor = _options.MetadataBuilder.EntityMetaBuilders.First().EntityMetadataDescriptor.MetadataAttributes.ToList()[1];
+            _options.ModelCustomizer.Should().NotBeNull();
 
-            firstEntityAttributeMetadataDescriptor.DisplayName.Should().Be(displayName);
-            firstEntityAttributeMetadataDescriptor.Description.Should().Be(description);
-            firstEntityAttributeMetadataDescriptor.ShowInLookup.Should().Be(showInLookup);
-            firstEntityAttributeMetadataDescriptor.IsEditable.Should().Be(editable);
-            firstEntityAttributeMetadataDescriptor.ShowOnCreate.Should().Be(showOnCreate);
-            firstEntityAttributeMetadataDescriptor.Sorting.Should().Be(sorting);
-            firstEntityAttributeMetadataDescriptor.IsEnabled.Should().Be(enabled);
-            firstEntityAttributeMetadataDescriptor.ShowOnView.Should().Be(showOnView);
-            firstEntityAttributeMetadataDescriptor.Index.Should().Be(index);
-            firstEntityAttributeMetadataDescriptor.ShowOnEdit.Should().Be(showOnEdit);
-
-            secondEntityAttributeMetadataDescriptor.Description.Should().Be(secondDescription);
-            secondEntityAttributeMetadataDescriptor.DisplayName.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.ShowInLookup.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.IsEditable.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.ShowOnCreate.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.Sorting.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.ShowOnView.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.Index.Should().BeNull();
-            secondEntityAttributeMetadataDescriptor.ShowOnEdit.Should().BeNull();
+            //TODO: Call LoadFromDbContext and check the metadata objects after that
         }
     }
 }

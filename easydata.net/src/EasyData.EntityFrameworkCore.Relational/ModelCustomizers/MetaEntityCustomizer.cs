@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 
-namespace EasyData
+namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
     /// Builder for entity metadata.
