@@ -6,11 +6,11 @@ namespace EasyData
     /// <summary>
     /// Build entity metadata.
     /// </summary>
-    public class MetadataModelBuilder
+    public class MetadataCustomizer
     {
         private MetaData _metadata;
 
-        public MetadataModelBuilder(MetaData metadata)
+        public MetadataCustomizer(MetaData metadata)
         { 
             _metadata = metadata;
         }
@@ -23,20 +23,20 @@ namespace EasyData
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
         /// <returns>Entity metadata builder instance.</returns>
-        protected virtual IMetaEntityBuilder<TEntity> GetEntityBuilder<TEntity>() where TEntity : class
+        protected virtual IMetaEntityCustomizer<TEntity> GetEntityBuilder<TEntity>() where TEntity : class
         {
             if (_builders.TryGetValue(typeof(TEntity), out var builderObj)) {
-                return builderObj as IMetaEntityBuilder<TEntity>;
+                return builderObj as IMetaEntityCustomizer<TEntity>;
             }
             else {
                 var entity = _metadata.EntityRoot.FindEntity(ent => ent.ClrType == typeof(TEntity));
 
-                IMetaEntityBuilder<TEntity> builder;
+                IMetaEntityCustomizer<TEntity> builder;
                 if (entity != null) {
-                    builder = new MetaEntityBuilder<TEntity>(entity);
+                    builder = new MetaEntityCustomizer<TEntity>(entity);
                 }
                 else {
-                    builder = new VoidMetaEntityBuilder<TEntity>(this);
+                    builder = new MetaEntityVoidCustomizer<TEntity>(this);
                 }
                 _builders.Add(typeof(TEntity), builder);
 
@@ -49,7 +49,7 @@ namespace EasyData
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
         /// <returns>Entity metadata builder instance.</returns>
-        public IMetaEntityBuilder<TEntity> Entity<TEntity>() where TEntity : class
+        public IMetaEntityCustomizer<TEntity> Entity<TEntity>() where TEntity : class
         {
             return GetEntityBuilder<TEntity>();
         }
