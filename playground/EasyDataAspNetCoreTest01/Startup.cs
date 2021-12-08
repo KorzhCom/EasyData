@@ -71,10 +71,20 @@ namespace EasyDataBasicDemo
                     options.UseDbContext<AppDbContext>(opts => {
                         opts.SkipForeignKeys = false;
 
-                        opts.UseMetaBuilder(builder => {
-                            builder.Entity<Customer>()
+                        opts.Customize(builder => {
+                            var entityCusomizer = builder.Entity<Customer>()
                                 .SetDisplayName("Client")
-                                .SetDisplayNamePlural("Clients")
+                                .SetDisplayNamePlural("Clients");
+
+                            entityCusomizer
+                                .Attribute(c => c.Fax)
+                                    .SetShowOnView(false);
+
+                            entityCusomizer
+                                .Attribute(c => c.PostalCode)
+                                    .SetShowOnView(false);
+
+                            entityCusomizer
                                 .Attribute(c => c.Country)
                                     .SetDisplayName("Country name")
                                     .SetDescription("Country where the client lives");

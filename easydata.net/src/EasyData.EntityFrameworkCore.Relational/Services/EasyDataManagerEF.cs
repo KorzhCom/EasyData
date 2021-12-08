@@ -50,11 +50,11 @@ namespace EasyData.Services
                     });
         }
 
-        public override async Task<EasyDataResultSet> GetEntitiesAsync(string modelId,
-            string entityContainer,
-            IEnumerable<EasyFilter> filters = null,
-            IEnumerable<EasySorter> sorters = null,
-            bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
+        public override async Task<EasyDataResultSet> FetchDatasetAsync(string modelId,
+                string entityContainer,
+                IEnumerable<EasyFilter> filters = null,
+                IEnumerable<EasySorter> sorters = null,
+                bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
         {
             if (filters == null)
                 filters = Enumerable.Empty<EasyFilter>();
@@ -71,8 +71,8 @@ namespace EasyData.Services
             var attrIdProps = entityType.GetProperties().ToDictionary(prop => DataUtils.ComposeKey(entityContainer, prop.Name), prop => prop);
 
             var attrs = modelEntity.Attributes.Where(attr => attr.Kind != EntityAttrKind.Lookup);
-            foreach (var attr in attrs) {
 
+            foreach (var attr in attrs) {
                 var dataType = attr.DataType;
                 var dfmt = attr.DisplayFormat;
 
@@ -81,10 +81,9 @@ namespace EasyData.Services
                 }
 
                 var prop = attrIdProps[attr.Id];
-                result.Cols.Add(new EasyDataCol(new EasyDataColDesc
-                {
+                result.Cols.Add(new EasyDataCol(new EasyDataColDesc {
                     Id = attr.Id,
-                    Label = DataUtils.PrettifyName(prop.Name),
+                    Label = attr.Caption,
                     AttrId = attr?.Id,
                     DisplayFormat = dfmt,
                     DataType = dataType,
@@ -100,7 +99,7 @@ namespace EasyData.Services
 
         }
 
-        public override async Task<long> GetTotalEntitiesAsync(string modelId, string entityContainer,
+        public override async Task<long> GetTotalRecordsAsync(string modelId, string entityContainer,
             IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default)
         {
             if (filters == null)
@@ -112,14 +111,14 @@ namespace EasyData.Services
             return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup, ct);
         }
 
-        public override async Task<object> GetEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public override async Task<object> FetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
             var keys = GetKeys(entityType, keyStr);
             return await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
         }
 
-        public override async Task<object> CreateEntityAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
+        public override async Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
@@ -133,7 +132,7 @@ namespace EasyData.Services
             return entity;
         }
 
-        public override async Task<object> UpdateEntityAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default)
+        public override async Task<object> UpdateRecordAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
@@ -151,7 +150,7 @@ namespace EasyData.Services
             return entity;
         }
 
-        public override async Task DeleteEntityAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public override async Task DeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
         {
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
