@@ -34,7 +34,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var optionsDisplayNamePlural = Faker.Lorem.Sentence();
             var editable = Faker.Boolean.Random();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.Customize(builder =>
+            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
             {
                 builder.Entity<Category>().SetDisplayName(optionsDisplayName)
                     .SetDisplayNamePlural(optionsDisplayNamePlural).SetEditable(editable);
@@ -61,7 +61,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var optionsDisplayName = Faker.Lorem.Sentence();
             var optionsDescription = Faker.Lorem.Sentence();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.Customize(builder =>
+            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
             {
                 builder.Entity<Category>()
                     .Attribute(category => category.Description)
@@ -87,7 +87,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         {
             var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.Customize(builder =>
+            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
             {
                 builder.Entity<Category>().SetEnabled(false);
             });
@@ -107,7 +107,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         {
             var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.Customize(builder =>
+            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
             {
                 builder.Entity<Category>()
                     .Attribute(category => category.Description)

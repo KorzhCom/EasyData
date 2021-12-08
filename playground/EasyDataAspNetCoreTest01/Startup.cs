@@ -71,8 +71,8 @@ namespace EasyDataBasicDemo
                     options.UseDbContext<AppDbContext>(opts => {
                         opts.SkipForeignKeys = false;
 
-                        opts.Customize(builder => {
-                            var entityCusomizer = builder.Entity<Customer>()
+                        opts.CustomizeModel(model => {
+                            var entityCusomizer = model.Entity<Customer>()
                                 .SetDisplayName("Client")
                                 .SetDisplayNamePlural("Clients");
 
@@ -89,7 +89,7 @@ namespace EasyDataBasicDemo
                                     .SetDisplayName("Country name")
                                     .SetDescription("Country where the client lives");
 
-                            builder.Entity<Order>()
+                            model.Entity<Order>()
                                 .Attribute(o => o.OrderDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
                         });

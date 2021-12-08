@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace EasyData
+namespace EasyData.EntityFrameworkCore
 {
     public interface IMetaEntityCustomizer<TEntity> where TEntity : class
     {

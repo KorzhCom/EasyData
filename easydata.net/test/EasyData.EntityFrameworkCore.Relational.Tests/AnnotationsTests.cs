@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using EasyData.EntityFrameworkCore.MetaDataLoader;
+using Microsoft.EntityFrameworkCore;
+
 using Xunit;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using EasyData.MetaDescriptors;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
