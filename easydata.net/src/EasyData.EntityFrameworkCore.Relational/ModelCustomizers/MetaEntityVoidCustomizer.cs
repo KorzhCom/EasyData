@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 
-namespace EasyData
+namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
     /// Represents a special case of an entity builder that

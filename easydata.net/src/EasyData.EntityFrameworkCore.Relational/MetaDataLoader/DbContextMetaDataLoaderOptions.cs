@@ -45,20 +45,18 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         public bool KeepDbSetDeclarationOrder { get; set; } = false;
 
-
         /// <summary>
         /// Store metadata.
         /// </summary>
-        public Action<MetadataCustomizer> ModelConfigurator { get; private set; }
+        public Action<MetadataCustomizer> ModelCustomizer { get; private set; }
 
         /// <summary>
         /// Build metadata.
         /// </summary>
         /// <param name="configurator">The procedure that configures the metadata model</param>
-        public void Customize(Action<MetadataCustomizer> configurator)
+        public void CustomizeModel(Action<MetadataCustomizer> configurator)
         {
-            ModelConfigurator = configurator;
+            ModelCustomizer = configurator;
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace EasyData
+﻿namespace EasyData.EntityFrameworkCore
 {
     public interface IMetaEntityAttrCustomizer
     {
