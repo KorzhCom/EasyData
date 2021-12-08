@@ -39,6 +39,7 @@ function MapAlignment(alignment: ColumnAlignment): GridColumnAlign {
 export class GridColumn {
     private _label : string = null;
     private grid: EasyGrid;
+    private _description: string = null;
 
     public readonly dataColumn: DataColumn;
 
@@ -77,6 +78,7 @@ export class GridColumn {
             }
 
             this.cellRenderer = this.grid.cellRendererStore.getDefaultRenderer(column.type);
+            this._description = column.description;
         }
         else if (isRowNum) {
             this.isRowNum = true;
@@ -97,6 +99,11 @@ export class GridColumn {
 
     public set label(value: string) {
         this._label = this.label;
+    }
+
+    /** Get column description. */
+    public get description(): string {
+        return this._description;
     }
 
     public get type(): DataType {
