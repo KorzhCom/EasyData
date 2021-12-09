@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EasyData.EntityFrameworkCore
@@ -26,6 +26,13 @@ namespace EasyData.EntityFrameworkCore
         public void AddFilter(EntityFilter filter)
         {
             _filters.Add(filter);
+        }
+
+        public void Skip<TEntity>(params Expression<Func<TEntity, object>>[] propertySelectors) 
+        {
+            if (propertySelectors == null) { 
+                AddFilter(ent => ent.ClrType.Equals(typeof(TEntity)));
+            }
         }
 
         /// <summary>
