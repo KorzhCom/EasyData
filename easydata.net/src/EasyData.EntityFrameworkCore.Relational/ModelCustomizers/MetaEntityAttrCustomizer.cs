@@ -18,19 +18,6 @@ namespace EasyData.EntityFrameworkCore
             Attribute = attr;
         }
 
-        /// <summary>
-        /// Set availability for the attribute.
-        /// </summary>
-        /// <param name="enabled">Enable or not.</param>
-        /// <returns>Current instance of the class.</returns>
-        public IMetaEntityAttrCustomizer SetEnabled(bool enabled)
-        {
-            //TODO: Check if we really need this
-            if (!enabled) {
-                Attribute.Entity?.Attributes.Remove(Attribute);
-            }
-            return this;
-        }
 
         /// <summary>
         /// Set attribute display name.

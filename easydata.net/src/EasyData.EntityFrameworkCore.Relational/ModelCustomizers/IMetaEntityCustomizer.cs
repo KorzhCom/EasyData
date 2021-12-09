@@ -9,7 +9,6 @@ namespace EasyData.EntityFrameworkCore
         IMetaEntityCustomizer<TEntity> SetDisplayName(string displayName);
         IMetaEntityCustomizer<TEntity> SetDisplayNamePlural(string displayNamePlural);
         IMetaEntityCustomizer<TEntity> SetEditable(bool editable);
-        IMetaEntityCustomizer<TEntity> SetEnabled(bool enabled);
         IMetaEntityAttrCustomizer Attribute(Expression<Func<TEntity, object>> propertySelector);
     }
 }

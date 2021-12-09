@@ -33,13 +33,31 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IEntityType> GetEntityTypes()
         {   
             return DbContext.Model.GetEntityTypes()
-               .Where(ApplyFilters);
+               .Where(ApplyEntityFilters);
         }
 
-        private bool ApplyFilters(IEntityType entityType)
+        private bool ApplyEntityFilters(IEntityType entityType)
         {
-            foreach (var filter in Options.Filters) {
+            foreach (var filter in Options.EntityFilters) {
                 if (!filter.Invoke(entityType)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
+        {
+            return entityType.GetProperties()
+                    .Where(ApplyPropertyFilters);
+        }
+
+        private bool ApplyPropertyFilters(IProperty property)
+        {
+            foreach (var filter in Options.PropertyFilters) {
+                if (!filter.Invoke(property)) {
                     return false;
                 }
             }
@@ -144,7 +162,7 @@ namespace EasyData.EntityFrameworkCore
                 }
             }
 
-            var properties = entityType.GetProperties().ToList();
+            var properties = GetEntityProperties(entityType);
             int attrCounter = 0;
             foreach (var property in properties) {
                 if (Options.SkipForeignKeys && property.IsForeignKey())
@@ -158,14 +176,14 @@ namespace EasyData.EntityFrameworkCore
 
                     attrCounter++;
 
-                    ProcessEntityAttr(entityAttr, entity, property);
+                    AddEntityAttr(entityAttr, entity, property);
                 }
             }
 
             return entity;
         }
 
-        protected virtual void ProcessEntityAttr(MetaEntityAttr entityAttr, MetaEntity entity, IProperty property)
+        protected virtual void AddEntityAttr(MetaEntityAttr entityAttr, MetaEntity entity, IProperty property)
         {
             entity.Attributes.Add(entityAttr);
         }

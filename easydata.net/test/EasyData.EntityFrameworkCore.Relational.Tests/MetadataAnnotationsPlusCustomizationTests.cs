@@ -42,7 +42,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var metaData = new MetaData();
             metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
-            var entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Category));
+            var entity = metaData.EntityRoot.FindSubEntity(e => e.ClrType == typeof(Category));
             entity.Name.Should().Be(optionsDisplayName);
             entity.NamePlural.Should().Be(optionsDisplayNamePlural);
             entity.Description.Should().Be("Categories description");
@@ -75,47 +75,6 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             attribute.Caption.Should().Be(optionsDisplayName);
             attribute.Description.Should().Be(optionsDescription);
             attribute.Index.Should().Be(2);
-        }
-
-        /// <summary>
-        /// Test setting not enabled entity property in options.
-        /// </summary>
-        [Fact]
-        public void TestNotEnabledEntity()
-        {
-            var loaderOptions = new DbContextMetaDataLoaderOptions();
-
-            loaderOptions.CustomizeModel(model => {
-                model.Entity<Category>().SetEnabled(false);
-            });
-
-            var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, loaderOptions);
-
-            var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == typeof(Category));
-            entity.Should().BeNull();
-        }
-
-        /// <summary>
-        /// Test setting not enabled entity attribute property in options.
-        /// </summary>
-        [Fact]
-        public void TestNotEnabledEntityAttribute()
-        {
-            var loaderOptions = new DbContextMetaDataLoaderOptions();
-
-            loaderOptions.CustomizeModel(model => {
-                model.Entity<Category>()
-                    .Attribute(category => category.Description)
-                    .SetEnabled(false);
-            });
-
-            var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, loaderOptions);
-
-            var entity = metaData.EntityRoot.SubEntities.First(e => e.ClrType == typeof(Category));
-            var attribute = entity.Attributes.FirstOrDefault(a => a.PropInfo.Name == nameof(Category.Description));
-            attribute.Should().BeNull();
         }
     }
 }

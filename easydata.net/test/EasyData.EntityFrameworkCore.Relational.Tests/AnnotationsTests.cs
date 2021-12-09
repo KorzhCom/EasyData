@@ -48,7 +48,8 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var entity = _metaData.EntityRoot.SubEntities.First();
             entity.Attributes.Should().HaveCount(10);
 
-            var attr = entity.FindAttributeById("CustomerAttributeTest.Region");
+            var attr = entity.FindAttributeById("CustomerWithAnnotations.Region");
+            attr.Should().NotBeNull();
             attr.ShowOnView.Should().BeFalse();
             attr.ShowInLookup.Should().BeTrue();
             attr.IsEditable.Should().BeFalse();
