@@ -6,7 +6,6 @@
         IMetaEntityAttrCustomizer SetDisplayFormat(string displayFormat);
         IMetaEntityAttrCustomizer SetDisplayName(string displayName);
         IMetaEntityAttrCustomizer SetEditable(bool editable);
-        IMetaEntityAttrCustomizer SetEnabled(bool enabled);
         IMetaEntityAttrCustomizer SetIndex(int index);
         IMetaEntityAttrCustomizer SetShowInLookup(bool showInLookup);
         IMetaEntityAttrCustomizer SetShowOnCreate(bool showOnCreate);

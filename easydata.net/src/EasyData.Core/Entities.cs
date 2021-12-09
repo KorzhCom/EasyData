@@ -203,7 +203,7 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Finds the attribute by its ID.
+        /// Finds an attribute by its ID.
         /// </summary>
         /// <param name="id">The ID of the attribute we are looking for.</param>
         /// <returns>MetaEntityAttr.</returns>
@@ -213,7 +213,7 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Finds the attribute by its caption.
+        /// Finds an attribute by its caption.
         /// </summary>
         /// <param name="caption">The caption.</param>
         /// <returns>MetaEntityAttr.</returns>
@@ -232,8 +232,12 @@ namespace EasyData
             return FindAttribute(attr => attr.CompareWithExpr(expr));
         }
 
-        /// <summary>Finds the attribute using a predicate function.</summary>
-        /// <param name="predicate">The predicate.</param>
+        /// <summary>
+        /// Finds an attribute using a predicate function.
+        /// </summary>
+        /// <param name="predicate">
+        /// The function must return <c>true</c> for the attribute we are searching for and <c>false</c> otherwise.
+        /// </param>
         /// <returns>MetaEntityAttr.</returns>
         public MetaEntityAttr FindAttribute(Func<MetaEntityAttr, bool> predicate)
         {
@@ -250,7 +254,7 @@ namespace EasyData
 
 
         /// <summary>
-        /// Finds a sub-entity by its name.
+        /// Finds an entity by its name.
         /// </summary>
         /// <param name="entityName">Name of the sub-entity we are srearching for</param>
         /// <returns>
@@ -274,17 +278,21 @@ namespace EasyData
             return result;
         }
 
-        /// <summary>Finds the attribute using a predicate function.</summary>
-        /// <param name="predicate">The predicate.</param>
+        /// <summary>
+        /// Finds an entity using a predicate function.
+        /// </summary>
+        /// <param name="predicate">
+        /// The function must return <c>true</c> for the entity we are searching for and <c>false</c> otherwise.
+        /// </param>
         /// <returns>MetaEntityAttr.</returns>
-        public MetaEntity FindEntity(Func<MetaEntity, bool> predicate)
+        public MetaEntity FindSubEntity(Func<MetaEntity, bool> predicate)
         {
             foreach (MetaEntity subEntity in SubEntities) {
                 if (predicate(subEntity)) {
                     return subEntity;
                 }
 
-                var result = subEntity.FindEntity(predicate);
+                var result = subEntity.FindSubEntity(predicate);
                 if (result != null) return result;
             }
 
@@ -292,7 +300,7 @@ namespace EasyData
         }
 
         /// <summary>
-        /// Deletes the sub-entities specified by name(s) passed in method's parameter(s).
+        /// Deletes sub-entities specified by name(s) passed in method's parameter(s).
         /// </summary>
         /// <param name="namesToDelete">The names of the entities to delete.</param>
         /// <returns>The amount of deleted entities</returns>

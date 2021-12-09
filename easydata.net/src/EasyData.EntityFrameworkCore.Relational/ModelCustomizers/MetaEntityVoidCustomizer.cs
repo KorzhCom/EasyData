@@ -32,17 +32,6 @@ namespace EasyData.EntityFrameworkCore
             return this;
         }
 
-
-        /// <summary>
-        /// Set availability for the entity.
-        /// </summary>
-        /// <param name="enabled">Enable or not.</param>
-        /// <returns>Current instance of the class.</returns>
-        public IMetaEntityCustomizer<TEntity> SetEnabled(bool enabled)
-        {
-            return this;
-        }
-
         /// <summary>
         /// Does nothing
         /// </summary>

@@ -37,22 +37,6 @@ namespace EasyData.EntityFrameworkCore
             return this;
         }
 
-
-        //TODO: We should check if really need this SetEnabled procedure
-
-        /// <summary>
-        /// Set availability for the entity.
-        /// </summary>
-        /// <param name="enabled">Enable or not.</param>
-        /// <returns>Current instance of the class.</returns>
-        public IMetaEntityCustomizer<TEntity> SetEnabled(bool enabled)
-        {
-            if (!enabled) {
-                Entity.Parent.SubEntities.Remove(Entity);
-            }
-            return this;
-        }
-
         /// <summary>
         /// Set entity plural display name.
         /// </summary>
@@ -87,18 +71,6 @@ namespace EasyData.EntityFrameworkCore
         }
 
 
-        private PropertyInfo GetPropertyInfoBySelector(Expression<Func<TEntity, object>> propertySelector)
-        {
-            if (propertySelector.Body is MemberExpression expression) {
-                return (PropertyInfo)expression.Member;
-            }
-            else {
-                var memberExpression = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
-                return (PropertyInfo)memberExpression.Member;
-            }
-        }
-
-
         /// <summary>
         /// Get entity attribute metadata builder.
         /// </summary>
@@ -106,7 +78,7 @@ namespace EasyData.EntityFrameworkCore
         /// <returns>Attribute metadata builder instance.</returns>
         public IMetaEntityAttrCustomizer Attribute(Expression<Func<TEntity, object>> propertySelector)
         {
-            PropertyInfo propertyInfo = GetPropertyInfoBySelector(propertySelector);
+            var propertyInfo = Utils.GetPropertyInfoBySelector(propertySelector);
 
             if (!_builders.TryGetValue(propertyInfo, out var attrBuilder)) {
                 var metaAttr = Entity.FindAttribute(attr => attr.PropInfo.Equals(propertyInfo));
