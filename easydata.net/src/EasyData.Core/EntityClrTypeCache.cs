@@ -26,7 +26,11 @@ namespace EasyData
         protected virtual void UpdateCache()
         {
             _cache.Clear();
-            _metadata.EntityRoot.Scan(ent => _cache.Add(ent.ClrType, ent), null);
+            _metadata.EntityRoot.Scan(ent => {
+                if (ent.ClrType != null) {
+                    _cache.Add(ent.ClrType, ent);
+                }
+            }, null, false);
         }
     }
 }
