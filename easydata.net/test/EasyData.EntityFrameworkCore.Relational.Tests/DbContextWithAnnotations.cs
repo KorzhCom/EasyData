@@ -5,9 +5,9 @@ using System.Text;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
-    public class AttributeTestDbContext : DbContext
+    public class DbContextWithAnnotations : DbContext
     {
-        public AttributeTestDbContext(DbContextOptions options)
+        public DbContextWithAnnotations(DbContextOptions options)
             : base(options)
         { }
 
@@ -15,9 +15,9 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
 
         public DbSet<CustomerAttributeTest> Customers { get; set; }
 
-        public static AttributeTestDbContext Create()
+        public static DbContextWithAnnotations Create()
         {
-            return new AttributeTestDbContext(new DbContextOptionsBuilder()
+            return new DbContextWithAnnotations(new DbContextOptionsBuilder()
                 .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TestDB;Trusted_Connection=True;")
                 .Options);
         }
@@ -40,7 +40,6 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
     [MetaEntity(Description = "Test Description", DisplayName = "Test")]
     public class CustomerAttributeTest
     {
-
         public string Id { get; set; }
 
         public string CompanyName { get; set; }

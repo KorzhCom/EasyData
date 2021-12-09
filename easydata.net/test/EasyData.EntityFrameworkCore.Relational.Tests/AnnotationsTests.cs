@@ -18,7 +18,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         /// </summary>
         public AnnotationsTests()
         {
-            DbContext dbContext = AttributeTestDbContext.Create();
+            DbContext dbContext = DbContextWithAnnotations.Create();
 
             _metaData = new MetaData();
             _metaData.LoadFromDbContext(dbContext);

@@ -11,14 +11,14 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
     /// <summary>
     /// Tests merging metadata from options with Model.
     /// </summary>
-    public class OptionsMetadataMergingTests
+    public class MetadataAnnotationsPlusCustomizationTests
     {
         private readonly DbContext _dbContext;
 
         /// <summary>
         /// Get db context.
         /// </summary>
-        public OptionsMetadataMergingTests()
+        public MetadataAnnotationsPlusCustomizationTests()
         {
             _dbContext = TestDbContext.Create();
         }
@@ -29,19 +29,18 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         [Fact]
         public void TestGetEntityMeta()
         {
-            var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
             var optionsDisplayName = Faker.Lorem.Sentence();
             var optionsDisplayNamePlural = Faker.Lorem.Sentence();
             var editable = Faker.Boolean.Random();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
-            {
-                builder.Entity<Category>().SetDisplayName(optionsDisplayName)
+            loaderOptions.CustomizeModel(model => {
+                model.Entity<Category>().SetDisplayName(optionsDisplayName)
                     .SetDisplayNamePlural(optionsDisplayNamePlural).SetEditable(editable);
             });
 
             var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, dbContextMetaDataLoaderOptionsLoaderOptions);
+            metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
             var entity = metaData.EntityRoot.SubEntities.First(e => e.ClrType == typeof(Category));
             entity.Name.Should().Be(optionsDisplayName);
@@ -56,21 +55,20 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         [Fact]
         public void TestGetEntityAttributeMeta()
         {
-            var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
 
             var optionsDisplayName = Faker.Lorem.Sentence();
             var optionsDescription = Faker.Lorem.Sentence();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
-            {
-                builder.Entity<Category>()
+            loaderOptions.CustomizeModel(model => {
+                model.Entity<Category>()
                     .Attribute(category => category.Description)
                     .SetDisplayName(optionsDisplayName)
                     .SetDescription(optionsDescription);
             });
 
             var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, dbContextMetaDataLoaderOptionsLoaderOptions);
+            metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
             var entity = metaData.EntityRoot.SubEntities.First(e => e.ClrType == typeof(Category));
             var attribute = entity.Attributes.First(a => a.PropInfo.Name == nameof(Category.Description));
@@ -85,15 +83,14 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         [Fact]
         public void TestNotEnabledEntity()
         {
-            var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
-            {
-                builder.Entity<Category>().SetEnabled(false);
+            loaderOptions.CustomizeModel(model => {
+                model.Entity<Category>().SetEnabled(false);
             });
 
             var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, dbContextMetaDataLoaderOptionsLoaderOptions);
+            metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
             var entity = metaData.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == typeof(Category));
             entity.Should().BeNull();
@@ -105,17 +102,16 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         [Fact]
         public void TestNotEnabledEntityAttribute()
         {
-            var dbContextMetaDataLoaderOptionsLoaderOptions = new DbContextMetaDataLoaderOptions();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
 
-            dbContextMetaDataLoaderOptionsLoaderOptions.CustomizeModel(builder =>
-            {
-                builder.Entity<Category>()
+            loaderOptions.CustomizeModel(model => {
+                model.Entity<Category>()
                     .Attribute(category => category.Description)
                     .SetEnabled(false);
             });
 
             var metaData = new MetaData();
-            metaData.LoadFromDbContext(_dbContext, dbContextMetaDataLoaderOptionsLoaderOptions);
+            metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
             var entity = metaData.EntityRoot.SubEntities.First(e => e.ClrType == typeof(Category));
             var attribute = entity.Attributes.FirstOrDefault(a => a.PropInfo.Name == nameof(Category.Description));
