@@ -14,7 +14,7 @@ using FluentAssertions;
 using EasyData.Services;
 using Newtonsoft.Json;
 
-namespace EasyData.Core.Tests.Services
+namespace EasyData.Core.Services.Tests
 {
     public class EasyDataOptionsTests
     {
