@@ -42,7 +42,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var metaData = new MetaData();
             metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
-            var entity = metaData.EntityRoot.SubEntities.First(e => e.ClrType == typeof(Category));
+            var entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Category));
             entity.Name.Should().Be(optionsDisplayName);
             entity.NamePlural.Should().Be(optionsDisplayNamePlural);
             entity.Description.Should().Be("Categories description");

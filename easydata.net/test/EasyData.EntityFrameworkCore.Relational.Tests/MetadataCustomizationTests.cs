@@ -54,7 +54,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             entity.Description.Should().Be(description);
             entity.IsEditable.Should().Be(editable);
 
-            entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Category));
+            entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Customer));
             entity.Should().NotBeNull();
             entity.Name.Should().Be(secondDisplayName);
         }
