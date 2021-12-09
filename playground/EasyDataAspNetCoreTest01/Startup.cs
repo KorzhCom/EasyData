@@ -11,6 +11,8 @@ using Korzh.DbUtils;
 using EasyData.Services;
 using EasyData;
 
+using EasyDataBasicDemo.Models;
+
 namespace EasyDataBasicDemo
 {
     public class Startup
@@ -65,7 +67,51 @@ namespace EasyDataBasicDemo
                             Multiline = true
                         };
                     });
-                    options.UseDbContext<AppDbContext>(opts => opts.SkipForeignKeys = false);
+
+                    options.UseDbContext<AppDbContext>(opts => {
+                        opts.SkipForeignKeys = false;
+
+                        opts.CustomizeModel(model => {
+                            var entity = model.Entity<Customer>()
+                                .SetDisplayName("Client")
+                                .SetDisplayNamePlural("Clients");
+
+                            entity
+                                .Attribute(c => c.Fax)
+                                    .SetShowOnView(false);
+
+                            entity
+                                .Attribute(c => c.PostalCode)
+                                    .SetShowOnView(false);
+
+                            entity
+                                .Attribute(c => c.Country)
+                                    .SetDisplayName("Country name")
+                                    .SetDescription("Country where the client lives");
+
+                            model.Entity<Order>()
+                                .Attribute(o => o.OrderDate)
+                                    .SetDisplayFormat("{0:yyyy-MM-dd}");
+                        });
+
+
+                        //opts.UseMetaBuilder()
+                        //    .Skip<Category>()
+                        //    .Skip<Supplier>()
+                        //    .SkipAttribute<Customer>(c => c.Country)
+                        //    .Entity<Customer>(ecfg => ecfg
+                        //        .SetDisplayName("Client")
+                        //        .SetDisplayNamePlural("Clients")
+                        //        .Attribute(c => c.Country, attrConfig => attrConfig
+                        //            .SetDisplayName("Country name")
+                        //            .SetDescription("Country where the client lives")
+                        //        )
+                        //    )
+                        //    .Entity<Order>(ecfg => ecfg
+                        //        .Attribute(o => o.OrderDate)
+                        //            .SetDisplayFormat("{0:yyyy-MM-dd}")
+                        //    );
+                    });
                 });
                 //.RequireAuthorization();
 

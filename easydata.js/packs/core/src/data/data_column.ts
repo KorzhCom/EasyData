@@ -15,33 +15,60 @@ export interface DataColumnStyle
 }
 
 export interface DataColumnDescriptor {
+    /** Represents the internal column ID. */
     id: string;
+
+    /** Represents the ID of the metadata attribute this column is based on. */
     originAttrId?: string;
+
+    /** The type of data represented by the column. */
     type?: DataType;
+
+    /** The label that is used for this column in UI. */
     label: string;
+
+    /** Indicates whether this column is an aggregate one. */
     isAggr?: boolean;
+
+    /** The display format for the column. */
     dfmt?: string;
+
     gfct?: string;
+
+    /** The style of the column to display in UI. */
     style?: DataColumnStyle;
+
+    /** The detailed column description. */
+    description: string | null;
 }
 
 export class DataColumn {
 
+    /** The type of data represented by the column. */
     public readonly type: DataType;
 
+    /** Represents the internal column ID. */
     public readonly id: string;
 
+    /** Indicates whether this column is an aggregate one. */
     public readonly isAggr: boolean;
 
+    /** Represents the ID of the metadata attribute this column is based on. */
     public readonly originAttrId?: string;
 
+    /** The label that is used for this column in UI. */
     public label: string;
 
+    /** The display format for the column. */
     public displayFormat?: string;
 
     public groupFooterColumnTemplate?: string;
 
+    /** The style of the column to display in UI. */
     public style?: DataColumnStyle;
+
+    /** The column description. */
+    public description: string | null;
 
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
@@ -61,6 +88,7 @@ export class DataColumn {
         this.displayFormat = desc.dfmt;
         this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
+        this.description = desc.description;
     }
 }
 

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using EasyData.EntityFrameworkCore.MetaDataLoader;
+using Microsoft.EntityFrameworkCore;
+
 using Xunit;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using EasyData.MetaDescriptors;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
@@ -19,7 +18,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         /// </summary>
         public AnnotationsTests()
         {
-            DbContext dbContext = AttributeTestDbContext.Create();
+            DbContext dbContext = DbContextWithAnnotations.Create();
 
             _metaData = new MetaData();
             _metaData.LoadFromDbContext(dbContext);
@@ -49,7 +48,8 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var entity = _metaData.EntityRoot.SubEntities.First();
             entity.Attributes.Should().HaveCount(10);
 
-            var attr = entity.FindAttributeById("CustomerAttributeTest.Region");
+            var attr = entity.FindAttributeById("CustomerWithAnnotations.Region");
+            attr.Should().NotBeNull();
             attr.ShowOnView.Should().BeFalse();
             attr.ShowInLookup.Should().BeTrue();
             attr.IsEditable.Should().BeFalse();

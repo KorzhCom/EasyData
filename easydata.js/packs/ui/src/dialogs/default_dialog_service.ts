@@ -13,8 +13,8 @@ export class DefaultDialogService implements DialogService {
 
     public openConfirm(title?: string, content?: string): Promise<boolean>;
     public openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): void;
-    public openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): Promise<boolean> | void {
-        
+    public openConfirm(title?: string, content?: string, callback?: (result: boolean) => void): Promise<boolean> | void 
+    {        
         const template = `<div id="${cssPrefix}-dialog-confirm">${content}</div>`;
 
         const options: DialogOptions = {

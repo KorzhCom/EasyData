@@ -47,6 +47,7 @@ namespace EasyDataBasicDemo.Models
         public virtual List<OrderDetail> Items { get; set; }
 
         [ScaffoldColumn(false)]
+        [MetaEntityAttr(ShowOnView = false)]
         public int? ShipVia { get; set; }
 
         public string ShipName { get; set; }

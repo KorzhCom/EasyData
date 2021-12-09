@@ -1,31 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using EasyData.EntityFrameworkCore.Services;
+using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EasyData.EntityFrameworkCore
 {
     using EntityFilter = Func<IEntityType, bool>;
+    using PropertyFilter = Func<IProperty, bool>;
 
     /// <summary>
     /// Contains different options for <see cref="DbContextMetaDataLoader"/>
     /// </summary>
     public class DbContextMetaDataLoaderOptions
     {
-        /// <summary>
-        /// The Filters
-        /// </summary>
-        public IReadOnlyList<EntityFilter> Filters => _filters;
+        private List<EntityFilter> _entityFilters = new List<EntityFilter>();
 
-        private List<EntityFilter> _filters = new List<EntityFilter>();
+        /// <summary>
+        /// Gets the list of entity filters
+        /// </summary>
+        public IReadOnlyList<EntityFilter> EntityFilters => _entityFilters;
+
+
+        private List<PropertyFilter> _propertyFilters = new List<PropertyFilter>();
+
+        /// <summary>
+        /// Gets the list of property filters.
+        /// </summary>
+        /// <value>The property filters.</value>
+        public IReadOnlyList<PropertyFilter> PropertyFilters => _propertyFilters;
+
 
         /// <summary>
         /// Adds a filter, which will be used during model loading from <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
         /// </summary>
         /// <param name="filter"></param>
+        [Obsolete("Use AddEntityFilter instead")]
         public void AddFilter(EntityFilter filter)
         {
-            _filters.Add(filter);
+            AddEntityFilter(filter);
+        }
+
+        /// <summary>
+        /// Adds an entity filter
+        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
+        /// </summary>
+        /// <param name="filter"></param>
+        public void AddEntityFilter(EntityFilter filter)
+        {
+            _entityFilters.Add(filter);
+        }
+
+        /// <summary>
+        /// Adds the property filter.
+        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        public void AddPropertyFilter(PropertyFilter filter)
+        { 
+            _propertyFilters.Add(filter);
+        }
+
+        public void Skip<TEntity>(params Expression<Func<TEntity, object>>[] propertySelectors) 
+            where TEntity : class
+        {
+            if (propertySelectors == null || propertySelectors.Length == 0) {
+                AddEntityFilter(ent => !ent.ClrType.Equals(typeof(TEntity)));
+            }
+            else {
+                foreach (var propSelector in propertySelectors) {
+                    var propInfo = Utils.GetPropertyInfoBySelector(propSelector);
+                    AddPropertyFilter(prop => !prop.PropertyInfo.Equals(propInfo));
+                }
+            }
         }
 
         /// <summary>
@@ -45,20 +92,18 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         public bool KeepDbSetDeclarationOrder { get; set; } = false;
 
-
         /// <summary>
         /// Store metadata.
         /// </summary>
-        public MetadataBuilder MetadataBuilder { get; } = new MetadataBuilder();
+        public Action<MetadataCustomizer> ModelCustomizer { get; private set; }
 
         /// <summary>
         /// Build metadata.
         /// </summary>
-        /// <param name="builder"></param>
-        public void UseMetaBuilder(Action<MetadataBuilder> builder)
+        /// <param name="configurator">The procedure that configures the metadata model</param>
+        public void CustomizeModel(Action<MetadataCustomizer> configurator)
         {
-            builder(MetadataBuilder);
+            ModelCustomizer = configurator;
         }
-
     }
 }

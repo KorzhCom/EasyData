@@ -1,30 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
-    public class AttributeTestDbContext : DbContext
+    public class DbContextWithAnnotations : DbContext
     {
-        public AttributeTestDbContext(DbContextOptions options)
+        public DbContextWithAnnotations(DbContextOptions options)
             : base(options)
         { }
 
-        public DbSet<CategoryAttributeTest> Categories { get; set; }
+        public DbSet<CategoryWithAnnotations> Categories { get; set; }
 
-        public DbSet<CustomerAttributeTest> Customers { get; set; }
+        public DbSet<CustomerWithAnnotations> Customers { get; set; }
 
-        public static AttributeTestDbContext Create()
+        public static DbContextWithAnnotations Create()
         {
-            return new AttributeTestDbContext(new DbContextOptionsBuilder()
-                .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TestDB;Trusted_Connection=True;")
+            return new DbContextWithAnnotations(new DbContextOptionsBuilder()
+                .UseSqlite("Data Source = :memory:")
                 .Options);
         }
     }
 
     [MetaEntity(Enabled = false)]
-    public class CategoryAttributeTest
+    public class CategoryWithAnnotations
     {
 
         public int Id { get; set; }
@@ -38,9 +38,8 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
     }
 
     [MetaEntity(Description = "Test Description", DisplayName = "Test")]
-    public class CustomerAttributeTest
+    public class CustomerWithAnnotations
     {
-
         public string Id { get; set; }
 
         public string CompanyName { get; set; }
