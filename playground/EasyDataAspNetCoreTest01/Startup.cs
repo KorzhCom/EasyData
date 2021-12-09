@@ -72,19 +72,19 @@ namespace EasyDataBasicDemo
                         opts.SkipForeignKeys = false;
 
                         opts.CustomizeModel(model => {
-                            var entityCusomizer = model.Entity<Customer>()
+                            var entity = model.Entity<Customer>()
                                 .SetDisplayName("Client")
                                 .SetDisplayNamePlural("Clients");
 
-                            entityCusomizer
+                            entity
                                 .Attribute(c => c.Fax)
                                     .SetShowOnView(false);
 
-                            entityCusomizer
+                            entity
                                 .Attribute(c => c.PostalCode)
                                     .SetShowOnView(false);
 
-                            entityCusomizer
+                            entity
                                 .Attribute(c => c.Country)
                                     .SetDisplayName("Country name")
                                     .SetDescription("Country where the client lives");
