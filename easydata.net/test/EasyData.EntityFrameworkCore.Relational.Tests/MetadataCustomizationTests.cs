@@ -47,14 +47,14 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var metaData = new MetaData();
             metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
-            var entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Category));
+            var entity = metaData.EntityRoot.FindSubEntity(e => e.ClrType == typeof(Category));
             entity.Should().NotBeNull();
             entity.Name.Should().Be(displayName);
             entity.NamePlural.Should().Be(displayNamePlural);
             entity.Description.Should().Be(description);
             entity.IsEditable.Should().Be(editable);
 
-            entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Customer));
+            entity = metaData.EntityRoot.FindSubEntity(e => e.ClrType == typeof(Customer));
             entity.Should().NotBeNull();
             entity.Name.Should().Be(secondDisplayName);
         }
@@ -101,7 +101,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var metaData = new MetaData();
             metaData.LoadFromDbContext(_dbContext, loaderOptions);
 
-            var entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Category));
+            var entity = metaData.EntityRoot.FindSubEntity(e => e.ClrType == typeof(Category));
             entity.Should().NotBeNull();
             var attr = entity.FindAttribute(a => a.PropName == "Description");
             attr.Should().NotBeNull();  
@@ -115,7 +115,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             attr.Sorting.Should().Be(sorting);
             attr.Index.Should().Be(index);
 
-            entity = metaData.EntityRoot.FindEntity(e => e.ClrType == typeof(Order));
+            entity = metaData.EntityRoot.FindSubEntity(e => e.ClrType == typeof(Order));
             entity.Should().NotBeNull();
             attr = entity.FindAttribute(a => a.PropName == "Id");
             attr.Should().NotBeNull();
