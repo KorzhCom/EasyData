@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EasyData.EntityFrameworkCore
 {
+    /// <summary>
+    /// Retrieves DB metadata from a DbContext object and fills the structures of <see cref="MetaData"/> instance.
+    /// </summary>
     public class DbContextMetaDataLoader
     {
         protected readonly DbContextMetaDataLoaderOptions Options;
@@ -18,11 +21,24 @@ namespace EasyData.EntityFrameworkCore
         protected readonly DbContext DbContext;
         protected readonly MetaData Model;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbContextMetaDataLoader"/> class.
+        /// </summary>
+        /// <param name="dbContext">The DbContext to get metadata from.</param>
+        /// <param name="model">The MetaData object to save metadata to.</param>
         public DbContextMetaDataLoader(DbContext dbContext, MetaData model)
             : this(dbContext, model, new DbContextMetaDataLoaderOptions())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbContextMetaDataLoader"/> class.
+        /// </summary>
+        /// <param name="dbContext">The DbContext to get metadata from.</param>
+        /// <param name="model">The MetaData object to save metadata to.</param>
+        /// <param name="options">The loader option. You can define here which model and/or properties should be skipped, 
+        /// what names the will have, what display formats to use and so on.
+        /// </param>
         public DbContextMetaDataLoader(DbContext dbContext, MetaData model, DbContextMetaDataLoaderOptions options)
         {
             DbContext = dbContext;
@@ -30,13 +46,22 @@ namespace EasyData.EntityFrameworkCore
             Options = options;
         }
 
-        protected virtual IEnumerable<IEntityType> GetEntityTypes()
+        /// <summary>
+        /// Gets the entity types filtered acording to EntitFilters list defined in <see cref="Options"/>
+        /// </summary>
+        /// <returns>IEnumerable&lt;IEntityType&gt;.</returns>
+        protected IEnumerable<IEntityType> GetEntityTypes()
         {   
             return DbContext.Model.GetEntityTypes()
                .Where(ApplyEntityFilters);
         }
 
-        private bool ApplyEntityFilters(IEntityType entityType)
+        /// <summary>
+        /// Applies the entity filters.
+        /// </summary>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that defines the entity.</param>
+        /// <returns><c>true</c> if the entity passes the filters, <c>false</c> otherwise.</returns>
+        protected virtual bool ApplyEntityFilters(IEntityType entityType)
         {
             foreach (var filter in Options.EntityFilters) {
                 if (!filter.Invoke(entityType)) {
@@ -48,13 +73,23 @@ namespace EasyData.EntityFrameworkCore
         }
 
 
+        /// <summary>
+        /// Gets the entity properties filtered according to the PropertyFilters list defined in <see cref="Options"/>.
+        /// </summary>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that represents the entity.</param>
+        /// <returns>IEnumerable&lt;IProperty&gt;.</returns>
         protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
                     .Where(ApplyPropertyFilters);
         }
 
-        private bool ApplyPropertyFilters(IProperty property)
+        /// <summary>
+        /// Applies the property filters.
+        /// </summary>
+        /// <param name="property">An instance of <see cref="IProperty"/> that represents the property.</param>
+        /// <returns><c>true</c> if the property passes the filters, <c>false</c> otherwise.</returns>
+        protected virtual bool ApplyPropertyFilters(IProperty property)
         {
             foreach (var filter in Options.PropertyFilters) {
                 if (!filter.Invoke(property)) {
@@ -65,6 +100,9 @@ namespace EasyData.EntityFrameworkCore
             return true;
         }
 
+        /// <summary>
+        /// Loads metadata from a DbContext object and stores them into a <see cref="MetaData"/> instance passed in the constructor
+        /// </summary>
         public virtual void LoadFromDbContext()
         { 
             var entityTypes = GetEntityTypes();
@@ -120,17 +158,26 @@ namespace EasyData.EntityFrameworkCore
             Model.EntityRoot.SubEntities.Reorder();
         }
 
-        protected string GetEntityId(IEntityType entityType)
+        /// <summary>
+        /// Gets the entity ID by <see cref="IEntityType"/>.
+        /// </summary>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that represents the entity.</param>
+        /// <returns>System.String.</returns>
+        protected virtual string GetEntityId(IEntityType entityType)
         {
             var entityName = Utils.GetEntityNameByType(entityType.ClrType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
-  
+
+        /// <summary>
+        /// Processes one entity.
+        /// </summary>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that represents the entity.</param>
+        /// <returns>MetaEntity.</returns>
         protected virtual MetaEntity ProcessEntityType(IEntityType entityType)
         {
             var entity = Model.CreateEntity();
-            var tableName = entityType.GetTableName();
             entity.Id = GetEntityId(entityType);
             entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType.ClrType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
@@ -176,18 +223,21 @@ namespace EasyData.EntityFrameworkCore
 
                     attrCounter++;
 
-                    AddEntityAttr(entityAttr, entity, property);
+                    entity.Attributes.Add(entityAttr);
                 }
             }
 
             return entity;
         }
 
-        protected virtual void AddEntityAttr(MetaEntityAttr entityAttr, MetaEntity entity, IProperty property)
-        {
-            entity.Attributes.Add(entityAttr);
-        }
 
+        /// <summary>
+        /// Processes the navigation property.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that represents the entity in DbContext.</param>
+        /// <param name="navigation">The navigation property.</param>
+        /// <param name="attrCounter">Represents the default index of the processed attribute</param>
         protected virtual void ProcessNavigationProperty(MetaEntity entity, IEntityType entityType, 
                                                             INavigation navigation, ref int attrCounter)
         {
@@ -306,6 +356,13 @@ namespace EasyData.EntityFrameworkCore
             return true;
         }
 
+        /// <summary>
+        /// Creates the entity attribute for a particular entity type and property.
+        /// </summary>
+        /// <param name="entity">The entity to which the new attribute will be added.</param>
+        /// <param name="entityType">An instance of <see cref="IEntityType"/> that represents the entity in the DbContext.</param>
+        /// <param name="property">An instance of <see cref="IProperty"/> that represents the property in the model class.</param>
+        /// <returns>MetaEntityAttr.</returns>
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
             var entityName = Utils.GetEntityNameByType(entityType.ClrType);
@@ -370,7 +427,6 @@ namespace EasyData.EntityFrameworkCore
             }
 
             return entityAttr;
-
         }
     }
 }
