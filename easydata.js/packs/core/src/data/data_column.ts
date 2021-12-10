@@ -39,7 +39,7 @@ export interface DataColumnDescriptor {
     style?: DataColumnStyle;
 
     /** The detailed column description. */
-    description: string | null;
+    description?: string | null;
 }
 
 export class DataColumn {
