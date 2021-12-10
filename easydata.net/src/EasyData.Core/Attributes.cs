@@ -295,10 +295,21 @@ namespace EasyData
 
         public EntityAttrKind Kind { get; internal set; }
 
+
+        private string _displayFormat;
+
         /// <summary>
         /// The display format for the attribute.
         /// </summary>
-        public string DisplayFormat { get; set; }
+        public string DisplayFormat {
+            get => _displayFormat;
+            set {
+                if (_displayFormat != value) {
+                    DataFormatUtils.CheckFormat(value);
+                    _displayFormat = value;
+                }            
+            }
+        }
 
 
         /// <summary>
