@@ -55,7 +55,7 @@
         "style-loader": "^0.23.1",
         "ts-loader": "^5.3.3",
         "ts-node": "^8.0.2",
-        "typedoc": "^0.5.0",
+        "typedoc": "^0.15.0",
         "typedoc-webpack-plugin": "^1.1.4",
         "typescript": "3.5.*",
         "typings-for-css-modules-loader": "1.7.0",
