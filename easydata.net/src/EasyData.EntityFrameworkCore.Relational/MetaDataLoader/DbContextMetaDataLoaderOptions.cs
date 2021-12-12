@@ -43,25 +43,37 @@ namespace EasyData.EntityFrameworkCore
 
         /// <summary>
         /// Adds an entity filter
-        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
+        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext" />
         /// </summary>
-        /// <param name="filter"></param>
-        public void AddEntityFilter(EntityFilter filter)
+        /// <param name="filter">The filter.</param>
+        /// <returns>DbContextMetaDataLoaderOptions (to use in chained calls).</returns>
+        public DbContextMetaDataLoaderOptions AddEntityFilter(EntityFilter filter)
         {
             _entityFilters.Add(filter);
+            return this;
         }
 
         /// <summary>
         /// Adds the property filter.
-        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
+        /// that will be used during the loading of the model from a <see cref="Microsoft.EntityFrameworkCore.DbContext" />
         /// </summary>
         /// <param name="filter">The filter.</param>
-        public void AddPropertyFilter(PropertyFilter filter)
+        /// <returns>DbContextMetaDataLoaderOptions (to use in chained calls).</returns>
+        public DbContextMetaDataLoaderOptions AddPropertyFilter(PropertyFilter filter)
         { 
             _propertyFilters.Add(filter);
+            return this;
         }
 
-        public void Skip<TEntity>(params Expression<Func<TEntity, object>>[] propertySelectors) 
+        /// <summary>
+        /// Adds an entity filter (if the list of property selectors is empty) or bunch of property filters
+        /// that makes the model loader skip the specified entity or properties.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the model class the represent the entity which should be skipped
+        /// (or some of its properties should be skipped).</typeparam>
+        /// <param name="propertySelectors">The list of property selectors. Each selector defines a property that should be skipped during the metadata loading.</param>
+        /// <returns>DbContextMetaDataLoaderOptions (to use in chained calls).</returns>
+        public DbContextMetaDataLoaderOptions Skip<TEntity>(params Expression<Func<TEntity, object>>[] propertySelectors) 
             where TEntity : class
         {
             if (propertySelectors == null || propertySelectors.Length == 0) {
@@ -73,6 +85,8 @@ namespace EasyData.EntityFrameworkCore
                     AddPropertyFilter(prop => !prop.PropertyInfo.Equals(propInfo));
                 }
             }
+
+            return this;
         }
 
         /// <summary>
@@ -93,17 +107,17 @@ namespace EasyData.EntityFrameworkCore
         public bool KeepDbSetDeclarationOrder { get; set; } = false;
 
         /// <summary>
-        /// Store metadata.
+        /// Gets the delegate that will be called at the end of metadata loading to customize loaded entities and attributes (properties).
         /// </summary>
         public Action<MetadataCustomizer> ModelCustomizer { get; private set; }
 
         /// <summary>
-        /// Build metadata.
+        /// Sets the model customizer - an action that configures some entities and their properties in the loaded model.
         /// </summary>
-        /// <param name="configurator">The procedure that configures the metadata model</param>
-        public void CustomizeModel(Action<MetadataCustomizer> configurator)
+        /// <param name="customizer">The procedure that configures the metadata model</param>
+        public void CustomizeModel(Action<MetadataCustomizer> customizer)
         {
-            ModelCustomizer = configurator;
+            ModelCustomizer = customizer;
         }
     }
 }

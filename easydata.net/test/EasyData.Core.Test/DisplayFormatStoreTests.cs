@@ -1,9 +1,5 @@
 ﻿
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xunit;
 using FluentAssertions;
@@ -69,6 +65,23 @@ namespace EasyData.Core.Tests
             formatDesc.IsDefault.Should().Be(isDefault);
             formatDesc.Name.Should().Be(name);
             formatDesc.Format.Should().Be(format);
+        }
+
+        [Fact]
+        public void SetAttrDisplayFormat_should_throw_error_on_wrong_formats()
+        { 
+            var meta = new MetaData();
+            var attr = meta.CreateEntityAttr(new MetaEntityAttrDescriptor { Parent = meta.EntityRoot, DataType = DataType.String });
+            
+            //the following assignments must be processed correctly
+            attr.DisplayFormat = "{0:d}"; 
+            attr.DisplayFormat = "Total: {0:C2} грн";
+            attr.DisplayFormat = "{0:yyyy-MM-dd}";
+
+            //the following must fail
+            Assert.Throws<InvalidDataFormatException>(() => attr.DisplayFormat = "{0:d");
+            Assert.Throws<InvalidDataFormatException>(() => attr.DisplayFormat = "{0n:}");
+            Assert.Throws<InvalidDataFormatException>(() => attr.DisplayFormat = "{1:F}");
         }
     }
 }
