@@ -356,9 +356,9 @@ export class EntityEditFormBuilder {
                         b.attr('checked', '');
                 } else {
                     b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
-                        .value(dataUtils.IsDefinedAndNotNull(value)
-                            ? value.toString()
-                            : '');
+                     .value(dataUtils.IsDefinedAndNotNull(value)
+                        ? value.toString()
+                        : '');
                 }
             });
     }
@@ -369,10 +369,12 @@ export class EntityEditFormBuilder {
             .addChild('textarea', b => {
                 if (readOnly)
                     b.attr('readonly', '');
-
+                    
                 b.attr('name', attr.id)
-                
                 b.setStyle('height', `120px`)
+                b.value(dataUtils.IsDefinedAndNotNull(value)
+                    ? value.toString()
+                    : '');
             });
     }
 
