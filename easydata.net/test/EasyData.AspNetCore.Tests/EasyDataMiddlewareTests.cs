@@ -82,14 +82,14 @@ namespace EasyData.AspNetCore.Tests
         }
 
         [Theory]
-        [InlineData("/api/easydata", "Customer", "ALFKI")]
-        [InlineData("/api/data", "Customer", "ALFKI")]
-        [InlineData("/api/easydata", "Product", "1")]
-        [InlineData("/api/data", "Product", "1")]
-        public async Task EasyData_GetEntity(string endpoint, string entity, string entityId)
+        [InlineData("/api/easydata", "Customer", "Id", "ALFKI")]
+        [InlineData("/api/data", "Customer", "Id", "ALFKI")]
+        [InlineData("/api/easydata", "Product", "Id", "1")]
+        [InlineData("/api/data", "Product", "Id", "1")]
+        public async Task EasyData_GetEntity(string endpoint, string entity, string keyProperty, string entityId)
         {
             var client = _host.GetTestClient();
-            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}/fetch/{entityId}");
+            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}/fetch?{keyProperty}={entityId}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
       
@@ -185,7 +185,7 @@ namespace EasyData.AspNetCore.Tests
         {
             var client = _host.GetTestClient();
             var content = new StringContent(data.ToString());
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/update/{data["Id"]}", content);
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/update", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -245,14 +245,15 @@ namespace EasyData.AspNetCore.Tests
             };
 
         [Theory]
-        [InlineData("/api/easydata", "Category", "1")]
-        [InlineData("/api/data", "Category", "2")]
-        [InlineData("/api/easydata", "Shipper", "1")]
-        [InlineData("/api/data", "Shipper", "2")]
-        public async Task EasyData_DeleteEntity(string endpoint, string entity, string entityId)
+        [InlineData("/api/easydata", "Category", "Id", "1")]
+        [InlineData("/api/data", "Category", "Id", "2")]
+        [InlineData("/api/easydata", "Shipper", "Id", "1")]
+        [InlineData("/api/data", "Shipper", "Id", "2")]
+        public async Task EasyData_DeleteEntity(string endpoint, string entity, string keyPropery, string entityId)
         {
             var client = _host.GetTestClient();
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/delete/{entityId}", new StringContent(""));
+            var content = new StringContent($"{{\"{keyPropery}\": {entityId}}}");
+            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/delete", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 

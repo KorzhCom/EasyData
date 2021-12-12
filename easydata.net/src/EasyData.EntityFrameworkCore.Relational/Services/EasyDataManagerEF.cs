@@ -17,16 +17,16 @@ namespace EasyData.Services
     {
         protected readonly TDbContext DbContext;
 
-
         public EasyDataManagerEF(IServiceProvider services, EasyDataOptions options) : base(services, options)
         {
             DbContext = (TDbContext)services.GetService(typeof(TDbContext))
                 ?? throw new ArgumentNullException($"DbContext is not registered in services: {typeof(TDbContext)}");
-
         }
 
         public override Task LoadModelAsync(string modelId, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             Model.Id = modelId;
             var loaderOptions = new DbContextMetaDataLoaderOptions();
             Options.MetaDataLoaderOptionsBuilder?.Invoke(loaderOptions);
@@ -36,6 +36,8 @@ namespace EasyData.Services
 
         public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             var model = await GetModelAsync(modelId);
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
@@ -56,6 +58,8 @@ namespace EasyData.Services
                 IEnumerable<EasySorter> sorters = null,
                 bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             if (filters == null)
                 filters = Enumerable.Empty<EasyFilter>();
 
@@ -68,7 +72,10 @@ namespace EasyData.Services
             var result = new EasyDataResultSet();
 
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
-            var attrIdProps = entityType.GetProperties().ToDictionary(prop => DataUtils.ComposeKey(entityContainer, prop.Name), prop => prop);
+            var attrIdProps = entityType.GetProperties()
+                .ToDictionary(
+                    prop => DataUtils.ComposeKey(entityContainer, prop.Name), 
+                    prop => prop);
 
             var attrs = modelEntity.Attributes.Where(attr => attr.Kind != EntityAttrKind.Lookup);
 
@@ -92,16 +99,18 @@ namespace EasyData.Services
             }
 
             foreach (var entity in entities) {
-                result.Rows.Add(new EasyDataRow(attrs.Select(attr => attrIdProps[attr.Id].PropertyInfo.GetValue(entity)).ToList()));
+                var values = attrs.Select(attr => attrIdProps[attr.Id].PropertyInfo.GetValue(entity)).ToList();
+                result.Rows.Add(new EasyDataRow(values));
             }
 
             return result;
-
         }
 
         public override async Task<long> GetTotalRecordsAsync(string modelId, string entityContainer,
             IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             if (filters == null)
                 filters = Enumerable.Empty<EasyFilter>();
 
@@ -111,15 +120,21 @@ namespace EasyData.Services
             return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup, ct);
         }
 
-        public override async Task<object> FetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public override async Task<object> FetchRecordAsync(string modelId, string entityContainer, 
+            Dictionary<string, string> recordKeys, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
-            var keys = GetKeys(entityType, keyStr);
-            return await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
+            var keys = GetKeys(entityType, recordKeys);
+            return await FindEntityAsync(DbContext, entityType.ClrType, keys.Values, ct);
         }
 
-        public override async Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
+        public override async Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, 
+            CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
             var entity = Activator.CreateInstance(entityType.ClrType);
@@ -132,14 +147,17 @@ namespace EasyData.Services
             return entity;
         }
 
-        public override async Task<object> UpdateRecordAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default)
+        public override async Task<object> UpdateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
-            var keys = GetKeys(entityType, keyStr);
-            var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
+            var keys = GetKeys(entityType, props);
+            var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys.Values, ct);
             if (entity == null) {
-                throw new RecordNotFoundException(entityContainer, keyStr);
+                throw new RecordNotFoundException(entityContainer,
+                    $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
             }
 
             MapProperties(entity, props);
@@ -150,21 +168,24 @@ namespace EasyData.Services
             return entity;
         }
 
-        public override async Task DeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public override async Task DeleteRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             var entityType = GetCurrentEntityType(DbContext, entityContainer);
 
-            var keys = GetKeys(entityType, keyStr);
-            var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys, ct);
+            var keys = GetKeys(entityType, props);
+            var entity = await FindEntityAsync(DbContext, entityType.ClrType, keys.Values, ct);
             if (entity == null) {
-                throw new RecordNotFoundException(entityContainer, keyStr);
+                throw new RecordNotFoundException(entityContainer, 
+                    $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
             }
 
             DbContext.Remove(entity);
             await DbContext.SaveChangesAsync(ct);
         }
 
-        private IEntityType GetCurrentEntityType(DbContext dbContext, string entityContainer)
+        private static IEntityType GetCurrentEntityType(DbContext dbContext, string entityContainer)
         {
             var entityType = dbContext.Model.GetEntityTypes()
                 .FirstOrDefault(ent => Utils.GetEntityNameByType(ent.ClrType) == entityContainer);
@@ -176,7 +197,7 @@ namespace EasyData.Services
             return entityType;
         }
 
-        private void MapProperties(object entity, JObject props)
+        private static void MapProperties(object entity, JObject props)
         {
             foreach (var entProp in props) {
                 var prop = entity.GetType().GetProperty(entProp.Key);
@@ -186,32 +207,42 @@ namespace EasyData.Services
             }
         }
 
-        private List<object> GetKeys(IEntityType entityType, string keyString)
+        private static Dictionary<IProperty, object> GetKeys(IEntityType entityType, Dictionary<string, string> keys)
         {
-            var keyStrings = keyString.Split(':').ToList();
-            var keyProps = entityType.GetProperties().Where(prop => prop.IsPrimaryKey()).ToList();
+            var keyProps = entityType.GetProperties()
+                .Where(prop => prop.IsPrimaryKey())
+                .ToList();
 
-            if (keyStrings.Count != keyProps.Count) {
-                throw new Exception();
-            }
+            if (keys.Count != keyProps.Count) {
+                throw new EasyDataManagerException("Wrong number of key fields");
+            }  
 
-            //change to support attrId:keyValue format in future
-            var keyObjs = new List<object>(Enumerable.Repeat<object>(null, keyStrings.Count));
-            for (int i = 0; i < keyStrings.Count; i++) {
-                var type = keyProps[i].ClrType;
-                var typeConverter = TypeDescriptor.GetConverter(type);
-                keyObjs[i] = typeConverter.ConvertFromString(keyStrings[i]);
-            }
-
-            return keyObjs;
-
+            return keyProps.ToDictionary(
+                prop => prop, 
+                prop => TypeDescriptor.GetConverter(prop.ClrType)
+                                   .ConvertFromString(keys[prop.Name]));
         }
 
-        private async Task<object> FindEntityAsync(DbContext dbContext, Type entityType, List<object> keys, CancellationToken ct)
+        private static Dictionary<IProperty, object> GetKeys(IEntityType entityType, JObject props)
         {
+            var keyProps = entityType.GetProperties()
+                .Where(prop => prop.IsPrimaryKey())
+                .ToList();
+
+            return keyProps.ToDictionary(
+                p => p,
+                p => props.TryGetValue(p.Name, out var token) 
+                    ? token.ToObject(p.ClrType) 
+                    : throw new EasyDataManagerException($"Key value is not found: {p.Name}"));
+        }
+
+        private async Task<object> FindEntityAsync(DbContext dbContext, Type entityType, IEnumerable<object> keys, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
-                       .Single(m => m.Name == "FindEntityAsync"
+                       .Single(m => m.Name == nameof(FindEntityAsync)
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
                        .Invoke(this, new object[] { dbContext, keys, ct });
@@ -226,9 +257,11 @@ namespace EasyData.Services
             bool isLookup, int? offset,
             int? fetch, CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
+
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
-                       .Single(m => m.Name == "ListAllEntitiesAsync"
+                       .Single(m => m.Name == nameof(ListAllEntitiesAsync)
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
                        .Invoke(this, new object[] { dbContext, filters, sorters, isLookup, offset, fetch, ct });
@@ -240,9 +273,10 @@ namespace EasyData.Services
         private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, IEnumerable<EasyFilter> filters, bool isLookup,
             CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
             var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
             var task = (Task)methods
-                       .Single(m => m.Name == "CountAllEntitiesAsync"
+                       .Single(m => m.Name == nameof(CountAllEntitiesAsync)
                             && m.IsGenericMethodDefinition)
                        .MakeGenericMethod(entityType)
                        .Invoke(this, new object[] { dbContext, filters, isLookup, ct });
@@ -251,8 +285,9 @@ namespace EasyData.Services
             return (long)((dynamic)task).Result;
         }
 
-        private async Task<T> FindEntityAsync<T>(DbContext dbContext, List<object> keys, CancellationToken ct) where T : class
+        private async Task<T> FindEntityAsync<T>(DbContext dbContext, IEnumerable<object> keys, CancellationToken ct) where T : class
         {
+            ct.ThrowIfCancellationRequested();
             return await dbContext.Set<T>().FindAsync(keys.ToArray(), ct);
         }
 
@@ -262,6 +297,8 @@ namespace EasyData.Services
             bool isLookup,
             int? offset, int? fetch, CancellationToken ct) where T : class
         {
+            ct.ThrowIfCancellationRequested();
+
             var query = dbContext.Set<T>().AsQueryable();
             var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
             if (filters != null) {
@@ -297,8 +334,11 @@ namespace EasyData.Services
             return await query.Cast<object>().ToListAsync(ct);
         }
 
-        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup, CancellationToken ct) where T : class
+        private async Task<long> CountAllEntitiesAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup, 
+            CancellationToken ct) where T : class
         {
+            ct.ThrowIfCancellationRequested();
+
             var query = dbContext.Set<T>().AsQueryable();
             var entity = Model.EntityRoot.SubEntities.FirstOrDefault(ent => ent.ClrType == typeof(T));
             foreach (var filter in filters) {
