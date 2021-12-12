@@ -128,12 +128,11 @@ export class DataContext {
             })
     }
 
-    public getEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('GetEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public getEntity(keys : {[key: string]: string}, entityId?: string) {
+        const url = this.resolveEndpoint('GetEntity', { entityId: entityId || this.activeEntity.id });
         
         this.startProcess();
-        return this.http.get(url).getPromise()
+        return this.http.get(url, { queryParams: keys})
             .finally(() => this.endProcess());
     }
 
@@ -142,23 +141,23 @@ export class DataContext {
             { entityId: entityId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public updateEntity(id: string, obj, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
-        
+    public updateEntity(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('UpdateEntity', { entityId: entityId || this.activeEntity.id });
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public deleteEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public deleteEntity(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('DeleteEntity', { entityId: entityId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, null).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json'})
+            .finally(() => this.endProcess());
     }
 
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
@@ -221,9 +220,9 @@ export class DataContext {
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
         this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch/{id}'));
+        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
         this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
-        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update/{id}'));
-        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete/{id}'));
+        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update'));
+        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete'));
     }
 }
