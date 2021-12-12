@@ -159,20 +159,45 @@ Here we change the default display name for this field, make it non-editable (si
 
 
 ### Fluent API
-It is also possible to use Fluent API to keep all model classes without any additional attributes:
+
+Annotations on the model classes and properties can make your core code dependant on implementation. It's not a good approach especially considering Clean Architecture principles. To avoid this situation you can use our Fluent API to establish filters and to set different parameters of entities and their properties.
+
 ```c#
 app.UseEndpoints(endpoints => {
     endpoints.MapEasyData(options => {
         options.UseDbContext<ApplicationDbContext>(opts => {
-            opts.UseMetaBuilder(builder => {
-                builder.Entity<Customer>()
+            //here we tell the model loader to skip the Supplier entity completely
+            opts.Skip<Supplier>(); 
+            
+            //the following command will skip some properties in the Customer entity
+            opts.Skip<Customer>(c => Phone, c => PostCode, c => Fax);
+
+            //here we define the procedure that customizes our metadata 
+            //when it's loaded from a DbContext
+            opts.CustomizeModel(model => {
+                //defining the setting for the Customer entity 
+                var entity = model.Entity<Customer>()
                     .SetDisplayName("Client")
-                    .SetDisplayNamePlural("Clients")
-                    .Property(c => c.Country)
+                    .SetDisplayNamePlural("Clients");
+
+                //hide Region and Address properties in the View mode
+                entity
+                    .Attribute(c => c.Region)
+                        .SetShowOnView(false);
+                entity
+                    .Attribute(c => c.Address)
+                        .SetShowOnView(false);
+
+                //Chaning the caption and the description of the Country property
+                entity
+                    .Attribute(c => c.Country)
+                        .SetDisplayName("Country name")
                         .SetDescription("Country where the client lives");
 
-                builder.Entity<Order>()
-                .     .     .     .     .
+                //Setting the display format for the Order.OrderDate
+                model.Entity<Order>()
+                    .Attribute(o => o.OrderDate)
+                        .SetDisplayFormat("{0:yyyy-MM-dd}");
             });
         });
     });
@@ -259,9 +284,9 @@ __Q:__ **What versions of .NET and ASP.NET (Core) does EasyData support?**
 
 __A:__ Currently, EasyData supports .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
 
-__Q:__ **I don’t like annotations. They ruin my pure data structures with some implementation-specific code. Do you support a Fluent API approach for setting all those filters, constraints, validators, and value editors?**
+__Q:__ Is it possible to use EasyData API only without the UI?
 
-__A:__ Not yet. You can add a new [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that to make it happen faster.
+__A:__ Yes, of course. You can follow [the issue](https://github.com/KorzhCom/EasyData/issues/73) about this request to get an idea of the possible endpoints and the formats of the requests and responses. We are going to publish a complete API documentation after version 1.4.0 release.
 
 
 ## Contact us
