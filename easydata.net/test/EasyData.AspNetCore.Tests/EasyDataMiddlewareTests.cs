@@ -254,7 +254,7 @@ namespace EasyData.AspNetCore.Tests
             var client = _host.GetTestClient();
             var content = new StringContent($"{{\"{keyPropery}\": {entityId}}}");
             var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/delete", content);
-
+            var body = await response.Content.ReadAsStringAsync();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             response.Content.Headers.ContentType

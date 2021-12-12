@@ -33,7 +33,6 @@ namespace EasyData.Services
             Model.LoadFromDbContext(DbContext, loaderOptions);
             return base.LoadModelAsync(modelId, ct);
         }
-
         public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -236,20 +235,30 @@ namespace EasyData.Services
                     : throw new EasyDataManagerException($"Key value is not found: {p.Name}"));
         }
 
+        static EasyDataManagerEF()
+        {
+            var methods = typeof(EasyDataManagerEF<TDbContext>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Where(m => m.IsGenericMethodDefinition).ToList();
+
+            _findEntityAsync = methods.Single(m => m.Name == nameof(FindEntityAsync));
+            _listAllEntitiesAsync = methods.Single(m => m.Name == nameof(ListAllEntitiesAsync));
+            _countAllEntitiesAsync = methods.Single(m => m.Name == nameof(CountAllEntitiesAsync));
+        }
+
+        private static readonly MethodInfo _findEntityAsync;
+        
         private async Task<object> FindEntityAsync(DbContext dbContext, Type entityType, IEnumerable<object> keys, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
 
-            var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
-            var task = (Task)methods
-                       .Single(m => m.Name == nameof(FindEntityAsync)
-                            && m.IsGenericMethodDefinition)
-                       .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, keys, ct });
+            var targetMethod = _findEntityAsync.MakeGenericMethod(entityType);
+            var task = (Task)targetMethod.Invoke(this, new object[] { dbContext, keys, ct });
 
             await task.ConfigureAwait(false);
             return (object)((dynamic)task).Result;
         }
+
+        private static readonly MethodInfo _listAllEntitiesAsync;
 
         private async Task<List<object>> ListAllEntitiesAsync(DbContext dbContext, Type entityType,
             IEnumerable<EasyFilter> filters,
@@ -259,27 +268,23 @@ namespace EasyData.Services
         {
             ct.ThrowIfCancellationRequested();
 
-            var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
-            var task = (Task)methods
-                       .Single(m => m.Name == nameof(ListAllEntitiesAsync)
-                            && m.IsGenericMethodDefinition)
-                       .MakeGenericMethod(entityType)
+            var targetMethod = _listAllEntitiesAsync.MakeGenericMethod(entityType);
+            var task = (Task)targetMethod
                        .Invoke(this, new object[] { dbContext, filters, sorters, isLookup, offset, fetch, ct });
 
             await task.ConfigureAwait(false);
             return (List<object>)((dynamic)task).Result;
         }
 
+        private static readonly MethodInfo _countAllEntitiesAsync;
+
         private async Task<long> CountAllEntitiesAsync(DbContext dbContext, Type entityType, IEnumerable<EasyFilter> filters, bool isLookup,
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            var methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).ToList();
-            var task = (Task)methods
-                       .Single(m => m.Name == nameof(CountAllEntitiesAsync)
-                            && m.IsGenericMethodDefinition)
-                       .MakeGenericMethod(entityType)
-                       .Invoke(this, new object[] { dbContext, filters, isLookup, ct });
+
+            var targetMethod = _countAllEntitiesAsync.MakeGenericMethod(entityType);
+            var task = (Task)targetMethod.Invoke(this, new object[] { dbContext, filters, isLookup, ct });
 
             await task.ConfigureAwait(false);
             return (long)((dynamic)task).Result;
