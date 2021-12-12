@@ -183,14 +183,11 @@ export class EntityDataView {
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
             onSubmit: () => {
-                const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
-                const keys = keyAttrs.map(attr => row.getValue(attr.id));
-
                 if (!form.validate())
                     return false;
 
                 form.getData()
-                .then(obj => this.context.updateEntity(keys.join(':'), obj))
+                .then(obj => this.context.updateEntity(obj))
                 .then(() => {
                     return this.refreshData();
                 })       
@@ -213,19 +210,22 @@ export class EntityDataView {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
                     const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
-                    const keys = keyAttrs.map(attr => row.getValue(attr.id));
-                    const entityId = keyAttrs.map((attr, index) => `${attr.id}:${keys[index]}`).join(';');
+                    const keyVals = keyAttrs.map(attr => row.getValue(attr.id));
+                    const keys = keyAttrs.reduce((val, attr, index) => { 
+                        const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                        val[property] = keyVals[index];
+                        return val; 
+                    }, {});
                     this.dlg.openConfirm(
                         i18n.getText('DeleteDlgCaption')
                             .replace('{entity}', activeEntity.caption), 
                         i18n.getText('DeleteDlgMessage')
-                            .replace('{entityId}', entityId), 
+                            .replace('{entityId}', Object.keys(keys)
+                                .map(key => `${key}:${keys[key]}`).join(';')), 
                     )
                     .then((result) => {
                         if (result) {
-
-                            //pass entityId in future
-                            this.context.deleteEntity(keys.join(':'))
+                            this.context.deleteEntity(keys)
                                 .then(() => {
                                     return this.refreshData();
                                 })
