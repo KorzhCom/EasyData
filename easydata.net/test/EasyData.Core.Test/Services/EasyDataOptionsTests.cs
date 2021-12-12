@@ -120,12 +120,7 @@ namespace EasyData.Core.Services.Tests
                 throw new NotImplementedException();
             }
 
-            public override Task DeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
+            public override Task DeleteRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
@@ -135,7 +130,12 @@ namespace EasyData.Core.Services.Tests
                 throw new NotImplementedException();
             }
 
-            public override Task<object> FetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+            public override Task<object> FetchRecordAsync(string modelId, string entityContainer, Dictionary<string, string> keys, CancellationToken ct = default)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
@@ -145,7 +145,7 @@ namespace EasyData.Core.Services.Tests
                 throw new NotImplementedException();
             }
 
-            public override Task<object> UpdateRecordAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default)
+            public override Task<object> UpdateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
