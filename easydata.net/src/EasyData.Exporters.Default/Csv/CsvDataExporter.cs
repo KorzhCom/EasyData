@@ -190,7 +190,7 @@ namespace EasyData.Export
                 return "";
             }
 
-            var s = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
+            var s = DataFormatUtils.GetFormattedValue(val, dataType, settings.Culture, displayFormat);
 
             bool needQuote = settings.QuoteAlways || s.Contains(settings.Separator) || s.IndexOfAny(new[] { '\n', '\r' }) > -1;
             if (needQuote) {
