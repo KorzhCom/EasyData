@@ -175,12 +175,12 @@ app.UseEndpoints(endpoints => {
             //here we define the procedure that customizes our metadata 
             //when it's loaded from a DbContext
             opts.CustomizeModel(model => {
-                //defining the setting for the Customer entity 
+                //setting the names of the Customer entity 
                 var entity = model.Entity<Customer>()
                     .SetDisplayName("Client")
                     .SetDisplayNamePlural("Clients");
 
-                //hide Region and Address properties in the View mode
+                //hiding Customer.Region and Customer.Address in the View mode
                 entity
                     .Attribute(c => c.Region)
                         .SetShowOnView(false);
@@ -188,13 +188,13 @@ app.UseEndpoints(endpoints => {
                     .Attribute(c => c.Address)
                         .SetShowOnView(false);
 
-                //Chaning the caption and the description of the Country property
+                //chaning the caption and the description of the Customer.Country
                 entity
                     .Attribute(c => c.Country)
                         .SetDisplayName("Country name")
                         .SetDescription("Country where the client lives");
 
-                //Setting the display format for the Order.OrderDate
+                //setting the display format of the Order.OrderDate
                 model.Entity<Order>()
                     .Attribute(o => o.OrderDate)
                         .SetDisplayFormat("{0:yyyy-MM-dd}");
