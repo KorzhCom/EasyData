@@ -45,7 +45,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public static TestDbContext Create()
         {
             return new TestDbContext(new DbContextOptionsBuilder()
-                .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TestDB;Trusted_Connection=True;")
+                .UseSqlite("Data Source = :memory:")
                 .Options);
         }
     }

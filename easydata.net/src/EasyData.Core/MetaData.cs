@@ -444,6 +444,16 @@ namespace EasyData
         }
 
         /// <summary>
+        /// Finds the entity using a predicate function.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>MetaEntityAttr.</returns>
+        public MetaEntity FindEntity(Func<MetaEntity, bool> predicate)
+        {
+            return EntityRoot.FindSubEntity(predicate);
+        }
+
+        /// <summary>
         /// Adds a sub-entity to the current entity.
         /// </summary>
         /// <param name="entity">The parent entity.</param>

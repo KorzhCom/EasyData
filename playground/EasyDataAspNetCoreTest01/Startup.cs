@@ -67,20 +67,32 @@ namespace EasyDataBasicDemo
                             Multiline = true
                         };
                     });
+
                     options.UseDbContext<AppDbContext>(opts => {
-                        opts.UseMetaBuilder(builder => {
-                            builder.Entity<Customer>()
+                        opts.SkipForeignKeys = false;
+
+                        opts.CustomizeModel(model => {
+                            var entity = model.Entity<Customer>()
                                 .SetDisplayName("Client")
-                                .SetDisplayNamePlural("Clients")
+                                .SetDisplayNamePlural("Clients");
+
+                            entity
+                                .Attribute(c => c.Fax)
+                                    .SetShowOnView(false);
+
+                            entity
+                                .Attribute(c => c.PostalCode)
+                                    .SetShowOnView(false);
+
+                            entity
                                 .Attribute(c => c.Country)
                                     .SetDisplayName("Country name")
                                     .SetDescription("Country where the client lives");
 
-                            builder.Entity<Order>()
+                            model.Entity<Order>()
                                 .Attribute(o => o.OrderDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
                         });
-                        opts.SkipForeignKeys = false;
                     });
                 });
                 //.RequireAuthorization();

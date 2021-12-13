@@ -239,7 +239,7 @@ namespace EasyData.Export
         /// <returns>System.String.</returns>
         protected string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
         {
-            var result = ExportHelpers.GetFormattedValue(val, dataType, settings, displayFormat);
+            var result = DataFormatUtils.GetFormattedValue(val, dataType, settings.Culture, displayFormat);
 
             if (settings.PreserveFormatting) {
                 result = result.Replace("\n", "<br>");

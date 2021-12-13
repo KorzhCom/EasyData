@@ -1,41 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using EasyData.MetaDescriptors;
 
-namespace EasyData.EntityFrameworkCore.Services
+namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
     /// Builder for entity attribute metadata.
     /// </summary>
-    public class EntityAttributeMetaBuilder
+    public class MetaEntityAttrVoidCustomizer : IMetaEntityAttrCustomizer
     {
-        /// <summary>
-        /// Store entity attribute metadata.
-        /// </summary>
-        public EntityAttributeMetadataDescriptor EntityAttributeMetadataDescriptor { get; }
 
         /// <summary>
-        /// Initialize entity attribute descriptor.
+        /// Initialize entity attribute builder.
         /// </summary>
-        public EntityAttributeMetaBuilder(PropertyInfo propertyInfo)
+        public MetaEntityAttrVoidCustomizer()
         {
-            EntityAttributeMetadataDescriptor = new EntityAttributeMetadataDescriptor
-            {
-                PropertyInfo = propertyInfo
-            };
-        }
-
-        /// <summary>
-        /// Set availability for the attribute.
-        /// </summary>
-        /// <param name="enabled">Enable or not.</param>
-        /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetEnabled(bool enabled)
-        {
-            EntityAttributeMetadataDescriptor.IsEnabled = enabled;
-            return this;
         }
 
         /// <summary>
@@ -43,9 +20,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="displayName">Name to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDisplayName(string displayName)
+        public IMetaEntityAttrCustomizer SetDisplayName(string displayName)
         {
-            EntityAttributeMetadataDescriptor.DisplayName = displayName;
             return this;
         }
 
@@ -54,9 +30,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="displayFormat">Display format to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDisplayFormat(string displayFormat)
+        public IMetaEntityAttrCustomizer SetDisplayFormat(string displayFormat)
         {
-            EntityAttributeMetadataDescriptor.DisplayFormat = displayFormat;
             return this;
         }
 
@@ -65,9 +40,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="description">Description to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetDescription(string description)
+        public IMetaEntityAttrCustomizer SetDescription(string description)
         {
-            EntityAttributeMetadataDescriptor.Description = description;
             return this;
         }
 
@@ -76,9 +50,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="editable">Editable or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetEditable(bool editable)
+        public IMetaEntityAttrCustomizer SetEditable(bool editable)
         {
-            EntityAttributeMetadataDescriptor.IsEditable = editable;
             return this;
         }
 
@@ -87,9 +60,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="index">Index to set.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetIndex(int index)
+        public IMetaEntityAttrCustomizer SetIndex(int index)
         {
-            EntityAttributeMetadataDescriptor.Index = index;
             return this;
         }
 
@@ -98,9 +70,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showInLookup">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowInLookup(bool showInLookup)
+        public IMetaEntityAttrCustomizer SetShowInLookup(bool showInLookup)
         {
-            EntityAttributeMetadataDescriptor.ShowInLookup = showInLookup;
             return this;
         }
 
@@ -109,9 +80,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnView">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnView(bool showOnView)
+        public IMetaEntityAttrCustomizer SetShowOnView(bool showOnView)
         {
-            EntityAttributeMetadataDescriptor.ShowOnView = showOnView;
             return this;
         }
 
@@ -120,9 +90,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnEdit">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnEdit(bool showOnEdit)
+        public IMetaEntityAttrCustomizer SetShowOnEdit(bool showOnEdit)
         {
-            EntityAttributeMetadataDescriptor.ShowOnEdit = showOnEdit;
             return this;
         }
 
@@ -131,9 +100,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="showOnCreate">To show or not.</param>
         /// <returns>Current instance of the class.</returns>
-        public EntityAttributeMetaBuilder SetShowOnCreate(bool showOnCreate)
+        public IMetaEntityAttrCustomizer SetShowOnCreate(bool showOnCreate)
         {
-            EntityAttributeMetadataDescriptor.ShowOnCreate = showOnCreate;
             return this;
         }
 
@@ -142,9 +110,8 @@ namespace EasyData.EntityFrameworkCore.Services
         /// </summary>
         /// <param name="sorting">Sorting to set.</param>
         /// <returns></returns>
-        public EntityAttributeMetaBuilder SetSorting(int sorting)
+        public IMetaEntityAttrCustomizer SetSorting(int sorting)
         {
-            EntityAttributeMetadataDescriptor.Sorting = sorting;
             return this;
         }
     }

@@ -3,7 +3,7 @@
 	"version": "1.3.5",
 	"description": "",
 	"scripts": {
-		"installall": "cd packs/core && npm install && cd ../ui && npm install && cd ../crud && npm install && cd ../.. && npm run linkall",
+		"installall": "cd packs/core && npm install --legacy-peer-deps && cd ../ui && npm install --legacy-peer-deps && cd ../crud && npm install --legacy-peer-deps && cd ../.. && npm run linkall",
 		"build:dev": "npm run linkall && cd packs/core && npm run build:dev && cd ../ui && npm run build:dev && cd ../crud && npm run build:dev && cd ../..",
 		"build:prod": "npm run linkall && cd packs/core && npm run build:prod && cd ../ui && npm run build:prod && cd ../crud && npm run build:prod && cd ../..",
 		"packall": "cd packs/core && npm pack && cd ../ui && npm pack && cd ../crud && npm pack && cd ../..",

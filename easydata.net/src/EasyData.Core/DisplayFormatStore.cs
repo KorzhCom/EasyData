@@ -38,7 +38,6 @@ namespace EasyData
             }
         }
 
-
         public DisplayFormatDescriptor AddOrUpdate(DataType type, string name, string format, bool isDefault = false)
         {
             DisplayFormatDescriptor desc;
