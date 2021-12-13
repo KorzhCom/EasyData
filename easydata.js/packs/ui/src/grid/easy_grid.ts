@@ -330,6 +330,13 @@ export class EasyGrid {
         });        
     }
 
+    protected getContainerWidth() : number {
+        return this.columns.getItems()
+            .filter(col => col.isVisible)
+            .map(col => col.width)
+            .reduce((sum, current) => {return sum + current});
+    }
+
     protected renderHeader() {
         this.headerDiv = domel('div')
             .addClass(`${this.cssPrefix}-header`)
@@ -361,7 +368,7 @@ export class EasyGrid {
                 }
             }); 
 
-        const containerWidth = this.columns.getItems().map(column => column.width).reduce((sum, current) => {return sum + current});
+        const containerWidth = this.getContainerWidth();
         domel(this.headerCellContainerDiv)
             .setStyle('width', `${containerWidth}px`)
     
@@ -488,8 +495,7 @@ export class EasyGrid {
                         }
                     }
 
-                    const containerWidth = this.columns.getItems()
-                    .map(column => column.width).reduce((sum, current) => {return sum + current});
+                    const containerWidth = this.getContainerWidth();
                     domel(this.bodyCellContainerDiv)
                         .setStyle('width', `${containerWidth}px`)
 

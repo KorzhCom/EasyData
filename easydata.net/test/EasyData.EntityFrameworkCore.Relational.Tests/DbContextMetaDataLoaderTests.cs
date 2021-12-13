@@ -1,24 +1,30 @@
 using System;
+using System.Collections.Generic;
 
 using Xunit;
 using FluentAssertions;
-using System.Collections.Generic;
-using Microsoft.Data.SqlClient.Server;
+
 
 namespace EasyData.EntityFrameworkCore.Relational.Tests
 {
-    public class DbContextMetaDataLoaderTests
+    public class DbContextMetadataLoaderTests
     {
+        private readonly TestDbContext _dbContext;
+
+        public DbContextMetadataLoaderTests()
+        {
+            _dbContext = TestDbContext.Create();
+        }
+
         /// <summary>
-        /// Test getting all entities.
+        /// Checking if we get all the entities and attributes from the testing DbContext.
         /// </summary>
         [Fact]
         public void LoadFromDbContextTest()
         {
-            var dbContext = TestDbContext.Create();
             var meta = new MetaData();
 
-            meta.LoadFromDbContext(dbContext);
+            meta.LoadFromDbContext(_dbContext);
 
             meta.EntityRoot.SubEntities.Should().HaveCount(8);
 
@@ -37,6 +43,32 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             foreach (var entity in meta.EntityRoot.SubEntities) {
                 entity.Attributes.Should().HaveCount(entityAttrCount[entity.Name]);
             }
+        }
+
+        /// <summary>
+        /// Checking how entity and property filters work.
+        /// </summary>
+        [Fact]
+        public void TestFilters()
+        {
+            var meta = new MetaData();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
+
+            loaderOptions.Skip<Category>();
+
+            loaderOptions.Skip<Customer>(c => c.Phone, c => c.PostalCode, c => c.Fax);
+
+            meta.LoadFromDbContext(_dbContext, loaderOptions);
+
+            var entity = meta.FindEntity(ent => ent.ClrType.Equals(typeof(Category)));
+            entity.Should().BeNull();
+
+            entity = meta.FindEntity(ent => ent.ClrType.Equals(typeof(Customer)));
+            entity.Should().NotBeNull();
+
+            entity.Attributes.Count.Should().Be(8);
+            var attr = entity.FindAttribute(a => a.Id.Contains("Phone"));
+            attr.Should().BeNull();
         }
     }
 }

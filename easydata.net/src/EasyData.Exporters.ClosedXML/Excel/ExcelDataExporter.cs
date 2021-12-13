@@ -160,7 +160,7 @@ namespace EasyData.Export
 
                     var excelDataType = XLDataType.Text;
                     if (value != null && isExtraRow && !string.IsNullOrEmpty(groupFooterTemplate)) {
-                        var formattedValue = ExportHelpers.GetFormattedValue(row[i], column.DataType, settings, dfmt);
+                        var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
                     }
                     else { 
