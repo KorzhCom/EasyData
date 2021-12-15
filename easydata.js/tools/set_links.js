@@ -37,7 +37,8 @@ function link(to, from) {
 	if (unlink) {
 		try {
 			fs.unlinkSync(from);
-		} catch (err) {} 
+		} 
+		catch (err) {} 
 	}
 	else {
 		let eqDir = RemoveLastDirectoryPartOf(from);
@@ -50,9 +51,14 @@ function link(to, from) {
 			fs.mkdirSync(eqDir, {recursive: true});
 		}
 
+		if (fs.existsSync(from)) {
+			fs.rmSync(from, {recursive: true, force: true});
+		}
+
 		try {
 			fs.symlinkSync(to, from, 'junction');
-		} catch (err) {
+		} 
+		catch (err) {
 			if (err.code !== 'EEXIST') throw err;
 		} 
 	  
