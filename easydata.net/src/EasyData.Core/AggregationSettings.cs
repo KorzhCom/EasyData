@@ -40,13 +40,36 @@ namespace EasyData.Aggregation
                 return new DataGroup
                 {
                     Columns = new List<string>(cols),
-                    Aggregates = Aggregates,
                     Name = g.Name
                 };
             })
             .ToList();
 
             return mappedGroups;
+        }
+
+        public AggregationSettings AddGroup(string name, params string[] columns)
+        {
+            var group = new DataGroup
+            {
+                Name = name,
+                Columns = columns.ToList()
+            };
+            Groups.Add(group);
+
+            return this;
+        }
+
+        public AggregationSettings AddAggregate(string columnId, string funcId = "SUM")
+        {
+            var aggregate = new DataAggregate
+            {
+                ColId = columnId,
+                FuncId = funcId
+            };
+            Aggregates.Add(aggregate);
+
+            return this;
         }
     }
 
@@ -55,9 +78,6 @@ namespace EasyData.Aggregation
         public string Name { get; set; }
 
         public List<string> Columns { get; set; } = new List<string>();
-
-        public List<DataAggregate> Aggregates { get; set; }
-
     }
 
     public class DataAggregate
