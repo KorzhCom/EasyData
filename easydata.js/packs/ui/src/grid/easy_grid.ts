@@ -1,7 +1,7 @@
 import { 
     EventEmitter, EasyDataTable, 
     DataRow, utils, i18n,
-    GroupData
+    DataGroup
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -533,7 +533,7 @@ export class EasyGrid {
 
     private prevRowTotals: DataRow = null;
 
-    private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
+    private updateTotalsState(groups: DataGroup[], newRow: DataRow, isLast = false) {
         const aggrSettings = this.options.aggregates.settings;
         if (this.prevRowTotals && aggrSettings.hasGroups()) {
             let changeLevel = -1;
@@ -615,7 +615,7 @@ export class EasyGrid {
 
         const key = this.buildGroupKey(group, row);
 
-        aggrContainer.getAggregates(level, key)
+        aggrContainer.getAggregateData(level, key)
             .then((values) => {
                 for (const aggrColId of aggrCols) {
                     row.setValue(aggrColId, values[aggrColId]);
@@ -678,7 +678,7 @@ export class EasyGrid {
         return rowElement;
     }
 
-    private buildGroupKey(group: GroupData, row: DataRow) {
+    private buildGroupKey(group: DataGroup, row: DataRow) {
         const aggrSettings = this.options.aggregates.settings;
         const caseInsensitive = aggrSettings && !aggrSettings.caseSensitiveGroups;
         let result: any = {}
