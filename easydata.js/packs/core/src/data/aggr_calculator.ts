@@ -12,6 +12,7 @@ export interface AggregatesCalculator {
     calculate(options?: AggrCalculationOptions): Promise<void>;
 }
 
+/* Contains the map of group key values */
 export interface GroupKeys {
     [key: string]: any;
 }
