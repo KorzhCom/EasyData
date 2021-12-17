@@ -57,7 +57,7 @@
         "ts-node": "^8.0.2",
         "typedoc": "^0.15.0",
         "typedoc-webpack-plugin": "^1.1.4",
-        "typescript": "3.5.*",
+        "typescript": "3.7.*",
         "typings-for-css-modules-loader": "1.7.0",
         "terser-webpack-plugin": "^4.2.3",
         "webpack": "^4.36.1",
