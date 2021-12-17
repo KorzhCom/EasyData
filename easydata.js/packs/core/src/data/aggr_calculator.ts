@@ -1,18 +1,37 @@
+
+/** Represents an error that occurs during groups/aggregates calculation */
 export interface AggrCalculationError extends Error {
+    /** Get the group level on which the error occurs */
     level? : number;
 }
+
+/** Represents options of the aggregates calculator */
 export interface AggrCalculationOptions {
+    /** Gets or sets the maximum level of grouping */
     maxLevel?: number;
+
+    /** A callback function that is called when we get the result of calculation for some level */
     resultObtained?(result?: any, level?: number);
+
+    /** A callback function that is called when an error occurred during the calculation */
     errorOccurred?(error:AggrCalculationError);    
 }
 
+/** Defines the interface for an object that calculates groups/aggregates */
 export interface AggregatesCalculator {
+
+    /** Gets the aggregate container - 
+     * an object that stores all data about groups, aggregates, etc
+     **/
     getAggrContainer(): AggregatesContainer;
+    
+    
+    /** Start the process of calculation and returns a Promise 
+     * that is resolved when the calculation is finished */
     calculate(options?: AggrCalculationOptions): Promise<void>;
 }
 
-/* Contains the map of group key values */
+/** Contains the dictionary of group keys */
 export interface GroupKeys {
     [key: string]: any;
 }
@@ -24,25 +43,30 @@ export interface GroupValues {
 type LevelData = Map<string, GroupValues>;
 
 export interface AggregatesContainer {
-    setAggregates(level: number, data: LevelData);
-    getAggregates(level: number, key: GroupKeys): Promise<GroupValues>;
+    setAggregateData(level: number, data: LevelData);
+    getAggregateData(level: number, key: GroupKeys): Promise<GroupValues>;
 }
 
-export interface GroupSettings {
+export interface GroupDescriptor {
     name?: string;
     columns?: string[],
     from?: number;
     to?: number;
 }
 
-export interface GroupData {
+/** Represents a definition of one group */
+export interface DataGroup {
     name?: string;
     columns: Array<string>;
-    aggregates: Array<AggregateInfo>;
 }
 
-export type AggregateInfo = { colId: string, funcId: string };
+export interface DataAggregate { 
+    colId: string, 
+    funcId: string 
+}
 
+/** Represents an object that holds the list of columns 
+ * and can perform a few operations over it */
 export interface AggregationColumnStore {
     getColumnIds(from: number, to?: number): string[];
     validateColumns(colIds: string[]): boolean;
@@ -53,11 +77,11 @@ export interface AggregationColumnStore {
  * Represents AggregationSettings structure prepared for saving into a storage.
  */
 export interface AggregationData {
-    groups: Array<GroupData>,
+    groups: Array<DataGroup>,
     ugt: boolean;
     urc: boolean;
     csg: boolean;
-    aggregates: Array<AggregateInfo>;
+    aggregates: Array<DataAggregate>;
 }
 
 /**
@@ -67,9 +91,9 @@ export interface AggregationData {
 export class AggregationSettings {
     public readonly COUNT_FIELD_NAME: string;
      
-    private aggregates: Array<AggregateInfo> = []
+    private aggregates: Array<DataAggregate> = []
 
-    private groups: GroupData[] = [];
+    private groups: DataGroup[] = [];
 
     private useGrandTotals = false;
 
@@ -81,7 +105,7 @@ export class AggregationSettings {
         this.COUNT_FIELD_NAME = 'GRPRECCNT';
     }
 
-    public addGroup(settings: GroupSettings) {
+    public addGroup(settings: GroupDescriptor) {
         const cols = settings.columns || this.colStore.getColumnIds(settings.from, settings.to);
         if (!this.colStore.validateColumns(cols))
             throw "Invalid columns: " + cols;
@@ -89,7 +113,7 @@ export class AggregationSettings {
         if (this.hasColumnsInUse(cols))
             throw "Can't add same columns to different groups/aggregates";
 
-        this.groups.push({ columns: cols, aggregates: null, ...settings })
+        this.groups.push({ columns: cols, ...settings })
         return this;
     }
 
@@ -138,7 +162,7 @@ export class AggregationSettings {
         return groups[groups.length - 1];
     }
 
-    public getAggregates(): Array<AggregateInfo> {
+    public getAggregates(): Array<DataAggregate> {
         return this.aggregates;
     }
 
