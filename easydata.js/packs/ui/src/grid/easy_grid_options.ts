@@ -12,6 +12,12 @@ import {
 import { GridColumn } from './easy_grid_columns';
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 
+export enum AutoResizeColumns {
+    Once,
+    Always,
+    Never
+}
+
 export interface EasyGridOptions {
     slot: HTMLElement | string;
 
@@ -44,6 +50,32 @@ export interface EasyGridOptions {
     header?: {
         fixed?: boolean
     }
+
+    columnsWidth?: {
+        string?: {
+            min?: number,
+            max?: number,
+            default?: number
+        },
+        number?: {
+            min?: number,
+            default?: number
+        },
+        bool?: {
+            min?: number,
+            default?: number
+        },
+        date?: {
+            min?: number,
+            default?: number
+        },
+        rowNum?: {
+            min?: number,
+            default?: number
+        }
+    }
+
+    autoResizeColumns?: AutoResizeColumns;
 
     syncGridColumns?: boolean;
 

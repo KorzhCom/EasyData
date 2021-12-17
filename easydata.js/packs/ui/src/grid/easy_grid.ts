@@ -80,6 +80,29 @@ export class EasyGrid {
             pageSize: 30,
             pageSizeItems: [20, 30, 50, 100, 200]
         },
+        columnsWidth: {
+            string: {
+                min: 100,
+                max: 500,
+                default: 250
+            },
+            number: {
+                min: 60,
+                default: 120
+            },
+            bool: {
+                min: 50,
+                default: 80
+            },
+            date: {
+                min: 80,
+                default: 200
+            },
+            rowNum: {
+                min: 40,
+                default: 60
+            }
+        },
         addColumns: false,
         viewportRowsCount: null,
         showActiveRow: true
