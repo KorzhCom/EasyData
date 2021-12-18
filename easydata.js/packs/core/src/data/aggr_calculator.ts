@@ -1,3 +1,4 @@
+import { DataRow } from "./data_row";
 
 /** Represents an error that occurs during groups/aggregates calculation */
 export interface AggrCalculationError extends Error {
@@ -45,6 +46,7 @@ type LevelData = Map<string, GroupValues>;
 export interface AggregatesContainer {
     setAggregateData(level: number, data: LevelData);
     getAggregateData(level: number, key: GroupKeys): Promise<GroupValues>;
+    updateAggregateData(level: number, groupKey : GroupKeys, values: GroupValues);
 }
 
 export interface GroupDescriptor {
@@ -76,7 +78,7 @@ export interface AggregationColumnStore {
 /**
  * Represents AggregationSettings structure prepared for saving into a storage.
  */
-export interface AggregationData {
+export interface AggregationSettingsData {
     groups: Array<DataGroup>,
     ugt: boolean;
     urc: boolean;
@@ -229,7 +231,7 @@ export class AggregationSettings {
                 && (this.hasGrandTotals() || this.hasGroups());
     }
 
-    public saveToData(): AggregationData {
+    public saveToData(): AggregationSettingsData {
         return {
             groups: Array.from(this.groups),
             ugt: this.useGrandTotals,
@@ -239,7 +241,7 @@ export class AggregationSettings {
         }
     }
 
-    public loadFromData(data: AggregationData) {
+    public loadFromData(data: AggregationSettingsData) {
         if (data) {
             if (typeof data.ugt !== 'undefined') this.useGrandTotals = data.ugt;
             if (typeof data.urc !== 'undefined') this.useRecordCount = data.urc;
@@ -253,5 +255,18 @@ export class AggregationSettings {
                 this.aggregates = Array.from(data.aggregates);
             }
         }
+    }
+
+    public buildGroupKey(group: DataGroup, row: DataRow) {
+        const caseInsensitive = !this.caseSensitiveGroups;
+        let result: any = {}
+        for (const colId of group.columns) {
+            let keyVal = row.getValue(colId);
+            if (caseInsensitive && typeof(keyVal) === 'string') {
+                keyVal = keyVal.toLowerCase();
+            }
+            result[colId] = keyVal;
+        }
+        return result;
     }
 }
