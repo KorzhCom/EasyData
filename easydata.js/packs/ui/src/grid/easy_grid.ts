@@ -532,7 +532,7 @@ export class EasyGrid {
                 .setStyle('margin-left', `-${this.bodyViewportDiv.scrollLeft}px`);
         })
 
-        this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
+        this.bodyViewportDiv.addEventListener('keydown', this.onViewportKeydown.bind(this));
     }
 
     private isLastPage() {
@@ -636,7 +636,7 @@ export class EasyGrid {
         const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
         const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
 
-        const key = this.buildGroupKey(group, row);
+        const key = aggrSettings.buildGroupKey(group, row);
 
         aggrContainer.getAggregateData(level, key)
             .then((values) => {
@@ -701,21 +701,7 @@ export class EasyGrid {
         return rowElement;
     }
 
-    private buildGroupKey(group: DataGroup, row: DataRow) {
-        const aggrSettings = this.options.aggregates.settings;
-        const caseInsensitive = aggrSettings && !aggrSettings.caseSensitiveGroups;
-        let result: any = {}
-        for (const colId of group.columns) {
-            let keyVal =  row.getValue(colId);
-            if (caseInsensitive && typeof(keyVal) === 'string') {
-                keyVal = keyVal.toLowerCase();
-            }
-            result[colId] = keyVal;
-        }
-        return result;
-    }
-
-    private onVieportKeydown(ev: KeyboardEvent) {
+    private onViewportKeydown(ev: KeyboardEvent) {
         if (this.options.showActiveRow) {
             const rowCount = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;
             let newValue;
