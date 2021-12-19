@@ -19,7 +19,8 @@ export * from './meta/meta_entity'
 export * from './meta/value_editor'
 
 //data
-export * from './data/aggr_calculator'
+export * from './data/aggr_structures'
+export * from './data/aggr_settings'
 export * from './data/data_column'
 export * from './data/data_loader'
 export * from './data/data_row'
