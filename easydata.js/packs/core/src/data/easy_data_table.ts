@@ -82,7 +82,9 @@ export class EasyDataTable {
         this.chunkMap = {};
     }
 
-    // object keeps number keys sorted
+    // here we keep all loaded chunks
+    // they keys of this map are chunk numbers
+    // and they are kept sorted
     private chunkMap: ChunkMap = {};
 
     private total: number = 0;

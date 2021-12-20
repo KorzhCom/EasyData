@@ -1,4 +1,4 @@
-import { DataGroup, DataAggregate, AggregationColumnStore, GroupDescriptor } from './aggr_structures'
+import { DataGroup, AggregateColumn, AggregationColumnStore, GroupDescriptor } from './aggr_structures'
 import { DataRow } from "./data_row";
 
 /**
@@ -9,7 +9,7 @@ export interface AggregationSettingsData {
     ugt: boolean;
     urc: boolean;
     csg: boolean;
-    aggregates: Array<DataAggregate>;
+    aggregates: Array<AggregateColumn>;
 }
 
 /**
@@ -19,7 +19,7 @@ export interface AggregationSettingsData {
 export class AggregationSettings {
     public readonly COUNT_FIELD_NAME: string;
      
-    private aggregates: Array<DataAggregate> = []
+    private aggregates: Array<AggregateColumn> = []
 
     private groups: DataGroup[] = [];
 
@@ -90,7 +90,7 @@ export class AggregationSettings {
         return groups[groups.length - 1];
     }
 
-    public getAggregates(): Array<DataAggregate> {
+    public getAggregates(): Array<AggregateColumn> {
         return this.aggregates;
     }
 

@@ -31,23 +31,28 @@ export interface AggregatesCalculator {
     calculate(options?: AggrCalculationOptions): Promise<void>;
 }
 
-/** Contains the dictionary of group keys */
-export interface GroupKeys {
+/** Represents a group key which is a list og (columnId:value) pairs.  */
+export interface GroupKey {
     [key: string]: any;
 }
 
-export interface GroupValues {
+/** Represents the totals of one group - a list (AggregationColumnId:AggregatedValue) pairs */
+export interface GroupTotals {
     [key: string]: any;
 }
 
-type LevelData = Map<string, GroupValues>;
+/** Represents the internal storage of aggregated data (totals) inside AggregatesContainer */
+type AggregatedData = Map<string, GroupTotals>;
 
+
+/** Defines the interface for container that stores aggregated data (totals) */
 export interface AggregatesContainer {
-    setAggregateData(level: number, data: LevelData);
-    getAggregateData(level: number, key: GroupKeys): Promise<GroupValues>;
-    updateAggregateData(level: number, groupKey : GroupKeys, values: GroupValues);
+    setAggregateData(level: number, data: AggregatedData);
+    getAggregateData(level: number, key: GroupKey): Promise<GroupTotals>;
+    updateAggregateData(level: number, groupKey : GroupKey, values: GroupTotals);
 }
 
+/** Represents an auxiliary type that is used to to create a new DataGroup  */
 export interface GroupDescriptor {
     name?: string;
     columns?: string[],
@@ -61,13 +66,13 @@ export interface DataGroup {
     columns: Array<string>;
 }
 
-export interface DataAggregate { 
+export interface AggregateColumn { 
     colId: string, 
     funcId: string 
 }
 
 /** Represents an object that holds the list of columns 
- * and can perform a few operations over it */
+ * and can perform a few operations over them */
 export interface AggregationColumnStore {
     getColumnIds(from: number, to?: number): string[];
     validateColumns(colIds: string[]): boolean;
