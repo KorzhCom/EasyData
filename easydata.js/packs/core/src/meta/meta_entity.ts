@@ -118,6 +118,14 @@ export class MetaEntity {
 
         internalProcessEntity(this);
     }
+
+    public getFirstPrimaryAttr(): MetaEntityAttr | null {
+        return this.getPrimaryAttrs()[0];
+    }
+
+    public getPrimaryAttrs(): MetaEntityAttr[] {
+        return this.attributes.filter(attr => attr.isPrimaryKey);
+    }
 }
 
 export class MetaEntityAttr {

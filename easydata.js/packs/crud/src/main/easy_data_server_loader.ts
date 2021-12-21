@@ -12,7 +12,7 @@ export class EasyDataServerLoader implements DataLoader {
     }
 
     loadChunk(params: DataChunkDescriptor | any) {
-        const url = this.context.resolveEndpoint('GetEntities', 
+        const url = this.context.resolveEndpoint('FetchDataset', 
             { entityId: params.entityId || this.context.getActiveEntity().id });
         delete params.entityId;
 

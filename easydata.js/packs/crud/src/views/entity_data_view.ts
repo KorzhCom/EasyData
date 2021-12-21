@@ -67,7 +67,7 @@ export class EntityDataView {
     }
 
     private renderGrid() {
-        this.context.getEntities()
+        this.context.fetchDataset()
             .then(result => {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
@@ -149,7 +149,7 @@ export class EntityDataView {
                     return false;
                       
                 form.getData()
-                .then(obj => this.context.createEntity(obj))
+                .then(obj => this.context.createRecord(obj))
                 .then(() => {
                     return this.refreshData();
                 })
@@ -187,7 +187,7 @@ export class EntityDataView {
                     return false;
 
                 form.getData()
-                .then(obj => this.context.updateEntity(obj))
+                .then(obj => this.context.updateRecord(obj))
                 .then(() => {
                     return this.refreshData();
                 })       
@@ -209,7 +209,7 @@ export class EntityDataView {
             .then(row => {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
-                    const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
+                    const keyAttrs = activeEntity.getPrimaryAttrs();
                     const keyVals = keyAttrs.map(attr => row.getValue(attr.id));
                     const keys = keyAttrs.reduce((val, attr, index) => { 
                         const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
@@ -225,7 +225,7 @@ export class EntityDataView {
                     )
                     .then((result) => {
                         if (result) {
-                            this.context.deleteEntity(keys)
+                            this.context.deleteRecord(keys)
                                 .then(() => {
                                     return this.refreshData();
                                 })
@@ -248,7 +248,7 @@ export class EntityDataView {
     }
 
     private refreshData(): Promise<void> {
-        return this.context.getEntities()
+        return this.context.fetchDataset()
             .then(() => {
                 this.grid.refresh();
             });
