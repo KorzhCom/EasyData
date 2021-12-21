@@ -8,12 +8,7 @@ import { EasyGrid } from './easy_grid';
 import { CellRendererType } from "./easy_grid_cell_renderer";
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 
-const DEFAULT_WIDTH_NUMBER = 120;
-const DEFAULT_WIDTH_DATE = 200;
-const DEFAULT_WIDTH_BOOL = 80;
 const DEFAULT_WIDTH_STRING = 250;
-const MIN_WIDTH = 100;
-const MAX_WIDTH_STRING = 500;
 const ROW_NUM_WIDTH = 60;
 
 export enum GridColumnAlign {
@@ -55,34 +50,21 @@ export class GridColumn {
     constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false) {
         this.dataColumn = column;
         this.grid = grid;
-        const colWidth = grid.options.columnsWidth || {};
+        const widthOptions = grid.options.columnWidths || {};
 
         if (column) {
             if (column.style.alignment) {
                 this.align = MapAlignment(column.style.alignment);
             }
-            const coltype : DataType = column.type;
-            const cellType = this.grid.cellRendererStore.getCellType(coltype);
-            switch (cellType) { 
-                case CellRendererType.NUMBER:
-                    this.width = (colWidth.number && colWidth.number.default) ? colWidth.number.default : DEFAULT_WIDTH_NUMBER;
-                    break;
-                case CellRendererType.DATETIME:
-                    this.width = (colWidth.date && colWidth.date.default) ? colWidth.date.default : DEFAULT_WIDTH_DATE;
-                    break;
-                case CellRendererType.BOOL:
-                    this.width = (colWidth.bool && colWidth.bool.default) ? colWidth.bool.default : DEFAULT_WIDTH_BOOL;
-                    break;
-                default:
-                    this.width = (colWidth.string && colWidth.string.default) ? colWidth.string.default : DEFAULT_WIDTH_STRING;
-            }
+
+            this.width = (widthOptions && widthOptions[this.type]) ? widthOptions[this.type].default : DEFAULT_WIDTH_STRING;
 
             this.cellRenderer = this.grid.cellRendererStore.getDefaultRenderer(column.type);
             this._description = column.description;
         }
         else if (isRowNum) {
             this.isRowNum = true;
-            this.width = (colWidth.rowNum && colWidth.rowNum.default) ? colWidth.rowNum.default : ROW_NUM_WIDTH;
+            this.width = (widthOptions && widthOptions.rowNumColumn) ? widthOptions.rowNumColumn.default : ROW_NUM_WIDTH;
             this._label = '';
 
             this.cellRenderer = this.grid.cellRendererStore.getDefaultRendererByType(CellRendererType.NUMBER);
