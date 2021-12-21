@@ -1,4 +1,4 @@
-import { EasyDataTable, AggregatesCalculator, AggregationSettings } from '@easydata/core';
+import { EasyDataTable, AggregatesCalculator, AggregationSettings, DataType } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -11,6 +11,28 @@ import {
 
 import { GridColumn } from './easy_grid_columns';
 import { GridCellRenderer } from './easy_grid_cell_renderer';
+
+export enum AutoResizeColumns {
+    Once,
+    Always,
+    Never
+}
+
+export interface ColumnWidthSettings {
+    min? : number,
+    max? : number,
+    default: number
+}
+
+export interface DefaultColumnWidths {
+    [key: number] : ColumnWidthSettings,
+    rowNumColumn?: ColumnWidthSettings,
+    stringColumns?: ColumnWidthSettings,
+    numberColumns?: ColumnWidthSettings,
+    boolColumns?: ColumnWidthSettings,
+    dateColumns?: ColumnWidthSettings,
+    otherColumns?: ColumnWidthSettings
+}
 
 export interface EasyGridOptions {
     slot: HTMLElement | string;
@@ -44,6 +66,10 @@ export interface EasyGridOptions {
     header?: {
         fixed?: boolean
     }
+
+    columnWidths?: DefaultColumnWidths;
+
+    autoResizeColumns?: AutoResizeColumns;
 
     syncGridColumns?: boolean;
 

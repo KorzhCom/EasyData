@@ -367,7 +367,7 @@ namespace EasyData.EntityFrameworkCore
         {
             var entityName = Utils.GetEntityNameByType(entityType.ClrType);
             var propertyName = property.Name;
-            var columnName = property.GetColumnName();
+            var columnName = property.GetDbColumnName();
 
             var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
             {

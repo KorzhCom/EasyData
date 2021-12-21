@@ -5,21 +5,25 @@ import { i18n } from '../i18n/i18n';
 
 export namespace utils {
     export function getAllDataTypes(): DataType[] {
-        return Object.values(DataType) as DataType[];
+        return Object.values(DataType).filter(item => typeof item === "number") as DataType[];
     }
-    
+
     export function getDateDataTypes(): DataType[] {
         return [DataType.Time, DataType.Date, DataType.DateTime]
     }
     
     export function getStringDataTypes(): DataType[] {
-        return [DataType.String, DataType.Memo]
+        return [DataType.String, DataType.Memo, DataType.FixedChar]
     }
 
     const _numericTypes = [DataType.Byte, DataType.Word, DataType.Int32, 
-        DataType.Int64, DataType.Float, DataType.Currency];
-    
-    const _intTypes = [DataType.Byte, DataType.Word, DataType.Int32, DataType.Int64];
+        DataType.Int64, DataType.Float, DataType.Currency, DataType.Autoinc];
+
+    export function getNumericDataTypes(): DataType[] {
+        return _numericTypes;
+    }
+            
+    const _intTypes = [DataType.Byte, DataType.Word, DataType.Int32, DataType.Int64, DataType.Autoinc];
 
 
     //-------------- object functions -------------------
@@ -79,7 +83,7 @@ export namespace utils {
                                     hashSet.set(sourceVal, target[key]);
                                 } 
                                 else {
-                                    if (typeof target[key] == 'undefined') {
+                                    if (typeof target[key] == 'undefined' || target[key] == null) {
                                         target[key] = Object.create(Object.getPrototypeOf(sourceVal));
                                     }
     
