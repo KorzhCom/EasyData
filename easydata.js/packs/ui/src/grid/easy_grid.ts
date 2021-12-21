@@ -507,8 +507,11 @@ export class EasyGrid {
                             if (showAggrs)
                                 this.updateTotalsState(groups, row);
 
-                            const tr = this.renderRow(row, index);
-                            this.bodyCellContainerDiv.appendChild(tr);
+                            //we don't actually render the last row
+                            if (index < rows.length - 1) {
+                                const tr = this.renderRow(row, index);
+                                this.bodyCellContainerDiv.appendChild(tr);    
+                            }    
                         });
     
                         const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
@@ -765,6 +768,10 @@ export class EasyGrid {
     }
 
 
+    /** Returns a promise with the list of the rows to render on one page.
+     * The list contains pageSize+1 row to make it possible 
+     * to render the totals row (if it appears to be on the edge between pages) 
+     */
     private getRowsToRender():Promise<DataRow[]> {
         if (this.options.paging.enabled === false) {
             return Promise.resolve(this.dataTable.getCachedRows());
@@ -772,7 +779,7 @@ export class EasyGrid {
 
         return this.dataTable.getRows({ 
             page: this.pagination.page, 
-            pageSize: this.pagination.pageSize
+            pageSize: this.pagination.pageSize + 1
         })
         .catch(error => {
             console.error(error);
