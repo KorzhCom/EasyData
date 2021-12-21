@@ -186,12 +186,14 @@ export class AggregationSettings {
     public buildGroupKey(group: DataGroup, row: DataRow) {
         const caseInsensitive = !this.caseSensitiveGroups;
         let result: any = {}
-        for (const colId of group.columns) {
-            let keyVal = row.getValue(colId);
-            if (caseInsensitive && typeof(keyVal) === 'string') {
-                keyVal = keyVal.toLowerCase();
-            }
-            result[colId] = keyVal;
+        if (group) {
+            for (const colId of group.columns) {
+                let keyVal = row.getValue(colId);
+                if (caseInsensitive && typeof(keyVal) === 'string') {
+                    keyVal = keyVal.toLowerCase();
+                }
+                result[colId] = keyVal;
+            }    
         }
         return result;
     }
