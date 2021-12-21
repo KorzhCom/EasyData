@@ -1,6 +1,6 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n,
+    DataRow, utils, i18n, DataType,
     DataGroup
 } from '@easydata/core';
 
@@ -80,25 +80,30 @@ export class EasyGrid {
             pageSize: 30,
             pageSizeItems: [20, 30, 50, 100, 200]
         },
-        columnsWidth: {
-            string: {
+        columnWidths: {
+            stringColumns: {
                 min: 100,
                 max: 500,
                 default: 250
             },
-            number: {
+            numberColumns: {
                 min: 60,
                 default: 120
             },
-            bool: {
+            boolColumns: {
                 min: 50,
                 default: 80
             },
-            date: {
+            dateColumns: {
                 min: 80,
                 default: 200
             },
-            rowNum: {
+            otherColumns: {
+                min: 100,
+                max: 500,
+                default: 250
+            },
+            rowNumColumn: {
                 min: 40,
                 default: 60
             }
@@ -116,7 +121,8 @@ export class EasyGrid {
                 options.paging);
         }
      
-        this.options = {...this.defaultDataGridOptions, ...options};
+        this.options = this.mergeOptions(options);
+        this.processColumnWidthsOptions();
 
         if (!this.options.slot)
             throw Error('"slot" parameter is required to initialize EasyDataGrid');
@@ -132,6 +138,55 @@ export class EasyGrid {
 
         this.setSlot(this.options.slot);
         this.init(this.options);
+    }
+
+    private mergeOptions(options: EasyGridOptions): EasyGridOptions {
+        const colWidthOptions = utils.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
+        const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
+
+        const result: EasyGridOptions = utils.assign({}, this.defaultDataGridOptions, options);
+        
+        result.columnWidths = colWidthOptions;
+        result.paging = pagingOptions;
+        
+        return result;
+    }
+
+    private processColumnWidthsOptions() {
+        const widthOptions = this.options.columnWidths;
+        if (!widthOptions) return;
+
+        //string columns
+        utils.getStringDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.stringColumns, ...widthOptions[dataType] };
+        });
+
+        //numeric columns
+        utils.getNumericDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.numberColumns, ...widthOptions[dataType] };
+        });
+
+        //bool columns
+        widthOptions[DataType.Bool] = { ...widthOptions.boolColumns, ...widthOptions[DataType.Bool] };
+
+        //date columns
+        utils.getDateDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.dateColumns, ...widthOptions[dataType] };
+        });
+
+        //other columns
+        const knownTypes = [
+            ...utils.getStringDataTypes(),
+            ...utils.getNumericDataTypes(),
+            ...utils.getDateDataTypes(),
+            DataType.Bool
+        ]
+
+        utils.getAllDataTypes().forEach(dataType => {
+            if (!(dataType in knownTypes)) {
+                widthOptions[dataType] = { ...widthOptions.otherColumns, ...widthOptions[dataType] };
+            }
+        });
     }
 
     private setSlot(slot: HTMLElement | string) {

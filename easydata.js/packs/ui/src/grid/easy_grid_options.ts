@@ -1,4 +1,4 @@
-import { EasyDataTable, AggregatesCalculator, AggregationSettings } from '@easydata/core';
+import { EasyDataTable, AggregatesCalculator, AggregationSettings, DataType } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -16,6 +16,22 @@ export enum AutoResizeColumns {
     Once,
     Always,
     Never
+}
+
+export interface ColumnWidthSettings {
+    min? : number,
+    max? : number,
+    default: number
+}
+
+export interface DefaultColumnWidths {
+    [key: number] : ColumnWidthSettings,
+    rowNumColumn?: ColumnWidthSettings,
+    stringColumns?: ColumnWidthSettings,
+    numberColumns?: ColumnWidthSettings,
+    boolColumns?: ColumnWidthSettings,
+    dateColumns?: ColumnWidthSettings,
+    otherColumns?: ColumnWidthSettings
 }
 
 export interface EasyGridOptions {
@@ -51,29 +67,7 @@ export interface EasyGridOptions {
         fixed?: boolean
     }
 
-    columnsWidth?: {
-        string?: {
-            min?: number,
-            max?: number,
-            default?: number
-        },
-        number?: {
-            min?: number,
-            default?: number
-        },
-        bool?: {
-            min?: number,
-            default?: number
-        },
-        date?: {
-            min?: number,
-            default?: number
-        },
-        rowNum?: {
-            min?: number,
-            default?: number
-        }
-    }
+    columnWidths?: DefaultColumnWidths;
 
     autoResizeColumns?: AutoResizeColumns;
 
