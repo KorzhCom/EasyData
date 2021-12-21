@@ -20,9 +20,9 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
-	"database",
-	"crud",
-	"paging",
+        "database",
+        "crud",
+        "paging",
         "data filter",
         "data grid",
         "data dialogs",
