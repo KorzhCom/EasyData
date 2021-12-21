@@ -1,7 +1,7 @@
 import { 
     EventEmitter, EasyDataTable, 
-    DataRow, utils, i18n,
-    GroupData
+    DataRow, utils, i18n, DataType,
+    DataGroup
 } from '@easydata/core';
 
 import { eqDragManager, DropEffect } from '../utils/drag_manager';
@@ -80,6 +80,34 @@ export class EasyGrid {
             pageSize: 30,
             pageSizeItems: [20, 30, 50, 100, 200]
         },
+        columnWidths: {
+            stringColumns: {
+                min: 100,
+                max: 500,
+                default: 250
+            },
+            numberColumns: {
+                min: 60,
+                default: 120
+            },
+            boolColumns: {
+                min: 50,
+                default: 80
+            },
+            dateColumns: {
+                min: 80,
+                default: 200
+            },
+            otherColumns: {
+                min: 100,
+                max: 500,
+                default: 250
+            },
+            rowNumColumn: {
+                min: 40,
+                default: 60
+            }
+        },
         addColumns: false,
         viewportRowsCount: null,
         showActiveRow: true
@@ -93,7 +121,8 @@ export class EasyGrid {
                 options.paging);
         }
      
-        this.options = {...this.defaultDataGridOptions, ...options};
+        this.options = this.mergeOptions(options);
+        this.processColumnWidthsOptions();
 
         if (!this.options.slot)
             throw Error('"slot" parameter is required to initialize EasyDataGrid');
@@ -109,6 +138,55 @@ export class EasyGrid {
 
         this.setSlot(this.options.slot);
         this.init(this.options);
+    }
+
+    private mergeOptions(options: EasyGridOptions): EasyGridOptions {
+        const colWidthOptions = utils.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
+        const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
+
+        const result: EasyGridOptions = utils.assign({}, this.defaultDataGridOptions, options);
+        
+        result.columnWidths = colWidthOptions;
+        result.paging = pagingOptions;
+        
+        return result;
+    }
+
+    private processColumnWidthsOptions() {
+        const widthOptions = this.options.columnWidths;
+        if (!widthOptions) return;
+
+        //string columns
+        utils.getStringDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.stringColumns, ...widthOptions[dataType] };
+        });
+
+        //numeric columns
+        utils.getNumericDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.numberColumns, ...widthOptions[dataType] };
+        });
+
+        //bool columns
+        widthOptions[DataType.Bool] = { ...widthOptions.boolColumns, ...widthOptions[DataType.Bool] };
+
+        //date columns
+        utils.getDateDataTypes().forEach(dataType => {
+            widthOptions[dataType] = { ...widthOptions.dateColumns, ...widthOptions[dataType] };
+        });
+
+        //other columns
+        const knownTypes = [
+            ...utils.getStringDataTypes(),
+            ...utils.getNumericDataTypes(),
+            ...utils.getDateDataTypes(),
+            DataType.Bool
+        ]
+
+        utils.getAllDataTypes().forEach(dataType => {
+            if (!(dataType in knownTypes)) {
+                widthOptions[dataType] = { ...widthOptions.otherColumns, ...widthOptions[dataType] };
+            }
+        });
     }
 
     private setSlot(slot: HTMLElement | string) {
@@ -509,7 +587,7 @@ export class EasyGrid {
                 .setStyle('margin-left', `-${this.bodyViewportDiv.scrollLeft}px`);
         })
 
-        this.bodyViewportDiv.addEventListener('keydown', this.onVieportKeydown.bind(this));
+        this.bodyViewportDiv.addEventListener('keydown', this.onViewportKeydown.bind(this));
     }
 
     private isLastPage() {
@@ -533,7 +611,7 @@ export class EasyGrid {
 
     private prevRowTotals: DataRow = null;
 
-    private updateTotalsState(groups:GroupData[], newRow: DataRow, isLast = false) {
+    private updateTotalsState(groups: DataGroup[], newRow: DataRow, isLast = false) {
         const aggrSettings = this.options.aggregates.settings;
         if (this.prevRowTotals && aggrSettings.hasGroups()) {
             let changeLevel = -1;
@@ -613,9 +691,9 @@ export class EasyGrid {
         const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
         const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
 
-        const key = this.buildGroupKey(group, row);
+        const key = aggrSettings.buildGroupKey(group, row);
 
-        aggrContainer.getAggregates(level, key)
+        aggrContainer.getAggregateData(level, key)
             .then((values) => {
                 for (const aggrColId of aggrCols) {
                     row.setValue(aggrColId, values[aggrColId]);
@@ -678,21 +756,7 @@ export class EasyGrid {
         return rowElement;
     }
 
-    private buildGroupKey(group: GroupData, row: DataRow) {
-        const aggrSettings = this.options.aggregates.settings;
-        const caseInsensitive = aggrSettings && !aggrSettings.caseSensitiveGroups;
-        let result: any = {}
-        for (const colId of group.columns) {
-            let keyVal =  row.getValue(colId);
-            if (caseInsensitive && typeof(keyVal) === 'string') {
-                keyVal = keyVal.toLowerCase();
-            }
-            result[colId] = keyVal;
-        }
-        return result;
-    }
-
-    private onVieportKeydown(ev: KeyboardEvent) {
+    private onViewportKeydown(ev: KeyboardEvent) {
         if (this.options.showActiveRow) {
             const rowCount = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;
             let newValue;

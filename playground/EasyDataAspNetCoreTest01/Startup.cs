@@ -93,24 +93,6 @@ namespace EasyDataBasicDemo
                                 .Attribute(o => o.OrderDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
                         });
-
-
-                        //opts.UseMetaBuilder()
-                        //    .Skip<Category>()
-                        //    .Skip<Supplier>()
-                        //    .SkipAttribute<Customer>(c => c.Country)
-                        //    .Entity<Customer>(ecfg => ecfg
-                        //        .SetDisplayName("Client")
-                        //        .SetDisplayNamePlural("Clients")
-                        //        .Attribute(c => c.Country, attrConfig => attrConfig
-                        //            .SetDisplayName("Country name")
-                        //            .SetDescription("Country where the client lives")
-                        //        )
-                        //    )
-                        //    .Entity<Order>(ecfg => ecfg
-                        //        .Attribute(o => o.OrderDate)
-                        //            .SetDisplayFormat("{0:yyyy-MM-dd}")
-                        //    );
                     });
                 });
                 //.RequireAuthorization();

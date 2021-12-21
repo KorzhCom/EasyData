@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
+using EasyData.Aggregation;
+
 namespace EasyData.Export
 {
     /// <summary>
@@ -91,7 +93,6 @@ namespace EasyData.Export
 
         //public int AggrColumnsCount { get; set; } = 0;
 
-        public AggregationSettings AggrSettings { get; set; } = new AggregationSettings();
-
+        public AggregationSettings Aggregation { get; set; } = new AggregationSettings();
     }
 }
