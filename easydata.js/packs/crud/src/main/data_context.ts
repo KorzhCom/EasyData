@@ -11,11 +11,11 @@ import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
     'GetMetaData'   |
-    'GetEntities'   | 
-    'GetEntity'     |
-    'CreateEntity'  |
-    'UpdateEntity'  |
-    'DeleteEntity'  ;
+    'FetchDataset'  | 
+    'FetchRecord'   |
+    'CreateRecord'  |
+    'UpdateRecord'  |
+    'DeleteRecord'  ;
 
 export interface EasyDataContextOptions {
     metaDataId?: string;
@@ -110,7 +110,7 @@ export class DataContext {
         return this.http;
     }
 
-    public getEntities() {
+    public fetchDataset() {
         this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
             .then(result => {                
@@ -128,16 +128,16 @@ export class DataContext {
             })
     }
 
-    public getEntity(keys : {[key: string]: string}, entityId?: string) {
-        const url = this.resolveEndpoint('GetEntity', { entityId: entityId || this.activeEntity.id });
+    public fetchRecord(keys : {[key: string]: string}, entityId?: string) {
+        const url = this.resolveEndpoint('FetchRecord', { entityId: entityId || this.activeEntity.id });
         
         this.startProcess();
         return this.http.get(url, { queryParams: keys})
             .finally(() => this.endProcess());
     }
 
-    public createEntity(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('CreateEntity', 
+    public createRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('CreateRecord', 
             { entityId: entityId || this.activeEntity.id });
 
         this.startProcess();
@@ -145,15 +145,15 @@ export class DataContext {
             .finally(() => this.endProcess());
     }
 
-    public updateEntity(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateEntity', { entityId: entityId || this.activeEntity.id });
+    public updateRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('UpdateRecord', { entityId: entityId || this.activeEntity.id });
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json' })
             .finally(() => this.endProcess());
     }
 
-    public deleteEntity(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteEntity', { entityId: entityId || this.activeEntity.id });
+    public deleteRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('DeleteRecord', { entityId: entityId || this.activeEntity.id });
 
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json'})
@@ -219,10 +219,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
-        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update'));
-        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete'));
+        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
+        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
+        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
+        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update'));
+        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete'));
     }
 }
