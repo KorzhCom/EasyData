@@ -148,9 +148,9 @@ export class EntityEditFormBuilder {
                                     }
 
                                     if (selectedValue) {
-                                        const attr = lookupEntity.attributes.filter(attr => attr.isPrimaryKey)[0];
+                                        const attr = lookupEntity.getFirstPrimaryAttr();
                                         const key = attr.id.substring(attr.id.lastIndexOf('.') + 1);
-                                        this.context.getEntity({[key]: selectedValue}, lookupEntity.id)
+                                        this.context.fetchRecord({[key]: selectedValue}, lookupEntity.id)
                                             .then(data => {
                                                 if (data.entity) {
                                                     updateSelectedValue(data.entity);
