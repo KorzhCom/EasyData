@@ -144,7 +144,6 @@ namespace EasyData.AspNetCore
             return result;
         }
 
-
         protected virtual async Task WriteFetchDatasetResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total, CancellationToken ct)
         {
             if (total.HasValue) {
@@ -179,7 +178,7 @@ namespace EasyData.AspNetCore
         protected virtual async Task WriteFetchRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
@@ -200,7 +199,7 @@ namespace EasyData.AspNetCore
         protected virtual async Task WriteCreateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
@@ -223,7 +222,7 @@ namespace EasyData.AspNetCore
             ct.ThrowIfCancellationRequested();
 
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 

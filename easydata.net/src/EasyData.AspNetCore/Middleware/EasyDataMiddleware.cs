@@ -43,11 +43,11 @@ namespace EasyData.AspNetCore
         private static readonly Endpoint[] _routing =
             {
                 new Endpoint(DataAction.GetModel, @"^/models/([^/]+?)$", "GET"),
-                new Endpoint(DataAction.FetchDataset, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "POST"),
-                new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "GET"),
-                new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/crud/([^/]+?)/create$", "POST"),
-                new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/crud/([^/]+?)/update$", "POST"),
-                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/crud/([^/]+?)/delete$", "POST")
+                new Endpoint(DataAction.FetchDataset, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "POST"),
+                new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "GET"),
+                new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/sources/([^/]+?)/create$", "POST"),
+                new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/sources/([^/]+?)/update$", "POST"),
+                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST")
             };
 
         public EasyDataMiddleware(RequestDelegate next, EasyDataOptions options)

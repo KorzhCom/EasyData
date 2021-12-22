@@ -129,7 +129,7 @@ export class DataContext {
     }
 
     public fetchRecord(keys : {[key: string]: string}, entityId?: string) {
-        const url = this.resolveEndpoint('FetchRecord', { entityId: entityId || this.activeEntity.id });
+        const url = this.resolveEndpoint('FetchRecord', { sourceId: entityId || this.activeEntity.id });
         
         this.startProcess();
         return this.http.get(url, { queryParams: keys})
@@ -138,7 +138,7 @@ export class DataContext {
 
     public createRecord(obj: any, entityId?: string) {
         const url = this.resolveEndpoint('CreateRecord', 
-            { entityId: entityId || this.activeEntity.id });
+            { sourceId: entityId || this.activeEntity.id });
 
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json' })
@@ -146,14 +146,14 @@ export class DataContext {
     }
 
     public updateRecord(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateRecord', { entityId: entityId || this.activeEntity.id });
+        const url = this.resolveEndpoint('UpdateRecord', { sourceId: entityId || this.activeEntity.id });
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json' })
             .finally(() => this.endProcess());
     }
 
     public deleteRecord(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteRecord', { entityId: entityId || this.activeEntity.id });
+        const url = this.resolveEndpoint('DeleteRecord', { sourceId: entityId || this.activeEntity.id });
 
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json'})
@@ -192,7 +192,7 @@ export class DataContext {
                     if (opt == 'modelId') {
                         optVal = this.model.getId();
                     }
-                    else if (opt == 'entityId') {
+                    else if (opt == 'sourceId') {
                         optVal = this.activeEntity.id;
                     }
                     else {
@@ -219,10 +219,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
-        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update'));
-        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete'));
+        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/create'));
+        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/update'));
+        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/delete'));
     }
 }
