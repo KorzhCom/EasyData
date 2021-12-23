@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -56,6 +57,16 @@ namespace EasyData.EntityFrameworkCore
                .Where(ApplyEntityFilters);
         }
 
+        private IList<Type> GetDbContextTypes()
+        {
+            return DbContext.GetType()
+                    .GetProperties()
+                    .Where(p => p.PropertyType.IsGenericType
+                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
+                    .Select(p => p.PropertyType.GetGenericArguments()[0])
+                    .ToList();
+        }
+
         /// <summary>
         /// Applies the entity filters.
         /// </summary>
@@ -63,6 +74,10 @@ namespace EasyData.EntityFrameworkCore
         /// <returns><c>true</c> if the entity passes the filters, <c>false</c> otherwise.</returns>
         protected virtual bool ApplyEntityFilters(IEntityType entityType)
         {
+            if (Options.SkipNonDbSetEntities && !_dbSetTypes.Contains(entityType.ClrType)) {
+                return false;
+            }
+
             foreach (var filter in Options.EntityFilters) {
                 if (!filter.Invoke(entityType)) {
                     return false;
@@ -100,26 +115,24 @@ namespace EasyData.EntityFrameworkCore
             return true;
         }
 
+        private IList<Type> _dbSetTypes = new List<Type>();
+
         /// <summary>
         /// Loads metadata from a DbContext object and stores them into a <see cref="MetaData"/> instance passed in the constructor
         /// </summary>
         public virtual void LoadFromDbContext()
-        { 
+        {
+            _dbSetTypes = GetDbContextTypes();
+
             var entityTypes = GetEntityTypes();
 
             if (Options.KeepDbSetDeclarationOrder) {
                 // EF Core keeps information about entity types 
                 // in alphabetical order.
                 // To make it possible to keep the original order
-                // we have to get all DbSet<> types manually
-                var dbSetTypes = DbContext.GetType()
-                    .GetProperties()
-                    .Where(p => p.PropertyType.IsGenericType 
-                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
-                    .Select(p => p.PropertyType.GetGenericArguments()[0])
-                    .ToList();
+                // we reoder the list of entities according to the orer of DbSets
 
-                entityTypes = entityTypes.OrderBy(t => dbSetTypes.IndexOf(t.ClrType));
+                entityTypes = entityTypes.OrderBy(t => _dbSetTypes.IndexOf(t.ClrType));
             }
 
             foreach (var entityType in entityTypes) {
@@ -165,7 +178,7 @@ namespace EasyData.EntityFrameworkCore
         /// <returns>System.String.</returns>
         protected virtual string GetEntityId(IEntityType entityType)
         {
-            var entityName = Utils.GetEntityNameByType(entityType.ClrType);
+            var entityName = Utils.GetEntityName(entityType);
             return DataUtils.ComposeKey(null, entityName);
         }
 
@@ -179,7 +192,7 @@ namespace EasyData.EntityFrameworkCore
         {
             var entity = Model.CreateEntity();
             entity.Id = GetEntityId(entityType);
-            entity.Name = DataUtils.PrettifyName(Utils.GetEntityNameByType(entityType.ClrType));
+            entity.Name = DataUtils.PrettifyName(Utils.GetEntityName(entityType));
             entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             var primaryKey = entityType.FindPrimaryKey();
@@ -365,7 +378,6 @@ namespace EasyData.EntityFrameworkCore
         /// <returns>MetaEntityAttr.</returns>
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
-            var entityName = Utils.GetEntityNameByType(entityType.ClrType);
             var propertyName = property.Name;
             var columnName = property.GetDbColumnName();
 
@@ -374,7 +386,7 @@ namespace EasyData.EntityFrameworkCore
                 Parent = entity
             });
 
-            entityAttr.Id = DataUtils.ComposeKey(entityName, propertyName);
+            entityAttr.Id = DataUtils.ComposeKey(entity.Id, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
             entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
@@ -393,7 +405,7 @@ namespace EasyData.EntityFrameworkCore
                 entityAttr.ShowOnEdit = false;
             }
 
-            var veId = $"VE_{entityName}_{propertyName}";
+            var veId = $"VE_{entity.Id}_{propertyName}";
             if (property.ClrType.IsEnum) {
                 var editor = new ConstListValueEditor(veId);
                 FieldInfo[] fields = property.ClrType.GetFields();
