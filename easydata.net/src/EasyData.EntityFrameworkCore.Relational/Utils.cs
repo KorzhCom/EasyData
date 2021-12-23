@@ -11,9 +11,9 @@ namespace EasyData.EntityFrameworkCore
 {
     internal static class Utils
     {
-        public static string GetEntityNameByType(Type entityType)
+        public static string GetEntityName(IEntityType entityType)
         {
-            return entityType.Name.Split('`').First();
+            return entityType.Name.Split('.').Last().Split('`').First();
         }
 
         public static PropertyInfo GetPropertyInfoBySelector<TEntity>(Expression<Func<TEntity, object>> propertySelector)
