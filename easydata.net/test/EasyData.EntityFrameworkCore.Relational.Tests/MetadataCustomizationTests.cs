@@ -9,7 +9,6 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
     /// </summary>
     public class MetadataCustomizationTests
     {
-        private readonly DbContextMetaDataLoaderOptions _loaderOptions;
         private readonly TestDbContext _dbContext;
 
         public MetadataCustomizationTests()
