@@ -219,10 +219,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/fetch'));
-        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/fetch'));
-        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/create'));
-        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/update'));
-        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/source/{sourceId}/delete'));
+        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
+        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
+        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
     }
 }
