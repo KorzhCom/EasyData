@@ -30,7 +30,6 @@ namespace EasyData.EntityFrameworkCore
         /// <value>The property filters.</value>
         public IReadOnlyList<PropertyFilter> PropertyFilters => _propertyFilters;
 
-
         /// <summary>
         /// Adds a filter, which will be used during model loading from <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
         /// </summary>
@@ -100,6 +99,13 @@ namespace EasyData.EntityFrameworkCore
         /// </summary>
         /// <value><c>true</c> if the foreign key fields must be skipped; otherwise, <c>false</c>.</value>
         public bool SkipForeignKeys { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the loader must skip the entities that are not defined directly as DbSets in DbContext.
+        /// </summary>
+        /// <value><c>true</c> if non-DbSet entities should be skipped; otherwise, <c>false</c>. Default is <c>true</c>.</value>
+        public bool SkipNonDbSetEntities { get; set; } = true;
+
 
         /// <summary>
         /// Gets or sets a value indicating whether entities must keep order of DbSet declarations.
