@@ -5,6 +5,7 @@ import {
 } from '@easydata/core';
 
 import { EasyGrid } from './easy_grid';
+import { AutoResizeColumns } from './easy_grid_options';
 import { CellRendererType } from "./easy_grid_cell_renderer";
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 
@@ -46,6 +47,8 @@ export class GridColumn {
     public readonly isRowNum: boolean = false;
 
     public cellRenderer: GridCellRenderer;
+
+    public calculatedWidth: number;
 
     constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false) {
         this.dataColumn = column;
@@ -106,9 +109,10 @@ export class GridColumnList {
     public sync(columnList: DataColumnList, hasRowNumCol = true) {
         this.clear();
 
-        if (hasRowNumCol) {
-            const rowNumCol = new GridColumn(null, this.grid, true);
-            this.add(rowNumCol);
+        const rowNumCol = new GridColumn(null, this.grid, true);
+        this.add(rowNumCol);
+        if (!hasRowNumCol) {
+            rowNumCol.isVisible = false;
         }
 
         if (columnList) {
