@@ -101,13 +101,6 @@ namespace EasyData.EntityFrameworkCore
         public bool SkipForeignKeys { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the loader must skip the entities that are not defined directly as DbSets in DbContext.
-        /// </summary>
-        /// <value><c>true</c> if non-DbSet entities should be skipped; otherwise, <c>false</c>. Default is <c>true</c>.</value>
-        public bool SkipNonDbSetEntities { get; set; } = true;
-
-
-        /// <summary>
         /// Gets or sets a value indicating whether entities must keep order of DbSet declarations.
         /// </summary>
         public bool KeepDbSetDeclarationOrder { get; set; } = false;

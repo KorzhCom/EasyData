@@ -15,10 +15,12 @@ namespace EasyData.EntityFrameworkCore
     /// </summary>
     public class DbContextMetaDataLoader
     {
+        private IDictionary<Type, int> _dbSetTypes = new Dictionary<Type, int>();
+
+        protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities 
+                                            = new Dictionary<IEntityType, MetaEntity>();
+
         protected readonly DbContextMetaDataLoaderOptions Options;
-
-        protected readonly Dictionary<IEntityType, MetaEntity> EntityTypeEntities = new Dictionary<IEntityType, MetaEntity>();
-
         protected readonly DbContext DbContext;
         protected readonly MetaData Model;
 
@@ -57,14 +59,14 @@ namespace EasyData.EntityFrameworkCore
                .Where(ApplyEntityFilters);
         }
 
-        private IList<Type> GetDbContextTypes()
+        private IDictionary<Type, int> GetDbContextTypes()
         {
             return DbContext.GetType()
                     .GetProperties()
                     .Where(p => p.PropertyType.IsGenericType
                         && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
-                    .Select(p => p.PropertyType.GetGenericArguments()[0])
-                    .ToList();
+                    .Select((p, index) => (p.PropertyType.GetGenericArguments()[0], index))
+                    .ToDictionary(tt => tt.Item1, tt => tt.Item2);
         }
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace EasyData.EntityFrameworkCore
         /// <returns><c>true</c> if the entity passes the filters, <c>false</c> otherwise.</returns>
         protected virtual bool ApplyEntityFilters(IEntityType entityType)
         {
-            if (Options.SkipNonDbSetEntities && !_dbSetTypes.Contains(entityType.ClrType)) {
+            if (!_dbSetTypes.TryGetValue(entityType.ClrType, out _)) {
                 return false;
             }
 
@@ -115,8 +117,6 @@ namespace EasyData.EntityFrameworkCore
             return true;
         }
 
-        private IList<Type> _dbSetTypes = new List<Type>();
-
         /// <summary>
         /// Loads metadata from a DbContext object and stores them into a <see cref="MetaData"/> instance passed in the constructor
         /// </summary>
@@ -132,7 +132,8 @@ namespace EasyData.EntityFrameworkCore
                 // To make it possible to keep the original order
                 // we reoder the list of entities according to the orer of DbSets
 
-                entityTypes = entityTypes.OrderBy(t => _dbSetTypes.IndexOf(t.ClrType));
+                entityTypes = entityTypes.OrderBy(t => 
+                    _dbSetTypes.TryGetValue(t.ClrType, out var index) ? index : int.MaxValue);
             }
 
             foreach (var entityType in entityTypes) {
