@@ -7,7 +7,7 @@ module.exports = {
     devtool: "source-map",
     output: {
         library: 'easydata',
-        path: path.resolve(__dirname, 'wwwroot/js'),
+        path: path.resolve(__dirname, '../EasyDataTest/wwwroot/js'),
         filename: "easydata.js"
     },
     resolve: {
