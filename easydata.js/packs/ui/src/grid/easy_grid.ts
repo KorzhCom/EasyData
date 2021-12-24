@@ -553,6 +553,7 @@ export class EasyGrid {
 
                     this.prevRowTotals = null;
 
+                    let rowsRendered = 0;                            
                     if (rows.length) {
                         const groups = showAggrs 
                             ? this.options.aggregates.settings.getGroups() 
@@ -564,6 +565,7 @@ export class EasyGrid {
 
                             //we don't actually render the last row
                             if (index < rows.length - 1) {
+                                rowsRendered++;    
                                 const tr = this.renderRow(row, index);
                                 this.bodyCellContainerDiv.appendChild(tr);    
                             }    
@@ -578,9 +580,9 @@ export class EasyGrid {
 
                     const containerWidth = this.getContainerWidth();
                     domel(this.bodyCellContainerDiv)
-                        .setStyle('width', `${containerWidth}px`)
+                        .setStyle('width', `${containerWidth}px`);                    
 
-                    return rows.length;
+                    return rowsRendered;
                 })
                 .catch(error => { console.error(error); return 0 });
         }
@@ -865,6 +867,7 @@ export class EasyGrid {
         const fistPageRecordNum = count 
             ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
             : 0;
+
         const lastPageRecordNum = count 
             ? fistPageRecordNum + count - 1 
             : 0;
@@ -997,7 +1000,6 @@ export class EasyGrid {
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
 
         if (this.options.paging && this.options.paging.enabled) {
-
             const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
 
             const buttonClickHandler = (ev: MouseEvent) => {
@@ -1009,8 +1011,8 @@ export class EasyGrid {
             };
 
             const renderPageCell = (pageIndex: number, content?: string, 
-                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => {
-
+                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => 
+            {
                 const li = document.createElement('li');
                 li.className = `${prefix}page-item`;
 
@@ -1144,7 +1146,6 @@ export class EasyGrid {
                 const label = document.createElement('span');
                 label.innerText = i18n.getText('GridItemsPerPage');
                 labelDiv.appendChild(label);
-
 
                 paginateDiv.appendChild(pageSizes);
             }
