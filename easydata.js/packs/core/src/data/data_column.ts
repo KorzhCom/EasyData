@@ -70,6 +70,8 @@ export class DataColumn {
     /** The column description. */
     public description: string | null;
 
+    public calculatedWidth: number;
+
     constructor(desc: DataColumnDescriptor) {
         if (!desc)
             throw Error("Options are required");
@@ -89,6 +91,7 @@ export class DataColumn {
         this.groupFooterColumnTemplate = desc.gfct;
         this.style = desc.style || {};
         this.description = desc.description;
+        this.calculatedWidth = 0;
     }
 }
 
@@ -136,9 +139,10 @@ export class DataColumnList {
     }
 
     public put(index: number, col : DataColumn) : void {
-        //!!!!!!!!!check on "out of index"
-        this.items[index] = col;
-        this.updateDateColumnIdx();
+        if (index >= 0 && index < this.count) {
+            this.items[index] = col;
+            this.updateDateColumnIdx();
+        }
     }
 
     public move(col: DataColumn, newIndex: number): void {
@@ -150,8 +154,12 @@ export class DataColumnList {
     }
 
     public get(index: number) : DataColumn {
-        //!!!!!!!!!check on "out of index"
-        return this.items[index];
+        if (index >= 0 && index < this.count) {
+            return this.items[index];
+        }
+        else {
+            return null;
+        }
     }
 
     public getIndex(id: string) : number | undefined {
