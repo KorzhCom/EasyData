@@ -507,18 +507,6 @@ export class EasyGrid {
         return colDiv; 
     }
 
-    private strictCompare(value1: any, value2: any) : boolean {
-        return value1 !== value2;
-    }
-
-    private caseInsensitiveCompare(value1: any, value2: any) : boolean {
-        const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
-        const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
-        return val1 !== val2;
-    }
-
-    private compareValues : (value1: any, value2: any) => boolean = this.strictCompare;
-
     protected renderBody() {
         this.bodyDiv = domel('div')
             .addClass(`${this.cssPrefix}-body`)
@@ -534,11 +522,6 @@ export class EasyGrid {
             .toDOM();
 
         const showAggrs = this.canShowAggregates();
-
-        this.compareValues = this.caseInsensitiveCompare;    
-        if (showAggrs && this.options.aggregates.settings.caseSensitiveGroups) {
-            this.compareValues = this.strictCompare;
-        }
 
         if (this.dataTable) {
             this.showProgress();
@@ -621,7 +604,7 @@ export class EasyGrid {
             for (let level = 1; level <= groups.length; level++) {
                 const group = groups[level - 1];
                 for(const col of group.columns) {
-                    if (this.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
+                    if (!aggrSettings.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
                         changeLevel = level;
                         break;
                     }

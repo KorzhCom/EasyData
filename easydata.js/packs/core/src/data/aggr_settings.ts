@@ -27,10 +27,28 @@ export class AggregationSettings {
 
     private useRecordCount = false;
 
-    public caseSensitiveGroups = false;
+    private _caseSensitiveGroups = false;
+
+    public compareValues: (value1:any, value2: any) => boolean;
+
 
     constructor(private colStore: AggregationColumnStore) {
         this.COUNT_FIELD_NAME = 'GRPRECCNT';
+    }
+
+    get caseSensitiveGroups() : boolean {
+        return this._caseSensitiveGroups;
+    }
+
+    set caseSensitiveGroups(value : boolean) {
+        this._caseSensitiveGroups = value;
+        this.updateCompareProc();
+    }
+
+    private updateCompareProc() {
+        this.compareValues = this._caseSensitiveGroups
+                ? this.strictCompare
+                : this.caseInsensitiveCompare;
     }
 
     public addGroup(settings: GroupDescriptor) {
@@ -196,5 +214,17 @@ export class AggregationSettings {
             }    
         }
         return result;
+    }
+
+    //returns true if value1 == value2
+    private strictCompare(value1: any, value2: any) : boolean {
+        return value1 === value2;
+    }
+
+    //makes a case insensative comparision of two values and return true if there are equal
+    private caseInsensitiveCompare(value1: any, value2: any) : boolean {
+        const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
+        const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
+        return val1 === val2;
     }
 }
