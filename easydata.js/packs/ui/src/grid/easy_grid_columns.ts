@@ -5,7 +5,6 @@ import {
 } from '@easydata/core';
 
 import { EasyGrid } from './easy_grid';
-import { AutoResizeColumns } from './easy_grid_options';
 import { CellRendererType } from "./easy_grid_cell_renderer";
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 

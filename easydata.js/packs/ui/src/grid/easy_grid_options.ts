@@ -25,6 +25,7 @@ export interface ColumnWidthSettings {
 }
 
 export interface DefaultColumnWidths {
+    autoResize?: AutoResizeColumns;
     [key: number] : ColumnWidthSettings,
     rowNumColumn?: ColumnWidthSettings,
     stringColumns?: ColumnWidthSettings,
@@ -68,8 +69,6 @@ export interface EasyGridOptions {
     }
 
     columnWidths?: DefaultColumnWidths;
-
-    autoResizeColumns?: AutoResizeColumns;
 
     syncGridColumns?: boolean;
 
