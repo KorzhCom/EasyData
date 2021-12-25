@@ -81,6 +81,7 @@ export class EasyGrid {
             pageSizeItems: [20, 30, 50, 100, 200]
         },
         columnWidths: {
+            autoResize: AutoResizeColumns.Never,
             stringColumns: {
                 min: 100,
                 max: 500,
@@ -374,7 +375,7 @@ export class EasyGrid {
             }, 100);    
         }
     
-        const needAutoResize = this.options.autoResizeColumns !== AutoResizeColumns.Never;
+        const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
         if (needAutoResize) {
             this.bodyCellContainerDiv.style.visibility = 'hidden';
             setTimeout(() => {
@@ -1320,7 +1321,7 @@ export class EasyGrid {
     }
 
     public resizeColumns() {
-        if (this.options.autoResizeColumns === AutoResizeColumns.Never) return;
+        if (this.options.columnWidths.autoResize === AutoResizeColumns.Never) return;
 
         const containerWidth = this.bodyCellContainerDiv.style.width;
         this.bodyCellContainerDiv.style.visibility = 'hidden';
@@ -1334,7 +1335,7 @@ export class EasyGrid {
         for(let idx = 0; idx < this.columns.count; idx++) {
             if (!columns[idx].isVisible) continue;
 
-            const calculatedWidth = this.options.autoResizeColumns !== AutoResizeColumns.Always && columns[idx].dataColumn ? columns[idx].dataColumn.calculatedWidth : 0;
+            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && columns[idx].dataColumn ? columns[idx].dataColumn.calculatedWidth : 0;
 
             const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
             
