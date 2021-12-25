@@ -47,6 +47,8 @@ export class GridColumn {
 
     public cellRenderer: GridCellRenderer;
 
+    public calculatedWidth: number;
+
     constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false) {
         this.dataColumn = column;
         this.grid = grid;
@@ -106,9 +108,10 @@ export class GridColumnList {
     public sync(columnList: DataColumnList, hasRowNumCol = true) {
         this.clear();
 
-        if (hasRowNumCol) {
-            const rowNumCol = new GridColumn(null, this.grid, true);
-            this.add(rowNumCol);
+        const rowNumCol = new GridColumn(null, this.grid, true);
+        this.add(rowNumCol);
+        if (!hasRowNumCol) {
+            rowNumCol.isVisible = false;
         }
 
         if (columnList) {

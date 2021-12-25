@@ -8,7 +8,7 @@ import { eqDragManager, DropEffect } from '../utils/drag_manager';
 import { domel } from '../utils/dom_elem_builder';
 import { getElementAbsolutePos, eqCssPrefix } from '../utils/ui-utils';
 
-import { EasyGridOptions } from './easy_grid_options';
+import { EasyGridOptions, AutoResizeColumns } from './easy_grid_options';
 import { 
     GridEventType, GridEvent, 
     ColumnMovedEvent, 
@@ -33,7 +33,6 @@ const DEFAULT_ROW_HEIGHT = 36;
 const DEFAULT_ROW_COUNT = 15;
 
 export class EasyGrid {
-
     protected eventEmitter: EventEmitter;
 
     protected slot: HTMLElement;
@@ -81,6 +80,7 @@ export class EasyGrid {
             pageSizeItems: [20, 30, 50, 100, 200]
         },
         columnWidths: {
+            autoResize: AutoResizeColumns.Never,
             stringColumns: {
                 min: 100,
                 max: 500,
@@ -266,7 +266,7 @@ export class EasyGrid {
                     this.slot.classList.remove(`${eqCssPrefix}-drophover`);
                     this.hideLandingSlot();
                 },
-            onDrop: (_, ev) => {
+                onDrop: (_, ev) => {
                     this.dataTable.columns.move(ev.data.column, this.landingIndex);
                     this.refresh();
 
@@ -365,10 +365,21 @@ export class EasyGrid {
         }
         else {
             setTimeout(() => {
-                this.updateHeight();
+                this.updateHeight()
+                .then(() => {
+                    this.firstRender = false;
+                });
 
-                this.firstRender = false;
             }, 100);    
+        }
+    
+        const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
+        if (needAutoResize) {
+            this.bodyCellContainerDiv.style.visibility = 'hidden';
+            setTimeout(() => {
+                this.resizeColumns();
+                this.bodyCellContainerDiv.style.visibility = null;
+            }, 20);
         }
     }
 
@@ -459,7 +470,7 @@ export class EasyGrid {
     protected renderColumnHeader(column: GridColumn, index: number): HTMLElement {
         let colBuilder = domel('div')
             .addClass(`${this.cssPrefix}-header-cell`)
-            .data('col-idx', `${index + 1}`)
+            .data('col-idx', `${index}`)
             .setStyle('width', `${column.width}px`);
 
         if (column.dataColumn) {
@@ -536,17 +547,23 @@ export class EasyGrid {
 
                     this.prevRowTotals = null;
 
+                    let rowsToRender = 0;                            
                     if (rows.length) {
                         const groups = showAggrs 
                             ? this.options.aggregates.settings.getGroups() 
                             : [];
                             
+
+                        rowsToRender = (rows.length < this.pagination.pageSize)
+                                ? rows.length
+                                : this.pagination.pageSize;
+                                
                         rows.forEach((row, index) => {
                             if (showAggrs)
                                 this.updateTotalsState(groups, row);
 
                             //we don't actually render the last row
-                            if (index < rows.length - 1) {
+                            if (index < rowsToRender) {
                                 const tr = this.renderRow(row, index);
                                 this.bodyCellContainerDiv.appendChild(tr);    
                             }    
@@ -561,9 +578,9 @@ export class EasyGrid {
 
                     const containerWidth = this.getContainerWidth();
                     domel(this.bodyCellContainerDiv)
-                        .setStyle('width', `${containerWidth}px`)
+                        .setStyle('width', `${containerWidth}px`);                    
 
-                    return rows.length;
+                    return rowsToRender;
                 })
                 .catch(error => { console.error(error); return 0 });
         }
@@ -726,14 +743,14 @@ export class EasyGrid {
                         } 
 
                         if (groupFooterTemplate) {
-                            const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                            const cellDiv = this.renderCell(column, index, val, rowElement);
                             const innerCell = (cellDiv.firstChild as HTMLElement);
                             val = innerCell.innerHTML;
                             val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[aggrSettings.COUNT_FIELD_NAME]);
                         }
                     }    
 
-                    const cellDiv = this.renderCell(column, colIndex, val, rowElement);
+                    const cellDiv = this.renderCell(column, index, val, rowElement);
                     rowElement.appendChild(cellDiv);
                 });
             })
@@ -816,8 +833,8 @@ export class EasyGrid {
         }
 
         return this.dataTable.getRows({ 
-            page: this.pagination.page, 
-            pageSize: this.pagination.pageSize + 1
+            offset: (this.pagination.page - 1) * this.pagination.pageSize,
+            limit: this.pagination.pageSize + 1
         })
         .catch(error => {
             console.error(error);
@@ -848,6 +865,7 @@ export class EasyGrid {
         const fistPageRecordNum = count 
             ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
             : 0;
+
         const lastPageRecordNum = count 
             ? fistPageRecordNum + count - 1 
             : 0;
@@ -930,7 +948,7 @@ export class EasyGrid {
             rowBuilder.addClass(`${this.cssPrefix}-row-active`);
         }
 
-        this.columns.getItems().forEach((column) => {
+        this.columns.getItems().forEach((column, index) => {
             if (!column.isVisible) {
                 return;
             }
@@ -938,7 +956,7 @@ export class EasyGrid {
             const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
             let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
 
-            rowElement.appendChild(this.renderCell(column, colindex, val, rowElement));
+            rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
         return rowElement;
@@ -980,7 +998,6 @@ export class EasyGrid {
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
 
         if (this.options.paging && this.options.paging.enabled) {
-
             const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
 
             const buttonClickHandler = (ev: MouseEvent) => {
@@ -992,8 +1009,8 @@ export class EasyGrid {
             };
 
             const renderPageCell = (pageIndex: number, content?: string, 
-                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => {
-
+                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => 
+            {
                 const li = document.createElement('li');
                 li.className = `${prefix}page-item`;
 
@@ -1127,7 +1144,6 @@ export class EasyGrid {
                 const label = document.createElement('span');
                 label.innerText = i18n.getText('GridItemsPerPage');
                 labelDiv.appendChild(label);
-
 
                 paginateDiv.appendChild(pageSizes);
             }
@@ -1287,5 +1303,88 @@ export class EasyGrid {
 
     public focus() {
         this.bodyViewportDiv.focus();
+    }
+
+    public resizeColumns() {
+        if (this.options.columnWidths.autoResize === AutoResizeColumns.Never) return;
+
+        const containerWidth = this.bodyCellContainerDiv.style.width;
+        this.bodyCellContainerDiv.style.visibility = 'hidden';
+        this.bodyCellContainerDiv.style.width = '1px';
+        
+        let sumWidth = 0;
+        const columns = this.columns.getItems();
+        const headerCells = this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);
+        let headerIdx = 0;
+
+        for(let idx = 0; idx < this.columns.count; idx++) {
+            if (!columns[idx].isVisible) continue;
+
+            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && columns[idx].dataColumn ? columns[idx].dataColumn.calculatedWidth : 0;
+
+            const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
+            
+            let maxWidth = 0;
+
+            if (calculatedWidth > 0) {
+                sumWidth += calculatedWidth
+                columns[idx].width = calculatedWidth;
+
+                cellValues.forEach(value => {
+                    (value as HTMLDivElement).parentElement.style.width = `${calculatedWidth}px`;
+                });
+
+                (headerCells[headerIdx] as HTMLDivElement).style.width = `${calculatedWidth}px`;
+
+                headerIdx++;
+            }
+            else if (cellValues.length > 0) {
+                cellValues.forEach(value => {
+                    (value as HTMLDivElement).parentElement.style.width = null;
+                    const width = (value as HTMLDivElement).parentElement.offsetWidth;
+                    if (width > maxWidth) {
+                        maxWidth = width;
+                    }
+                })
+
+                maxWidth += 3;
+
+                const maxOption = columns[idx].isRowNum ? this.options.columnWidths.rowNumColumn.max || 500 : this.options.columnWidths[columns[idx].dataColumn.type].max || 2000;
+                const minOption = columns[idx].isRowNum ? this.options.columnWidths.rowNumColumn.min || 10 : this.options.columnWidths[columns[idx].dataColumn.type].min || 10;
+
+                if (maxWidth > maxOption) {
+                    maxWidth = maxOption;
+                }                
+
+                if (maxWidth < minOption) {
+                    maxWidth = minOption;
+                }
+
+                sumWidth += maxWidth;
+                columns[idx].width = maxWidth;
+
+                cellValues.forEach(value => {
+                    (value as HTMLDivElement).parentElement.style.width = `${maxWidth}px`;
+                });
+
+                (headerCells[headerIdx] as HTMLDivElement).style.width = `${maxWidth}px`;
+
+                headerIdx++;
+
+                if (columns[idx].dataColumn) {
+                    columns[idx].dataColumn.calculatedWidth = maxWidth;
+                }
+            }
+        }
+
+        if (sumWidth > 0) {
+            this.bodyCellContainerDiv.style.width = `${sumWidth}px`;
+            this.headerCellContainerDiv.style.width = `${sumWidth}px`;
+        }
+        else {
+            this.bodyCellContainerDiv.style.width = containerWidth;
+            this.headerCellContainerDiv.style.width = containerWidth;
+        }
+        this.bodyCellContainerDiv.style.visibility = null;
     }
 }

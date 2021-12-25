@@ -11,11 +11,11 @@ import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
     'GetMetaData'   |
-    'GetEntities'   | 
-    'GetEntity'     |
-    'CreateEntity'  |
-    'UpdateEntity'  |
-    'DeleteEntity'  ;
+    'FetchDataset'  | 
+    'FetchRecord'   |
+    'CreateRecord'  |
+    'UpdateRecord'  |
+    'DeleteRecord'  ;
 
 export interface EasyDataContextOptions {
     metaDataId?: string;
@@ -110,7 +110,7 @@ export class DataContext {
         return this.http;
     }
 
-    public getEntities() {
+    public fetchDataset() {
         this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
             .then(result => {                
@@ -128,37 +128,36 @@ export class DataContext {
             })
     }
 
-    public getEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('GetEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public fetchRecord(keys : {[key: string]: string}, entityId?: string) {
+        const url = this.resolveEndpoint('FetchRecord', { sourceId: entityId || this.activeEntity.id });
         
         this.startProcess();
-        return this.http.get(url).getPromise()
+        return this.http.get(url, { queryParams: keys})
             .finally(() => this.endProcess());
     }
 
-    public createEntity(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('CreateEntity', 
-            { entityId: entityId || this.activeEntity.id });
+    public createRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('CreateRecord', 
+            { sourceId: entityId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public updateEntity(id: string, obj, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
-        
+    public updateRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('UpdateRecord', { sourceId: entityId || this.activeEntity.id });
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public deleteEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public deleteRecord(obj: any, entityId?: string) {
+        const url = this.resolveEndpoint('DeleteRecord', { sourceId: entityId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, null).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json'})
+            .finally(() => this.endProcess());
     }
 
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
@@ -193,7 +192,7 @@ export class DataContext {
                     if (opt == 'modelId') {
                         optVal = this.model.getId();
                     }
-                    else if (opt == 'entityId') {
+                    else if (opt == 'sourceId') {
                         optVal = this.activeEntity.id;
                     }
                     else {
@@ -220,10 +219,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch/{id}'));
-        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
-        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update/{id}'));
-        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete/{id}'));
+        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
+        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
+        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
     }
 }

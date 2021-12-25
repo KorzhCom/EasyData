@@ -67,7 +67,7 @@ export class EntityDataView {
     }
 
     private renderGrid() {
-        this.context.getEntities()
+        this.context.fetchDataset()
             .then(result => {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
@@ -149,7 +149,7 @@ export class EntityDataView {
                     return false;
                       
                 form.getData()
-                .then(obj => this.context.createEntity(obj))
+                .then(obj => this.context.createRecord(obj))
                 .then(() => {
                     return this.refreshData();
                 })
@@ -183,14 +183,11 @@ export class EntityDataView {
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
             onSubmit: () => {
-                const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
-                const keys = keyAttrs.map(attr => row.getValue(attr.id));
-
                 if (!form.validate())
                     return false;
 
                 form.getData()
-                .then(obj => this.context.updateEntity(keys.join(':'), obj))
+                .then(obj => this.context.updateRecord(obj))
                 .then(() => {
                     return this.refreshData();
                 })       
@@ -212,20 +209,23 @@ export class EntityDataView {
             .then(row => {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
-                    const keyAttrs = activeEntity.attributes.filter(attr => attr.isPrimaryKey);
-                    const keys = keyAttrs.map(attr => row.getValue(attr.id));
-                    const entityId = keyAttrs.map((attr, index) => `${attr.id}:${keys[index]}`).join(';');
+                    const keyAttrs = activeEntity.getPrimaryAttrs();
+                    const keyVals = keyAttrs.map(attr => row.getValue(attr.id));
+                    const keys = keyAttrs.reduce((val, attr, index) => { 
+                        const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                        val[property] = keyVals[index];
+                        return val; 
+                    }, {});
                     this.dlg.openConfirm(
                         i18n.getText('DeleteDlgCaption')
                             .replace('{entity}', activeEntity.caption), 
                         i18n.getText('DeleteDlgMessage')
-                            .replace('{entityId}', entityId), 
+                            .replace('{entityId}', Object.keys(keys)
+                                .map(key => `${key}:${keys[key]}`).join(';')), 
                     )
                     .then((result) => {
                         if (result) {
-
-                            //pass entityId in future
-                            this.context.deleteEntity(keys.join(':'))
+                            this.context.deleteRecord(keys)
                                 .then(() => {
                                     return this.refreshData();
                                 })
@@ -248,7 +248,7 @@ export class EntityDataView {
     }
 
     private refreshData(): Promise<void> {
-        return this.context.getEntities()
+        return this.context.fetchDataset()
             .then(() => {
                 this.grid.refresh();
             });

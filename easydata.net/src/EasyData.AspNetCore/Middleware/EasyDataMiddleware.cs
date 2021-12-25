@@ -43,11 +43,11 @@ namespace EasyData.AspNetCore
         private static readonly Endpoint[] _routing =
             {
                 new Endpoint(DataAction.GetModel, @"^/models/([^/]+?)$", "GET"),
-                new Endpoint(DataAction.FetchDataset, @"^/models/([^/]+?)/crud/([^/]+?)/fetch$", "POST"),
-                new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/crud/([^/]+?)/fetch/([^/]+?)$", "GET"),
-                new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/crud/([^/]+?)/create$", "POST"),
-                new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/crud/([^/]+?)/update/([^/]+?)$", "POST"),
-                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/crud/([^/]+?)/delete/([^/]+?)$", "POST")
+                new Endpoint(DataAction.FetchDataset, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "POST"),
+                new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "GET"),
+                new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/sources/([^/]+?)/create$", "POST"),
+                new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/sources/([^/]+?)/update$", "POST"),
+                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST")
             };
 
         public EasyDataMiddleware(RequestDelegate next, EasyDataOptions options)
@@ -70,7 +70,6 @@ namespace EasyData.AspNetCore
                 var action = "";
                 var modelId = "";
                 var entityTypeName = "";
-                var entityId = "";
 
                 foreach (var route in _routing) {
                     var matches = route.Regex.Matches(actionUrl);
@@ -78,9 +77,6 @@ namespace EasyData.AspNetCore
                         modelId = matches[0].Groups[1].Value;
                         if (matches[0].Groups.Count > 2) {
                             entityTypeName = matches[0].Groups[2].Value;
-                        }
-                        if (matches[0].Groups.Count > 3) {
-                            entityId = matches[0].Groups[3].Value;
                         }
                         action = route.Action;
                         break;
@@ -100,7 +96,7 @@ namespace EasyData.AspNetCore
                                 await handler.HandleGetModelAsync(modelId, ct);
                                 return;
                             case DataAction.FetchRecord:
-                                await handler.HandleFetchRecordAsync(modelId, entityTypeName, entityId, ct);
+                                await handler.HandleFetchRecordAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.FetchDataset:
                                 await handler.HandleFetchDatasetAsync(modelId, entityTypeName, ct);
@@ -109,10 +105,10 @@ namespace EasyData.AspNetCore
                                 await handler.HandleCreateRecordAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.UpdateRecord:
-                                await handler.HandleUpdateRecordAsync(modelId, entityTypeName, entityId, ct);
+                                await handler.HandleUpdateRecordAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.DeleteRecord:
-                                await handler.HandleDeleteRecordAsync(modelId, entityTypeName, entityId, ct);
+                                await handler.HandleDeleteRecordAsync(modelId, entityTypeName, ct);
                                 return;
                         }
                     }

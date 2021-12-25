@@ -30,7 +30,6 @@ namespace EasyData.EntityFrameworkCore
         /// <value>The property filters.</value>
         public IReadOnlyList<PropertyFilter> PropertyFilters => _propertyFilters;
 
-
         /// <summary>
         /// Adds a filter, which will be used during model loading from <see cref="Microsoft.EntityFrameworkCore.DbContext"/> 
         /// </summary>

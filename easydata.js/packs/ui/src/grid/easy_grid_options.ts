@@ -13,8 +13,8 @@ import { GridColumn } from './easy_grid_columns';
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 
 export enum AutoResizeColumns {
-    Once,
     Always,
+    Once,
     Never
 }
 
@@ -25,6 +25,7 @@ export interface ColumnWidthSettings {
 }
 
 export interface DefaultColumnWidths {
+    autoResize?: AutoResizeColumns;
     [key: number] : ColumnWidthSettings,
     rowNumColumn?: ColumnWidthSettings,
     stringColumns?: ColumnWidthSettings,
@@ -68,8 +69,6 @@ export interface EasyGridOptions {
     }
 
     columnWidths?: DefaultColumnWidths;
-
-    autoResizeColumns?: AutoResizeColumns;
 
     syncGridColumns?: boolean;
 

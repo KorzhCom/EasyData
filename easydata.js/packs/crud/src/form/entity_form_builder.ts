@@ -148,7 +148,9 @@ export class EntityEditFormBuilder {
                                     }
 
                                     if (selectedValue) {
-                                        this.context.getEntity(selectedValue, lookupEntity.id)
+                                        const attr = lookupEntity.getFirstPrimaryAttr();
+                                        const key = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                                        this.context.fetchRecord({[key]: selectedValue}, lookupEntity.id)
                                             .then(data => {
                                                 if (data.entity) {
                                                     updateSelectedValue(data.entity);
@@ -354,9 +356,9 @@ export class EntityEditFormBuilder {
                         b.attr('checked', '');
                 } else {
                     b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
-                        .value(dataUtils.IsDefinedAndNotNull(value)
-                            ? value.toString()
-                            : '');
+                     .value(dataUtils.IsDefinedAndNotNull(value)
+                        ? value.toString()
+                        : '');
                 }
             });
     }
@@ -367,10 +369,12 @@ export class EntityEditFormBuilder {
             .addChild('textarea', b => {
                 if (readOnly)
                     b.attr('readonly', '');
-
+                    
                 b.attr('name', attr.id)
-                
                 b.setStyle('height', `120px`)
+                b.value(dataUtils.IsDefinedAndNotNull(value)
+                    ? value.toString()
+                    : '');
             });
     }
 
