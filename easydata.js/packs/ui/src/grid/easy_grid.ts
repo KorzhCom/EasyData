@@ -33,7 +33,6 @@ const DEFAULT_ROW_HEIGHT = 36;
 const DEFAULT_ROW_COUNT = 15;
 
 export class EasyGrid {
-
     protected eventEmitter: EventEmitter;
 
     protected slot: HTMLElement;
@@ -355,7 +354,6 @@ export class EasyGrid {
 
         this.slot.appendChild(gridContainer);
 
-
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise
                 .then(() => this.updateHeight())
@@ -565,19 +563,23 @@ export class EasyGrid {
 
                     this.prevRowTotals = null;
 
-                    let rowsRendered = 0;                            
+                    let rowsToRender = 0;                            
                     if (rows.length) {
                         const groups = showAggrs 
                             ? this.options.aggregates.settings.getGroups() 
                             : [];
                             
+
+                        rowsToRender = (rows.length < this.pagination.pageSize)
+                                ? rows.length
+                                : this.pagination.pageSize;
+                                
                         rows.forEach((row, index) => {
                             if (showAggrs)
                                 this.updateTotalsState(groups, row);
 
                             //we don't actually render the last row
-                            if (index < rows.length - 1) {
-                                rowsRendered++;    
+                            if (index < rowsToRender) {
                                 const tr = this.renderRow(row, index);
                                 this.bodyCellContainerDiv.appendChild(tr);    
                             }    
@@ -594,7 +596,7 @@ export class EasyGrid {
                     domel(this.bodyCellContainerDiv)
                         .setStyle('width', `${containerWidth}px`);                    
 
-                    return rowsRendered;
+                    return rowsToRender;
                 })
                 .catch(error => { console.error(error); return 0 });
         }
@@ -847,8 +849,8 @@ export class EasyGrid {
         }
 
         return this.dataTable.getRows({ 
-            page: this.pagination.page, 
-            pageSize: this.pagination.pageSize + 1
+            offset: (this.pagination.page - 1) * this.pagination.pageSize,
+            limit: this.pagination.pageSize + 1
         })
         .catch(error => {
             console.error(error);
