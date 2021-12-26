@@ -220,7 +220,6 @@ export namespace utils {
     }
 
     export function fillArray<T>(arr: Array<T>, value: T, start: number = 0, end?: number) {
-
       let len = arr.length >>> 0;
       var relativeStart = start >> 0;
       
