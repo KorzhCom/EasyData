@@ -1349,8 +1349,13 @@ export class EasyGrid {
 
                 maxWidth += 3;
 
-                const maxOption = columns[idx].isRowNum ? this.options.columnWidths.rowNumColumn.max || 500 : this.options.columnWidths[columns[idx].dataColumn.type].max || 2000;
-                const minOption = columns[idx].isRowNum ? this.options.columnWidths.rowNumColumn.min || 10 : this.options.columnWidths[columns[idx].dataColumn.type].min || 10;
+                const maxOption = columns[idx].isRowNum 
+                        ? this.options.columnWidths.rowNumColumn.max || 500 
+                        : this.options.columnWidths[columns[idx].dataColumn.type].max || 2000;
+
+                const minOption = columns[idx].isRowNum 
+                        ? this.options.columnWidths.rowNumColumn.min || 10 
+                        : this.options.columnWidths[columns[idx].dataColumn.type].min || 20;
 
                 if (maxWidth > maxOption) {
                     maxWidth = maxOption;
