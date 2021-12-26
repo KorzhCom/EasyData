@@ -10,19 +10,12 @@ export interface EasyDataTableOptions {
     loader?: DataLoader;
     columns?: DataColumnDescriptor[];
     rows?: any[];
+    onUpdate?: (table?: EasyDataTable) => void;
 }
 
 type GetRowsPageParams = { page: number, pageSize: number };
 type GetRowsOffsetParams = { offset: number, limit?: number };
 export type GetRowsParams = GetRowsPageParams | GetRowsOffsetParams;
-
-interface CachedChunk {
-    offset: number;
-    rows: Array<DataRow>;
-}
-interface ChunkMap {
-    [index: number]: CachedChunk;
-}
 
 export class EasyDataTable {
     public id: string;
@@ -39,12 +32,15 @@ export class EasyDataTable {
 
     private needTotal = true;
 
+    private onUpdate?: (table?: EasyDataTable) => void;
+
     constructor(options?: EasyDataTableOptions) {
         options = options || {};
         this._chunkSize = options.chunkSize || this._chunkSize;
         this._elasticChunks = options.elasticChunks || this._elasticChunks;
         this.loader = options.loader;
         this._columns = new DataColumnList();
+        this.onUpdate = options.onUpdate;
 
         if (options.columns) {
             for(const colDesc of options.columns) {
@@ -140,7 +136,7 @@ export class EasyDataTable {
             limit = this._chunkSize;
         }
 
-        return this.loader.loadChunk({
+        const resultPromise = this.loader.loadChunk({
             offset: offset, 
             limit: limit,
             needTotal: needTotal
@@ -162,8 +158,11 @@ export class EasyDataTable {
                 }
             }
 
+            this.fireUpdated();
             return this.cachedRows.slice(fromIndex,  endIndex);
         });
+
+        return resultPromise;
     }
 
     public getRow(index: number): Promise<DataRow | null> {
@@ -265,5 +264,11 @@ export class EasyDataTable {
         }
 
         return !this.needTotal;
+    }
+
+    public fireUpdated() {
+        if (this.onUpdate) {
+            this.onUpdate(this);
+        }
     }
 }
