@@ -1317,7 +1317,7 @@ export class EasyGrid {
         const headerCells = this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);
         let headerIdx = 0;
 
-        for(let idx = 0; idx < this.columns.count; idx++) {
+        for (let idx = 0; idx < this.columns.count; idx++) {
             if (!columns[idx].isVisible) continue;
 
             const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && columns[idx].dataColumn ? columns[idx].dataColumn.calculatedWidth : 0;
