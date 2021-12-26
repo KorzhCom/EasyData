@@ -7,6 +7,7 @@ import { utils } from '../utils/utils';
 export interface EasyDataTableOptions {
     chunkSize?: number;
     elasticChunks?: boolean;
+    inMemory? : boolean;
     loader?: DataLoader;
     columns?: DataColumnDescriptor[];
     rows?: any[];
@@ -32,6 +33,8 @@ export class EasyDataTable {
 
     private needTotal = true;
 
+    private isInMemory = false;
+
     private onUpdate?: (table?: EasyDataTable) => void;
 
     constructor(options?: EasyDataTableOptions) {
@@ -39,6 +42,12 @@ export class EasyDataTable {
         this._chunkSize = options.chunkSize || this._chunkSize;
         this._elasticChunks = options.elasticChunks || this._elasticChunks;
         this.loader = options.loader;
+        if (typeof options.inMemory !== 'undefined') {
+            this.isInMemory = options.inMemory
+        }
+        if (this.isInMemory) {
+            this.needTotal = false;
+        }
         this._columns = new DataColumnList();
         this.onUpdate = options.onUpdate;
 
@@ -110,6 +119,10 @@ export class EasyDataTable {
             }
         }
 
+        if (this.isInMemory && endIndex > this.cachedRows.length) {
+            endIndex = this.cachedRows.length;
+        }
+
         let allChunksCached = endIndex <= this.cachedRows.length;
 
         if (allChunksCached) {
@@ -117,7 +130,7 @@ export class EasyDataTable {
                 this.cachedRows.slice(fromIndex,  endIndex)
             );
         }
-
+        
         //if loader is not defined
         if (!this.loader) {
             throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
@@ -177,7 +190,6 @@ export class EasyDataTable {
     public setTotal(total : number) : void {
         this.total = total;
         this.needTotal = false;
-        this.cachedRows = [];
     }
 
     public getCachedCount(): number {

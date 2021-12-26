@@ -80,12 +80,12 @@ export class DataContext {
     }
 
     public createFilter(): DataFilter
-    public createFilter(entityId: string, data: EasyDataTable, isLookup?: boolean): DataFilter
-    public createFilter(entityId?: string, data?: EasyDataTable, isLookup?: boolean): DataFilter {
+    public createFilter(sourceId: string, data: EasyDataTable, isLookup?: boolean): DataFilter
+    public createFilter(sourceId?: string, data?: EasyDataTable, isLookup?: boolean): DataFilter {
         return new TextDataFilter(
             this.dataLoader, 
             data || this.getData(), 
-            entityId || this.activeEntity.id, 
+            sourceId || this.activeEntity.id, 
             isLookup);
     }
 
@@ -178,7 +178,6 @@ export class DataContext {
 
     public resolveEndpoint(endpointKey: EasyDataEndpointKey, options?: any): string 
     public resolveEndpoint(endpointKey: EasyDataEndpointKey | string, options?: any) : string {
-
         options = options || {};
 
         let result = this.endpoints.get(endpointKey);

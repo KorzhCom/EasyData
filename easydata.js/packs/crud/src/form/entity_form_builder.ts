@@ -73,7 +73,6 @@ export class EntityEditFormBuilder {
                         .attr('title', i18n.getText('NavigationBtnTitle'))
                         .addText('...')
                         .on('click', (ev) => {
-
                             const lookupTable = new EasyDataTable({
                                 loader: {
                                     loadChunk: (chunkParams) => this.context.getDataLoader()
@@ -82,9 +81,8 @@ export class EntityEditFormBuilder {
                             });
 
                             this.context.getDataLoader()
-                                .loadChunk({ offset: 0, limit: 1000, needTotal: true, entityId: lookupEntity.id } as any)
+                                .loadChunk({ offset: 0, limit: 1000, needTotal: true, sourceId: lookupEntity.id } as any)
                                 .then(data => {
-
                                     for (const col of data.table.columns.getItems()) {
                                         const attrs = lookupEntity.attributes.filter(attr =>
                                             attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));

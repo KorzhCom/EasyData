@@ -220,7 +220,7 @@ export class EntityDataView {
                         i18n.getText('DeleteDlgCaption')
                             .replace('{entity}', activeEntity.caption), 
                         i18n.getText('DeleteDlgMessage')
-                            .replace('{entityId}', Object.keys(keys)
+                            .replace('{recordId}', Object.keys(keys)
                                 .map(key => `${key}:${keys[key]}`).join(';')), 
                     )
                     .then((result) => {
