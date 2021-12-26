@@ -135,8 +135,10 @@ export class EasyDataTable {
 
         let offset = this.cachedRows.length;
         let limit = endIndex - offset;
-        if (this.elasticChunks)
-            limit++;
+
+        if (limit < this._chunkSize) {
+            limit = this._chunkSize;
+        }
 
         return this.loader.loadChunk({
             offset: offset, 
@@ -148,7 +150,7 @@ export class EasyDataTable {
                 this.total = result.total;
             }
 
-            this.cachedRows.concat(result.table.getCachedRows());
+            Array.prototype.push.apply(this.cachedRows, result.table.getCachedRows());
             if (endIndex > this.cachedRows.length) {
                 endIndex = this.cachedRows.length;
             }
