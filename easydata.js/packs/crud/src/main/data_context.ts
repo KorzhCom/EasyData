@@ -1,7 +1,7 @@
 import { 
     HttpClient, MetaData,
     MetaEntity, combinePath, 
-    EasyDataTable, 
+    EasyDataTable, EasyDataTableOptions,
     DataLoader
 } from '@easydata/core';
 import { DataFilter } from '../filter/data_filter';
@@ -20,12 +20,12 @@ type EasyDataEndpointKey =
 export interface EasyDataContextOptions {
     metaDataId?: string;
     endpoint?: string;
+    dataTable?: EasyDataTableOptions,
     onProcessStart?: () => void;
     onProcessEnd?: () => void;
 }
 
 export class DataContext {
-
     private endpoints: Map<string, string> = new Map<string, string>();
 
     private http: HttpClient;
@@ -48,11 +48,14 @@ export class DataContext {
         this.model.id = options.metaDataId || '__default';
 
         this.dataLoader = new EasyDataServerLoader(this);
-        this.data = new EasyDataTable({
-            loader: this.dataLoader
-        });
+        const dataTableOptions = {
+            loader: this.dataLoader,
+            ...options.dataTable
+        };
 
-        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata')
+        this.data = new EasyDataTable(dataTableOptions);
+
+        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata');
     }
 
     public getActiveEntity() {

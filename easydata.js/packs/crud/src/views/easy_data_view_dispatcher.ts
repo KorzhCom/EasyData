@@ -7,7 +7,6 @@ import { EasyDataViewDispatcherOptions } from './options';
 import { RootDataView } from './root_data_view';
 
 export class EasyDataViewDispatcher {
-
     private context: DataContext;
     private basePath: string;
 
@@ -37,6 +36,7 @@ export class EasyDataViewDispatcher {
         
         this.context = new DataContext({
             endpoint: options.endpoint,
+            dataTable: options.dataTable,
             onProcessStart: () => bar.show(),
             onProcessEnd: () => bar.hide()
         });
