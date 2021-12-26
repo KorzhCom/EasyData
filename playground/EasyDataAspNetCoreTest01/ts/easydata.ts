@@ -2,7 +2,10 @@
 
 window.addEventListener('load', () => {
     new EasyDataViewDispatcher({
-        endpoint: "/api/easy-crud"
+        endpoint: "/api/easy-crud",
+        //dataTable: {
+        //    elasticChunks: true
+        //}
         // rootEntity: 'Customer'
     }).run()
 });

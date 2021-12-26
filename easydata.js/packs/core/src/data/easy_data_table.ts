@@ -31,11 +31,6 @@ export class EasyDataTable {
     private _elasticChunks = false;
     private _columns: DataColumnList;
 
-    // here we keep all loaded chunks
-    // they keys of this map are chunk numbers
-    // and they are kept sorted
-    //private chunkMap: ChunkMap = {};
-
     private cachedRows: DataRow[] = [];
 
     private total: number = 0;
@@ -229,22 +224,23 @@ export class EasyDataTable {
         return null;
     }
 
-    public addRow(rowOrValue: any[] | DataRow) : DataRow {
+    public addRow(rowOrValues: any[] | DataRow) : DataRow {
         let newRow: DataRow;
-        if (Array.isArray(rowOrValue)) {
+        if (Array.isArray(rowOrValues)) {
+            let values : any[] = rowOrValues;
             const dateIdx = this._columns.getDateColumnIndexes();
             if (dateIdx.length > 0) {
-                for(const idx of dateIdx) {
-                    if (rowOrValue[idx]) {
-                        rowOrValue[idx] = this.mapDate(rowOrValue[idx], this._columns.get(idx).type);
+                for (const idx of dateIdx) {
+                    if (values[idx]) {
+                        values[idx] = this.mapDate(values[idx], this._columns.get(idx).type);
                     }
                 }
             }
 
-            newRow = new DataRow(this._columns, rowOrValue);
+            newRow = new DataRow(this._columns, values);
         } 
         else {
-            newRow = this.createRow(rowOrValue);
+            newRow = this.createRow(rowOrValues);
         }  
     
         this.cachedRows.push(newRow);
