@@ -29,6 +29,14 @@ export interface AggregatesCalculator {
     /** Start the process of calculation and returns a Promise 
      * that is resolved when the calculation is finished */
     calculate(options?: AggrCalculationOptions): Promise<void>;
+
+    /** Returns true if the aggregated data should be recalculated
+     * (for example because of a new chunk of data was fetched)
+     */
+    needRecalculation() : boolean;
+
+    /** Clears all internal structures and sets needRecalculation to true */
+    reset(): void;
 }
 
 /** Represents a group key which is a list og (columnId:value) pairs.  */
