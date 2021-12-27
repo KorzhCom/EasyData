@@ -107,8 +107,8 @@
 .keg-header-cell-label {
     width: 100%;
     text-align: center;
-    word-break: break-word;
-    -ms-word-wrap: break-word;
+    word-break: keep-all;
+    -ms-word-wrap: keep-all;
 }
 
 .keg-cell {

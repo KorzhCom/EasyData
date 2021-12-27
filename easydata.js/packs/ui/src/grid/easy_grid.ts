@@ -355,12 +355,18 @@ export class EasyGrid {
 
         this.slot.appendChild(gridContainer);
 
+        const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
+
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise
                 .then(() => this.updateHeight())
                 .then(() =>  {
                     this.firstRender = false;
                     this.rowsOnPagePromise = null
+
+                    if (needAutoResize) {
+                        this.resizeColumns();
+                    }
                 });
         }
         else {
@@ -368,18 +374,11 @@ export class EasyGrid {
                 this.updateHeight()
                 .then(() => {
                     this.firstRender = false;
+                    if (needAutoResize) {
+                        this.resizeColumns();
+                    }
                 });
-
             }, 100);    
-        }
-    
-        const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
-        if (needAutoResize) {
-            this.bodyCellContainerDiv.style.visibility = 'hidden';
-            setTimeout(() => {
-                this.resizeColumns();
-                this.bodyCellContainerDiv.style.visibility = null;
-            }, 20);
         }
     }
 
@@ -1310,6 +1309,9 @@ export class EasyGrid {
         const containerWidth = this.bodyCellContainerDiv.style.width;
         this.bodyCellContainerDiv.style.visibility = 'hidden';
         this.bodyCellContainerDiv.style.width = '1px';
+
+        //this.headerRowDiv.style.visibility = 'hidden';
+        this.headerRowDiv.style.width = '1px';
         
         let sumWidth = 0;
         const columns = this.columns.getItems();
@@ -1337,56 +1339,64 @@ export class EasyGrid {
                 });
 
                 (headerCells[headerIdx] as HTMLDivElement).style.width = `${calculatedWidth}px`;
-
-                headerIdx++;
             }
-            else if (cellValues.length > 0) {
-                cellValues.forEach(value => {
-                    (value as HTMLDivElement).parentElement.style.width = null;
-                    const width = (value as HTMLDivElement).parentElement.offsetWidth;
-                    if (width > maxWidth) {
-                        maxWidth = width;
+            else {
+                if (cellValues.length == 0) {
+                    (headerCells[headerIdx] as HTMLDivElement).style.width = null;
+                    (headerCells[headerIdx] as HTMLDivElement).style.whiteSpace = 'nowrap';
+                }
+                maxWidth = (headerCells[headerIdx] as HTMLDivElement).offsetWidth;
+
+                if (cellValues.length > 0) {
+                    cellValues.forEach(value => {
+                        (value as HTMLDivElement).parentElement.style.width = null;
+                        const width = (value as HTMLDivElement).parentElement.offsetWidth;
+                        if (width > maxWidth) {
+                            maxWidth = width;
+                        }
+                    })
+
+                    maxWidth += 3;
+
+                    const maxOption = column.isRowNum 
+                            ? this.options.columnWidths.rowNumColumn.max || 500 
+                            : this.options.columnWidths[column.dataColumn.type].max || 2000;
+
+                    const minOption = column.isRowNum 
+                            ? this.options.columnWidths.rowNumColumn.min || 0 
+                            : this.options.columnWidths[column.dataColumn.type].min || 20;
+
+                    if (maxWidth > maxOption) {
+                        maxWidth = maxOption;
+                    }                
+
+                    if (maxWidth < minOption) {
+                        maxWidth = minOption;
                     }
-                })
 
-                maxWidth += 3;
+                    if (utils.isNumericType(column.type)) {
+                        //increase the calculated width in 1.3 times for numeric columns
+                        maxWidth = Math.round(maxWidth * 1.3);
+                    }
 
-                const maxOption = column.isRowNum 
-                        ? this.options.columnWidths.rowNumColumn.max || 500 
-                        : this.options.columnWidths[column.dataColumn.type].max || 2000;
+                    sumWidth += maxWidth;
+                    column.width = maxWidth;
 
-                const minOption = column.isRowNum 
-                        ? this.options.columnWidths.rowNumColumn.min || 0 
-                        : this.options.columnWidths[column.dataColumn.type].min || 20;
+                    cellValues.forEach(value => {
+                        (value as HTMLDivElement).parentElement.style.width = `${maxWidth}px`;
+                    });
 
-                if (maxWidth > maxOption) {
-                    maxWidth = maxOption;
-                }                
+                    (headerCells[headerIdx] as HTMLDivElement).style.width = `${maxWidth}px`;
 
-                if (maxWidth < minOption) {
-                    maxWidth = minOption;
+                    if (column.dataColumn) {
+                        column.dataColumn.calculatedWidth = maxWidth;
+                    }
                 }
-
-                if (utils.isNumericType(column.type)) {
-                    //increase the calculated width in 1.3 times for numeric columns
-                    maxWidth = Math.round(maxWidth * 1.3);
-                }
-
-                sumWidth += maxWidth;
-                column.width = maxWidth;
-
-                cellValues.forEach(value => {
-                    (value as HTMLDivElement).parentElement.style.width = `${maxWidth}px`;
-                });
-
-                (headerCells[headerIdx] as HTMLDivElement).style.width = `${maxWidth}px`;
-
-                headerIdx++;
-
-                if (column.dataColumn) {
-                    column.dataColumn.calculatedWidth = maxWidth;
+                else {
+                    sumWidth += maxWidth;
                 }
             }
+            headerIdx++;
         }
 
         if (sumWidth > 0) {
@@ -1398,5 +1408,6 @@ export class EasyGrid {
             this.headerCellContainerDiv.style.width = containerWidth;
         }
         this.bodyCellContainerDiv.style.visibility = null;
+        this.headerRowDiv.removeAttribute('style');
     }
 }
