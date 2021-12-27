@@ -17,6 +17,11 @@ type EasyDataEndpointKey =
     'UpdateRecord'  |
     'DeleteRecord'  ;
 
+
+interface CompoundRecordKey { 
+    [key: string]: string 
+}
+    
 export interface EasyDataContextOptions {
     metaDataId?: string;
     endpoint?: string;
@@ -131,32 +136,32 @@ export class DataContext {
             })
     }
 
-    public fetchRecord(keys : {[key: string]: string}, entityId?: string) {
-        const url = this.resolveEndpoint('FetchRecord', { sourceId: entityId || this.activeEntity.id });
+    public fetchRecord(keys : CompoundRecordKey, sourceId?: string) {
+        const url = this.resolveEndpoint('FetchRecord', { sourceId: sourceId || this.activeEntity.id });
         
         this.startProcess();
         return this.http.get(url, { queryParams: keys})
             .finally(() => this.endProcess());
     }
 
-    public createRecord(obj: any, entityId?: string) {
+    public createRecord(obj: any, sourceId?: string) {
         const url = this.resolveEndpoint('CreateRecord', 
-            { sourceId: entityId || this.activeEntity.id });
+            { sourceId: sourceId || this.activeEntity.id });
 
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json' })
             .finally(() => this.endProcess());
     }
 
-    public updateRecord(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateRecord', { sourceId: entityId || this.activeEntity.id });
+    public updateRecord(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('UpdateRecord', { sourceId: sourceId || this.activeEntity.id });
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json' })
             .finally(() => this.endProcess());
     }
 
-    public deleteRecord(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteRecord', { sourceId: entityId || this.activeEntity.id });
+    public deleteRecord(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('DeleteRecord', { sourceId: sourceId || this.activeEntity.id });
 
         this.startProcess();
         return this.http.post(url, obj, { dataType: 'json'})
