@@ -80,7 +80,7 @@ export class EntityDataView {
                         allowPageSizeChange: true,
                         pageSizeItems: [15, 30, 50, 100, 200]
                     },
-                    addColumns: true,
+                    addColumns: this.context.getActiveEntity().isEditable,
                     addColumnsTitle: i18n.getText('AddBtnTitle'),
                     showActiveRow: false,
                     onAddColumnClick: this.addClickHandler.bind(this),
