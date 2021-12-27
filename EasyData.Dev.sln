@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyData.Exporters.PdfSharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataAspNetCoreTest03", "playground\EasyDataAspNetCoreTest03\EasyDataAspNetCoreTest03.csproj", "{383F50EE-B326-47CC-935F-A35AB6053929}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataTest", "playground\EasyDataTest\EasyDataTest.csproj", "{5869B759-B97A-475D-A3C5-B34BEF5FA1AD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,10 +93,6 @@ Global
 		{383F50EE-B326-47CC-935F-A35AB6053929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{383F50EE-B326-47CC-935F-A35AB6053929}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{383F50EE-B326-47CC-935F-A35AB6053929}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5869B759-B97A-475D-A3C5-B34BEF5FA1AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5869B759-B97A-475D-A3C5-B34BEF5FA1AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5869B759-B97A-475D-A3C5-B34BEF5FA1AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5869B759-B97A-475D-A3C5-B34BEF5FA1AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,7 +111,6 @@ Global
 		{51C1C2CD-33EF-4664-818B-AA0E0B0784E9} = {03351042-6C55-496B-A725-0B187F61A159}
 		{8BE02066-E338-4A6B-AA1A-DC8B68A42319} = {03351042-6C55-496B-A725-0B187F61A159}
 		{383F50EE-B326-47CC-935F-A35AB6053929} = {15E56031-436B-4009-991A-0C0981A93F76}
-		{5869B759-B97A-475D-A3C5-B34BEF5FA1AD} = {15E56031-436B-4009-991A-0C0981A93F76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {10A72635-95B3-4077-908D-02AAA9A49601}
