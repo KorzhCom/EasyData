@@ -42,24 +42,24 @@ namespace EasyData.Services
         }
 
         public abstract Task<EasyDataResultSet> FetchDatasetAsync(
-                                                    string modelId, string entityContainer,
+                                                    string modelId, string sourceId,
                                                     IEnumerable<EasyFilter> filters = null,
                                                     IEnumerable<EasySorter> sorters = null,
                                                     bool isLookup = false,
                                                     int? offset = null, int? fetch = null,
                                                     CancellationToken ct = default);
 
-        public abstract Task<long> GetTotalRecordsAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
+        public abstract Task<long> GetTotalRecordsAsync(string modelId, string sourceId, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default);
 
-        public abstract Task<object> FetchRecordAsync(string modelId, string entityContainer, Dictionary<string, string> keys, CancellationToken ct = default);
+        public abstract Task<object> FetchRecordAsync(string modelId, string sourceId, Dictionary<string, string> keys, CancellationToken ct = default);
 
-        public abstract Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
+        public abstract Task<object> CreateRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default);
 
-        public abstract Task<object> UpdateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
+        public abstract Task<object> UpdateRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default);
 
-        public abstract Task DeleteRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default);
+        public abstract Task DeleteRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default);
 
-        public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default);
+        public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string sourceId, CancellationToken ct = default);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
