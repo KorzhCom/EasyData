@@ -1317,9 +1317,12 @@ export class EasyGrid {
         let headerIdx = 0;
 
         for (let idx = 0; idx < this.columns.count; idx++) {
-            if (!columns[idx].isVisible) continue;
+            const column = columns[idx];
+            if (!column.isVisible) continue;
 
-            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && columns[idx].dataColumn ? columns[idx].dataColumn.calculatedWidth : 0;
+            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && column.dataColumn 
+                        ? column.dataColumn.calculatedWidth 
+                        : 0;
 
             const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
             
@@ -1327,7 +1330,7 @@ export class EasyGrid {
 
             if (calculatedWidth > 0) {
                 sumWidth += calculatedWidth
-                columns[idx].width = calculatedWidth;
+                column.width = calculatedWidth;
 
                 cellValues.forEach(value => {
                     (value as HTMLDivElement).parentElement.style.width = `${calculatedWidth}px`;
@@ -1348,13 +1351,13 @@ export class EasyGrid {
 
                 maxWidth += 3;
 
-                const maxOption = columns[idx].isRowNum 
+                const maxOption = column.isRowNum 
                         ? this.options.columnWidths.rowNumColumn.max || 500 
-                        : this.options.columnWidths[columns[idx].dataColumn.type].max || 2000;
+                        : this.options.columnWidths[column.dataColumn.type].max || 2000;
 
-                const minOption = columns[idx].isRowNum 
-                        ? this.options.columnWidths.rowNumColumn.min || 10 
-                        : this.options.columnWidths[columns[idx].dataColumn.type].min || 20;
+                const minOption = column.isRowNum 
+                        ? this.options.columnWidths.rowNumColumn.min || 0 
+                        : this.options.columnWidths[column.dataColumn.type].min || 20;
 
                 if (maxWidth > maxOption) {
                     maxWidth = maxOption;
@@ -1364,8 +1367,13 @@ export class EasyGrid {
                     maxWidth = minOption;
                 }
 
+                if (utils.isNumericType(column.type)) {
+                    //increase the calculated width in 1.3 times for numeric columns
+                    maxWidth = Math.round(maxWidth * 1.3);
+                }
+
                 sumWidth += maxWidth;
-                columns[idx].width = maxWidth;
+                column.width = maxWidth;
 
                 cellValues.forEach(value => {
                     (value as HTMLDivElement).parentElement.style.width = `${maxWidth}px`;
@@ -1375,8 +1383,8 @@ export class EasyGrid {
 
                 headerIdx++;
 
-                if (columns[idx].dataColumn) {
-                    columns[idx].dataColumn.calculatedWidth = maxWidth;
+                if (column.dataColumn) {
+                    column.dataColumn.calculatedWidth = maxWidth;
                 }
             }
         }
