@@ -187,13 +187,13 @@ export class EntityDataView {
                     return false;
 
                 form.getData()
-                .then(obj => this.context.updateRecord(obj))
-                .then(() => {
-                    return this.refreshData();
-                })       
-                .catch((error) => {
-                   this.processError(error);
-                });
+                    .then(obj => this.context.updateRecord(obj))
+                    .then(() => {
+                        return this.refreshData();
+                    })       
+                    .catch((error) => {
+                        this.processError(error);
+                    });
             }
         })
     }
