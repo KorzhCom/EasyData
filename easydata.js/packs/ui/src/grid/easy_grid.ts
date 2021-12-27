@@ -1171,7 +1171,6 @@ export class EasyGrid {
 
     protected renderAddColumnButton(): HTMLElement {
         if (this.options.addColumns) {
-
             return domel('div')
                 .addClass(`${this.cssPrefix}-addrow`)
                 .title(this.options.addColumnsTitle || 'Add column')
