@@ -33,12 +33,12 @@ namespace EasyData.Services
             Model.LoadFromDbContext(DbContext, loaderOptions);
             return base.LoadModelAsync(modelId, ct);
         }
-        public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
+        public override async Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
             var model = await GetModelAsync(modelId);
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
 
             return modelEntity.Attributes
@@ -52,7 +52,7 @@ namespace EasyData.Services
         }
 
         public override async Task<EasyDataResultSet> FetchDatasetAsync(string modelId,
-                string entityContainer,
+                string sourceId,
                 IEnumerable<EasyFilter> filters = null,
                 IEnumerable<EasySorter> sorters = null,
                 bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
@@ -64,7 +64,7 @@ namespace EasyData.Services
 
             await GetModelAsync(modelId);
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
             var entities = await ListAllEntitiesAsync(DbContext, entityType.ClrType,
                     filters, sorters, isLookup, offset, fetch, ct);
 
@@ -73,7 +73,7 @@ namespace EasyData.Services
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
             var attrIdProps = entityType.GetProperties()
                 .ToDictionary(
-                    prop => DataUtils.ComposeKey(entityContainer, prop.Name), 
+                    prop => DataUtils.ComposeKey(sourceId, prop.Name), 
                     prop => prop);
 
             var attrs = modelEntity.Attributes.Where(attr => attr.Kind != EntityAttrKind.Lookup);
@@ -105,7 +105,7 @@ namespace EasyData.Services
             return result;
         }
 
-        public override async Task<long> GetTotalRecordsAsync(string modelId, string entityContainer,
+        public override async Task<long> GetTotalRecordsAsync(string modelId, string sourceId,
             IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -115,32 +115,32 @@ namespace EasyData.Services
 
             await GetModelAsync(modelId);
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
             return await CountAllEntitiesAsync(DbContext, entityType.ClrType, filters, isLookup, ct);
         }
 
-        public override async Task<object> FetchRecordAsync(string modelId, string entityContainer, 
+        public override async Task<object> FetchRecordAsync(string modelId, string sourceId, 
             Dictionary<string, string> recordKeys, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
             var keys = GetKeys(entityType, recordKeys);
             var record = await FindRecordAsync(DbContext, entityType.ClrType, keys.Values, ct);
             if (record == null) {
-                throw new RecordNotFoundException(entityContainer,
+                throw new RecordNotFoundException(sourceId,
                     $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
             }
 
             return record;
         }
 
-        public override async Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, 
+        public override async Task<object> CreateRecordAsync(string modelId, string sourceId, JObject props, 
             CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
 
             var record = Activator.CreateInstance(entityType.ClrType);
 
@@ -152,16 +152,16 @@ namespace EasyData.Services
             return record;
         }
 
-        public override async Task<object> UpdateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
+        public override async Task<object> UpdateRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
 
             var keys = GetKeys(entityType, props);
             var record = await FindRecordAsync(DbContext, entityType.ClrType, keys.Values, ct);
             if (record == null) {
-                throw new RecordNotFoundException(entityContainer,
+                throw new RecordNotFoundException(sourceId,
                     $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
             }
 
@@ -173,16 +173,16 @@ namespace EasyData.Services
             return record;
         }
 
-        public override async Task DeleteRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
+        public override async Task DeleteRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
-            var entityType = GetCurrentEntityType(DbContext, entityContainer);
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
 
             var keys = GetKeys(entityType, props);
             var record = await FindRecordAsync(DbContext, entityType.ClrType, keys.Values, ct);
             if (record == null) {
-                throw new RecordNotFoundException(entityContainer,
+                throw new RecordNotFoundException(sourceId,
                     $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
             }
 
@@ -190,13 +190,13 @@ namespace EasyData.Services
             await DbContext.SaveChangesAsync(ct);
         }
 
-        private static IEntityType GetCurrentEntityType(DbContext dbContext, string entityContainer)
+        private static IEntityType GetCurrentEntityType(DbContext dbContext, string sourceId)
         {
             var entityType = dbContext.Model.GetEntityTypes()
-                .FirstOrDefault(entType => Utils.GetEntityName(entType) == entityContainer);
+                .FirstOrDefault(entType => Utils.GetEntityName(entType) == sourceId);
 
             if (entityType == null) {
-                throw new ContainerNotFoundException(entityContainer);
+                throw new ContainerNotFoundException(sourceId);
             }
 
             return entityType;

@@ -10,14 +10,14 @@ namespace EasyData
 
     public class RecordNotFoundException : EasyDataManagerException
     {
-        public RecordNotFoundException(string entityContainer, string recordKey)
-            : base($"Can't found the record with ID {recordKey} in {entityContainer}")
+        public RecordNotFoundException(string sourceId, string recordKey)
+            : base($"Can't found the record with ID {recordKey} in {sourceId}")
         { }
     }
 
     public class ContainerNotFoundException : EasyDataManagerException
     {
-        public ContainerNotFoundException(string entityContainer) : base($"Container is not found: {entityContainer}")
+        public ContainerNotFoundException(string sourceId) : base($"Container is not found: {sourceId}")
         { }
     }
 }
