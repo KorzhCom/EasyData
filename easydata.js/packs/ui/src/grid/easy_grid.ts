@@ -388,15 +388,15 @@ export class EasyGrid {
                 const firstRow = this.bodyCellContainerDiv.firstElementChild;
                 const rowHeight = firstRow ? (firstRow as HTMLElement).offsetHeight : DEFAULT_ROW_HEIGHT;
                 const rowCount = this.options.viewportRowsCount; // || DEFAULT_ROW_COUNT;
-                let bodyHeight = rowHeight * rowCount;
-                domel(this.bodyDiv)
-                    .setStyle('height', `${bodyHeight}px`);
+                let viewportHeight = rowHeight * rowCount;
+                domel(this.bodyViewportDiv)
+                    .setStyle('height', `${viewportHeight}px`);
     
                 setTimeout(() => {
                     const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
-                    bodyHeight = bodyHeight + sbHeight;
-                    domel(this.bodyDiv)
-                        .setStyle('height', `${bodyHeight}px`);
+                    viewportHeight = viewportHeight + sbHeight;
+                    domel(this.bodyViewportDiv)
+                        .setStyle('height', `${viewportHeight}px`);
 
                         resolve();
                 }, 100);
