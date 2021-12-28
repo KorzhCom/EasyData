@@ -71,6 +71,12 @@ namespace EasyData.Aggregation
 
             return this;
         }
+
+        public void Clear()
+        { 
+            Groups.Clear();
+            Aggregates.Clear();
+        }
     }
 
     public class DataGroup
