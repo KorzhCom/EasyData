@@ -14,6 +14,7 @@ function addEasyDataCRUDTexts() {
         CalendarBtnTitle: 'Open calendar',
         TimerBtnTitle: 'Open timer',
         AddBtnTitle: 'Add',
+        AddRecordBtnTitle: 'Add record',
         EditBtn: 'Edit',
         DeleteBtn: 'Delete',
         SelectLink: '[ select ]',

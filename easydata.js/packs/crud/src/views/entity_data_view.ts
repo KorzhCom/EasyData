@@ -80,10 +80,10 @@ export class EntityDataView {
                         allowPageSizeChange: true,
                         pageSizeItems: [15, 30, 50, 100, 200]
                     },
-                    addColumns: this.context.getActiveEntity().isEditable,
-                    addColumnsTitle: i18n.getText('AddBtnTitle'),
+                    showPlusButton: this.context.getActiveEntity().isEditable,
+                    plusButtonTitle: i18n.getText('AddRecordBtnTitle'),
                     showActiveRow: false,
-                    onAddColumnClick: this.addClickHandler.bind(this),
+                    onPlusButtonClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this),
                     onSyncGridColumn: this.syncGridColumnHandler.bind(this)

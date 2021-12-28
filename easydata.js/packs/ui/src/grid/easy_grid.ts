@@ -13,7 +13,7 @@ import {
     GridEventType, GridEvent, 
     ColumnMovedEvent, 
     RowClickEvent,
-    AddColumnClickEvent,
+    AddColumnClickEvent as PlusButtonClickEvent,
     PageChangedEvent,
     ColumnChangedEvent,
     ColumnDeletedEvent,
@@ -108,7 +108,7 @@ export class EasyGrid {
                 default: 60
             }
         },
-        addColumns: false,
+        showPlusButton: false,
         viewportRowsCount: null,
         showActiveRow: true
     }
@@ -223,8 +223,8 @@ export class EasyGrid {
         if (options.onRowDbClick) {
             this.addEventListener('rowDbClick', options.onRowDbClick);
         }
-        if (options.onAddColumnClick) {
-            this.addEventListener('addColumnClick', options.onAddColumnClick);
+        if (options.onPlusButtonClick) {
+            this.addEventListener('plusButtonClick', options.onPlusButtonClick);
         }
         if (options.onColumnChanged) {
             this.addEventListener('columnChanged', options.onColumnChanged);
@@ -329,7 +329,7 @@ export class EasyGrid {
     private firstRender = true;
 
     protected render() {
-        if (!this.hasData() && !this.options.addColumns) 
+        if (!this.hasData() && !this.options.showPlusButton) 
             return;
 
         this.containerInitialHeight = this.slot.clientHeight;
@@ -452,7 +452,7 @@ export class EasyGrid {
     
                 if (column.isRowNum) {
                     domel(hd)
-                        .addChildElement(this.renderAddColumnButton());
+                        .addChildElement(this.renderHeaderButtons());
                 }
             }); 
 
@@ -1160,7 +1160,7 @@ export class EasyGrid {
     public addEventListener(eventType: 'rowClick', handler: (ev: RowClickEvent) => void): string;
     public addEventListener(eventType: 'rowDbClick', handler: (ev: RowClickEvent) => void): string;
     public addEventListener(eventType: 'pageChanged', handler: (ev: PageChangedEvent) => void): string;
-    public addEventListener(eventType: 'addColumnClick', handler: (ev: AddColumnClickEvent) => void): string;
+    public addEventListener(eventType: 'plusButtonClick', handler: (ev: PlusButtonClickEvent) => void): string;
     public addEventListener(eventType: 'columnChanged', handler: (ev: ColumnChangedEvent) => void): string;
     public addEventListener(eventType: 'columnMoved', handler: (ev: ColumnMovedEvent) => void): string;
     public addEventListener(eventType: 'columnDeleted', handler: (ev: ColumnDeletedEvent) => void): string;
@@ -1173,19 +1173,19 @@ export class EasyGrid {
         this.eventEmitter.unsubscribe(eventType, handlerId);
     } 
 
-    protected renderAddColumnButton(): HTMLElement {
-        if (this.options.addColumns) {
+    protected renderHeaderButtons(): HTMLElement {
+        if (this.options.showPlusButton) {
             return domel('div')
-                .addClass(`${this.cssPrefix}-addrow`)
-                .title(this.options.addColumnsTitle || 'Add column')
+                .addClass(`${this.cssPrefix}-header-btn-plus`)
+                .title(this.options.plusButtonTitle || 'Add')
                 .addChild('a', builder => builder
                     .attr('href', 'javascript:void(0)')
                     .on('click', (e) => {
                         e.preventDefault();   
                         this.fireEvent({
-                            type: 'addColumnClick',
+                            type: 'plusButtonClick',
                             sourceEvent: e
-                        } as AddColumnClickEvent);
+                        } as PlusButtonClickEvent);
                     })
                 )
                 .toDOM();

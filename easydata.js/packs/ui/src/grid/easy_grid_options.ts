@@ -45,8 +45,8 @@ export interface EasyGridOptions {
         settings: AggregationSettings,
         calculator: AggregatesCalculator
     },
-    addColumns?: boolean;
-    addColumnsTitle?: string;
+    showPlusButton?: boolean;
+    plusButtonTitle?: string;
     useRowNumeration?: boolean;
     allowDragDrop?: boolean;
 
@@ -80,7 +80,7 @@ export interface EasyGridOptions {
     onRowClick?: (ev: RowClickEvent) => void;
     onRowDbClick?: (ev: RowClickEvent) => void;
     onPageChanged?: (ev: PageChangedEvent) => void;
-    onAddColumnClick?: (ev: AddColumnClickEvent) => void;
+    onPlusButtonClick?: (ev: AddColumnClickEvent) => void;
     onColumnChanged?: (ev: ColumnChangedEvent) => void;
     onColumnDeleted?: (ev: ColumnDeletedEvent) => void;
     onColumnMoved?: (ev: ColumnMovedEvent) => void;
