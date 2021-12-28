@@ -861,28 +861,31 @@ export class EasyGrid {
             .addClass(`${this.cssPrefix}-page-info`)
             .toDOM()
 
-        const fistPageRecordNum = count 
-            ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
-            : 0;
+        const rowCount = this.dataTable.getTotal();
+        if (rowCount > 0) {
+            const fistPageRecordNum = count 
+                ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
+                : 0;
 
-        const lastPageRecordNum = count 
-            ? fistPageRecordNum + count - 1 
-            : 0;
-            
-        let totalStr = this.dataTable.getTotal().toString();
+            const lastPageRecordNum = count 
+                ? fistPageRecordNum + count - 1 
+                : 0;
+                
+            let totalStr = this.dataTable.getTotal().toString();
 
-        if (this.dataTable.elasticChunks) {
-            const count = this.dataTable.getCachedCount();
-            const total = this.dataTable.getTotal();
-            if (count !== total)
-                totalStr = '?';
+            if (this.dataTable.elasticChunks) {
+                const count = this.dataTable.getCachedCount();
+                const total = this.dataTable.getTotal();
+                if (count !== total)
+                    totalStr = '?';
+            }
+
+            pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
+                .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
+                .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
+                .replace('{Total}', `<span>${totalStr}</span>`);
         }
 
-        pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
-            .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
-            .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
-            .replace('{Total}', `<span>${totalStr}</span>`);
-    
         return pageInfoDiv;
     }
 
@@ -995,8 +998,10 @@ export class EasyGrid {
     protected renderPageNavigator(): HTMLDivElement {
         let paginateDiv = document.createElement('div');
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
+        const rowCount = this.dataTable.getTotal();
 
-        if (this.options.paging && this.options.paging.enabled) {
+
+        if (this.options.paging && this.options.paging.enabled && rowCount > 0) {
             const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
 
             const buttonClickHandler = (ev: MouseEvent) => {
