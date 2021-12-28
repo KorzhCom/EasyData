@@ -129,7 +129,6 @@ export class TextFilterWidget {
     }
 
     private applyFilter() {
-
         if (this.applyFilterTimeout) {
             clearTimeout(this.applyFilterTimeout);
         }

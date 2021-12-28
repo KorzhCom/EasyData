@@ -78,7 +78,7 @@
 .keg-header-cell {
     position: relative;
     align-items: center;
-    padding: 0 4px 0 10px;
+    padding: 2px 6px;
 }
 
 .keg-header-cell-resize {
@@ -107,8 +107,8 @@
 .keg-header-cell-label {
     width: 100%;
     text-align: center;
-    word-break: break-word;
-    -ms-word-wrap: break-word;
+    word-break: keep-all;
+    -ms-word-wrap: keep-all;
 }
 
 .keg-cell {

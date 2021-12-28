@@ -7,34 +7,49 @@ import { utils } from '../utils/utils';
 export interface EasyDataTableOptions {
     chunkSize?: number;
     elasticChunks?: boolean;
+    inMemory? : boolean;
     loader?: DataLoader;
     columns?: DataColumnDescriptor[];
     rows?: any[];
+    onUpdate?: (table?: EasyDataTable) => void;
 }
 
 type GetRowsPageParams = { page: number, pageSize: number };
 type GetRowsOffsetParams = { offset: number, limit?: number };
 export type GetRowsParams = GetRowsPageParams | GetRowsOffsetParams;
 
-interface CachedChunk {
-    offset: number;
-    rows: Array<DataRow>;
-}
-interface ChunkMap {
-    [index: number]: CachedChunk;
-}
-
 export class EasyDataTable {
     public id: string;
 
     private _chunkSize: number = 1000;
+    private _elasticChunks = false;
+    private _columns: DataColumnList;
+
+    private cachedRows: DataRow[] = [];
+
+    private total: number = 0;
+
+    private loader?: DataLoader | null = null;
+
+    private needTotal = true;
+
+    private isInMemory = false;
+
+    private onUpdate?: (table?: EasyDataTable) => void;
 
     constructor(options?: EasyDataTableOptions) {
         options = options || {};
         this._chunkSize = options.chunkSize || this._chunkSize;
         this._elasticChunks = options.elasticChunks || this._elasticChunks;
         this.loader = options.loader;
+        if (typeof options.inMemory !== 'undefined') {
+            this.isInMemory = options.inMemory
+        }
+        if (this.isInMemory) {
+            this.needTotal = false;
+        }
         this._columns = new DataColumnList();
+        this.onUpdate = options.onUpdate;
 
         if (options.columns) {
             for(const colDesc of options.columns) {
@@ -52,8 +67,6 @@ export class EasyDataTable {
         this.needTotal = !this._elasticChunks;
     }
 
-    private _columns: DataColumnList;
-
     public get columns() : DataColumnList {
         return this._columns;
     }
@@ -66,10 +79,8 @@ export class EasyDataTable {
         this._chunkSize = value;
         this.total = 0;
         this.needTotal = !this.elasticChunks;
-        this.chunkMap = {};
+        this.cachedRows = [];
     }
-
-    private _elasticChunks = false;
 
     public get elasticChunks(): boolean {
         return this._elasticChunks;
@@ -79,17 +90,8 @@ export class EasyDataTable {
         this._elasticChunks = value;
         this.total = 0;
         this.needTotal = !this.elasticChunks;
-        this.chunkMap = {};
+        this.cachedRows = [];
     }
-
-    // object keeps number keys sorted
-    private chunkMap: ChunkMap = {};
-
-    private total: number = 0;
-
-    private loader?: DataLoader | null = null;
-
-    private needTotal = true;
 
     public getRows(params?: GetRowsParams): Promise<Array<DataRow>> {
         let fromIndex = 0, count = this._chunkSize;
@@ -117,29 +119,18 @@ export class EasyDataTable {
             }
         }
 
-        const lbChunk = Math.trunc(fromIndex / this._chunkSize);
-        const ubChunk = Math.trunc((endIndex - 1) / this._chunkSize);
-
-        let allChunksCached = true;
-        for (let i = lbChunk; i <= ubChunk; i++) {
-            if (!this.chunkMap[i]) {
-                allChunksCached = false;
-                break;
-            }
+        if (this.isInMemory && endIndex > this.cachedRows.length) {
+            endIndex = this.cachedRows.length;
         }
+
+        let allChunksCached = endIndex <= this.cachedRows.length;
 
         if (allChunksCached) {
-            let resultArr: DataRow[] = [];
-            for (let i = lbChunk; i <= ubChunk; i++) {
-               resultArr = resultArr.concat(this.chunkMap[i].rows)
-            }
-
-            const firstChunkOffset = this.chunkMap[lbChunk].offset;
             return Promise.resolve(
-                    resultArr.slice(fromIndex - firstChunkOffset,  endIndex - firstChunkOffset)
-                );
+                this.cachedRows.slice(fromIndex,  endIndex)
+            );
         }
-
+        
         //if loader is not defined
         if (!this.loader) {
             throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
@@ -151,59 +142,40 @@ export class EasyDataTable {
             this.needTotal = false;
         }
 
-        let limit = this._chunkSize * (ubChunk - lbChunk + 1);
-        if (this.elasticChunks)
-            limit++;
+        let offset = this.cachedRows.length;
+        let limit = endIndex - offset;
 
-        return this.loader.loadChunk({
-            offset: lbChunk * this._chunkSize, 
+        if (limit < this._chunkSize) {
+            limit = this._chunkSize;
+        }
+
+        const resultPromise = this.loader.loadChunk({
+            offset: offset, 
             limit: limit,
             needTotal: needTotal
         })
         .then(result => {
-            const chunks = result.table.getCachedChunks();
             if (needTotal) {
                 this.total = result.total;
-                if (endIndex > this.total) {
-                    endIndex = this.total;
-                }
             }
 
-            let index = lbChunk;
-            for (const chunk of chunks) {
-                this.chunkMap[index] = {
-                    offset: index * this._chunkSize,
-                    rows: chunk.rows
-                }
-                index++;
+            Array.prototype.push.apply(this.cachedRows, result.table.getCachedRows());
+            if (endIndex > this.cachedRows.length) {
+                endIndex = this.cachedRows.length;
             }
 
             if (this.elasticChunks) {
                 const count = result.table.getCachedCount();
-                if (count > 0) {
-                    const chunk = this.chunkMap[index - 1];
-
-                    if (count === limit) {
-                        chunk.rows.splice(chunk.rows.length - 1, 1);
-                        if (chunk.rows.length == 0) {
-                            delete this.chunkMap[index - 1];
-                        }
-                    }
-                
-                    if (count < limit) {
-                        this.total = this.getCachedCount();
-                    }
+                if (count < limit) {
+                    this.total = this.cachedRows.length;
                 }
             }
 
-            let resultArr: DataRow[] = [];
-            for (let i = lbChunk; i <= ubChunk; i++) {
-               resultArr = resultArr.concat(this.chunkMap[i].rows)
-            }
-
-            const firstChunkOffset = this.chunkMap[lbChunk].offset;
-            return resultArr.slice(fromIndex - firstChunkOffset,  endIndex - firstChunkOffset);
+            this.fireUpdated();
+            return this.cachedRows.slice(fromIndex,  endIndex);
         });
+
+        return resultPromise;
     }
 
     public getRow(index: number): Promise<DataRow | null> {
@@ -218,16 +190,15 @@ export class EasyDataTable {
     public setTotal(total : number) : void {
         this.total = total;
         this.needTotal = false;
-        this.chunkMap = {};
     }
 
     public getCachedCount(): number {
-        return this.getCachedRows().length;
+        return this.cachedRows.length;
     }
 
     public clear() {
         this.columns.clear();
-        this.chunkMap = {};
+        this.cachedRows = [];
         this.total = 0;
         this.needTotal = !this._elasticChunks;
     }
@@ -266,30 +237,26 @@ export class EasyDataTable {
         return null;
     }
 
-    public addRow(rowOrValue: any[] | DataRow) : DataRow {
+    public addRow(rowOrValues: any[] | DataRow) : DataRow {
         let newRow: DataRow;
-        if (Array.isArray(rowOrValue)) {
+        if (Array.isArray(rowOrValues)) {
+            let values : any[] = rowOrValues;
             const dateIdx = this._columns.getDateColumnIndexes();
             if (dateIdx.length > 0) {
-                for(const idx of dateIdx) {
-                    if (rowOrValue[idx]) {
-                        rowOrValue[idx] = this.mapDate(rowOrValue[idx], this._columns.get(idx).type);
+                for (const idx of dateIdx) {
+                    if (values[idx]) {
+                        values[idx] = this.mapDate(values[idx], this._columns.get(idx).type);
                     }
                 }
             }
 
-            newRow = new DataRow(this._columns, rowOrValue);
+            newRow = new DataRow(this._columns, values);
         } 
         else {
-            newRow = this.createRow(rowOrValue);
+            newRow = this.createRow(rowOrValues);
         }  
     
-        let lastChunk = this.getLastChunk();
-        if (!lastChunk || lastChunk.rows.length >= this._chunkSize) {
-            lastChunk = this.createChunk();
-        }
-
-        lastChunk.rows.push(newRow);
+        this.cachedRows.push(newRow);
         const cachedTotal = this.getCachedCount();
         if (cachedTotal > this.total) {
             this.total = cachedTotal;
@@ -298,39 +265,9 @@ export class EasyDataTable {
         return newRow;
     }
 
-    protected createChunk(index?: number): CachedChunk {
-        if (typeof index == 'undefined') {
-            index = this.getLastChunkIndex() + 1;
-        }
-
-        const chunk: CachedChunk = { offset: index * this._chunkSize, rows: [] };
-
-        this.chunkMap[index] = chunk;
-        return chunk;
-    }
-
-    private getLastChunkIndex(): number {
-        const keys = Object.keys(this.chunkMap);
-        return keys.length > 0 
-            ? parseInt(keys[keys.length - 1])
-            : -1;
-    }
-
-    private getLastChunk(): CachedChunk | null {
-        const index = this.getLastChunkIndex();
-        return index > -1
-            ? this.chunkMap[index]
-            : null;
-    }
-
     public getCachedRows(): DataRow[] {
-        return this.getCachedChunks()
-            .reduce((acc, v) => acc.concat(v.rows), []);
+        return this.cachedRows;
     }
-
-    public getCachedChunks(): CachedChunk[] {
-        return Object.values(this.chunkMap);
-    }    
 
     public totalIsKnown() : boolean {
         if (this.elasticChunks) {
@@ -339,5 +276,11 @@ export class EasyDataTable {
         }
 
         return !this.needTotal;
+    }
+
+    public fireUpdated() {
+        if (this.onUpdate) {
+            this.onUpdate(this);
+        }
     }
 }

@@ -20,7 +20,7 @@ function addEasyDataCRUDTexts() {
         AddDlgCaption: 'Create {entity}',
         EditDlgCaption: 'Edit {entity}',
         DeleteDlgCaption: 'Delete {entity}',
-        DeleteDlgMessage: 'Are you shure about removing this entity: [{entityId}]?',
+        DeleteDlgMessage: 'Are you sure you want to remove this record: {{recordId}}?',
         EntityMenuDesc: 'Click on an entity to view/edit its content',
         BackToEntities: 'Back to entities',
         SearchBtn: 'Search',

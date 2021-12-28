@@ -73,7 +73,6 @@ export class EntityEditFormBuilder {
                         .attr('title', i18n.getText('NavigationBtnTitle'))
                         .addText('...')
                         .on('click', (ev) => {
-
                             const lookupTable = new EasyDataTable({
                                 loader: {
                                     loadChunk: (chunkParams) => this.context.getDataLoader()
@@ -82,9 +81,8 @@ export class EntityEditFormBuilder {
                             });
 
                             this.context.getDataLoader()
-                                .loadChunk({ offset: 0, limit: 1000, needTotal: true, entityId: lookupEntity.id } as any)
+                                .loadChunk({ offset: 0, limit: 1000, needTotal: true, sourceId: lookupEntity.id } as any)
                                 .then(data => {
-
                                     for (const col of data.table.columns.getItems()) {
                                         const attrs = lookupEntity.attributes.filter(attr =>
                                             attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
@@ -148,7 +146,9 @@ export class EntityEditFormBuilder {
                                     }
 
                                     if (selectedValue) {
-                                        this.context.getEntity(selectedValue, lookupEntity.id)
+                                        const attr = lookupEntity.getFirstPrimaryAttr();
+                                        const key = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                                        this.context.fetchRecord({[key]: selectedValue}, lookupEntity.id)
                                             .then(data => {
                                                 if (data.entity) {
                                                     updateSelectedValue(data.entity);
@@ -201,7 +201,7 @@ export class EntityEditFormBuilder {
             });
     }
 
-    private setupDateTimeField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+    private setupDateTimeField(parent: HTMLElement, attr: MetaEntityAttr, value: any, readOnly: boolean, hidden: boolean) {
         const horizClass = isIE
             ? 'kfrm-fields-ie is-horizontal'
             : 'kfrm-fields is-horizontal';
@@ -225,6 +225,9 @@ export class EntityEditFormBuilder {
                     .addClass(horizClass)
                     .addChild('input', b => {
                         inputEl = b.toDOM();
+
+                        b.name(attr.id)
+                        b.type(hidden ? 'hidden' : this.resolveInputType(attr.dataType));
 
                         if (readOnly) {
                             b.attr('readonly', '');
@@ -250,9 +253,6 @@ export class EntityEditFormBuilder {
                                     }
                                 });
                         }
-
-                        b.name(attr.id)
-                        b.type(this.resolveInputType(attr.dataType));
 
                         b.value((dataUtils.IsDefinedAndNotNull(value)
                             ? dataUtils.dateTimeToStr(value, editFormat)
@@ -304,7 +304,7 @@ export class EntityEditFormBuilder {
             });
     }
 
-    private setupListField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, values: any, value: any) {
+    private setupListField(parent: HTMLElement, attr: MetaEntityAttr, value: any, values: any, readOnly: boolean) {
         domel(parent)
             .addChild('div', b => b
                 .addClass('kfrm-select full-width')
@@ -340,11 +340,13 @@ export class EntityEditFormBuilder {
             });
     }
 
-    private setupTextField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+    private setupTextField(parent: HTMLElement, attr: MetaEntityAttr, value: any, readOnly: boolean, hidden : boolean) {
         domel(parent)
             .addChild('input', b => {
-                if (readOnly)
+                if (readOnly) {
                     b.attr('readonly', '');
+                }
+                b.type(hidden ? 'hidden' : this.resolveInputType(attr.dataType));
 
                 b.name(attr.id)
                     .type(this.resolveInputType(attr.dataType));
@@ -352,25 +354,28 @@ export class EntityEditFormBuilder {
                 if (attr.dataType == DataType.Bool) {
                     if (value)
                         b.attr('checked', '');
-                } else {
+                } 
+                else {
                     b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
-                        .value(dataUtils.IsDefinedAndNotNull(value)
-                            ? value.toString()
-                            : '');
+                     .value(dataUtils.IsDefinedAndNotNull(value)
+                        ? value.toString()
+                        : '');
                 }
             });
     }
 
-    private setupTextArea(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+    private setupTextArea(parent: HTMLElement, attr: MetaEntityAttr, value: any, readOnly: boolean) {
         // feature: modify size in value editor ??
         domel(parent)
             .addChild('textarea', b => {
                 if (readOnly)
                     b.attr('readonly', '');
-
+                    
                 b.attr('name', attr.id)
-                
                 b.setStyle('height', `120px`)
+                b.value(dataUtils.IsDefinedAndNotNull(value)
+                    ? value.toString()
+                    : '');
             });
     }
 
@@ -403,10 +408,10 @@ export class EntityEditFormBuilder {
                         .setStyle('display', 'inline-block')
                     );
                 }
-            }
-
-            );
+            });
         
+        const hidden = attr.isPrimaryKey;
+            
         if (attr.kind === EntityAttrKind.Lookup) {
             this.setupLookupField(parent, attr, readOnly, value);
             return;
@@ -414,11 +419,11 @@ export class EntityEditFormBuilder {
 
         switch (editor.tag) {
             case EditorTag.DateTime:
-                this.setupDateTimeField(parent, attr, readOnly, value);
+                this.setupDateTimeField(parent, attr, value, readOnly, hidden);
                 break;
 
             case EditorTag.List:
-                this.setupListField(parent, attr, readOnly, editor.values, value);
+                this.setupListField(parent, attr, value, editor.values, readOnly);
                 break;
 
             case EditorTag.File:
@@ -428,10 +433,10 @@ export class EntityEditFormBuilder {
             case EditorTag.Edit:
             default:
                 if (editor.multiline) {
-                    this.setupTextArea(parent, attr, readOnly, value);
+                    this.setupTextArea(parent, attr, value, readOnly);
                 }
                 else {
-                    this.setupTextField(parent, attr, readOnly, value);
+                    this.setupTextField(parent, attr, value, readOnly, hidden);
                 }
                 break;
         }
@@ -497,14 +502,16 @@ export class EntityEditFormBuilder {
 
         this.form['setHtmlInt'](formHtml);
 
-        for (const attr of this.context.getActiveEntity().attributes) {           
-            if (this.params.isEditForm) {
-                if (!attr.showOnEdit)
-                    continue;
-            }
-            else {
-                if (!attr.showOnCreate)
-                    continue;
+        for (const attr of this.context.getActiveEntity().attributes) {      
+            if (!attr.isPrimaryKey) {
+                if (this.params.isEditForm) {
+                    if (!attr.showOnEdit)
+                        continue;
+                }
+                else {
+                    if (!attr.showOnCreate)
+                        continue;
+                }    
             }
 
             this.addFormField(fb.toDOM(), attr)

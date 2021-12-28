@@ -67,7 +67,7 @@ namespace EasyDataBasicDemo
                             Multiline = true
                         };
                     });
-
+              
                     options.UseDbContext<AppDbContext>(opts => {
                         opts.SkipForeignKeys = false;
 
@@ -92,10 +92,10 @@ namespace EasyDataBasicDemo
                             model.Entity<Order>()
                                 .Attribute(o => o.OrderDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
+
                         });
                     });
                 });
-                //.RequireAuthorization();
 
                 endpoints.MapRazorPages();
             });

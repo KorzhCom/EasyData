@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
@@ -115,37 +113,37 @@ namespace EasyData.Core.Services.Tests
 
             }
 
-            public override Task<object> CreateRecordAsync(string modelId, string entityContainer, JObject props, CancellationToken ct = default)
+            public override Task<object> CreateRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task DeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+            public override Task DeleteRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string entityContainer, CancellationToken ct = default)
+            public override Task<EasyDataResultSet> FetchDatasetAsync(string modelId, string sourceId, IEnumerable<EasyFilter> filters = null, IEnumerable<EasySorter> sorters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<EasyDataResultSet> FetchDatasetAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, IEnumerable<EasySorter> sorters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
+            public override Task<object> FetchRecordAsync(string modelId, string sourceId, Dictionary<string, string> keys, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<object> FetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+            public override Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string sourceId, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<long> GetTotalRecordsAsync(string modelId, string entityContainer, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default)
+            public override Task<long> GetTotalRecordsAsync(string modelId, string sourceId, IEnumerable<EasyFilter> filters = null, bool isLookup = false, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<object> UpdateRecordAsync(string modelId, string entityContainer, string keyStr, JObject props, CancellationToken ct = default)
+            public override Task<object> UpdateRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }
