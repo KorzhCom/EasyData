@@ -80,7 +80,7 @@ export class EasyGrid {
             pageSizeItems: [20, 30, 50, 100, 200]
         },
         columnWidths: {
-            autoResize: AutoResizeColumns.Once,
+            autoResize: AutoResizeColumns.Always,
             stringColumns: {
                 min: 100,
                 max: 500,
