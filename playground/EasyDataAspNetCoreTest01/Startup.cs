@@ -72,25 +72,31 @@ namespace EasyDataBasicDemo
                         opts.SkipForeignKeys = false;
 
                         opts.CustomizeModel(model => {
-                            var entity = model.Entity<Customer>()
+                            var customerEntity = model.Entity<Customer>()
                                 .SetDisplayName("Client")
                                 .SetDisplayNamePlural("Clients");
 
-                            entity
+                            customerEntity
                                 .Attribute(c => c.Fax)
                                     .SetShowOnView(false);
 
-                            entity
+                            customerEntity
                                 .Attribute(c => c.PostalCode)
                                     .SetShowOnView(false);
 
-                            entity
+                            customerEntity
                                 .Attribute(c => c.Country)
                                     .SetDisplayName("Country name")
                                     .SetDescription("Country where the client lives");
 
-                            model.Entity<Order>()
+                            var orderEntity = model.Entity<Order>();
+
+                            orderEntity
                                 .Attribute(o => o.OrderDate)
+                                    .SetDisplayFormat("{0:yyyy-MM-dd}");
+
+                            orderEntity
+                                .Attribute(o => o.ShippedDate)
                                     .SetDisplayFormat("{0:yyyy-MM-dd}");
 
                         });
