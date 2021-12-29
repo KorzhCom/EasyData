@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using Korzh.DbUtils;
-
 using EasyData.Services;
 
-namespace EasyDataBasicDemo {
+namespace EasyDataBasicDemo 
+{
     public class Startup
     {
         public Startup(IConfiguration configuration)
