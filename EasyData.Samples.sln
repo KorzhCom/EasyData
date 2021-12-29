@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30711.63
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.RazorPages.Net5", "samples\EasyDataBasicDemo.RazorPages.Net5\EasyDataBasicDemo.RazorPages.Net5.csproj", "{01AB0F07-3135-4206-9B7D-55E2DCFCEF45}"
 EndProject
@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorWebAsm.Net5.Shared", "samples\EasyDataBasicDemo.BlazorWebAsm.Net5\Shared\EasyDataBasicDemo.BlazorWebAsm.Net5.Shared.csproj", "{6D213867-AC44-4789-8B30-C6C551ED30FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDataBasicDemo.Angular.Net5", "samples\EasyDataBasicDemo.Angular.Net5\EasyDataBasicDemo.Angular.Net5.csproj", "{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.Angular.Net5", "samples\EasyDataBasicDemo.Angular.Net5\EasyDataBasicDemo.Angular.Net5.csproj", "{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.RazorPages.Net6", "samples\EasyDataBasicDemo.RazorPages.Net6\EasyDataBasicDemo.RazorPages.Net6.csproj", "{409FEE7C-2FDA-4122-974F-1306063E8BA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{014FF716-CA4A-48A6-90E8-6EC1CF664E8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{409FEE7C-2FDA-4122-974F-1306063E8BA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{409FEE7C-2FDA-4122-974F-1306063E8BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{409FEE7C-2FDA-4122-974F-1306063E8BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{409FEE7C-2FDA-4122-974F-1306063E8BA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
