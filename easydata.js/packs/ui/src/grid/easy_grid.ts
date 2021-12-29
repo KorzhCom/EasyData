@@ -363,10 +363,6 @@ export class EasyGrid {
                 .then(() =>  {
                     this.firstRender = false;
                     this.rowsOnPagePromise = null
-
-                    if (needAutoResize) {
-                        this.resizeColumns();
-                    }
                 });
         }
         else {
@@ -575,9 +571,15 @@ export class EasyGrid {
                         }
                     }
 
-                    const containerWidth = this.getContainerWidth();
-                    domel(this.bodyCellContainerDiv)
-                        .setStyle('width', `${containerWidth}px`);                    
+                    const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
+                    if (needAutoResize) {
+                        this.resizeColumns();
+                    }
+                    else {
+                        const containerWidth = this.getContainerWidth();
+                        domel(this.bodyCellContainerDiv)
+                            .setStyle('width', `${containerWidth}px`);                    
+                    }
 
                     return rowsToRender;
                 })
