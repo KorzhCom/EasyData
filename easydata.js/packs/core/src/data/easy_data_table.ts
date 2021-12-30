@@ -19,6 +19,7 @@ type GetRowsOffsetParams = { offset: number, limit?: number };
 export type GetRowsParams = GetRowsPageParams | GetRowsOffsetParams;
 
 export class EasyDataTable {
+    /** The unique ID of the data table */
     public id: string;
 
     private _chunkSize: number = 1000;
@@ -201,6 +202,7 @@ export class EasyDataTable {
         this.cachedRows = [];
         this.total = 0;
         this.needTotal = !this._elasticChunks;
+        this.fireUpdated();
     }
 
     protected createRow(dataOrRow?: DataRow | any): DataRow {

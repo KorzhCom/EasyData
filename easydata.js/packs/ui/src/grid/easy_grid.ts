@@ -621,7 +621,7 @@ export class EasyGrid {
             let changeLevel = -1;
             for (let level = 1; level <= groups.length; level++) {
                 const group = groups[level - 1];
-                for(const col of group.columns) {
+                for (const col of group.columns) {
                     if (!aggrSettings.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
                         changeLevel = level;
                         break;
