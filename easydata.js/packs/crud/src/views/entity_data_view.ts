@@ -32,7 +32,8 @@ export class EntityDataView {
         private slot: HTMLElement, 
         private context: DataContext, 
         private basePath: string,
-        options: EasyDataViewOptions) {
+        options: EasyDataViewOptions) 
+    {
         options = options || {}
         
         this.options = dataUtils.assignDeep(this.options, options || {});
@@ -40,21 +41,23 @@ export class EntityDataView {
         this.dlg = new DefaultDialogService();
 
         const ent = this.context.getActiveEntity();
-        
-        this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
-        if (this.options.showBackToEntities) {
-            domel(this.slot)
-                .addChild('a', b => b
-                    .attr('href', 'javascript:void(0)')
-                    .text(`← ${i18n.getText('BackToEntities')}`)
-                    .on('click', (e) => {
-                        e.preventDefault();
-                        setLocation(this.basePath);
-                    })
-                );
+        console.log('Creating entity view', basePath, ent);
+        if (ent) {
+            this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
+            if (this.options.showBackToEntities) {
+                domel(this.slot)
+                    .addChild('a', b => b
+                        .attr('href', 'javascript:void(0)')
+                        .text(`← ${i18n.getText('BackToEntities')}`)
+                        .on('click', (e) => {
+                            e.preventDefault();
+                            setLocation(this.basePath);
+                        })
+                    );
+            }
+    
+            this.renderGrid();    
         }
-
-        this.renderGrid();
     }
 
     private syncGridColumnHandler(column: GridColumn) {

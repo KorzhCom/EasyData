@@ -12,16 +12,16 @@ export class EasyDataViewDispatcher {
 
     private container: HTMLElement;
 
-    private options?: EasyDataViewDispatcherOptions = { basePath: 'easydata' };
+    private options?: EasyDataViewDispatcherOptions = { };
 
     constructor(options?: EasyDataViewDispatcherOptions) {
         options = options || {};
 
         this.options = dataUtils.assign(this.options, options);
 
-        this.options.basePath = (!this.options.rootEntity)
-            ? this.pretiffyPath(this.options.basePath)
-            : this.pretiffyPath(window.location.pathname);
+        // this.options.basePath = (!this.options.rootEntity)
+        //     ? this.pretiffyPath(this.options.basePath)
+        //     : this.pretiffyPath(window.location.pathname);
 
         if (this.options.rootEntity)
             this.options.showBackToEntities = false;
@@ -44,7 +44,7 @@ export class EasyDataViewDispatcher {
         this.basePath = this.getBasePath();
     }
 
-    private pretiffyPath(path: string): string {
+    private trimSlashes(path: string): string {
         return path.replace(/^\/|\/$/g, '')
     }
 
@@ -79,19 +79,15 @@ export class EasyDataViewDispatcher {
         if (this.options.rootEntity) 
             return this.options.rootEntity;
 
-        const decodedUrl = decodeURIComponent(window.location.href);
-        const splitIndex = decodedUrl.lastIndexOf('/');
-        const typeName = decodedUrl.substring(splitIndex + 1);
+        const path = this.trimSlashes(window.location.pathname);
+        const idx = path.lastIndexOf('/');
+        const typeName = idx >=0 ? path.substring(idx + 1) : null;
 
-        return typeName && typeName.toLocaleLowerCase() !== this.options.basePath
-            ? typeName
-            : null;
+        return typeName;
     }
 
     private getBasePath(): string {
-        const decodedUrl = decodeURIComponent(window.location.href);
-        const optBasePathIndex = decodedUrl.toLocaleLowerCase().indexOf(this.options.basePath);
-        return decodedUrl.substring(0, optBasePathIndex + this.options.basePath.length);
+        return this.trimSlashes(window.location.pathname);
     }
 
     run(): Promise<void> {
