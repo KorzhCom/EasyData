@@ -12,13 +12,10 @@ export class EasyDataViewDispatcher {
 
     private container: HTMLElement;
 
-    private options: EasyDataViewDispatcherOptions = { basePath: '/easydata' };
+    private options: EasyDataViewDispatcherOptions = { basePath: 'easydata' };
 
     constructor(options?: EasyDataViewDispatcherOptions) {
-        options = options || {};
-
-        this.options = dataUtils.assign(this.options, options);
-
+        this.options = dataUtils.assign(this.options, options || {});
 
         if (this.options.rootEntity) {
             this.options.showBackToEntities = false;
