@@ -2,7 +2,8 @@
 
 window.addEventListener('load', () => {
     new EasyDataViewDispatcher({
-        endpoint: "/api/easy-crud",
+        basePath: 'crud',
+        endpoint: '/api/easy-crud',
         //dataTable: {
         //    elasticChunks: true
         //}
