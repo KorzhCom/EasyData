@@ -12,19 +12,21 @@ export class EasyDataViewDispatcher {
 
     private container: HTMLElement;
 
-    private options?: EasyDataViewDispatcherOptions = { };
+    private options: EasyDataViewDispatcherOptions = { basePath: '/easydata' };
 
     constructor(options?: EasyDataViewDispatcherOptions) {
         options = options || {};
 
         this.options = dataUtils.assign(this.options, options);
 
-        // this.options.basePath = (!this.options.rootEntity)
-        //     ? this.pretiffyPath(this.options.basePath)
-        //     : this.pretiffyPath(window.location.pathname);
 
-        if (this.options.rootEntity)
+        if (this.options.rootEntity) {
             this.options.showBackToEntities = false;
+            this.basePath = '/';
+        }
+        else {
+            this.basePath = this.normalizeBasePath(this.options.basePath);
+        }
 
         this.setContainer(options.container);
 
@@ -41,7 +43,13 @@ export class EasyDataViewDispatcher {
             onProcessEnd: () => bar.hide()
         });
 
-        this.basePath = this.getBasePath();
+    }
+    
+    private normalizeBasePath(basePath: string): string {
+        basePath = this.trimSlashes(basePath);
+        const fullPath = decodeURIComponent(window.location.pathname);
+        const idx = fullPath.toLocaleLowerCase().indexOf(basePath);
+        return idx >= 0 ? fullPath.substring(0, idx + basePath.length) : '/';
     }
 
     private trimSlashes(path: string): string {
@@ -75,19 +83,13 @@ export class EasyDataViewDispatcher {
         }
     }
 
-    private getActiveEntityId(): string | null {
+    private getActiveSourceId(): string | null {
         if (this.options.rootEntity) 
             return this.options.rootEntity;
 
-        const path = this.trimSlashes(window.location.pathname);
-        const idx = path.lastIndexOf('/');
-        const typeName = idx >=0 ? path.substring(idx + 1) : null;
-
-        return typeName;
-    }
-
-    private getBasePath(): string {
-        return this.trimSlashes(window.location.pathname);
+        const path = decodeURIComponent(window.location.pathname);
+        const idIndex = this.basePath.length + 1;
+        return idIndex < path.length ? path.substring(idIndex) : null;
     }
 
     run(): Promise<void> {
@@ -102,9 +104,9 @@ export class EasyDataViewDispatcher {
     private setActiveView() {
         this.clear();
 
-        const activeEntityId = this.getActiveEntityId();
-        if (activeEntityId) {
-            this.context.setActiveEntity(activeEntityId);
+        const sourceId = this.getActiveSourceId();
+        if (sourceId) {
+            this.context.setActiveSource(sourceId);
             window['EDView'] = new EntityDataView(this.container, this.context,
                 this.basePath, this.options);
         }

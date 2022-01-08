@@ -67,7 +67,7 @@ export class DataContext {
         return this.activeEntity;
     }
 
-    public setActiveEntity(entityId: string) {
+    public setActiveSource(entityId: string) {
         this.activeEntity = this.model.getRootEntity().subEntities
                 .filter(e => e.id == entityId)[0];
     }
