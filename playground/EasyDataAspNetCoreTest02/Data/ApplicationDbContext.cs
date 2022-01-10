@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace EasyDataBasicDemo.Data
 {
@@ -12,5 +11,8 @@ namespace EasyDataBasicDemo.Data
             : base(options)
         {
         }
+
+        public DbSet<IdentityUser> ApplicationUser { get; set; }
+        public DbSet<IdentityRole> ApplicationRole { get; set; }
     }
 }

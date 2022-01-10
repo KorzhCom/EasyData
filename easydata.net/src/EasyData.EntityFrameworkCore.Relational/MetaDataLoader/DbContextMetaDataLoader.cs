@@ -61,12 +61,20 @@ namespace EasyData.EntityFrameworkCore
 
         private IDictionary<Type, int> GetDbContextTypes()
         {
-            return DbContext.GetType()
+            var dbSetProps = DbContext.GetType()
                     .GetProperties()
                     .Where(p => p.PropertyType.IsGenericType
-                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()))
-                    .Select((p, index) => (p.PropertyType.GetGenericArguments()[0], index))
-                    .ToDictionary(tt => tt.Item1, tt => tt.Item2);
+                        && typeof(DbSet<>).IsAssignableFrom(p.PropertyType.GetGenericTypeDefinition()));
+
+            var result = new Dictionary<Type, int>();
+            int idx = 0;
+            foreach (var prop in dbSetProps) {
+                var entType = prop.PropertyType.GetGenericArguments()[0];
+                if (!result.ContainsKey(entType)) { 
+                    result.Add(entType, idx++);
+                }
+            }
+            return result;
         }
 
         /// <summary>
