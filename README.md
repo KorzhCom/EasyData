@@ -34,24 +34,54 @@ Installing EasyData to your own project takes the following 3 simple steps:
 * EasyData.AspNetCore
 * EasyData.EntityFrameworkCore.Relational
 
-### 2. Add EasyData middleware in `Startup.Configure`
+### 2. Add EasyData middleware 
+
+Here is an example for .NET 6 app with "Program.cs based" approach:
 
 ```c#
+//Program.cs file
 using EasyData.Services;
 .    .    .    .    .
 
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapEasyData(options => {
-            options.UseDbContext<AppDbContext>();
-        });
+var app = builder.Build();
 
-        endpoints.MapRazorPages();
-    });
+.    .    .    .    .
+
+app.MapEasyData(options => {
+    options.UseDbContext<AppDbContext>();
+});
+
+endpoints.MapRazorPages();
 
 ```
 
-In the middleware options we also specify the type of DbContext object that will be used as the source of the metadata.
+And here is an example for the old "Startup.cs based" way:
+
+
+```c#
+//Startup.cs file
+using EasyData.Services;
+.    .    .    .    .
+
+public class Startup 
+{
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        .    .    .    .
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapEasyData(options => {
+                options.UseDbContext<AppDbContext>();
+            });
+
+            endpoints.MapRazorPages();
+        });
+    }
+}       
+
+```
+
+In the middleware options we specify the type of the DbContext object that will be used as the source of the metadata.
 
 ### 3. Set up a catch-all page for all CRUD operations
 

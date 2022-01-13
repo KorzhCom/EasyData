@@ -6,7 +6,6 @@ import {
 import { DataFilter } from './data_filter';
 
 export class TextDataFilter implements DataFilter {
-
     private filterValue = '';
 
     //turns off client-side search
@@ -16,7 +15,7 @@ export class TextDataFilter implements DataFilter {
     constructor (
         private loader: DataLoader, 
         private sourceTable: EasyDataTable,  
-        private entityId: string,
+        private sourceId: string,
         private isLookup = false) {
     }
 
@@ -25,7 +24,6 @@ export class TextDataFilter implements DataFilter {
     }
     
     public apply(value: string): Promise<EasyDataTable> {
-
         this.filterValue = value;
 
         if (this.filterValue) {
@@ -54,32 +52,30 @@ export class TextDataFilter implements DataFilter {
                 limit: this.sourceTable.chunkSize, 
                 needTotal: true, 
                 filters: filters,
-                entityId: this.entityId,
+                sourceId: this.sourceId,
                 lookup: this.isLookup
             } as any)
             .then(data => {
-
                 const filteredTable = new EasyDataTable({
                     chunkSize: this.sourceTable.chunkSize,
                     loader: {
                         loadChunk: (params) => this.loader
-                            .loadChunk({ ...params, filters: filters, entityId: this.entityId, lookup: this.isLookup } as any)
+                            .loadChunk({ ...params, filters: filters, sourceId: this.sourceId, lookup: this.isLookup } as any)
                     }
                 });
 
-                for(const col of this.sourceTable.columns.getItems()) {
+                for (const col of this.sourceTable.columns.getItems()) {
                     filteredTable.columns.add(col);
                 }
 
                 filteredTable.setTotal(data.total);
 
-                for(const row of data.table.getCachedRows()) {
+                for (const row of data.table.getCachedRows()) {
                     filteredTable.addRow(row);
                 }
 
                 return filteredTable;
             })
-
         }
     }
 
@@ -87,6 +83,7 @@ export class TextDataFilter implements DataFilter {
         return new Promise((resolve, reject) => {
             const filteredTable = new EasyDataTable({
                 chunkSize: this.sourceTable.chunkSize,
+                inMemory: true
             });
 
             for(const col of this.sourceTable.columns.getItems()) {
@@ -94,35 +91,33 @@ export class TextDataFilter implements DataFilter {
             }   
             
             const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
+            const suitableColumns = this.sourceTable.columns.getItems()
+                                        .filter(col => dataUtils.isIntType(col.type) 
+                                                || dataUtils.getStringDataTypes().indexOf(col.type) >= 0)
             const hasEnterance = (row: DataRow) => {
-                for (const col of this.sourceTable.columns.getItems()) {
-                    if (dataUtils.isIntType(col.type) 
-                        || dataUtils.getStringDataTypes().indexOf(col.type) >= 0) {
-                        const value = row.getValue(col.id);
-                        if (value) {
-                           const normalized = value.toString()
-                            .toLowerCase();
+                for (const col of suitableColumns) {
+                    const value = row.getValue(col.id);
+                    if (value) {
+                       const normalized = value.toString().toLowerCase();
 
-                            for(const word of words) {
-                                if (normalized.indexOf(word) >= 0) {
-                                    return true;
-                                }
+                        for(const word of words) {
+                            if (normalized.indexOf(word) >= 0) {
+                                return true;
                             }
                         }
                     }
-                }
+            }
 
                 return false;
             }
 
-            for(const row of this.sourceTable.getCachedRows()) {
+            for (const row of this.sourceTable.getCachedRows()) {
                 if (hasEnterance(row)) {
                     filteredTable.addRow(row); 
                 }
             }
 
-            if (filteredTable.getCachedCount() == 0)
-                filteredTable.setTotal(0);
+            filteredTable.setTotal(filteredTable.getCachedCount());
 
             resolve(filteredTable);
         });

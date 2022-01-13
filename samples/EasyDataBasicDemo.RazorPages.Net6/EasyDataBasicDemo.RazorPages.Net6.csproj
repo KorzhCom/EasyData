@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>EasyDataBasicDemo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+		<PackageReference Include="EasyData.AspNetCore" Version="1.4.0" />
+		<PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.4.0" />
+		<PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
+		<PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
+		<PackageReference Include="Korzh.DbUtils.Sqlite" Version="1.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App_Data\EqDemoData.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

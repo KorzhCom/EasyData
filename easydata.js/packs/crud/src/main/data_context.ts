@@ -1,7 +1,7 @@
 import { 
     HttpClient, MetaData,
     MetaEntity, combinePath, 
-    EasyDataTable, 
+    EasyDataTable, EasyDataTableOptions,
     DataLoader
 } from '@easydata/core';
 import { DataFilter } from '../filter/data_filter';
@@ -11,21 +11,26 @@ import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
     'GetMetaData'   |
-    'GetEntities'   | 
-    'GetEntity'     |
-    'CreateEntity'  |
-    'UpdateEntity'  |
-    'DeleteEntity'  ;
+    'FetchDataset'  | 
+    'FetchRecord'   |
+    'CreateRecord'  |
+    'UpdateRecord'  |
+    'DeleteRecord'  ;
 
+
+interface CompoundRecordKey { 
+    [key: string]: string 
+}
+    
 export interface EasyDataContextOptions {
     metaDataId?: string;
     endpoint?: string;
+    dataTable?: EasyDataTableOptions,
     onProcessStart?: () => void;
     onProcessEnd?: () => void;
 }
 
 export class DataContext {
-
     private endpoints: Map<string, string> = new Map<string, string>();
 
     private http: HttpClient;
@@ -48,18 +53,21 @@ export class DataContext {
         this.model.id = options.metaDataId || '__default';
 
         this.dataLoader = new EasyDataServerLoader(this);
-        this.data = new EasyDataTable({
-            loader: this.dataLoader
-        });
+        const dataTableOptions = {
+            loader: this.dataLoader,
+            ...options.dataTable
+        };
 
-        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata')
+        this.data = new EasyDataTable(dataTableOptions);
+
+        this.setDefaultEndpoints(this.options.endpoint || '/api/easydata');
     }
 
     public getActiveEntity() {
         return this.activeEntity;
     }
 
-    public setActiveEntity(entityId: string) {
+    public setActiveSource(entityId: string) {
         this.activeEntity = this.model.getRootEntity().subEntities
                 .filter(e => e.id == entityId)[0];
     }
@@ -77,12 +85,12 @@ export class DataContext {
     }
 
     public createFilter(): DataFilter
-    public createFilter(entityId: string, data: EasyDataTable, isLookup?: boolean): DataFilter
-    public createFilter(entityId?: string, data?: EasyDataTable, isLookup?: boolean): DataFilter {
+    public createFilter(sourceId: string, data: EasyDataTable, isLookup?: boolean): DataFilter
+    public createFilter(sourceId?: string, data?: EasyDataTable, isLookup?: boolean): DataFilter {
         return new TextDataFilter(
             this.dataLoader, 
             data || this.getData(), 
-            entityId || this.activeEntity.id, 
+            sourceId || this.activeEntity.id, 
             isLookup);
     }
 
@@ -110,7 +118,7 @@ export class DataContext {
         return this.http;
     }
 
-    public getEntities() {
+    public fetchDataset() {
         this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
             .then(result => {                
@@ -128,37 +136,36 @@ export class DataContext {
             })
     }
 
-    public getEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('GetEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public fetchRecord(keys : CompoundRecordKey, sourceId?: string) {
+        const url = this.resolveEndpoint('FetchRecord', { sourceId: sourceId || this.activeEntity.id });
         
         this.startProcess();
-        return this.http.get(url).getPromise()
+        return this.http.get(url, { queryParams: keys})
             .finally(() => this.endProcess());
     }
 
-    public createEntity(obj: any, entityId?: string) {
-        const url = this.resolveEndpoint('CreateEntity', 
-            { entityId: entityId || this.activeEntity.id });
+    public createRecord(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('CreateRecord', 
+            { sourceId: sourceId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public updateEntity(id: string, obj, entityId?: string) {
-        const url = this.resolveEndpoint('UpdateEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
-        
+    public updateRecord(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('UpdateRecord', { sourceId: sourceId || this.activeEntity.id });
         this.startProcess();
-        return this.http.post(url, obj, { dataType: 'json' }).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json' })
+            .finally(() => this.endProcess());
     }
 
-    public deleteEntity(id: string, entityId?: string) {
-        const url = this.resolveEndpoint('DeleteEntity', { id, 
-            entityId: entityId || this.activeEntity.id });
+    public deleteRecord(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('DeleteRecord', { sourceId: sourceId || this.activeEntity.id });
 
         this.startProcess();
-        return this.http.post(url, null).getPromise().finally(() => this.endProcess());
+        return this.http.post(url, obj, { dataType: 'json'})
+            .finally(() => this.endProcess());
     }
 
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
@@ -176,7 +183,6 @@ export class DataContext {
 
     public resolveEndpoint(endpointKey: EasyDataEndpointKey, options?: any): string 
     public resolveEndpoint(endpointKey: EasyDataEndpointKey | string, options?: any) : string {
-
         options = options || {};
 
         let result = this.endpoints.get(endpointKey);
@@ -193,7 +199,7 @@ export class DataContext {
                     if (opt == 'modelId') {
                         optVal = this.model.getId();
                     }
-                    else if (opt == 'entityId') {
+                    else if (opt == 'sourceId') {
                         optVal = this.activeEntity.id;
                     }
                     else {
@@ -220,10 +226,10 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('GetEntities', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch'));
-        this.setEnpointIfNotExist('GetEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/fetch/{id}'));
-        this.setEnpointIfNotExist('CreateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/create'));
-        this.setEnpointIfNotExist('UpdateEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/update/{id}'));
-        this.setEnpointIfNotExist('DeleteEntity', combinePath(endpointBase, 'models/{modelId}/crud/{entityId}/delete/{id}'));
+        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
+        this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
+        this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
     }
 }

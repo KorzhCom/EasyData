@@ -370,3 +370,4 @@ dist/
 /playground/**/ts/**/*.js
 !/playground/**/ts/styles.js
 /easydata.net/src/**/EasyData*.xml
+/playground/EasyDataTest

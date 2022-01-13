@@ -31,7 +31,7 @@ namespace EasyData.AspNetCore.Tests
         [Theory]
         [InlineData("/api/easydata")]
         [InlineData("/api/data")]
-        public async Task EasyData_GetModel(string endpoint)
+        public async Task EasyData_GetModel_should_return_model(string endpoint)
         {
             var client = _host.GetTestClient();
             var response = await client.GetAsync($"{endpoint}/models/__default");
@@ -59,10 +59,10 @@ namespace EasyData.AspNetCore.Tests
         [InlineData("/api/data", "Customer", 91)]
         [InlineData("/api/easydata", "Product", 77)]
         [InlineData("/api/data", "Product", 77)]
-        public async Task EasyData_GetEntities(string endpoint, string entity, int count)
+        public async Task EasyData_FetchRecords_should_return_resultSet_with_records(string endpoint, string sourceId, int count)
         {
             var client = _host.GetTestClient();
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/fetch", new StringContent("{ \"needTotal\": true }"));
+            var response = await client.PostAsync($"{endpoint}/models/__default/sources/{sourceId}/fetch", new StringContent("{ \"needTotal\": true }"));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -82,34 +82,35 @@ namespace EasyData.AspNetCore.Tests
         }
 
         [Theory]
-        [InlineData("/api/easydata", "Customer", "ALFKI")]
-        [InlineData("/api/data", "Customer", "ALFKI")]
-        [InlineData("/api/easydata", "Product", "1")]
-        [InlineData("/api/data", "Product", "1")]
-        public async Task EasyData_GetEntity(string endpoint, string entity, string entityId)
+        [InlineData("/api/easydata", "Customer", "Id", "ALFKI")]
+        [InlineData("/api/data", "Customer", "Id", "ALFKI")]
+        [InlineData("/api/easydata", "Product", "Id", "1")]
+        [InlineData("/api/data", "Product", "Id", "1")]
+        public async Task EasyData_FetchRecord_should_return_record(string endpoint, string sourceId, string keyProperty, string recordId)
         {
             var client = _host.GetTestClient();
-            var response = await client.GetAsync($"{endpoint}/models/__default/crud/{entity}/fetch/{entityId}");
+            var response = await client.GetAsync($"{endpoint}/models/__default/sources/{sourceId}/fetch?{keyProperty}={recordId}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
       
             response.Content.Headers.ContentType
                     .ToString().Should().StartWith("application/json");
 
-            var jsonReader = new JsonTextReader(new StreamReader(await response.Content.ReadAsStreamAsync()));
+            var responseContentStream = await response.Content.ReadAsStreamAsync();
+            var jsonReader = new JsonTextReader(new StreamReader(responseContentStream));
             var responseObj = JObject.Load(jsonReader);
 
-            var entityObj = responseObj.Should().HaveElement("entity").Subject;
+            var entityObj = responseObj.Should().HaveElement("record").Subject;
             entityObj.Should().NotBeNull();
         }
 
         [Theory]
-        [MemberData(nameof(GetAddEntityData))]
-        public async Task EasyData_AddEntity(string endpoint, string entity, JObject data)
+        [MemberData(nameof(GetAddRecordData))]
+        public async Task EasyData_CreateRecord_should_create_record(string endpoint, string sourceId, JObject data)
         {
             var client = _host.GetTestClient();
             var content = new StringContent(data.ToString());
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/create", content);
+            var response = await client.PostAsync($"{endpoint}/models/__default/sources/{sourceId}/create", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -118,13 +119,13 @@ namespace EasyData.AspNetCore.Tests
 
             var dbContext = _host.Services.GetRequiredService<TestDbContext>();
 
-            if (entity == "Category") {
+            if (sourceId == "Category") {
                 var id = data["Id"].ToObject<int>();
                 var result = await dbContext.Set<Category>().FindAsync(id);
                 result.Should().NotBeNull();
                 CompareWithJObject(result, data);
             }
-            else if (entity == "Shipper") {
+            else if (sourceId == "Shipper") {
                 var id = data["Id"].ToObject<int>();
                 var result = await dbContext.Set<Shipper>().FindAsync(id);
                 result.Should().NotBeNull();
@@ -143,7 +144,7 @@ namespace EasyData.AspNetCore.Tests
             }
         }
 
-        public static IEnumerable<object[]> GetAddEntityData()
+        public static IEnumerable<object[]> GetAddRecordData()
             => new List<object[]>() {
                 new object[] {
                     "/api/easydata", 
@@ -180,12 +181,12 @@ namespace EasyData.AspNetCore.Tests
             };
 
         [Theory]
-        [MemberData(nameof(GetUpdateEntityData))]
-        public async Task EasyData_UpdateEntity(string endpoint, string entity, JObject data)
+        [MemberData(nameof(GetUpdateRecordData))]
+        public async Task EasyData_UpdateRecord_should_update_record(string endpoint, string sourceId, JObject data)
         {
             var client = _host.GetTestClient();
             var content = new StringContent(data.ToString());
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/update/{data["Id"]}", content);
+            var response = await client.PostAsync($"{endpoint}/models/__default/sources/{sourceId}/update", content);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -194,13 +195,13 @@ namespace EasyData.AspNetCore.Tests
 
             var dbContext = _host.Services.GetRequiredService<TestDbContext>();
 
-            if (entity == "Category") {
+            if (sourceId == "Category") {
                 var id = data["Id"].ToObject<int>();
                 var result = await dbContext.Set<Category>().FindAsync(id);
                 result.Should().NotBeNull();
                 CompareWithJObject(result, data);
             }
-            else if (entity == "Employee") {
+            else if (sourceId == "Employee") {
                 var id = data["Id"].ToObject<int>();
                 var result = await dbContext.Set<Employee>().FindAsync(id);
                 result.Should().NotBeNull();
@@ -208,7 +209,7 @@ namespace EasyData.AspNetCore.Tests
             }
         }
 
-        public static IEnumerable<object[]> GetUpdateEntityData()
+        public static IEnumerable<object[]> GetUpdateRecordData()
             => new List<object[]>() {
                 new object[] {
                     "/api/easydata",
@@ -245,15 +246,16 @@ namespace EasyData.AspNetCore.Tests
             };
 
         [Theory]
-        [InlineData("/api/easydata", "Category", "1")]
-        [InlineData("/api/data", "Category", "2")]
-        [InlineData("/api/easydata", "Shipper", "1")]
-        [InlineData("/api/data", "Shipper", "2")]
-        public async Task EasyData_DeleteEntity(string endpoint, string entity, string entityId)
+        [InlineData("/api/easydata", "Category", "Id", "1")]
+        [InlineData("/api/data", "Category", "Id", "2")]
+        [InlineData("/api/easydata", "Shipper", "Id", "1")]
+        [InlineData("/api/data", "Shipper", "Id", "2")]
+        public async Task EasyData_DeleteRecord_should_delete_record(string endpoint, string sourceId, string keyPropery, string entityId)
         {
             var client = _host.GetTestClient();
-            var response = await client.PostAsync($"{endpoint}/models/__default/crud/{entity}/delete/{entityId}", new StringContent(""));
-
+            var content = new StringContent($"{{\"{keyPropery}\": {entityId}}}");
+            var response = await client.PostAsync($"{endpoint}/models/__default/sources/{sourceId}/delete", content);
+            var body = await response.Content.ReadAsStringAsync();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             response.Content.Headers.ContentType
@@ -261,11 +263,11 @@ namespace EasyData.AspNetCore.Tests
 
             var dbContext = _host.Services.GetRequiredService<TestDbContext>();
 
-            if (entity == "Category") {
+            if (sourceId == "Category") {
                 var result = await dbContext.Set<Category>().FindAsync(int.Parse(entityId));
                 result.Should().BeNull();
             }
-            else if (entity == "Shipper") {
+            else if (sourceId == "Shipper") {
                 var result = await dbContext.Set<Shipper>().FindAsync(int.Parse(entityId));
                 result.Should().BeNull();
             }

@@ -5,8 +5,8 @@
     <PackageId>EasyData.Exporters.Default</PackageId>
     <DocumentationFile>EasyData.Exporters.Default.xml</DocumentationFile>
     <Description>
-      Default exporters of EasyData library that support CSV, HTML, and Excel-compatible HTML formats.
-    </Description>
+			Default exporters (implementations of EasyData's IDataExporter interface) for CSV and HTML (Excel-compatible) formats.
+		</Description>
     <PackageTags>database export csv html excel-html</PackageTags>
   </PropertyGroup>
 

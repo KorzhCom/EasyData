@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,6 +53,8 @@ namespace EasyData.AspNetCore
         /// <param name="ct">The cancellation token.</param>
         public virtual async Task HandleGetModelAsync(string modelId, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             try {
                 var model = await Manager.GetModelAsync(modelId, ct);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
@@ -78,8 +81,10 @@ namespace EasyData.AspNetCore
             await model.WriteToJsonAsync(jsonWriter, MetaDataReadWriteOptions.ClientSideContent, ct);
         }
 
-        public virtual async Task HandleFetchDatasetAsync(string modelId, string entityContainer, CancellationToken ct = default)
+        public virtual async Task HandleFetchDatasetAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             int? offset = null;
             int? fetch = null;
 
@@ -113,12 +118,12 @@ namespace EasyData.AspNetCore
 
             long? total = null;
             if (needTotal) {
-                total = await Manager.GetTotalRecordsAsync(modelId, entityContainer, filters, isLookup, ct);
+                total = await Manager.GetTotalRecordsAsync(modelId, sourceId, filters, isLookup, ct);
             }
 
-            var sorters = await Manager.GetDefaultSortersAsync(modelId, entityContainer);
+            var sorters = await Manager.GetDefaultSortersAsync(modelId, sourceId);
 
-            var result = await Manager.FetchDatasetAsync(modelId, entityContainer, filters, sorters, isLookup, offset, fetch);
+            var result = await Manager.FetchDatasetAsync(modelId, sourceId, filters, sorters, isLookup, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                 await WriteFetchDatasetResponseAsync(jsonWriter, result, total, cancellationToken);
             }, ct);
@@ -139,7 +144,6 @@ namespace EasyData.AspNetCore
             return result;
         }
 
-
         protected virtual async Task WriteFetchDatasetResponseAsync(JsonWriter jsonWriter, EasyDataResultSet result, long? total, CancellationToken ct)
         {
             if (total.HasValue) {
@@ -156,9 +160,16 @@ namespace EasyData.AspNetCore
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleFetchRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public virtual async Task HandleFetchRecordAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
-            var result = await Manager.FetchRecordAsync(modelId, entityContainer, keyStr);
+            ct.ThrowIfCancellationRequested();
+
+            var query = HttpContext.Request.Query;
+            var keys = query.Keys.ToDictionary(
+                k => k,
+                k => query[k].ToString());
+
+            var result = await Manager.FetchRecordAsync(modelId, sourceId, keys);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                 await WriteFetchRecordResponseAsync(jsonWriter, result, cancellationToken);
             }, ct);
@@ -167,16 +178,18 @@ namespace EasyData.AspNetCore
         protected virtual async Task WriteFetchRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleCreateRecordAsync(string modelId, string entityContainer, CancellationToken ct = default)
+        public virtual async Task HandleCreateRecordAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
             using (var jsReader = new JsonTextReader(reader)) {
                 var props = await JObject.LoadAsync(jsReader);
-                var result = await Manager.CreateRecordAsync(modelId, entityContainer, props);
+                var result = await Manager.CreateRecordAsync(modelId, sourceId, props);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                     await WriteCreateRecordResponseAsync(jsonWriter, result, ct);
                 }, ct);
@@ -186,16 +199,18 @@ namespace EasyData.AspNetCore
         protected virtual async Task WriteCreateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleUpdateRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public virtual async Task HandleUpdateRecordAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
+            ct.ThrowIfCancellationRequested();
+
             using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
             using (var jsReader = new JsonTextReader(reader)) {
                 var props = await JObject.LoadAsync(jsReader);
-                var result = await Manager.UpdateRecordAsync(modelId, entityContainer, keyStr, props, ct);
+                var result = await Manager.UpdateRecordAsync(modelId, sourceId, props, ct);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                     await WriteUpdateRecordResponseAsync(jsonWriter, result, cancellationToken);
                 }, ct);
@@ -204,17 +219,25 @@ namespace EasyData.AspNetCore
 
         protected virtual async Task WriteUpdateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
+
             var jObj = JObject.FromObject(entity);
-            await jsonWriter.WritePropertyNameAsync("entity", ct);
+            await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
 
-        public virtual async Task HandleDeleteRecordAsync(string modelId, string entityContainer, string keyStr, CancellationToken ct = default)
+        public virtual async Task HandleDeleteRecordAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
-            await Manager.DeleteRecordAsync(modelId, entityContainer, keyStr, ct);
-            await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
-                await WriteDeleteRecordResponseAsync(jsonWriter, cancellationToken);
-            }, ct);
+            ct.ThrowIfCancellationRequested();
+
+            using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
+            using (var jsReader = new JsonTextReader(reader)) {
+                var props = await JObject.LoadAsync(jsReader);
+                await Manager.DeleteRecordAsync(modelId, sourceId, props, ct);
+                await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
+                    await WriteDeleteRecordResponseAsync(jsonWriter, cancellationToken);
+                }, ct);
+            }          
         }
 
         protected virtual Task WriteDeleteRecordResponseAsync(JsonWriter jsonWriter, CancellationToken ct)

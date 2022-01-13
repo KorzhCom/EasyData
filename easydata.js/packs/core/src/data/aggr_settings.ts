@@ -1,62 +1,15 @@
-export interface AggrCalculationError extends Error {
-    level? : number;
-}
-export interface AggrCalculationOptions {
-    maxLevel?: number;
-    resultObtained?(result?: any, level?: number);
-    errorOccurred?(error:AggrCalculationError);    
-}
-
-export interface AggregatesCalculator {
-    getAggrContainer(): AggregatesContainer;
-    calculate(options?: AggrCalculationOptions): Promise<void>;
-}
-
-export interface GroupKeys {
-    [key: string]: any;
-}
-
-export interface GroupValues {
-    [key: string]: any;
-}
-
-type LevelData = Map<string, GroupValues>;
-
-export interface AggregatesContainer {
-    setAggregates(level: number, data: LevelData);
-    getAggregates(level: number, key: GroupKeys): Promise<GroupValues>;
-}
-
-export interface GroupSettings {
-    name?: string;
-    columns?: string[],
-    from?: number;
-    to?: number;
-}
-
-export interface GroupData {
-    name?: string;
-    columns: Array<string>;
-    aggregates: Array<AggregateInfo>;
-}
-
-export type AggregateInfo = { colId: string, funcId: string };
-
-export interface AggregationColumnStore {
-    getColumnIds(from: number, to?: number): string[];
-    validateColumns(colIds: string[]): boolean;
-    validateAggregate(colId: string, funcId: string): boolean;
-}
+import { DataGroup, AggregateColumn, AggregationColumnStore, GroupDescriptor } from './aggr_structures'
+import { DataRow } from "./data_row";
 
 /**
  * Represents AggregationSettings structure prepared for saving into a storage.
  */
-export interface AggregationData {
-    groups: Array<GroupData>,
+export interface AggregationSettingsData {
+    groups: Array<DataGroup>,
     ugt: boolean;
     urc: boolean;
     csg: boolean;
-    aggregates: Array<AggregateInfo>;
+    aggregates: Array<AggregateColumn>;
 }
 
 /**
@@ -66,21 +19,39 @@ export interface AggregationData {
 export class AggregationSettings {
     public readonly COUNT_FIELD_NAME: string;
      
-    private aggregates: Array<AggregateInfo> = []
+    private aggregates: Array<AggregateColumn> = []
 
-    private groups: GroupData[] = [];
+    private groups: DataGroup[] = [];
 
     private useGrandTotals = false;
 
     private useRecordCount = false;
 
-    public caseSensitiveGroups = false;
+    private _caseSensitiveGroups = false;
+
+    public compareValues: (value1:any, value2: any) => boolean;
+
 
     constructor(private colStore: AggregationColumnStore) {
         this.COUNT_FIELD_NAME = 'GRPRECCNT';
     }
 
-    public addGroup(settings: GroupSettings) {
+    get caseSensitiveGroups() : boolean {
+        return this._caseSensitiveGroups;
+    }
+
+    set caseSensitiveGroups(value : boolean) {
+        this._caseSensitiveGroups = value;
+        this.updateCompareProc();
+    }
+
+    private updateCompareProc() {
+        this.compareValues = this._caseSensitiveGroups
+                ? this.strictCompare
+                : this.caseInsensitiveCompare;
+    }
+
+    public addGroup(settings: GroupDescriptor) {
         const cols = settings.columns || this.colStore.getColumnIds(settings.from, settings.to);
         if (!this.colStore.validateColumns(cols))
             throw "Invalid columns: " + cols;
@@ -88,7 +59,7 @@ export class AggregationSettings {
         if (this.hasColumnsInUse(cols))
             throw "Can't add same columns to different groups/aggregates";
 
-        this.groups.push({ columns: cols, aggregates: null, ...settings })
+        this.groups.push({ columns: cols, ...settings })
         return this;
     }
 
@@ -137,7 +108,7 @@ export class AggregationSettings {
         return groups[groups.length - 1];
     }
 
-    public getAggregates(): Array<AggregateInfo> {
+    public getAggregates(): Array<AggregateColumn> {
         return this.aggregates;
     }
 
@@ -204,7 +175,7 @@ export class AggregationSettings {
                 && (this.hasGrandTotals() || this.hasGroups());
     }
 
-    public saveToData(): AggregationData {
+    public saveToData(): AggregationSettingsData {
         return {
             groups: Array.from(this.groups),
             ugt: this.useGrandTotals,
@@ -214,7 +185,7 @@ export class AggregationSettings {
         }
     }
 
-    public loadFromData(data: AggregationData) {
+    public loadFromData(data: AggregationSettingsData) {
         if (data) {
             if (typeof data.ugt !== 'undefined') this.useGrandTotals = data.ugt;
             if (typeof data.urc !== 'undefined') this.useRecordCount = data.urc;
@@ -228,5 +199,32 @@ export class AggregationSettings {
                 this.aggregates = Array.from(data.aggregates);
             }
         }
+    }
+
+    public buildGroupKey(group: DataGroup, row: DataRow) {
+        const caseInsensitive = !this.caseSensitiveGroups;
+        let result: any = {}
+        if (group) {
+            for (const colId of group.columns) {
+                let keyVal = row.getValue(colId);
+                if (caseInsensitive && typeof(keyVal) === 'string') {
+                    keyVal = keyVal.toLowerCase();
+                }
+                result[colId] = keyVal;
+            }    
+        }
+        return result;
+    }
+
+    //returns true if value1 == value2
+    private strictCompare(value1: any, value2: any) : boolean {
+        return value1 === value2;
+    }
+
+    //makes a case insensative comparision of two values and return true if there are equal
+    private caseInsensitiveCompare(value1: any, value2: any) : boolean {
+        const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
+        const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
+        return val1 === val2;
     }
 }

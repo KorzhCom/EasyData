@@ -1,6 +1,6 @@
 {
     "name": "@easydata/ui",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "EasyData.JS: DOM manipulation functions and UI widgets",
     "types": "./dist/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.ui.js",
@@ -20,9 +20,9 @@
         "url": "https://github.com/KorzhCom/EasyData.git"
     },
     "keywords": [
-	"database",
-	"crud",
-	"paging",
+        "database",
+        "crud",
+        "paging",
         "data filter",
         "data grid",
         "data dialogs",
@@ -33,12 +33,11 @@
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
     "peerDependencies": {
-        "@easydata/core": "^1.3.0"
+        "@easydata/core": "^1.4.0"
     },
     "devDependencies": {
         "@types/node": "12.7.8",
         "@types/jasmine": "^3.3.12",
-        "@types/jsdom": "12.2.4",
         "autoprefixer": "^9.7.2",
         "css-loader": "^2.1.0",
         "es6-promise": "^4.2.8",
@@ -57,7 +56,7 @@
         "ts-node": "^8.0.2",
         "typedoc": "^0.15.0",
         "typedoc-webpack-plugin": "^1.1.4",
-        "typescript": "3.5.*",
+        "typescript": "3.7.*",
         "typings-for-css-modules-loader": "1.7.0",
         "terser-webpack-plugin": "^4.2.3",
         "webpack": "^4.36.1",

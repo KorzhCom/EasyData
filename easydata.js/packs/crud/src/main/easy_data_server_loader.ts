@@ -6,15 +6,14 @@ import {
 import { DataContext } from './data_context';
 
 export class EasyDataServerLoader implements DataLoader {
-
     constructor(protected context: DataContext) {
 
     }
 
     loadChunk(params: DataChunkDescriptor | any) {
-        const url = this.context.resolveEndpoint('GetEntities', 
-            { entityId: params.entityId || this.context.getActiveEntity().id });
-        delete params.entityId;
+        const url = this.context.resolveEndpoint('FetchDataset', 
+            { sourceId: params.sourceId || this.context.getActiveEntity().id });
+        delete params.sourceId;
 
         this.context.startProcess();
         const http = this.context.getHttpClient();

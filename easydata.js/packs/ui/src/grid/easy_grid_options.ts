@@ -1,4 +1,4 @@
-import { EasyDataTable, AggregatesCalculator, AggregationSettings } from '@easydata/core';
+import { EasyDataTable, AggregatesCalculator, AggregationSettings, DataType } from '@easydata/core';
 
 import { 
     ColumnMovedEvent, ColumnDeletedEvent, 
@@ -12,6 +12,29 @@ import {
 import { GridColumn } from './easy_grid_columns';
 import { GridCellRenderer } from './easy_grid_cell_renderer';
 
+export enum AutoResizeColumns {
+    Always,
+    Once,
+    Never
+}
+
+export interface ColumnWidthSettings {
+    min? : number,
+    max? : number,
+    default: number
+}
+
+export interface DefaultColumnWidths {
+    autoResize?: AutoResizeColumns;
+    [key: number] : ColumnWidthSettings,
+    rowNumColumn?: ColumnWidthSettings,
+    stringColumns?: ColumnWidthSettings,
+    numberColumns?: ColumnWidthSettings,
+    boolColumns?: ColumnWidthSettings,
+    dateColumns?: ColumnWidthSettings,
+    otherColumns?: ColumnWidthSettings
+}
+
 export interface EasyGridOptions {
     slot: HTMLElement | string;
 
@@ -22,8 +45,8 @@ export interface EasyGridOptions {
         settings: AggregationSettings,
         calculator: AggregatesCalculator
     },
-    addColumns?: boolean;
-    addColumnsTitle?: string;
+    showPlusButton?: boolean;
+    plusButtonTitle?: string;
     useRowNumeration?: boolean;
     allowDragDrop?: boolean;
 
@@ -45,6 +68,8 @@ export interface EasyGridOptions {
         fixed?: boolean
     }
 
+    columnWidths?: DefaultColumnWidths;
+
     syncGridColumns?: boolean;
 
     viewportRowsCount?: number;
@@ -55,7 +80,7 @@ export interface EasyGridOptions {
     onRowClick?: (ev: RowClickEvent) => void;
     onRowDbClick?: (ev: RowClickEvent) => void;
     onPageChanged?: (ev: PageChangedEvent) => void;
-    onAddColumnClick?: (ev: AddColumnClickEvent) => void;
+    onPlusButtonClick?: (ev: AddColumnClickEvent) => void;
     onColumnChanged?: (ev: ColumnChangedEvent) => void;
     onColumnDeleted?: (ev: ColumnDeletedEvent) => void;
     onColumnMoved?: (ev: ColumnMovedEvent) => void;
