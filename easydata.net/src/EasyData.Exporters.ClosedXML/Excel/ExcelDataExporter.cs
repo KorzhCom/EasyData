@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -241,13 +241,20 @@ namespace EasyData.Export
             rngTable.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
             rngTable.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
-            ws.Columns(2, 2 + data.Cols.Count - 1).AdjustToContents();
+            AdjustColumnsSize(ws.Columns(2, 2 + data.Cols.Count - 1));
 
             using (MemoryStream memoryStream = new MemoryStream()) {
                 wb.SaveAs(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
+            }
+        }
+
+        private void AdjustColumnsSize(IXLColumns columns)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                columns.AdjustToContents();
             }
         }
 
