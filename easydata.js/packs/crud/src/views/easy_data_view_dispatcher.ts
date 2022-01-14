@@ -12,7 +12,10 @@ export class EasyDataViewDispatcher {
 
     private container: HTMLElement;
 
-    private options: EasyDataViewDispatcherOptions = { basePath: 'easydata' };
+    private options: EasyDataViewDispatcherOptions = {
+        container: '#EasyDataContainer',
+        basePath: 'easydata' 
+    };
 
     constructor(options?: EasyDataViewDispatcherOptions) {
         this.options = dataUtils.assign(this.options, options || {});
@@ -25,7 +28,7 @@ export class EasyDataViewDispatcher {
             this.basePath = this.normalizeBasePath(this.options.basePath);
         }
 
-        this.setContainer(options.container);
+        this.setContainer(this.options.container);
 
         const progressBarSlot = document.createElement('div');
         const bar = new ProgressBar(progressBarSlot);   
@@ -34,8 +37,8 @@ export class EasyDataViewDispatcher {
         parent.insertBefore(progressBarSlot, parent.firstElementChild);
         
         this.context = new DataContext({
-            endpoint: options.endpoint,
-            dataTable: options.dataTable,
+            endpoint: this.options.endpoint,
+            dataTable: this.options.dataTable,
             onProcessStart: () => bar.show(),
             onProcessEnd: () => bar.hide()
         });
@@ -55,23 +58,25 @@ export class EasyDataViewDispatcher {
 
     private setContainer(container: HTMLElement | string) {
         if (!container) {
-            this.container = document.getElementById('EasyDataContainer');
-            return;
+            throw 'Container is undefined';
         }
 
         if (typeof container === 'string') {
             if (container.length){
-                if (container[0] === '#') {
-                    this.container = document.getElementById(container.substring(1));
-                }
-                else if (container[0] === '.') {
+                if (container[0] === '.') {
                     const result = document.getElementsByClassName(container.substring(1));
                     if (result.length) 
                         this.container = result[0] as HTMLElement;
                 }
                 else {
-                    throw Error('Unrecognized container parameter ' + 
-                    '(Must be an element ID, a class name or HTMLElement object itself): ' + container);
+                    if (container[0] === '#') {
+                        container = container.substring(1);
+                    }
+                    this.container = document.getElementById(container);
+                }
+                if (!this.container) {
+                    throw Error('Unrecognized `container` parameter: ' + container + '\n'  
+                        + 'It must be an element ID, a class name (starting with .) or an HTMLElement object itself.');
                 }
             }
         }
