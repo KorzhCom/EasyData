@@ -168,7 +168,6 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public virtual Employee Manager { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
-
     }
 
     public class Order

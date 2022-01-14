@@ -312,6 +312,8 @@ namespace EasyData.EntityFrameworkCore
                 //}
 
                 if (dataAttr != null) {
+                    dataAttr.ShowOnEdit = false;
+                    dataAttr.ShowOnCreate = false;
                     lookUpAttr.DataAttr = dataAttr;
                     lookUpAttr.IsNullable = dataAttr.IsNullable;
                 }
