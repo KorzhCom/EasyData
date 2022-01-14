@@ -106,6 +106,7 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
+                    .Where(prop => prop.PropertyInfo != null) //exclude shadow properties for now
                     .Where(ApplyPropertyFilters);
         }
 
@@ -295,21 +296,25 @@ namespace EasyData.EntityFrameworkCore
 
                 var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
                 var dataAttr = entity.FindAttributeById(dataAttrId);
-                if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entity, entityType, property);
-                    if (dataAttr == null)
-                        return;
 
-                    if (dataAttr.Index == int.MaxValue) {
-                        dataAttr.Index = attrCounter;
-                    }
+                //TODO: Uncomment when we find out how to get data for shadow properties
+                //if (dataAttr == null) {
+                //    dataAttr = CreateEntityAttribute(entity, entityType, property);
+                //    if (dataAttr == null)
+                //        return;
 
-                    attrCounter++;
-                    entity.Attributes.Add(dataAttr);
+                //    if (dataAttr.Index == int.MaxValue) {
+                //        dataAttr.Index = attrCounter;
+                //    }
+
+                //    attrCounter++;
+                //    entity.Attributes.Add(dataAttr);
+                //}
+
+                if (dataAttr != null) {
+                    lookUpAttr.DataAttr = dataAttr;
+                    lookUpAttr.IsNullable = dataAttr.IsNullable;
                 }
-                lookUpAttr.DataAttr = dataAttr;
-                lookUpAttr.IsNullable = dataAttr.IsNullable;
-
                 lookUpAttr.LookupEntity = lookupEntity;
 
                 var principalKey = foreignKey.PrincipalKey;
