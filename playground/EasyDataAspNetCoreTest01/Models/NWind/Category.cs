@@ -12,13 +12,13 @@ namespace EasyDataBasicDemo.Models
     [MetaEntity(Description = "Categories of Product")]
     public class Category
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("CategoryID")]
         public int Id { get; set; }
 
         public Language Language { get; set; }
   
-        [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
+       // [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
         public string CategoryName { get; set; }
 
         public string Description { get; set; }
