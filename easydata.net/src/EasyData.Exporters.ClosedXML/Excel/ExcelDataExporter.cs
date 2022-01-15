@@ -253,11 +253,8 @@ namespace EasyData.Export
 
         private void AdjustColumnsSize(IXLColumns columns)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                columns.AdjustToContents();
-            }
+            columns.AdjustToContents();
         }
-
 
         private static string GetExcelColumnId(int num)
         {
