@@ -146,18 +146,17 @@ export class EntityDataView {
                 .replace('{entity}', activeEntity.caption),
             body: form.getHtml(),
             onSubmit: () => {
-
                 if (!form.validate())
                     return false;
                       
                 form.getData()
-                .then(obj => this.context.createRecord(obj))
-                .then(() => {
-                    return this.refreshData();
-                })
-                .catch((error) => {
-                    this.processError(error);
-                });
+                    .then(obj => this.context.createRecord(obj))
+                    .then(() => {
+                        return this.refreshData();
+                    })
+                    .catch((error) => {
+                        this.processError(error);
+                    });
             }
         });
     }

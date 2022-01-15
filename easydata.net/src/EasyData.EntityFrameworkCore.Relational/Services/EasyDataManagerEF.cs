@@ -72,6 +72,7 @@ namespace EasyData.Services
 
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
             var attrIdProps = entityType.GetProperties()
+                .Where(prop => !prop.IsShadowProperty())
                 .ToDictionary(
                     prop => DataUtils.ComposeKey(sourceId, prop.Name), 
                     prop => prop);
@@ -100,9 +101,9 @@ namespace EasyData.Services
             foreach (var record in records) {
                 var values = attrs.Select(attr => {
                     var prop = attrIdProps[attr.Id];
-                    return (prop.PropertyInfo != null)
+                    return (object)(prop.PropertyInfo != null
                         ? prop.PropertyInfo.GetValue(record)
-                        : null;
+                        : null);
                 }).ToList();
                 result.Rows.Add(new EasyDataRow(values));
             }
