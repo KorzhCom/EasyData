@@ -36,12 +36,14 @@ export class EntityEditFormBuilder {
         this.form = new EntityEditForm(this.context);
     }
 
-    private setupLookupField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+    private setupLookupField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any): void {
         const lookupEntity = this.context.getMetaData().getRootEntity()
             .subEntities.filter(ent => ent.id == attr.lookupEntity)[0];
         const dataAttr = this.context.getMetaData().getAttributeById(attr.dataAttr);
 
-        readOnly = readOnly && dataAttr.isEditable;
+        if (!dataAttr) return;
+
+        readOnly = readOnly || !dataAttr.isEditable;
 
         value = this.params.values
             ? this.params.values.getValue(dataAttr.id)
