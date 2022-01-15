@@ -106,7 +106,6 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
-                    .Where(prop => prop.PropertyInfo != null) //exclude shadow properties for now
                     .Where(ApplyPropertyFilters);
         }
 
@@ -297,22 +296,21 @@ namespace EasyData.EntityFrameworkCore
                 var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
                 var dataAttr = entity.FindAttributeById(dataAttrId);
 
-                //TODO: Uncomment when we find out how to get data for shadow properties
-                //if (dataAttr == null) {
-                //    dataAttr = CreateEntityAttribute(entity, entityType, property);
-                //    if (dataAttr == null)
-                //        return;
+                if (dataAttr == null) {
+                    dataAttr = CreateEntityAttribute(entity, entityType, property);
+                    if (dataAttr == null)
+                        return;
 
-                //    if (dataAttr.Index == int.MaxValue) {
-                //        dataAttr.Index = attrCounter;
-                //    }
+                    if (dataAttr.Index == int.MaxValue) {
+                        dataAttr.Index = attrCounter;
+                    }
 
-                //    attrCounter++;
-                //    entity.Attributes.Add(dataAttr);
-                //}
+                    attrCounter++;
+                    entity.Attributes.Add(dataAttr);
+                }
 
                 if (dataAttr != null) {
-                    // hide lookup data field of lookup field on managing data
+                    // hide lookup data field field from data editing views
                     dataAttr.ShowOnCreate = dataAttr.ShowOnEdit = false;
                     lookUpAttr.DataAttr = dataAttr;
                     lookUpAttr.IsNullable = dataAttr.IsNullable;
