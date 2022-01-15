@@ -502,16 +502,13 @@ export class EntityEditFormBuilder {
 
         this.form['setHtmlInt'](formHtml);
 
-        for (const attr of this.context.getActiveEntity().attributes) {      
-            if (!attr.isPrimaryKey) {
-                if (this.params.isEditForm) {
-                    if (!attr.showOnEdit)
-                        continue;
-                }
-                else {
-                    if (!attr.showOnCreate)
-                        continue;
-                }    
+        for (const attr of this.context.getActiveEntity().attributes) { 
+            
+            if (!this.params.isEditForm && !attr.showOnCreate)
+                continue;
+
+            if (!attr.isPrimaryKey && this.params.isEditForm && !attr.showOnEdit) {
+                continue;
             }
 
             this.addFormField(fb.toDOM(), attr)

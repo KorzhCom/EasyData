@@ -312,8 +312,8 @@ namespace EasyData.EntityFrameworkCore
                 //}
 
                 if (dataAttr != null) {
-                    dataAttr.ShowOnEdit = false;
-                    dataAttr.ShowOnCreate = false;
+                    // hide lookup data field of lookup field on managing data
+                    dataAttr.ShowOnCreate = dataAttr.ShowOnEdit = false;
                     lookUpAttr.DataAttr = dataAttr;
                     lookUpAttr.IsNullable = dataAttr.IsNullable;
                 }
@@ -329,9 +329,6 @@ namespace EasyData.EntityFrameworkCore
                     if (lookupDataAttr.Index == int.MaxValue) {
                         lookupDataAttr.Index = attrCounter;
                     }
-
-                    // hide lookup data field of lookup field on managing data
-                    lookupDataAttr.ShowOnEdit = lookupDataAttr.ShowOnCreate = false;
 
                     attrCounter++;
                     entity.Attributes.Add(lookUpAttr);
@@ -446,6 +443,13 @@ namespace EasyData.EntityFrameworkCore
                     return null;
             }
 
+            if (entityAttr.IsPrimaryKey)
+                entityAttr.IsEditable = false;
+            if (property.ValueGenerated.HasFlag(ValueGenerated.OnAdd))
+                entityAttr.ShowOnCreate = false;
+            if (property.ValueGenerated.HasFlag(ValueGenerated.OnUpdate))
+                entityAttr.ShowOnEdit = false;
+         
             if (entityAttr.DataType == DataType.Blob) {
                 // DO NOT show blob fields in GRID
                 entityAttr.ShowOnView = false;
