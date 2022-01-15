@@ -11,7 +11,6 @@ namespace EasyDataBasicDemo.Models
 {
     public class Language
     {
-        [MetaEntityAttr(Enabled = false)]
         public int Id { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }

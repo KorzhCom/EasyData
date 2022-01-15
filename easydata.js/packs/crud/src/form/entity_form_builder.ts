@@ -504,8 +504,7 @@ export class EntityEditFormBuilder {
 
         this.form['setHtmlInt'](formHtml);
 
-        for (const attr of this.context.getActiveEntity().attributes) { 
-            
+        for (const attr of this.context.getActiveEntity().attributes) {       
             if (!this.params.isEditForm && !attr.showOnCreate)
                 continue;
 

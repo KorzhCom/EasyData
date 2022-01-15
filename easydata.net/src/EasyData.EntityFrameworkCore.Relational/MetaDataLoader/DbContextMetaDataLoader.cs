@@ -106,6 +106,7 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
+                    .Where(prop => !prop.IsShadowProperty())
                     .Where(ApplyPropertyFilters);
         }
 
@@ -274,8 +275,24 @@ namespace EasyData.EntityFrameworkCore
 
             var foreignKey = navigation.ForeignKey;
             var property = foreignKey.Properties.First();
+            var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
+            var dataAttr = entity.FindAttributeById(dataAttrId);
 
-            if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
+            //TODO: Uncomment when we find out how to get values for shadow properties too
+            //if (dataAttr == null) {
+            //    dataAttr = CreateEntityAttribute(entity, entityType, property);
+            //    if (dataAttr == null)
+            //        return;
+
+            //    if (dataAttr.Index == int.MaxValue) {
+            //        dataAttr.Index = attrCounter;
+            //    }
+
+            //    attrCounter++;
+            //    entity.Attributes.Add(dataAttr);
+            //}
+
+            if (dataAttr != null && EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
                 var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { 
                     Parent = entity, 
                     Kind = EntityAttrKind.Lookup 
@@ -293,28 +310,11 @@ namespace EasyData.EntityFrameworkCore
                 if (!enabled)
                     return;
 
-                var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
-                var dataAttr = entity.FindAttributeById(dataAttrId);
+                // hide lookup data field field from data editing views
+                dataAttr.ShowOnCreate = dataAttr.ShowOnEdit = false;
+                lookUpAttr.DataAttr = dataAttr;
+                lookUpAttr.IsNullable = dataAttr.IsNullable;
 
-                if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entity, entityType, property);
-                    if (dataAttr == null)
-                        return;
-
-                    if (dataAttr.Index == int.MaxValue) {
-                        dataAttr.Index = attrCounter;
-                    }
-
-                    attrCounter++;
-                    entity.Attributes.Add(dataAttr);
-                }
-
-                if (dataAttr != null) {
-                    // hide lookup data field field from data editing views
-                    dataAttr.ShowOnCreate = dataAttr.ShowOnEdit = false;
-                    lookUpAttr.DataAttr = dataAttr;
-                    lookUpAttr.IsNullable = dataAttr.IsNullable;
-                }
                 lookUpAttr.LookupEntity = lookupEntity;
 
                 var principalKey = foreignKey.PrincipalKey;
@@ -441,8 +441,6 @@ namespace EasyData.EntityFrameworkCore
                     return null;
             }
 
-            if (entityAttr.IsPrimaryKey)
-                entityAttr.IsEditable = false;
             if (property.ValueGenerated.HasFlag(ValueGenerated.OnAdd))
                 entityAttr.ShowOnCreate = false;
             if (property.ValueGenerated.HasFlag(ValueGenerated.OnUpdate))
