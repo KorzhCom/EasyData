@@ -27,6 +27,6 @@ export const getEditDateTimeFormat = (dtype: DataType): string => {
 
 export const setLocation = (path: string) => {
     const state = window.history.state;
-    history.replaceState(state, document.title, path)
+    history.pushState(state, document.title, path)
     window.dispatchEvent(new Event('ed_set_location'));
 }

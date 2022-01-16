@@ -95,7 +95,9 @@ export class EasyDataViewDispatcher {
     }
 
     run(): Promise<void> {
-        window.addEventListener('ed_set_location', this.onSetLocation);
+        
+        this.attach();
+
         return this.context.loadMetaData()
         .then(() => {
             this.setActiveView();
@@ -126,7 +128,13 @@ export class EasyDataViewDispatcher {
         this.setActiveView();
     }
 
+    private attach = () => {
+        window.addEventListener('ed_set_location', this.onSetLocation);
+        window.addEventListener('popstate', this.onSetLocation);
+    }
+
     detach() {
         window.removeEventListener('ed_set_location', this.onSetLocation);
+        window.removeEventListener('popstate', this.onSetLocation);
     }
 }
