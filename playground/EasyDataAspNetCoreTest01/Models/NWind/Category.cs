@@ -16,6 +16,7 @@ namespace EasyDataBasicDemo.Models
         [Column("CategoryID")]
         public int Id { get; set; }
 
+        public int? LanguageId { get; set; }
         public Language Language { get; set; }
   
        // [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]

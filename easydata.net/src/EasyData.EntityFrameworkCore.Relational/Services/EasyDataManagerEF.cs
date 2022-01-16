@@ -65,14 +65,14 @@ namespace EasyData.Services
             await GetModelAsync(modelId);
 
             var entityType = GetCurrentEntityType(DbContext, sourceId);
-            var records = await ListRecordsAsync(DbContext, entityType.ClrType,
+            var records = GetRecordsQuery(DbContext, entityType.ClrType,
                     filters, sorters, isLookup, offset, fetch, ct);
 
             var result = new EasyDataResultSet();
 
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
             var attrIdProps = entityType.GetProperties()
-                .Where(prop => prop.PropertyInfo != null) //we exclude shadow (foreign key) properties for now
+                .Where(prop => !prop.IsShadowProperty())
                 .ToDictionary(
                     prop => DataUtils.ComposeKey(sourceId, prop.Name), 
                     prop => prop);
@@ -98,12 +98,12 @@ namespace EasyData.Services
                 }));
             }
 
-            foreach (var entity in records) {
+            foreach (var record in records) {
                 var values = attrs.Select(attr => {
                     var prop = attrIdProps[attr.Id];
-                    return (prop.PropertyInfo != null) 
-                        ? prop.PropertyInfo.GetValue(entity)
-                        : null;
+                    return (object)(prop.PropertyInfo != null
+                        ? prop.PropertyInfo.GetValue(record)
+                        : null);
                 }).ToList();
                 result.Rows.Add(new EasyDataRow(values));
             }
@@ -253,7 +253,7 @@ namespace EasyData.Services
                 .Where(m => m.IsGenericMethodDefinition).ToList();
 
             _findRecordAsync = methods.Single(m => m.Name == nameof(FetchRecordAsync));
-            _listRecordsAsync = methods.Single(m => m.Name == nameof(ListRecordsAsync));
+            _queryRecordsGeneric = methods.Single(m => m.Name == nameof(QueryRecords));
             _countRecordsAsync = methods.Single(m => m.Name == nameof(CountRecordsAsync));
         }
 
@@ -270,9 +270,9 @@ namespace EasyData.Services
             return (object)((dynamic)task).Result;
         }
 
-        private static readonly MethodInfo _listRecordsAsync;
+        private static readonly MethodInfo _queryRecordsGeneric;
 
-        private async Task<List<object>> ListRecordsAsync(DbContext dbContext, Type entityType,
+        private IQueryable GetRecordsQuery(DbContext dbContext, Type entityType,
             IEnumerable<EasyFilter> filters,
             IEnumerable<EasySorter> sorters,
             bool isLookup, int? offset,
@@ -280,12 +280,11 @@ namespace EasyData.Services
         {
             ct.ThrowIfCancellationRequested();
 
-            var targetMethod = _listRecordsAsync.MakeGenericMethod(entityType);
-            var task = (Task)targetMethod
+            var targetMethod = _queryRecordsGeneric.MakeGenericMethod(entityType);
+            var result = (IQueryable)targetMethod
                        .Invoke(this, new object[] { dbContext, filters, sorters, isLookup, offset, fetch, ct });
 
-            await task.ConfigureAwait(false);
-            return (List<object>)((dynamic)task).Result;
+            return result;
         }
 
         private static readonly MethodInfo _countRecordsAsync;
@@ -308,7 +307,7 @@ namespace EasyData.Services
             return await dbContext.Set<T>().FindAsync(keys.ToArray(), ct);
         }
 
-        private async Task<List<object>> ListRecordsAsync<T>(DbContext dbContext,
+        private IQueryable QueryRecords<T>(DbContext dbContext,
             IEnumerable<EasyFilter> filters,
             IEnumerable<EasySorter> sorters,
             bool isLookup,
@@ -348,7 +347,7 @@ namespace EasyData.Services
                 query = query.Take(fetch.Value);
             }
 
-            return await query.Cast<object>().ToListAsync(ct);
+            return query;
         }
 
         private async Task<long> CountRecordsAsync<T>(DbContext dbContext, IEnumerable<EasyFilter> filters, bool isLookup, 
