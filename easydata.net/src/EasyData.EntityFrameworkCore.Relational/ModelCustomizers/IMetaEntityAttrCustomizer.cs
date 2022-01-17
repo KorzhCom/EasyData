@@ -12,5 +12,6 @@
         IMetaEntityAttrCustomizer SetShowOnEdit(bool showOnEdit);
         IMetaEntityAttrCustomizer SetShowOnView(bool showOnView);
         IMetaEntityAttrCustomizer SetSorting(int sorting);
+        IMetaEntityAttrCustomizer SetDataType(DataType dataType);
     }
 }

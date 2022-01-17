@@ -364,6 +364,10 @@ namespace EasyData.EntityFrameworkCore
                     entityAttr.Description = annotation.Description;
                 }
 
+                if (annotation.DataType != DataType.Unknown) {
+                    entityAttr.DataType = annotation.DataType;
+                }
+
                 entityAttr.DisplayFormat = annotation.DisplayFormat;
                 entityAttr.IsEditable = annotation.Editable;
                 entityAttr.ShowInLookup = annotation.ShowInLookup;
