@@ -210,6 +210,11 @@ export class MetaEntityAttr {
     public defaultEditor: ValueEditor;
 
     /**
+     * The default value
+     */
+    public defaultValue?: any;
+
+    /**
      * The parent
      */
     public entity: MetaEntity;
@@ -264,6 +269,8 @@ export class MetaEntityAttr {
             this.lookupEntity = dto.lent;
             this.dataAttr = dto.dattr;
             this.lookupDataAttr = dto.ldattr;
+
+            this.defaultValue = dto.defVal;
 
             this.isNullable = utils.getIfDefined(dto.nul, this.isNullable);
             this.isEditable = utils.getIfDefined(dto.ied, this.isEditable);

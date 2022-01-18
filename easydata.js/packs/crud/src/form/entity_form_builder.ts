@@ -382,13 +382,15 @@ export class EntityEditFormBuilder {
     }
 
     private addFormField(parent: HTMLElement, attr: MetaEntityAttr) {
-        let value = this.params.values && attr.kind !== EntityAttrKind.Lookup
+        const value = (this.params.values && attr.kind !== EntityAttrKind.Lookup)
             ? this.params.values.getValue(attr.id)
-            : undefined;
+            : !this.params.isEditForm
+                ? attr.defaultValue
+                : undefined;
 
         const editor = this.resolveEditor(attr);
 
-        let readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+        const readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
         const required = !attr.isNullable;
         
         if (isIE) {

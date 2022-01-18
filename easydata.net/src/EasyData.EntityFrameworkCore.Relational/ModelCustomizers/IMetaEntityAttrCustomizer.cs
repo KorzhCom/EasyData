@@ -13,5 +13,6 @@
         IMetaEntityAttrCustomizer SetShowOnView(bool showOnView);
         IMetaEntityAttrCustomizer SetSorting(int sorting);
         IMetaEntityAttrCustomizer SetDataType(DataType dataType);
+        IMetaEntityAttrCustomizer SetDefaultValue(object value);
     }
 }
