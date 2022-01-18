@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -409,6 +410,8 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.PropInfo = property.PropertyInfo;
             entityAttr.PropName = property.Name;
 
+            entityAttr.DefaultValue = ResolveDefaultValue(property);
+
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();
 
@@ -445,7 +448,7 @@ namespace EasyData.EntityFrameworkCore
                     return null;
             }
 
-            if (property.ValueGenerated.HasFlag(ValueGenerated.OnAdd))
+            if (property.ValueGenerated.HasFlag(ValueGenerated.OnAdd) && entityAttr.DefaultValue == null)
                 entityAttr.ShowOnCreate = false;
             if (property.ValueGenerated.HasFlag(ValueGenerated.OnUpdate))
                 entityAttr.ShowOnEdit = false;
@@ -459,6 +462,19 @@ namespace EasyData.EntityFrameworkCore
             }
 
             return entityAttr;
+        }
+
+        private static object ResolveDefaultValue(IProperty property)
+        {
+            var value = property.GetDefaultValue();
+            if (value == null) {
+                var dva = (DefaultValueAttribute)property.PropertyInfo.GetCustomAttribute(typeof(DefaultValueAttribute));
+                if (dva != null) {
+                    value = dva.Value;
+                }
+            }
+
+            return value;
         }
     }
 }

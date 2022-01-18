@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace EasyDataBasicDemo.Models
 
         public int? LanguageId { get; set; }
         public Language Language { get; set; }
-  
-       // [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
+
+        // [MetaEntityAttr(ShowOnCreate = false, ShowOnEdit = false, ShowOnView = false)]
         public string CategoryName { get; set; }
 
         public string Description { get; set; }

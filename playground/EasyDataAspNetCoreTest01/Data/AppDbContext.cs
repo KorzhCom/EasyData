@@ -42,6 +42,9 @@ namespace EasyDataBasicDemo
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Category>()
+                .Property(c => c.CategoryName);
+
             modelBuilder.Entity<OrderDetail>()
                 .ToTable("Order_Details")
                 .HasKey(od => new { od.OrderID, od.ProductID });
