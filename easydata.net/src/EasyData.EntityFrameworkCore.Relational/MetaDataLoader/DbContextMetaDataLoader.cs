@@ -410,7 +410,8 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.PropInfo = property.PropertyInfo;
             entityAttr.PropName = property.Name;
 
-            entityAttr.DefaultValue = ResolveDefaultValue(property);
+            if (TryResolveDefaultValue(property, out var defVal))
+             entityAttr.DefaultValue = defVal;
 
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();
@@ -464,17 +465,52 @@ namespace EasyData.EntityFrameworkCore
             return entityAttr;
         }
 
-        private static object ResolveDefaultValue(IProperty property)
+
+        private readonly Dictionary<IEntityType, object> _cachedInstances = new Dictionary<IEntityType, object>();
+        private object ResolveInstance(IEntityType entityType)
         {
-            var value = property.GetDefaultValue();
-            if (value == null) {
-                var dva = (DefaultValueAttribute)property.PropertyInfo.GetCustomAttribute(typeof(DefaultValueAttribute));
-                if (dva != null) {
-                    value = dva.Value;
-                }
+            if (!_cachedInstances.TryGetValue(entityType, out var value)) {
+                value = Activator.CreateInstance(entityType.ClrType);
+                _cachedInstances[entityType] = value;
             }
 
             return value;
         }
+
+        private bool TryResolveDefaultValue(IProperty property, out object value)
+        {
+            try {
+                value = property.GetDefaultValue();
+                if (value == null) {
+                    var dva = (DefaultValueAttribute)property.PropertyInfo.GetCustomAttribute(typeof(DefaultValueAttribute));
+                    value = dva?.Value;
+
+                    if (value == null) {
+                        var instance = ResolveInstance(property.DeclaringEntityType);
+                        value = property.PropertyInfo.GetValue(instance);
+                    }
+                }
+
+                // only if value of the property does not equal default CLR value
+                var clrDefValue = GetClrDefaultValue(property.PropertyInfo.PropertyType);
+                return value != null && !value.Equals(clrDefValue);
+            }
+            catch {
+                // in case of error nothing to do. We could not
+                // create instance of model class
+                value = null;
+                return false;
+            }
+        }
+
+        public static object GetClrDefaultValue(Type type)
+        {
+            if (type.IsValueType) {
+                return Activator.CreateInstance(type);
+            }
+
+            return null;
+        }
+
     }
 }
