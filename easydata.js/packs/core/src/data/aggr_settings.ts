@@ -21,7 +21,7 @@ export class AggregationSettings {
      
     private aggregates: Array<AggregateColumn> = []
 
-    private groups: DataGroup[] = [];
+    public groups: DataGroup[] = [];
 
     private useGrandTotals = false;
 
