@@ -281,6 +281,11 @@ export class DomSelectElementBuilder extends DomElementBuilder<HTMLSelectElement
         this.element.appendChild(option);
         return this;
     }
+
+    public value(value: string): DomSelectElementBuilder {
+        this.element.value = value;
+        return this;
+    }
 }
 
 export function domel(tag: "div" | HTMLDivElement, parent?: HTMLElement): DomElementBuilder<HTMLDivElement>
