@@ -159,12 +159,14 @@ namespace EasyData.Export
                     }
 
                     var excelDataType = XLDataType.Text;
-                    if (value != null && isExtraRow && !string.IsNullOrEmpty(groupFooterTemplate)) {
-                        var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
-                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
-                    }
-                    else { 
-                        excelDataType = MapDataType(column.DataType);
+                    if (value != null) {
+                        if (!isExtraRow) {
+                            excelDataType = MapDataType(column.DataType);
+                        }
+                        else if (!string.IsNullOrEmpty(groupFooterTemplate)) {
+                            var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
+                            value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
+                        }
                     }
 
                     cell.Value = value;
