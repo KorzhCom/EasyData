@@ -8,6 +8,7 @@ using EasyData.Aggregation;
 
 namespace EasyData.Export
 {
+    public delegate Task WriteRowFunc(EasyDataRow row, Dictionary<string, object> extraData, CancellationToken ct);
 
     public delegate Task BeforeRowAddedCallback(EasyDataRow row, Dictionary<string, object> extraData, CancellationToken ct);
 
@@ -40,6 +41,8 @@ namespace EasyData.Export
         Func<EasyDataRow, bool> RowFilter { get; set; }
 
         Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded { get; set; }
+
+        Func<EasyDataRow, WriteRowFunc, CancellationToken, Task> BeforeRowInsert { get; set; }
 
         /// <summary>
         /// The title
