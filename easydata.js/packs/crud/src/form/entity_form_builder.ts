@@ -325,6 +325,7 @@ export class EntityEditFormBuilder {
                             });
                         }
                     }
+                    b.value(value);
                 })
             );
     }

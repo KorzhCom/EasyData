@@ -92,7 +92,7 @@ export class TextDataFilter implements DataFilter {
             
             const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
             const suitableColumns = this.sourceTable.columns.getItems()
-                                        .filter(col => dataUtils.isIntType(col.type) 
+                                        .filter(col => dataUtils.isNumericType(col.type) 
                                                 || dataUtils.getStringDataTypes().indexOf(col.type) >= 0)
             const hasEnterance = (row: DataRow) => {
                 for (const col of suitableColumns) {
@@ -106,8 +106,7 @@ export class TextDataFilter implements DataFilter {
                             }
                         }
                     }
-            }
-
+                }
                 return false;
             }
 
@@ -121,6 +120,5 @@ export class TextDataFilter implements DataFilter {
 
             resolve(filteredTable);
         });
-    }
-    
+    }    
 }
