@@ -141,7 +141,7 @@ namespace EasyData.Export
                 await writer.WriteLineAsync(rowContent.ToString()).ConfigureAwait(false);
             }
 
-            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+            WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
                 WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
 
@@ -150,15 +150,15 @@ namespace EasyData.Export
                 if (add.HasValue && !add.Value)
                     continue;
 
-                if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
+                if (mappedSettings.BeforeRowInsert != null)
+                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row, false, null, ct);
 
             }
 
-            if (mappedSettings.BeforeRowAdded != null) {
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
+            if (mappedSettings.BeforeRowInsert != null) {
+                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
             }
 
             await writer.FlushAsync().ConfigureAwait(false);
@@ -216,7 +216,7 @@ namespace EasyData.Export
             result.ShowColumnNames = settings.ShowColumnNames;
             result.RowFilter = settings.RowFilter;
             result.ColumnFilter = settings.ColumnFilter;
-            result.BeforeRowAdded = settings.BeforeRowAdded;
+            result.BeforeRowInsert = settings.BeforeRowInsert;
 
             return result;
         }

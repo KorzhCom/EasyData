@@ -211,18 +211,18 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+            WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
                 WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
             foreach (var row in rows) {
-                if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
+                if (mappedSettings.BeforeRowInsert != null)
+                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row);
             }
 
-            if (mappedSettings.BeforeRowAdded != null) {
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
+            if (mappedSettings.BeforeRowInsert != null) {
+                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
             }
 
             // rendering pdf
