@@ -104,7 +104,10 @@ export class HttpClient {
                 
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const status = xhr.status;
-                if (status === 0 || status >= 200 && status < 400) {
+                if (status === 0) {
+                    reject(new HttpResponseError(status, "Network error or the request was aborted"));
+                }
+                else if (status >= 200 && status < 400) {
                     //Success
                     const responseObj = (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
                         ? xhr.response
@@ -131,8 +134,7 @@ export class HttpClient {
                                 : responseObj);
 
                         reject(new HttpResponseError(status, message));
-                    });
-    
+                    });    
                 }
             }
       
