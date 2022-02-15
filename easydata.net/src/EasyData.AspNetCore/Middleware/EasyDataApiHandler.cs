@@ -33,6 +33,16 @@ namespace EasyData.AspNetCore
         /// </summary>
         protected readonly EasyDataOptions Options;
 
+        private static JsonSerializer _jsonSerializer;
+
+        static EasyDataApiHandler()
+        {
+            _jsonSerializer = new JsonSerializer();
+            _jsonSerializer.MaxDepth = 1;
+            _jsonSerializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        }
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyDataApiHandler"/> class.
         /// </summary>
@@ -175,9 +185,14 @@ namespace EasyData.AspNetCore
             }, ct);
         }
 
+        protected virtual JObject ToJObject(object entity)
+        {
+            return JObject.FromObject(entity, _jsonSerializer);
+        }
+
         protected virtual async Task WriteFetchRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
-            var jObj = JObject.FromObject(entity);
+            var jObj = ToJObject(entity);
             await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
@@ -198,7 +213,7 @@ namespace EasyData.AspNetCore
 
         protected virtual async Task WriteCreateRecordResponseAsync(JsonWriter jsonWriter, object entity, CancellationToken ct)
         {
-            var jObj = JObject.FromObject(entity);
+            var jObj = ToJObject(entity);
             await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
@@ -221,7 +236,7 @@ namespace EasyData.AspNetCore
         {
             ct.ThrowIfCancellationRequested();
 
-            var jObj = JObject.FromObject(entity);
+            var jObj = ToJObject(entity);
             await jsonWriter.WritePropertyNameAsync("record", ct);
             await jObj.WriteToAsync(jsonWriter, ct);
         }
@@ -290,6 +305,7 @@ namespace EasyData.AspNetCore
                     }
                     await jsonWriter.WriteEndObjectAsync(ct);
                     await jsonWriter.FlushAsync(ct);
+                    await jsonWriter.CloseAsync(ct);
                 }
             }
         }
