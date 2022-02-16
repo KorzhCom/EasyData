@@ -95,16 +95,31 @@ export class HttpClient {
             if (options.responseType)
                 xhr.responseType = options.responseType;
 
+            xhr.onerror = (error) => {
+                reject(new HttpResponseError(xhr.status, xhr.responseText));
+            };
+
             xhr.onreadystatechange = () => {
-                if (xhr.readyState != 4) {
-                    return;
-                }
+                if (xhr.readyState != 4) return; //we process only the state change to DONE(4)
                 
                 const responseContentType = xhr.getResponseHeader('Content-Type') || '';
                 const status = xhr.status;
-                if (status >= 400) {
-                    const rtPromise = (xhr.responseType === 'arraybuffer' 
-                        || xhr.responseType === 'blob')
+                if (status === 0) {
+                    reject(new HttpResponseError(status, "Network error or the request was aborted"));
+                }
+                else if (status >= 200 && status < 400) {
+                    //Success
+                    const responseObj = (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
+                        ? xhr.response
+                        : (responseContentType.indexOf('application/json') == 0
+                            ? JSON.parse(xhr.responseText)
+                            : xhr.responseText);
+
+                    resolve(responseObj);
+                }
+                else {
+                    //Error
+                    const rtPromise = (xhr.responseType === 'arraybuffer' || xhr.responseType === 'blob')
                         ? HttpClient.decodeArrayBuffer(xhr.response)
                         : Promise.resolve(xhr.responseText);
                        
@@ -119,23 +134,11 @@ export class HttpClient {
                                 : responseObj);
 
                         reject(new HttpResponseError(status, message));
-                    });
-    
-                    return;
+                    });    
                 }
-
-                const responseObj = 
-                    (xhr.responseType === 'arraybuffer'|| xhr.responseType === 'blob')
-                        ? xhr.response
-                        : (responseContentType.indexOf('application/json') == 0)
-                            ? JSON.parse(xhr.responseText)
-                            : xhr.responseText;
-
-                resolve(responseObj);
             }
       
             xhr.send(dataToSend);
-
         }));
     }
 

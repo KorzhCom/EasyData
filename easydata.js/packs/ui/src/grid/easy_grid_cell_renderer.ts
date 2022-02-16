@@ -1,7 +1,6 @@
 import { i18n, DataType } from '@easydata/core';
 
 import { GridColumn, GridColumnAlign } from './easy_grid_columns';
-import { domel } from '../utils/dom_elem_builder';
 import { EasyGridOptions } from './easy_grid_options';
 
 const cssPrefix = "keg";
@@ -15,23 +14,21 @@ export enum CellRendererType {
 }
 
 export type GridCellRenderer = (value: any, column: GridColumn, 
-    cellElement: HTMLElement, rowElement: HTMLElement, isGroup?: boolean) => void;
+    cellValueElement: HTMLElement, rowElement: HTMLElement, isGroup?: boolean) => void;
 
 
-const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
+const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
     const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
-    const builder = domel('div', cellElement)
-        .addClass(`${cssPrefix}-cell-value`)
-        .addHtml(text)
-        .title(value || '');
 
+    cellValueElement.innerHTML = text;
+    cellValueElement.title = text;
     if (column.align == GridColumnAlign.NONE) {
-        builder.addClass(`${cssPrefix}-cell-value-align-left`);
+        cellValueElement.classList.add(`${cssPrefix}-cell-value-align-left`);
     }
 }
 
 
-const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
+const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
     let strValue = (value || '').toString();
 
     if(typeof value == 'number') {
@@ -47,17 +44,14 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
         }
     }
 
-    const builder = domel('div', cellElement)
-        .addClass(`${cssPrefix}-cell-value`)
-        .addHtml(strValue)
-        .title(strValue);
-
+    cellValueElement.innerHTML = strValue;
+    cellValueElement.title = strValue;
     if (column.align == GridColumnAlign.NONE) {
-        builder.addClass(`${cssPrefix}-cell-value-align-right`);
+        cellValueElement.classList.add(`${cssPrefix}-cell-value-align-right`);
     }
 }
 
-const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
+const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
     const isDate = Object.prototype.toString.call(value) === '[object Date]';
     let strValue = (value || '').toString();
 
@@ -86,31 +80,26 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
         }
     }
 
-    const builder = domel('div', cellElement)
-        .addClass(`${cssPrefix}-cell-value`)
-        .addHtml(strValue)
-        .title(strValue);
-
+    cellValueElement.innerHTML = strValue;
+    cellValueElement.title = strValue;
     if (column.align == GridColumnAlign.NONE) {
-        builder.addClass(`${cssPrefix}-cell-value-align-right`);
+        cellValueElement.classList.add(`${cssPrefix}-cell-value-align-right`);
     }
 }
 
 
-const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) => {
+const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
     if (column.dataColumn && column.dataColumn.displayFormat
         && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
         const strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
             return i18n.booleanToStr(value, $1);
         });
 
-        return StringCellRendererDefault(strValue, column, cellElement, rowElement);
+        return StringCellRendererDefault(strValue, column, cellValueElement, rowElement);
     }
     else {
-        domel('div', cellElement)
-            .addClass(`${cssPrefix}-cell-value`)
-            .addClass(`${cssPrefix}-cell-value-bool`)
-            .addClass(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
+        cellValueElement.classList.add(`${cssPrefix}-cell-value-bool`);
+        cellValueElement.classList.add(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
     }
 
 }

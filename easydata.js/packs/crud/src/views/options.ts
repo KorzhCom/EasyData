@@ -2,6 +2,7 @@ import { EasyDataTableOptions } from '@easydata/core';
 import { EasyGridOptions } from '@easydata/ui';
 
 export interface EasyDataViewOptions {
+    showFilterBox?: boolean;
     showBackToEntities?: boolean,
     grid?: Omit<EasyGridOptions, 'slot' | 'dataTable'>,
     dataTable?: EasyDataTableOptions
