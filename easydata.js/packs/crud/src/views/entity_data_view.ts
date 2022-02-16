@@ -17,8 +17,8 @@ import { EasyDataViewOptions } from './options';
 import { setLocation } from '../utils/utils';
 
 export class EntityDataView {
-
     private options: EasyDataViewOptions = {
+        showFilterBox: true,
         showBackToEntities: true
     }
 
@@ -91,18 +91,20 @@ export class EntityDataView {
                     onSyncGridColumn: this.syncGridColumnHandler.bind(this)
                 }, this.options.grid || {}));
 
-                let widgetSlot: HTMLElement;
-                const filterBar = domel('div')
-                    .addClass(`kfrm-form`)
-                    .setStyle('margin', '10px 0px')
-                    .addChild('div', b => 
-                        widgetSlot = b.toDOM()
-                    ).toDOM();
-                
-                this.slot.insertBefore(filterBar, gridSlot);
-
-                const dataFilter = this.context.createFilter();
-                new TextFilterWidget(widgetSlot, this.grid, dataFilter);
+                if (this.options.showFilterBox) {
+                    let filterWidgetSlot: HTMLElement;
+                    const filterBarDiv = domel('div')
+                        .addClass(`kfrm-form`)
+                        .setStyle('margin', '10px 0px')
+                        .addChild('div', b => 
+                            filterWidgetSlot = b.toDOM()
+                        ).toDOM();
+                    
+                    this.slot.insertBefore(filterBarDiv, gridSlot);
+    
+                    const dataFilter = this.context.createFilter();
+                    new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);    
+                }
             });
     }
 

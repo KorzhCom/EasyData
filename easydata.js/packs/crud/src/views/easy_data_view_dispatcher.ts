@@ -94,8 +94,7 @@ export class EasyDataViewDispatcher {
         return idIndex < path.length ? path.substring(idIndex) : null;
     }
 
-    run(): Promise<void> {
-        
+    run(): Promise<void> {        
         this.attach();
 
         return this.context.loadMetaData()

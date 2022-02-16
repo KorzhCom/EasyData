@@ -70,51 +70,49 @@ namespace EasyDataBasicDemo
                     options.Endpoint = "/api/easy-crud";
 
                     options.UseManager<CustomEasyDataManager>();
-                    options.UseModelTuner(model =>
-                    {
+                    options.UseModelTuner(model => {
                         model.DisplayFormats.SetDefault(EasyData.DataType.DateTime, "Long date & time");
 
                         var categoryDesc = model.FindEntityAttr("Category.Description");
-                        categoryDesc.DefaultEditor = new TextValueEditor($"TVE_MULTI_{categoryDesc.Id}")
-                        {
+                        categoryDesc.DefaultEditor = new TextValueEditor($"TVE_MULTI_{categoryDesc.Id}") {
                             Multiline = true
                         };
                     });
-              
+
                     options.UseDbContext<AppDbContext>(opts => {
                         opts.SkipForeignKeys = false;
 
-                        opts.CustomizeModel(model => {
-                            var customerEntity = model.Entity<Customer>()
-                                .SetDisplayName("Client")
-                                .SetDisplayNamePlural("Clients");
+                        //opts.CustomizeModel(model => {
+                        //    var customerEntity = model.Entity<Customer>()
+                        //        .SetDisplayName("Client")
+                        //        .SetDisplayNamePlural("Clients");
 
-                            customerEntity
-                                .Attribute(c => c.Fax)
-                                    .SetShowOnView(false);
+                        //    customerEntity
+                        //        .Attribute(c => c.Fax)
+                        //            .SetShowOnView(false);
 
-                            customerEntity
-                                .Attribute(c => c.PostalCode)
-                                    .SetShowOnView(false);
+                        //    customerEntity
+                        //        .Attribute(c => c.PostalCode)
+                        //            .SetShowOnView(false);
 
-                            customerEntity
-                                .Attribute(c => c.Country)
-                                    .SetDisplayName("Country name")
-                                    .SetDescription("Country where the client lives");
+                        //    customerEntity
+                        //        .Attribute(c => c.Country)
+                        //            .SetDisplayName("Country name")
+                        //            .SetDescription("Country where the client lives");
 
-                            var orderEntity = model.Entity<Order>();
+                        //    var orderEntity = model.Entity<Order>();
 
-                            orderEntity
-                                .Attribute(o => o.OrderDate)
-                                    .SetDisplayFormat("{0:yyyy-MM-dd}");
+                        //    orderEntity
+                        //        .Attribute(o => o.OrderDate)
+                        //            .SetDisplayFormat("{0:yyyy-MM-dd}");
 
-                            orderEntity
-                                .Attribute(o => o.ShippedDate)
-                                    .SetDisplayFormat("{0:yyyy-MM-dd}");
+                        //    orderEntity
+                        //        .Attribute(o => o.ShippedDate)
+                        //            .SetDisplayFormat("{0:yyyy-MM-dd}");
 
-                        });
+                        //});
                     });
-                }).RequireAuthorization("AuthPolicy");
+                });
 
                 endpoints.MapRazorPages();
             });
