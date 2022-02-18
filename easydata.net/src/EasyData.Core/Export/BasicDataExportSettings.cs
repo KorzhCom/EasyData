@@ -104,5 +104,7 @@ namespace EasyData.Export
         public bool PreserveFormatting { get; set; } = true;
 
         public AggregationSettings Aggregation { get; set; } = new AggregationSettings();
+
+        public int RowLimit { get; set; } = 0;
     }
 }
