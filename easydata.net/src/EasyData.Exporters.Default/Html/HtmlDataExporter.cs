@@ -72,8 +72,9 @@ namespace EasyData.Export
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
             // do not close stream
-            var writer = new StreamWriter(stream, new UTF8Encoding(false));
-            await ExportAsync(data, writer, settings, ct);
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                await ExportAsync(data, writer, settings, ct);
+            }
         }
 
         private async Task ExportAsync(IEasyDataResultSet data, TextWriter writer, IDataExportSettings settings, CancellationToken ct)
@@ -112,13 +113,13 @@ namespace EasyData.Export
             await writer.WriteLineAsync(string.Format("        font-size: {0}.0pt;", mappedSettings.FontSize)).ConfigureAwait(false);
             await writer.WriteLineAsync(string.Format("        font-family: {0};", mappedSettings.FontFamily)).ConfigureAwait(false);
             await writer.WriteLineAsync(string.Format("        padding: 0;")).ConfigureAwait(false);
-            await writer.WriteLineAsync("    }");
+            await writer.WriteLineAsync("    }").ConfigureAwait(false);
 
             await writer.WriteLineAsync("    .eq-result-set thead tr {").ConfigureAwait(false);
             await writer.WriteLineAsync(string.Format("        color: {0};", mappedSettings.HeaderFgColor)).ConfigureAwait(false);
             await writer.WriteLineAsync(string.Format("        background-color: {0};", mappedSettings.HeaderBgColor)).ConfigureAwait(false);
             await writer.WriteLineAsync(string.Format("        font-weight: {0};", mappedSettings.HeaderFontWeight)).ConfigureAwait(false);
-            await writer.WriteLineAsync("    }");
+            await writer.WriteLineAsync("    }").ConfigureAwait(false);
 
             await writer.WriteLineAsync("</style>").ConfigureAwait(false);
             await writer.WriteLineAsync("<body>").ConfigureAwait(false);
@@ -154,7 +155,7 @@ namespace EasyData.Export
                 await writer.WriteLineAsync("</thead>").ConfigureAwait(false);
             }
 
-            await writer.WriteLineAsync("<tbody>");
+            await writer.WriteLineAsync("<tbody>").ConfigureAwait(false);
             int a = 0;
 
             async Task RenderRowAsync(EasyDataRow row, bool isExtra = false, 
@@ -203,7 +204,7 @@ namespace EasyData.Export
                 if (mappedSettings.BeforeRowInsert != null)
                     await mappedSettings.BeforeRowInsert(row, RenderExtraRowAsync, ct);
 
-                await RenderRowAsync(row);
+                await RenderRowAsync(row, false, null, ct).ConfigureAwait(false);
 
                 a++;
             }
