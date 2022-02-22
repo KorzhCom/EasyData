@@ -198,15 +198,21 @@ namespace EasyData.Export
             WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
                 => WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
+            var currentRowNum = 0;
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
+                    continue;
+
+                if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
                     continue;
 
                 if (mappedSettings.BeforeRowInsert != null)
                     await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row, cancellationToken: ct);
+
+                currentRowNum++;
             }
 
             if (mappedSettings.BeforeRowInsert != null)
