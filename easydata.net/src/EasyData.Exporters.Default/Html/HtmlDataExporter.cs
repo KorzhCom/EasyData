@@ -59,9 +59,9 @@ namespace EasyData.Export
         /// <param name="stream">The stream.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
+        public Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
         {
-            await ExportAsync(data, stream, HtmlDataExportSettings.Default, ct).ConfigureAwait(false);
+            return ExportAsync(data, stream, HtmlDataExportSettings.Default, ct);
         }
 
         /// <summary>
