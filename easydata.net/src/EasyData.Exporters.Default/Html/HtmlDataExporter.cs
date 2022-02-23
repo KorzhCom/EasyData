@@ -46,7 +46,10 @@ namespace EasyData.Export
         /// <param name="settings">The settings.</param>
         public void Export(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
         {
-            ExportAsync(data, stream, settings).GetAwaiter().GetResult();
+            ExportAsync(data, stream, settings)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
         }
 
         /// <summary>
@@ -56,9 +59,9 @@ namespace EasyData.Export
         /// <param name="stream">The stream.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
-        public Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
+        public async Task ExportAsync(IEasyDataResultSet data, Stream stream, CancellationToken ct = default)
         {
-            return ExportAsync(data, stream, HtmlDataExportSettings.Default, ct);
+            await ExportAsync(data, stream, HtmlDataExportSettings.Default, ct).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,9 +74,8 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            // do not close stream
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
-                await ExportAsync(data, writer, settings, ct);
+                await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
             }
         }
 
@@ -193,7 +195,7 @@ namespace EasyData.Export
                 await writer.WriteLineAsync("</tr>").ConfigureAwait(false);
             }
 
-            WriteRowFunc RenderExtraRowAsync = (extraRow, extraData, cancellationToken) => 
+            WriteRowFunc RenderExtraRowAsync = (extraRow, extraData, cancellationToken) =>
                 RenderRowAsync(extraRow, true, extraData, cancellationToken);
 
             var currentRowNum = 0;
@@ -206,7 +208,7 @@ namespace EasyData.Export
                     continue;
 
                 if (mappedSettings.BeforeRowInsert != null)
-                    await mappedSettings.BeforeRowInsert(row, RenderExtraRowAsync, ct);
+                    await mappedSettings.BeforeRowInsert(row, RenderExtraRowAsync, ct).ConfigureAwait(false);
 
                 await RenderRowAsync(row, false, null, ct).ConfigureAwait(false);
 
@@ -215,13 +217,14 @@ namespace EasyData.Export
             }
 
             if (mappedSettings.BeforeRowInsert != null) {
-                await mappedSettings.BeforeRowInsert(null, RenderExtraRowAsync, ct);
+                await mappedSettings.BeforeRowInsert(null, RenderExtraRowAsync, ct).ConfigureAwait(false);
             }
 
             await writer.WriteLineAsync("</tbody>").ConfigureAwait(false);
             await writer.WriteLineAsync("</table>").ConfigureAwait(false);
             await writer.WriteLineAsync("</body>").ConfigureAwait(false);
             await writer.WriteLineAsync("</html>").ConfigureAwait(false);
+
             await writer.FlushAsync().ConfigureAwait(false);
         }
 
