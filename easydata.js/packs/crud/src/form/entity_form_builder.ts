@@ -36,12 +36,14 @@ export class EntityEditFormBuilder {
         this.form = new EntityEditForm(this.context);
     }
 
-    private setupLookupField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any) {
+    private setupLookupField(parent: HTMLElement, attr: MetaEntityAttr, readOnly: boolean, value: any): void {
         const lookupEntity = this.context.getMetaData().getRootEntity()
             .subEntities.filter(ent => ent.id == attr.lookupEntity)[0];
         const dataAttr = this.context.getMetaData().getAttributeById(attr.dataAttr);
 
-        readOnly = readOnly && dataAttr.isEditable;
+        if (!dataAttr) return;
+
+        readOnly = readOnly || !dataAttr.isEditable;
 
         value = this.params.values
             ? this.params.values.getValue(dataAttr.id)
@@ -323,6 +325,7 @@ export class EntityEditFormBuilder {
                             });
                         }
                     }
+                    b.value(value);
                 })
             );
     }
@@ -380,13 +383,15 @@ export class EntityEditFormBuilder {
     }
 
     private addFormField(parent: HTMLElement, attr: MetaEntityAttr) {
-        let value = this.params.values && attr.kind !== EntityAttrKind.Lookup
+        const value = (this.params.values && attr.kind !== EntityAttrKind.Lookup)
             ? this.params.values.getValue(attr.id)
-            : undefined;
+            : !this.params.isEditForm
+                ? attr.defaultValue
+                : undefined;
 
         const editor = this.resolveEditor(attr);
 
-        let readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+        const readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
         const required = !attr.isNullable;
         
         if (isIE) {
@@ -502,16 +507,12 @@ export class EntityEditFormBuilder {
 
         this.form['setHtmlInt'](formHtml);
 
-        for (const attr of this.context.getActiveEntity().attributes) {      
-            if (!attr.isPrimaryKey) {
-                if (this.params.isEditForm) {
-                    if (!attr.showOnEdit)
-                        continue;
-                }
-                else {
-                    if (!attr.showOnCreate)
-                        continue;
-                }    
+        for (const attr of this.context.getActiveEntity().attributes) {       
+            if (!this.params.isEditForm && !attr.showOnCreate)
+                continue;
+
+            if (!attr.isPrimaryKey && this.params.isEditForm && !attr.showOnEdit) {
+                continue;
             }
 
             this.addFormField(fb.toDOM(), attr)

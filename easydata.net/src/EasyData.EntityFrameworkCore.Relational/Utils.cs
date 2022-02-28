@@ -13,7 +13,13 @@ namespace EasyData.EntityFrameworkCore
     {
         public static string GetEntityName(IEntityType entityType)
         {
-            return entityType.Name.Split('.').Last().Split('`').First();
+            var p = entityType.Name.LastIndexOf('.');
+            var entityName = entityType.Name.Substring(p + 1);
+            p = entityName.IndexOf('`');
+            if (p > 0) entityName = entityName.Substring(0, p);
+            p = entityName.IndexOf('<');
+            if (p > 0) entityName = entityName.Substring(0, p);
+            return entityName;
         }
 
         public static PropertyInfo GetPropertyInfoBySelector<TEntity>(Expression<Func<TEntity, object>> propertySelector)

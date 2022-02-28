@@ -204,6 +204,8 @@
     padding: 20px;
     background-color: #e2f5ff;
     color: #004aef;
+    min-width: 1px;
+    min-height: 60px;
 }
 
 .kdlg-alert.success {

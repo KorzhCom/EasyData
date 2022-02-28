@@ -165,21 +165,22 @@ namespace EasyData
         /// The list which represents the most common data types
         /// </summary>
         static public readonly DataTypeList CommonDataTypes = new DataTypeList(new DataType[] {
-            DataType.String,
+            DataType.Autoinc,
+            DataType.Blob,
+            DataType.Bool,
             DataType.Byte,
-            DataType.Word,
+            DataType.Currency,
+            DataType.Date,
+            DataType.DateTime,
+            DataType.FixedChar,
+            DataType.Float,
+            DataType.Guid,
             DataType.Int32,
             DataType.Int64,
-            DataType.Bool,
-            DataType.Float,
-            DataType.Currency,
-            DataType.BCD,
-            DataType.Date,
-            DataType.Time,
-            DataType.DateTime,
-            DataType.Autoinc,
             DataType.Memo,
-            DataType.FixedChar
+            DataType.String,
+            DataType.Time,
+            DataType.Word
         });
 
         /// <summary>

@@ -967,7 +967,7 @@ export class EasyGrid {
     }
 
     protected renderCell(column: GridColumn, colIndex: number, value: any, rowElement: HTMLElement): HTMLDivElement {
-        let builder = domel('div')
+        const builder = domel('div')
             .addClass(`${this.cssPrefix}-cell`)
             .data('col-idx', `${colIndex}`)
             .attr('tabindex', '-1')
@@ -983,11 +983,18 @@ export class EasyGrid {
             builder.addClass(`${this.cssPrefix}-cell-align-center`);
         }
 
+        const cellElement = builder.toDOM();
+        const valueCell = cellElement.appendChild(
+            domel('div')
+            .addClass(`${this.cssPrefix}-cell-value`)
+            .toDOM()
+        );
+
         if (column.cellRenderer) {
-            column.cellRenderer(value, column, builder.toDOM(), rowElement);
+            column.cellRenderer(value, column, valueCell, rowElement);
         }
 
-        return builder.toDOM();
+        return cellElement;
     }
 
     public setPage(page: number) {

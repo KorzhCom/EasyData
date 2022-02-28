@@ -7,6 +7,8 @@ namespace EasyData.EntityFrameworkCore
     {
         public bool Enabled { get; set; } = true;
 
+        public DataType DataType { get; set; } = DataType.Unknown;
+
         public string DisplayName { get; set; }
 
         public string DisplayFormat { get; set; }

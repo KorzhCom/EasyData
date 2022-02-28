@@ -17,6 +17,8 @@ namespace EasyDataBasicDemo
         #region NWind
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<Language> Languages { get; set; }
+
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<Order> Orders { get; set; }
@@ -40,15 +42,18 @@ namespace EasyDataBasicDemo
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Category>()
+                .Property(c => c.CategoryName);
+
             modelBuilder.Entity<OrderDetail>()
                 .ToTable("Order_Details")
                 .HasKey(od => new { od.OrderID, od.ProductID });
 
             //to use the following view you will need to run an extra SQL command over the testing DB:
             //CREATE VIEW [dbo].[AllCities] AS SELECT Country, City FROM [Customers]
-            modelBuilder.Entity<CityEntity>()
-                .ToTable("AllCities")
-                .HasNoKey();
+            //modelBuilder.Entity<CityEntity>()
+            //    .ToView("AllCities")
+            //    .HasNoKey();
         }
     }
 }

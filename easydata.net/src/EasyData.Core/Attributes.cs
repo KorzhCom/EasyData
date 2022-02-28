@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace EasyData
 {
@@ -384,6 +385,11 @@ namespace EasyData
         /// </summary>
         public bool IsVirtual => Kind == EntityAttrKind.Virtual;
 
+        /// <summary>
+        /// The default value
+        /// </summary>
+        public object DefaultValue { get; set; }
+
 
         protected internal MetaEntityAttr() : this(null, false)
         {
@@ -587,6 +593,11 @@ namespace EasyData
             await writer.WritePropertyNameAsync("sil", ct).ConfigureAwait(false);
             await writer.WriteValueAsync(ShowInLookup, ct).ConfigureAwait(false);
 
+            if (DefaultValue != null) {
+                await writer.WritePropertyNameAsync("defVal", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(DefaultValue, ct).ConfigureAwait(false);
+            }
+
             if (!string.IsNullOrEmpty(DisplayFormat)) {
                 await writer.WritePropertyNameAsync("dfmt", ct).ConfigureAwait(false);
                 await writer.WriteValueAsync(DisplayFormat, ct).ConfigureAwait(false);
@@ -737,6 +748,10 @@ namespace EasyData
                     break;
                 case "udata":
                     UserData = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
+                    break;
+                case "defVal":
+                    var jObj = await JObject.ReadFromAsync(reader, ct).ConfigureAwait(false);
+                    DefaultValue = jObj.ToObject<string>();
                     break;
                 default:
                     await reader.SkipAsync(ct).ConfigureAwait(false);

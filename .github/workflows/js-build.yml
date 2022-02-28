@@ -172,16 +172,16 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
 
     - name: Publish @easydata/core
-      run: npm publish packs/core --access public
+      run: npm publish packs/core --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui --access public
+      run: npm publish packs/ui --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud --access public
+      run: npm publish packs/crud --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}

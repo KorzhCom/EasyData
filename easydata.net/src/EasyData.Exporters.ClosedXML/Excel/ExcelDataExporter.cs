@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -159,12 +159,14 @@ namespace EasyData.Export
                     }
 
                     var excelDataType = XLDataType.Text;
-                    if (value != null && isExtraRow && !string.IsNullOrEmpty(groupFooterTemplate)) {
-                        var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
-                        value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
-                    }
-                    else { 
-                        excelDataType = MapDataType(column.DataType);
+                    if (value != null) {
+                        if (!isExtraRow) {
+                            excelDataType = MapDataType(column.DataType);
+                        }
+                        else if (!string.IsNullOrEmpty(groupFooterTemplate)) {
+                            var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
+                            value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
+                        }
                     }
 
                     cell.Value = value;
@@ -193,22 +195,28 @@ namespace EasyData.Export
                 return Task.CompletedTask;
             }
 
-            BeforeRowAddedCallback WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
+            WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
                 => WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
+            var currentRowNum = 0;
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
                     continue;
 
-                if (mappedSettings.BeforeRowAdded != null)
-                    await mappedSettings.BeforeRowAdded(row, WriteExtraRowAsync, ct);
+                if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
+                    continue;
+
+                if (mappedSettings.BeforeRowInsert != null)
+                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row, cancellationToken: ct);
+
+                currentRowNum++;
             }
 
-            if (mappedSettings.BeforeRowAdded != null)
-                await mappedSettings.BeforeRowAdded(null, WriteExtraRowAsync, ct);
+            if (mappedSettings.BeforeRowInsert != null)
+                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
 
             cellNum--;
 
@@ -241,7 +249,7 @@ namespace EasyData.Export
             rngTable.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
             rngTable.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
-            ws.Columns(2, 2 + data.Cols.Count - 1).AdjustToContents();
+            AdjustColumnsSize(ws.Columns(2, 2 + data.Cols.Count - 1));
 
             using (MemoryStream memoryStream = new MemoryStream()) {
                 wb.SaveAs(memoryStream);
@@ -251,6 +259,15 @@ namespace EasyData.Export
             }
         }
 
+        private void AdjustColumnsSize(IXLColumns columns)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                columns.AdjustToContents();
+            }
+            else { 
+                columns.Width = 16; //TODO: we need to figure out how to make it more intelligently.
+            }
+        }
 
         private static string GetExcelColumnId(int num)
         {
@@ -334,7 +351,7 @@ namespace EasyData.Export
             result.ShowColumnNames = settings.ShowColumnNames;
             result.RowFilter = settings.RowFilter;
             result.ColumnFilter = settings.ColumnFilter;
-            result.BeforeRowAdded = settings.BeforeRowAdded;
+            result.BeforeRowInsert = settings.BeforeRowInsert;
 
             return result;
         }

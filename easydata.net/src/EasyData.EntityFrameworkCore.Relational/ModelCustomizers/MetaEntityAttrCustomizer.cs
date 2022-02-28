@@ -128,5 +128,27 @@ namespace EasyData.EntityFrameworkCore
             Attribute.Sorting = sorting;
             return this;
         }
+
+        /// <summary>
+        /// Set the data type
+        /// </summary>
+        /// <param name="dataType"></param>
+        /// <returns></returns>
+        public IMetaEntityAttrCustomizer SetDataType(DataType dataType)
+        {
+            Attribute.DataType = dataType;
+            return this;
+        }
+
+        /// <summary>
+        /// Set the default value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public IMetaEntityAttrCustomizer SetDefaultValue(object value)
+        {
+            Attribute.DefaultValue = value;
+            return this;
+        }
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "@easydata/crud",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "EasyData.JS UI widgets and view for CRUD manipulations",
     "types": "./dist/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.crud.js",
@@ -29,8 +29,8 @@
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
     "peerDependencies": {
-        "@easydata/core": "^1.4.0",
-        "@easydata/ui": "^1.4.0"
+        "@easydata/core": "^1.4.1",
+        "@easydata/ui": "^1.4.1"
     },
     "devDependencies": {
         "@types/node": "12.7.8",

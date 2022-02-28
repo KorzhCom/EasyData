@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel;
 
 namespace EasyData.EntityFrameworkCore
 {
@@ -106,6 +107,7 @@ namespace EasyData.EntityFrameworkCore
         protected virtual IEnumerable<IProperty> GetEntityProperties(IEntityType entityType)
         {
             return entityType.GetProperties()
+                    .Where(prop => !prop.IsShadowProperty())
                     .Where(ApplyPropertyFilters);
         }
 
@@ -274,8 +276,24 @@ namespace EasyData.EntityFrameworkCore
 
             var foreignKey = navigation.ForeignKey;
             var property = foreignKey.Properties.First();
+            var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
+            var dataAttr = entity.FindAttributeById(dataAttrId);
 
-            if (EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
+            //TODO: Uncomment when we find out how to get values for shadow properties too
+            //if (dataAttr == null) {
+            //    dataAttr = CreateEntityAttribute(entity, entityType, property);
+            //    if (dataAttr == null)
+            //        return;
+
+            //    if (dataAttr.Index == int.MaxValue) {
+            //        dataAttr.Index = attrCounter;
+            //    }
+
+            //    attrCounter++;
+            //    entity.Attributes.Add(dataAttr);
+            //}
+
+            if (dataAttr != null && EntityTypeEntities.TryGetValue(foreignKey.PrincipalEntityType, out var lookupEntity)) {
                 var lookUpAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() { 
                     Parent = entity, 
                     Kind = EntityAttrKind.Lookup 
@@ -293,20 +311,8 @@ namespace EasyData.EntityFrameworkCore
                 if (!enabled)
                     return;
 
-                var dataAttrId = DataUtils.ComposeKey(entity.Id, property.Name);
-                var dataAttr = entity.FindAttributeById(dataAttrId);
-                if (dataAttr == null) {
-                    dataAttr = CreateEntityAttribute(entity, entityType, property);
-                    if (dataAttr == null)
-                        return;
-
-                    if (dataAttr.Index == int.MaxValue) {
-                        dataAttr.Index = attrCounter;
-                    }
-
-                    attrCounter++;
-                    entity.Attributes.Add(dataAttr);
-                }
+                // hide lookup data field field from data editing views
+                dataAttr.ShowOnCreate = dataAttr.ShowOnEdit = false;
                 lookUpAttr.DataAttr = dataAttr;
                 lookUpAttr.IsNullable = dataAttr.IsNullable;
 
@@ -322,9 +328,6 @@ namespace EasyData.EntityFrameworkCore
                     if (lookupDataAttr.Index == int.MaxValue) {
                         lookupDataAttr.Index = attrCounter;
                     }
-
-                    // hide lookup data field of lookup field on managing data
-                    lookupDataAttr.ShowOnEdit = lookupDataAttr.ShowOnCreate = false;
 
                     attrCounter++;
                     entity.Attributes.Add(lookUpAttr);
@@ -360,6 +363,10 @@ namespace EasyData.EntityFrameworkCore
 
                 if (!string.IsNullOrEmpty(annotation.Description)) {
                     entityAttr.Description = annotation.Description;
+                }
+
+                if (annotation.DataType != DataType.Unknown) {
+                    entityAttr.DataType = annotation.DataType;
                 }
 
                 entityAttr.DisplayFormat = annotation.DisplayFormat;
@@ -403,6 +410,9 @@ namespace EasyData.EntityFrameworkCore
             entityAttr.PropInfo = property.PropertyInfo;
             entityAttr.PropName = property.Name;
 
+            if (TryResolveDefaultValue(property, out var defVal))
+             entityAttr.DefaultValue = defVal;
+
             entityAttr.IsPrimaryKey = property.IsPrimaryKey();
             entityAttr.IsForeignKey = property.IsForeignKey();
 
@@ -439,6 +449,11 @@ namespace EasyData.EntityFrameworkCore
                     return null;
             }
 
+            if (property.ValueGenerated.HasFlag(ValueGenerated.OnAdd) && entityAttr.DefaultValue == null)
+                entityAttr.ShowOnCreate = false;
+            if (property.ValueGenerated.HasFlag(ValueGenerated.OnUpdate))
+                entityAttr.ShowOnEdit = false;
+         
             if (entityAttr.DataType == DataType.Blob) {
                 // DO NOT show blob fields in GRID
                 entityAttr.ShowOnView = false;
@@ -449,5 +464,53 @@ namespace EasyData.EntityFrameworkCore
 
             return entityAttr;
         }
+
+
+        private readonly Dictionary<IEntityType, object> _cachedInstances = new Dictionary<IEntityType, object>();
+        private object ResolveInstance(IEntityType entityType)
+        {
+            if (!_cachedInstances.TryGetValue(entityType, out var value)) {
+                value = Activator.CreateInstance(entityType.ClrType);
+                _cachedInstances[entityType] = value;
+            }
+
+            return value;
+        }
+
+        private bool TryResolveDefaultValue(IProperty property, out object value)
+        {
+            try {
+                value = property.GetDefaultValue();
+                if (value == null) {
+                    var dva = (DefaultValueAttribute)property.PropertyInfo.GetCustomAttribute(typeof(DefaultValueAttribute));
+                    value = dva?.Value;
+
+                    if (value == null) {
+                        var instance = ResolveInstance(property.DeclaringEntityType);
+                        value = property.PropertyInfo.GetValue(instance);
+                    }
+                }
+
+                // only if value of the property does not equal default CLR value
+                var clrDefValue = GetClrDefaultValue(property.PropertyInfo.PropertyType);
+                return value != null && !value.Equals(clrDefValue);
+            }
+            catch {
+                // in case of error nothing to do. We could not
+                // create instance of model class
+                value = null;
+                return false;
+            }
+        }
+
+        public static object GetClrDefaultValue(Type type)
+        {
+            if (type.IsValueType) {
+                return Activator.CreateInstance(type);
+            }
+
+            return null;
+        }
+
     }
 }

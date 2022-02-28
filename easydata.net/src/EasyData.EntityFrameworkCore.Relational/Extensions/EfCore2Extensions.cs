@@ -47,5 +47,15 @@ namespace EasyData.EntityFrameworkCore
         {
             return model.Relational().DefaultSchema;
         }
+
+        public static object GetDefaultValue(this IProperty property)
+        {
+            return property.Relational().DefaultValue;
+        }
+
+        public static bool IsShadowProperty(this IProperty property)
+        {
+            return property.IsShadowProperty;
+        }
     }
 }

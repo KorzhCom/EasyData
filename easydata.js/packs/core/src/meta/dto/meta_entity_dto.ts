@@ -81,4 +81,7 @@ export interface MetaEntityAttrDTO {
 
     /** Display format */
     dfmt?: string;
+
+    /** The default value */
+    defVal?: any;
 }

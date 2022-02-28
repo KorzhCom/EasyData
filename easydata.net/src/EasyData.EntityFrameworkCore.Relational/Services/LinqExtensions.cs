@@ -51,7 +51,6 @@ namespace EasyData.Services
         /// <returns></returns>
         public static IQueryable<T> FullTextSearchQuery<T>(this IQueryable<T> source, string text, FullTextSearchOptions options = null)
         {
-
             var pe = Exp.Parameter(typeof(T), "d");
             var predicateBody = CreateSubExpression(pe, typeof(T), text, options, isQueriable: true);
 
@@ -78,7 +77,7 @@ namespace EasyData.Services
             return source;
         }
 
-        private static Exp CreateSubExpression(Exp pe, Type type, string text, FullTextSearchOptions options, bool isQueriable = false)
+        private static Exp CreateSubExpression(Exp expr, Type type, string text, FullTextSearchOptions options, bool isQueriable = false)
         {
             var texts = text.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(t => t.Trim().ToLower())
@@ -92,37 +91,28 @@ namespace EasyData.Services
 
             Exp predicateBody = null;
             foreach (var prop in properties) {
-
-                //Check if we can use this property in Search
+                //Check if we can use this property in search
                 if (options == null || options.Filter == null || options.Filter.Invoke(prop)) {
-                    var paramExp = Exp.Property(pe, prop);
+                    var paramExp = Exp.Property(expr, prop);
 
-                    if (prop.PropertyType == typeof(string) || prop.PropertyType == typeof(int)
-                        || prop.PropertyType == typeof(int?))
-                    {
-
+                    if (prop.PropertyType.IsNumeric() || prop.PropertyType == typeof(string)) {
                         Exp notNullExp = null;
+                        Exp toStringExp = paramExp;
+
                         if (prop.PropertyType == typeof(string)) {
                             Exp nullConst = Exp.Constant(null, typeof(string));
                             notNullExp = Exp.NotEqual(paramExp, nullConst);
                         }
-
-                        Exp toStringExp = paramExp;
-                        //Check if property has int type
-                        if (prop.PropertyType == typeof(int?) || prop.PropertyType == typeof(int)) {
-
+                        else {//property is a numeric
                             if (!isQueriable) {
-                                Exp toNullableIntExp = null;
-
-                                //property should be nullable
-                                if (prop.PropertyType == typeof(int)) {
-                                    toNullableIntExp = Exp.TypeAs(paramExp, typeof(int?));
-                                }
+                                Exp toNullableExp = null;
 
                                 Exp valueExp = null;
-                                if (toNullableIntExp != null) {
-                                    notNullExp = Exp.Property(toNullableIntExp, "HasValue");
-                                    valueExp = Exp.Property(toNullableIntExp, "Value");
+                                if (!prop.PropertyType.IsNullable()) {
+                                    var nullableType = typeof(Nullable<>).MakeGenericType(prop.PropertyType);
+                                    toNullableExp = Exp.TypeAs(paramExp, nullableType);
+                                    notNullExp = Exp.Property(toNullableExp, "HasValue");
+                                    valueExp = Exp.Property(toNullableExp, "Value");
                                 }
                                 else {
                                     notNullExp = Exp.Property(paramExp, "HasValue");
@@ -131,14 +121,13 @@ namespace EasyData.Services
 
                                 notNullExp = Exp.Equal(notNullExp, Exp.Constant(true, typeof(bool)));
 
-                                var convertToString = typeof(Convert).GetMethod("ToString", new[] { typeof(int) });
+                                var convertToString = typeof(Convert).GetMethod("ToString", new[] { prop.PropertyType });
                                 toStringExp = Exp.Call(convertToString, valueExp);
                             }
                             else {
-                                var convertToString = typeof(Convert).GetMethod("ToString", new[] { typeof(int) });
-                                toStringExp = Exp.Call(convertToString, Exp.Convert(paramExp, typeof(int)));
-                            }
-                           
+                                var convertToString = typeof(Convert).GetMethod("ToString", new[] { prop.PropertyType });
+                                toStringExp = Exp.Call(convertToString, Exp.Convert(paramExp, prop.PropertyType));
+                            }                           
                         }
 
                         Exp peLower = Exp.Call(toStringExp, typeof(string).GetMethod("ToLower", System.Type.EmptyTypes));

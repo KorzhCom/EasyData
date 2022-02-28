@@ -8,6 +8,7 @@ using EasyData.Aggregation;
 
 namespace EasyData.Export
 {
+    public delegate Task WriteRowFunc(EasyDataRow row, Dictionary<string, object> extraData, CancellationToken ct);
 
     public delegate Task BeforeRowAddedCallback(EasyDataRow row, Dictionary<string, object> extraData, CancellationToken ct);
 
@@ -39,7 +40,14 @@ namespace EasyData.Export
         /// </summary>
         Func<EasyDataRow, bool> RowFilter { get; set; }
 
+        [Obsolete("Use BeforeRowInsert instead")]
         Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the callback functions that is called for each exported row before its insertion.
+        /// </summary>
+        /// <value>The callback function.</value>
+        Func<EasyDataRow, WriteRowFunc, CancellationToken, Task> BeforeRowInsert { get; set; }
 
         /// <summary>
         /// The title
@@ -61,12 +69,8 @@ namespace EasyData.Export
         /// </summary>
         bool PreserveFormatting { get; set; }
 
-        //bool IncludeGrandTotals { get; set; }
-
-        //bool IncludeSubTotals { get; set;}
-
-        //int AggrColumnsCount { get; set; }
-
         AggregationSettings Aggregation { get; set; }
+
+        int RowLimit { get; set; }
     }
 }

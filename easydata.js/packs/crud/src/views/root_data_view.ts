@@ -4,7 +4,6 @@ import { setLocation } from '../utils/utils';
 import { DataContext } from '../main/data_context';
 
 export class RootDataView {
-
     private metaData: MetaData;
 
     constructor (

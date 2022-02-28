@@ -143,8 +143,9 @@ export class TextFilterWidget {
     }
 
     private highlightCellRenderer(defaultRenderer: GridCellRenderer, value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) {   
-        if (dataUtils.isIntType(column.type) 
-        || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) {
+        if (dataUtils.isNumericType(column.type) 
+            || dataUtils.getStringDataTypes().indexOf(column.type) >= 0) 
+        {
             if (value) {
                 if (column.dataColumn && column.dataColumn.displayFormat
                     && DFMT_REGEX.test(column.dataColumn.displayFormat)) {

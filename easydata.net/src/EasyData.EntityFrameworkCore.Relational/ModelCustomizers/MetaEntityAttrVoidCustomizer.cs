@@ -114,5 +114,25 @@ namespace EasyData.EntityFrameworkCore
         {
             return this;
         }
+
+        /// <summary>
+        /// Set the data type
+        /// </summary>
+        /// <param name="dataType"></param>
+        /// <returns></returns>
+        public IMetaEntityAttrCustomizer SetDataType(DataType dataType)
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Set the default value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public IMetaEntityAttrCustomizer SetDefaultValue(object value)
+        {
+            return this;
+        }
     }
 }

@@ -65,7 +65,23 @@ namespace EasyData.Export
         /// </summary>
         public Func<EasyDataRow, bool> RowFilter { get; set; }
 
-        public Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded { get; set; }
+        private Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> _beforeRowAdded;
+
+        public Func<EasyDataRow, BeforeRowAddedCallback, CancellationToken, Task> BeforeRowAdded {
+            get => _beforeRowAdded;
+            set {
+                _beforeRowAdded = value;
+                if (_beforeRowAdded != null) {
+                    BeforeRowInsert = (EasyDataRow row, WriteRowFunc callback, CancellationToken token) =>
+                        BeforeRowAdded?.Invoke(row, (er, ed, ct) => callback(er, ed, ct), token);
+                }
+                else {
+                    BeforeRowInsert = null;
+                }
+            }
+        }
+
+        public Func<EasyDataRow, WriteRowFunc, CancellationToken, Task> BeforeRowInsert { get; set; }
 
         /// <summary>
         /// The title
@@ -87,12 +103,8 @@ namespace EasyData.Export
         /// </summary>
         public bool PreserveFormatting { get; set; } = true;
 
-        //public bool IncludeGrandTotals { get; set; } = false;
-
-        //public bool IncludeSubTotals { get; set; } = false;
-
-        //public int AggrColumnsCount { get; set; } = 0;
-
         public AggregationSettings Aggregation { get; set; } = new AggregationSettings();
+
+        public int RowLimit { get; set; } = 0;
     }
 }
