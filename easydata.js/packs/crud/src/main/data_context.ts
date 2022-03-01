@@ -10,12 +10,13 @@ import { TextDataFilter } from '../filter/text_data_filter';
 import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
-    'GetMetaData'   |
-    'FetchDataset'  | 
-    'FetchRecord'   |
-    'CreateRecord'  |
-    'UpdateRecord'  |
-    'DeleteRecord'  ;
+    'GetMetaData'      |
+    'FetchDataset'     | 
+    'FetchRecord'      |
+    'CreateRecord'     |
+    'UpdateRecord'     |
+    'DeleteRecord'     |
+    'BulkDeleteRecords';
 
 
 interface CompoundRecordKey { 
@@ -168,6 +169,19 @@ export class DataContext {
             .finally(() => this.endProcess());
     }
 
+    /**
+     * Delete records in bulk.
+     * @param obj Instances primary keys.
+     * @param sourceId Entity Id.
+     */
+    public bulkDeleteRecords(obj: any, sourceId?: string) {
+        const url = this.resolveEndpoint('BulkDeleteRecords', { sourceId: sourceId || this.activeEntity.id });
+
+        this.startProcess();
+        return this.http.post(url, obj, { dataType: 'json'})
+            .finally(() => this.endProcess());
+    }
+
     public setEndpoint(key: EasyDataEndpointKey, value: string) : void
     public setEndpoint(key: EasyDataEndpointKey | string, value: string) : void {
         this.endpoints.set(key, value);
@@ -231,5 +245,6 @@ export class DataContext {
         this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
         this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
         this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
+        this.setEnpointIfNotExist('BulkDeleteRecords', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/bulk-delete'));
     }
 }

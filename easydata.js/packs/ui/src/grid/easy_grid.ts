@@ -17,7 +17,8 @@ import {
     PageChangedEvent,
     ColumnChangedEvent,
     ColumnDeletedEvent,
-    ActiveRowChangedEvent
+    ActiveRowChangedEvent,
+    BulkDeleteClickEvent
 } from './easy_grid_events';
 
 import { GridColumnList, GridColumn, GridColumnAlign } from './easy_grid_columns';
@@ -110,7 +111,8 @@ export class EasyGrid {
         },
         showPlusButton: false,
         viewportRowsCount: null,
-        showActiveRow: true
+        showActiveRow: true,
+        showBulkDeleteButton: false,
     }
 
     public readonly options: EasyGridOptions;
@@ -240,6 +242,9 @@ export class EasyGrid {
         }
         if (options.onActiveRowChanged) {
             this.addEventListener('activeRowChanged', options.onActiveRowChanged);
+        }
+        if (options.onBulkDeleteButtonClick) {
+            this.addEventListener('bulkDeleteClick', options.onBulkDeleteButtonClick);
         }
 
         this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
@@ -450,6 +455,15 @@ export class EasyGrid {
                     domel(hd)
                         .addChildElement(this.renderHeaderButtons());
                 }
+
+                if (column.isSelectCol) {
+                    domel(hd)
+                        .addChildElement(domel('span')
+                            .setStyle("margin-left", "4px")
+                            .setStyle("display", "flex")
+                            .setStyle("align-items", "center")
+                            .addChildElement(this.renderSelectAllCheckbox()).toDOM());
+                }
             }); 
 
         const containerWidth = this.getContainerWidth();
@@ -478,7 +492,7 @@ export class EasyGrid {
         domel('div', colDiv)
             .addClass(`${this.cssPrefix}-header-cell-resize`)
 
-        if (!column.isRowNum) {
+        if (!column.isRowNum && !column.isSelectCol) {
             domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
@@ -957,8 +971,21 @@ export class EasyGrid {
                 return;
             }
 
-            const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
-            let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
+            let colindex: number;
+            let val: any;
+
+            if (column.isSelectCol) {
+                colindex = -2;
+                val = indexGlobal + 1;
+            }
+            else if (column.isRowNum) {
+                colindex = -1;
+                val = indexGlobal + 1;
+            }
+            else {
+                colindex = this.dataTable.columns.getIndex(column.dataColumn.id);
+                val = row.getValue(colindex)
+            }
 
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
@@ -1174,6 +1201,7 @@ export class EasyGrid {
     public addEventListener(eventType: 'columnMoved', handler: (ev: ColumnMovedEvent) => void): string;
     public addEventListener(eventType: 'columnDeleted', handler: (ev: ColumnDeletedEvent) => void): string;
     public addEventListener(eventType: 'activeRowChanged', handler: (ev: ActiveRowChangedEvent) => void): string;
+    public addEventListener(eventType: 'bulkDeleteClick', handler: (ev: BulkDeleteClickEvent) => void): string;
     public addEventListener(eventType: GridEventType | string, handler: (data: any) => void): string {
         return this.eventEmitter.subscribe(eventType, event => handler(event.data));
     }
@@ -1183,26 +1211,83 @@ export class EasyGrid {
     } 
 
     protected renderHeaderButtons(): HTMLElement {
-        if (this.options.showPlusButton) {
-            return domel('div')
-                .addClass(`${this.cssPrefix}-header-btn-plus`)
-                .title(this.options.plusButtonTitle || 'Add')
-                .addChild('a', builder => builder
-                    .attr('href', 'javascript:void(0)')
-                    .on('click', (e) => {
-                        e.preventDefault();   
-                        this.fireEvent({
-                            type: 'plusButtonClick',
-                            sourceEvent: e
-                        } as PlusButtonClickEvent);
-                    })
-                )
+        if (!this.options.showBulkDeleteButton && !this.options.showPlusButton) {
+            return domel('span')
+                .addText('#')
                 .toDOM();
         }
 
-        return domel('span')
-            .addText('#')
-            .toDOM();
+        let buttonBlock = domel('div')
+            .setStyle("display", "flex")
+            .setStyle("justify-content", "center");
+
+        // Generate Add Record button.
+        if (this.options.showPlusButton) {
+            buttonBlock.addChildElement(domel('div')
+            .addClass(`${this.cssPrefix}-header-btn-plus`)
+            .title(this.options.plusButtonTitle || 'Add')
+            .addChild('a', builder => builder
+                .attr('href', 'javascript:void(0)')
+                .on('click', (e) => {
+                    e.preventDefault();   
+                    this.fireEvent({
+                        type: 'plusButtonClick',
+                        sourceEvent: e
+                    } as PlusButtonClickEvent);
+                })
+            ).toDOM());
+        }
+
+        // Generate Bulk Delete button.
+        if (this.options.showBulkDeleteButton) {
+            buttonBlock.addChildElement(domel('div')
+            .addClass(`${this.cssPrefix}-header-btn-delete`)
+            .title(this.options.bulkDeleteButtonTitle || 'Bulk delete')
+            .addChild('a', builder => builder
+                .attr('href', 'javascript:void(0)'))
+                .on('click', (e) => {
+                    e.preventDefault();   
+                    this.fireEvent({
+                        type: 'bulkDeleteClick',
+                        rowIndices: this.getSelectedRowsIds()
+                    } as BulkDeleteClickEvent);
+                }).toDOM());
+        }
+
+        return buttonBlock.toDOM();
+    }
+
+    /**
+     * Render checkbox to select all checkboxes.
+     */
+    private renderSelectAllCheckbox(): HTMLElement {
+        return domel('input')
+            .attr('type', 'checkbox')
+            .on('change', (e) => {
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                const targetCheckbox: HTMLInputElement = e.target as HTMLInputElement;
+
+                checkboxes.forEach(checkbox => {
+                    const input: HTMLInputElement = checkbox as HTMLInputElement;
+
+                    if (input != targetCheckbox)
+                        input.checked = targetCheckbox.checked;
+                })
+            }).toDOM();
+    }
+
+    /**
+     * Get indices of selected rows.
+     */
+    private getSelectedRowsIds(): number[] {
+        var checkboxes = document.querySelectorAll('div.keg-cell-value input[type="checkbox"]:checked');
+
+        let indices: number[] = [];
+
+        checkboxes.forEach(checkbox => {
+            indices.push(parseInt(checkbox.closest('div.keg-row').getAttribute('data-row-idx')));
+        });
+        return indices;
     }
 
 
@@ -1372,11 +1457,11 @@ export class EasyGrid {
 
                     maxWidth += 3;
 
-                    const maxOption = column.isRowNum 
+                    const maxOption = column.isRowNum
                             ? this.options.columnWidths.rowNumColumn.max || 500 
                             : this.options.columnWidths[column.dataColumn.type].max || 2000;
 
-                    const minOption = column.isRowNum 
+                    const minOption = column.isRowNum
                             ? this.options.columnWidths.rowNumColumn.min || 0 
                             : this.options.columnWidths[column.dataColumn.type].min || 20;
 
