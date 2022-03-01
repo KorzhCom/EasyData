@@ -196,6 +196,45 @@ namespace EasyData.Services
             await DbContext.SaveChangesAsync(ct);
         }
 
+        /// <inheritdoc />
+        public override async Task DeleteRecordsInBulkAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
+            var recordsPKs = GetRecordsPKs(props);
+            var recordsToDelete = new List<object>();
+
+            foreach (var pk in recordsPKs) {
+                var keys = GetKeys(entityType, pk);
+                var record = FindRecord(DbContext, entityType.ClrType, keys.Values);
+
+                if (record == null) {
+                    throw new RecordNotFoundException(sourceId,
+                        $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
+                }
+
+                recordsToDelete.Add(record);
+            }
+
+            DbContext.RemoveRange(recordsToDelete);
+            await DbContext.SaveChangesAsync(ct);
+        }
+
+        /// <summary>
+        /// Get primary keys of records from the request body.
+        /// </summary>
+        private IEnumerable<JObject> GetRecordsPKs(JObject fields)
+        {
+            foreach (var keyValue in fields) {
+                if (keyValue.Key.Equals("pks")) {
+                    return keyValue.Value.ToObject<JObject[]>();
+                }
+            }
+
+            throw new Exception("Primary keys were not found.");
+        }
+
+
         private static IEntityType GetCurrentEntityType(DbContext dbContext, string sourceId)
         {
             var entityType = dbContext.Model.GetEntityTypes()

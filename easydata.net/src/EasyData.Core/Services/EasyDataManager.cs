@@ -59,6 +59,15 @@ namespace EasyData.Services
 
         public abstract Task DeleteRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default);
 
+        /// <summary>
+        /// Delete entities in bulk.
+        /// </summary>
+        /// <param name="modelId">Model Id.</param>
+        /// <param name="sourceId">Entity type.</param>
+        /// <param name="pks">Primary keys of the records to delete in bulk.</param>
+        /// <param name="ct">Cancellation Token.</param>
+        public abstract Task DeleteRecordsInBulkAsync(string modelId, string sourceId, JObject pks, CancellationToken ct = default);
+
         public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string sourceId, CancellationToken ct = default);
 
         /// <summary>
