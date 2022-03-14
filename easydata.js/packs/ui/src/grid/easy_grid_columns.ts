@@ -45,11 +45,16 @@ export class GridColumn {
 
     public readonly isRowNum: boolean = false;
 
+    /**
+     * If column contains checkbox to select the row.
+     */
+    public readonly isSelectCol: boolean = false;
+
     public cellRenderer: GridCellRenderer;
 
     public calculatedWidth: number;
 
-    constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false) {
+    constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false, isSelectCol: boolean = false) {
         this.dataColumn = column;
         this.grid = grid;
         const widthOptions = grid.options.columnWidths || {};
@@ -64,8 +69,9 @@ export class GridColumn {
             this.cellRenderer = this.grid.cellRendererStore.getDefaultRenderer(column.type);
             this._description = column.description;
         }
-        else if (isRowNum) {
-            this.isRowNum = true;
+        else if (isRowNum || isSelectCol) {
+            this.isRowNum = isRowNum;
+            this.isSelectCol = isSelectCol;
             this.width = (widthOptions && widthOptions.rowNumColumn) ? widthOptions.rowNumColumn.default : ROW_NUM_WIDTH;
             this._label = '';
 
@@ -78,7 +84,10 @@ export class GridColumn {
     }
 
     public get label(): string {
-        return this._label ? this._label : this.isRowNum ? '' : this.dataColumn.label;
+        if (this.isSelectCol || this.isRowNum) {
+            return '';
+        }
+        return this._label ? this._label : this.dataColumn.label;
     };
 
     public set label(value: string) {
@@ -107,6 +116,9 @@ export class GridColumnList {
 
     public sync(columnList: DataColumnList, hasRowNumCol = true) {
         this.clear();
+
+        const selectColumn = new GridColumn(null, this.grid, false, true);
+        this.add(selectColumn);
 
         const rowNumCol = new GridColumn(null, this.grid, true);
         this.add(rowNumCol);
