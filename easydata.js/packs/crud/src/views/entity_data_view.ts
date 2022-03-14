@@ -264,16 +264,15 @@ export class EntityDataView {
         let recordKeys: object[] = [];
 
         Promise.all(promises).then((rows) => {
-            rows.forEach(row => {
+            recordKeys = rows.map(row => { 
                 if (!row) return;
                 let keyVals = keyAttrs.map(attr => row.getValue(attr.id));
                 let keys = keyAttrs.reduce((val, attr, index) => { 
                     const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
                     val[property] = keyVals[index];
                     return val; 
-                }, {});
-
-                recordKeys.push(keys);
+                }, {}); 
+                return keys;
             });
 
             if (recordKeys.length == 0) {

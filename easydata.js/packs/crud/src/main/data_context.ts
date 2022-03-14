@@ -174,7 +174,7 @@ export class DataContext {
      * @param obj Instances primary keys.
      * @param sourceId Entity Id.
      */
-    public bulkDeleteRecords(obj: any, sourceId?: string) {
+    public bulkDeleteRecords(obj: {[key: string]: object[]}, sourceId?: string) {
         const url = this.resolveEndpoint('BulkDeleteRecords', { sourceId: sourceId || this.activeEntity.id });
 
         this.startProcess();

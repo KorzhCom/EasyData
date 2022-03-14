@@ -1281,12 +1281,9 @@ export class EasyGrid {
      */
     private getSelectedRowsIds(): number[] {
         var checkboxes = document.querySelectorAll('div.keg-cell-value input[type="checkbox"]:checked');
-
-        let indices: number[] = [];
-
-        checkboxes.forEach(checkbox => {
-            indices.push(parseInt(checkbox.closest('div.keg-row').getAttribute('data-row-idx')));
-        });
+        const indices: number[] = Array.from(checkboxes, checkbox => {
+            return parseInt(checkbox.closest('div.keg-row').getAttribute('data-row-idx'));
+        })
         return indices;
     }
 
@@ -1457,11 +1454,11 @@ export class EasyGrid {
 
                     maxWidth += 3;
 
-                    const maxOption = column.isRowNum
+                    const maxOption = column.isRowNum || column.isSelectCol
                             ? this.options.columnWidths.rowNumColumn.max || 500 
                             : this.options.columnWidths[column.dataColumn.type].max || 2000;
 
-                    const minOption = column.isRowNum
+                    const minOption = column.isRowNum || column.isSelectCol
                             ? this.options.columnWidths.rowNumColumn.min || 0 
                             : this.options.columnWidths[column.dataColumn.type].min || 20;
 
