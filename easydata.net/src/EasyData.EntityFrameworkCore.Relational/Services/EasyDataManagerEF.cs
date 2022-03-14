@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
+using EasyData.EntityFrameworkCore.Models;
+
 namespace EasyData.Services
 {
     public class EasyDataManagerEF<TDbContext> : EasyDataManager where TDbContext : DbContext
@@ -197,14 +199,14 @@ namespace EasyData.Services
         }
 
         /// <inheritdoc />
-        public override async Task DeleteRecordsInBulkAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default)
+        public override async Task DeleteRecordsInBulkAsync(string modelId, string sourceId, JObject primaryKeys, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             var entityType = GetCurrentEntityType(DbContext, sourceId);
-            var recordsPKs = GetRecordsPKs(props);
+            var recordsPrimaryKeys = GetRecordsPrimaryKeys(primaryKeys);
             var recordsToDelete = new List<object>();
 
-            foreach (var pk in recordsPKs) {
+            foreach (var pk in recordsPrimaryKeys) {
                 var keys = GetKeys(entityType, pk);
                 var record = FindRecord(DbContext, entityType.ClrType, keys.Values);
 
@@ -223,17 +225,10 @@ namespace EasyData.Services
         /// <summary>
         /// Get primary keys of records from the request body.
         /// </summary>
-        private IEnumerable<JObject> GetRecordsPKs(JObject fields)
+        private IEnumerable<JObject> GetRecordsPrimaryKeys(JObject fields)
         {
-            foreach (var keyValue in fields) {
-                if (keyValue.Key.Equals("pks")) {
-                    return keyValue.Value.ToObject<JObject[]>();
-                }
-            }
-
-            throw new Exception("Primary keys were not found.");
+            return fields.ToObject<BulkDeleteDTO>().PrimaryKeys;
         }
-
 
         private static IEntityType GetCurrentEntityType(DbContext dbContext, string sourceId)
         {
