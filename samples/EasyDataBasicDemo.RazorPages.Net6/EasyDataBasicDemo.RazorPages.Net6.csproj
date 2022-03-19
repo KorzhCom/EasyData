@@ -8,13 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
-		<PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
-		<PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
-		<PackageReference Include="Korzh.DbUtils.Sqlite" Version="1.4.1" />
-		<PackageReference Include="EasyData.AspNetCore" Version="1.4.3-beta01" />
-		<PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.4.3-beta01" />
-	</ItemGroup>
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+	<PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
+	<PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
+	<PackageReference Include="Korzh.DbUtils.Sqlite" Version="1.4.1" />
+	<PackageReference Include="EasyData.AspNetCore" Version="1.4.3" />
+	<PackageReference Include="EasyData.EntityFrameworkCore.Relational" Version="1.4.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="App_Data\EqDemoData.zip">

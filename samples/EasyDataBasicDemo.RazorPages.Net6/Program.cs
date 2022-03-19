@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using EasyData.EntityFrameworkCore;
 using EasyData.Services;
 
 using EasyDataBasicDemo;
@@ -34,6 +33,7 @@ app.UseAuthorization();
 app.MapEasyData((options) => {
     options.UseDbContext<AppDbContext>();
 });
+
 app.MapRazorPages();
 
 app.EnsureDbInitialized(builder.Configuration, app.Environment);
