@@ -90,7 +90,9 @@ namespace EasyData.Export
             var mappedSettings = MapSettings(settings);
 
             var document = new Document();
-            document.Info.Title = settings.Title;
+            document.Info.Title = mappedSettings.Title;
+            document.DefaultPageSetup.Orientation = mappedSettings.Orientation;
+            document.DefaultPageSetup.PageFormat = mappedSettings.PageFormat;
 
             ApplyStyles(document, mappedSettings);
 

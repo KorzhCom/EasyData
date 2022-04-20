@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 
+using MigraDoc.DocumentObjectModel;
+
 namespace EasyData.Export
 {
     /// <summary>
@@ -27,6 +29,16 @@ namespace EasyData.Export
         {
        
         }
+
+        /// <summary>
+        /// Orientation of the page
+        /// </summary>
+        public Orientation Orientation { get; set; } = Orientation.Portrait;
+
+        /// <summary>
+        /// Format of the page
+        /// </summary>
+        public PageFormat PageFormat { get; set; } = PageFormat.A4;
 
     }
 }
