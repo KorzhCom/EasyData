@@ -69,6 +69,7 @@ namespace EasyData.AspNetCore
                 var model = await Manager.GetModelAsync(modelId, ct);
                 await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                     await WriteGetModelResponseAsync(jsonWriter, model, cancellationToken);
+                    await WriteRegisteredExportFormatsAsync(jsonWriter, cancellationToken);
                 }, ct);
             }
             catch (EasyDataManagerException ex) {
@@ -89,6 +90,22 @@ namespace EasyData.AspNetCore
         {
             await jsonWriter.WritePropertyNameAsync("model", ct);
             await model.WriteToJsonAsync(jsonWriter, MetaDataReadWriteOptions.ClientSideContent, ct);
+        }
+
+        protected virtual async Task WriteRegisteredExportFormatsAsync(JsonWriter jsonWriter, CancellationToken ct)
+        {
+            var exportFormats = EasyDataManager.GetRegisteredExporterFormats();
+            await jsonWriter.WritePropertyNameAsync("exportFormats", ct);
+            await jsonWriter.WriteStartArrayAsync(ct);
+            foreach (var format in exportFormats) {
+                await jsonWriter.WriteStartObjectAsync(ct);
+                await jsonWriter.WritePropertyNameAsync("name", ct);
+                await jsonWriter.WriteValueAsync(format);
+                await jsonWriter.WritePropertyNameAsync("type", ct);
+                await jsonWriter.WriteValueAsync(EasyDataManager.GetContentTypeByExportFormat(format));
+                await jsonWriter.WriteEndObjectAsync(ct);
+            }
+            await jsonWriter.WriteEndArrayAsync();
         }
 
         public virtual async Task HandleFetchDatasetAsync(string modelId, string sourceId, CancellationToken ct = default)
@@ -260,6 +277,21 @@ namespace EasyData.AspNetCore
             return Task.CompletedTask;
         }
 
+        public virtual async Task HandleExportDatasetAsync(string modelId, string sourceId, string formatType, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            HttpContext.Response.StatusCode = StatusCodes.Status200OK;
+            HttpContext.Response.ContentType = EasyDataManager.GetContentTypeByExportFormat(formatType);
+
+            var resultFileName = $"{sourceId}.{GetFileExtentionByContentType(HttpContext.Response.ContentType)}";
+            HttpContext.Response.Headers.Add("Content-Disposition",
+                string.Format("attachment; filename=\"{0}\"", resultFileName));
+
+            var resultSet = await Manager.FetchDatasetAsync(modelId, sourceId, ct: ct);
+            await Manager.ExportDatasetAsync(resultSet, formatType, HttpContext.Response.Body, ct);
+        }
+
         /// <summary>
         /// Handles exceptions that might occur inside any other EasyData API request handler.
         /// If the writing to the response content has not started it returns a response with 400 code and the error message.
@@ -336,6 +368,34 @@ namespace EasyData.AspNetCore
                 await jsonWriter.WritePropertyNameAsync("message", cancellationToken);
                 await jsonWriter.WriteValueAsync(errorMessage, cancellationToken);
             }, ct);
+        }
+
+        /// <summary>
+        /// Gets the file extention by the content type.
+        /// </summary>
+        /// <param name="contentType">Content type (e.g. application/msword).</param>
+        /// <returns>System.String.</returns>
+        protected virtual string GetFileExtentionByContentType(string contentType)
+        {
+            if (contentType.StartsWith("application")) {
+                var subType = contentType.Substring("application".Length + 1);
+                if (subType == "vnd.ms-excel") {
+                    return "xls";
+                }
+                else if (subType == "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                    return "xlsx";
+                }
+                else if (subType == "msword") {
+                    return "doc";
+                }
+
+                return subType;
+            }
+            else if (contentType.StartsWith("text")) {
+                return contentType.Substring("text".Length + 1);
+            }
+
+            return "txt";
         }
     }
 }

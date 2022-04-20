@@ -5,6 +5,12 @@ using System.Threading;
 
 namespace EasyData.Export
 {
+    public enum ExportFormatType
+    { 
+        Text,
+        Binary
+    }
+
     /// <summary>
     /// Represents a type used to perform exporting of the data stream to some format (like CSV or PDF) 
     /// </summary>
@@ -53,6 +59,6 @@ namespace EasyData.Export
         /// Gets the MIME content type of the exporting format.
         /// </summary>
         /// <returns>System.String.</returns>
-        string GetContentType();        
+        string GetContentType();
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
+using EasyData.Export;
 
 namespace EasyData.Services
 {
@@ -60,6 +61,38 @@ namespace EasyData.Services
         public abstract Task DeleteRecordAsync(string modelId, string sourceId, JObject props, CancellationToken ct = default);
 
         public abstract Task<IEnumerable<EasySorter>> GetDefaultSortersAsync(string modelId, string sourceId, CancellationToken ct = default);
+
+        public async Task ExportDatasetAsync(EasyDataResultSet resultSet, string format, Stream stream, CancellationToken ct = default)
+        {
+            var exporter = GetExporterByFormat(format) ?? throw new EasyDataManagerException("Can't find exporter for format type: " + format);
+            await exporter.ExportAsync(resultSet, stream, ct);
+        }
+
+        internal static void RegisterExporter(string format, IDataExporter exporter)
+            => _dataExporters[format] = exporter;
+
+        private static Dictionary<string, IDataExporter> _dataExporters = new Dictionary<string, IDataExporter>();
+
+        protected static IDataExporter GetExporterByFormat(string format)
+            => _dataExporters.TryGetValue(format, out var exporter) ? exporter : null;
+
+        /// <summary>
+        /// Returns registered exporter types
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> GetRegisteredExporterFormats()
+            => _dataExporters.Keys;
+
+        /// <summary>
+        /// Gets the content type by export format.
+        /// </summary>
+        /// <param name="format">The format of exporting (like "csv" or "excel-html").</param>
+        /// <returns>A string which represents the MIME content type (e.g. "application/json" or "text/plain")</returns>
+        public static string GetContentTypeByExportFormat(string format)
+        {
+            var exporter = GetExporterByFormat(format);
+            return exporter != null ? exporter.GetContentType() : "text/plain";
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

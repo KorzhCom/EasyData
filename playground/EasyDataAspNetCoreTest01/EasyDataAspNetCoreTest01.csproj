@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\easydata.net\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj" />
     <ProjectReference Include="..\..\easydata.net\src\EasyData.Core\EasyData.Core.csproj" />
     <ProjectReference Include="..\..\easydata.net\src\EasyData.EntityFrameworkCore.Relational\EasyData.EntityFrameworkCore.Relational.csproj" />
+	<ProjectReference Include="..\..\easydata.net\src\EasyData.Exporters\EasyData.Exporters.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

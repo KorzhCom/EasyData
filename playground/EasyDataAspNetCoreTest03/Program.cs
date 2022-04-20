@@ -16,6 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options
     => options.UseSqlServer(builder.Configuration.GetConnectionString("EasyDataDB")));
 builder.Services.AddRazorPages();
 
+builder.Services.AddEasyData()
+                .AddDefaultExporters();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -56,6 +56,19 @@ export class EntityDataView {
                 );
         }
 
+        if (this.context.getExportFormats().length > 0) {
+            domel(this.slot)
+                .addChild('a', b => b
+                    .attr('href', 'javascript:void(0)')
+                    .text(`${i18n.getText('ExportData')} 🠗`)
+                    .setStyle('float', 'right')
+                    .on('click', (e) => {
+                        e.preventDefault();
+                        this.showExportDialog();
+                    })
+                );
+        }
+
         this.renderGrid();
     }
 
@@ -239,6 +252,55 @@ export class EntityDataView {
                     })
                 }
             });
+    }
+
+    private showExportDialog() {
+        const formats = this.context.getExportFormats();
+        console.log('Formats: ', formats);
+        const body = domel('div')
+            .addClass('kdlg-form-section')
+            .addChild('div', b => b
+                .addClass('kfrm-form')
+                .addChild('div', b => b
+                    .addClass('kfrm-fields col-a-1 label-align-right')
+                    .addChild('label', b => b
+                        .addClass('kdlg-form-label', 'kflex-20')
+                        .attr('for', 'export_format')
+                        .addText(i18n.getText('ExportDlgFormatLabel'))
+                    )
+                    .addChild('div', b => b
+                        .addClass('kfrm-select')
+                        .addChild('select', b => {
+                            b
+                                .attr('name', 'export_format')
+                                .id('exportFormat');
+
+                            for (const format of formats) {
+                                b.addOption({
+                                    value: format.name,
+                                    title: i18n.getText(format.name) || format.name,
+                                    selected: formats[0] == format
+                                });
+                            }
+
+                        })
+                    )
+                )
+            )
+            .toDOM();
+
+        const dlg = this.dlg.open({
+            title: i18n.getText('ExportDlgCaption'),
+            body: body,
+            onSubmit: () => {
+                dlg.disableButtons();
+                const formatName = (body.querySelector('#exportFormat') as HTMLSelectElement).value;
+                const format = formats.filter(f => f.name === formatName)[0];
+                this.context.exportDataSet(format)
+                    .then(() => dlg.close())
+                return false;
+            }
+        });
     }
 
     private processError(error) {

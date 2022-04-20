@@ -27,7 +27,10 @@ function addEasyDataCRUDTexts() {
         SearchBtn: 'Search',
         SearchInputPlaceholder: 'Search...',
         RootViewTitle: 'Entities',
-        ModelIsEmpty: 'No entity was found.'
+        ModelIsEmpty: 'No entity was found.',
+        ExportData: 'Export data',
+        ExportDlgCaption: 'Export data',
+        ExportDlgFormatLabel: 'Export to format: '
     });
 }
 

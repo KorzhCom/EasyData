@@ -41,6 +41,10 @@ namespace EasyDataBasicDemo
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB")));
 
+            services.AddEasyData()
+                    .AddDefaultExporters()
+                    .AddPdfExporter();
+
             services.AddRazorPages();
         }
 

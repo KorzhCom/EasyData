@@ -15,11 +15,17 @@ type EasyDataEndpointKey =
     'FetchRecord'   |
     'CreateRecord'  |
     'UpdateRecord'  |
-    'DeleteRecord'  ;
+    'DeleteRecord'  |
+    'ExportDataset' ;
 
 
 interface CompoundRecordKey { 
     [key: string]: string 
+}
+
+type ExportFormat = {
+    name: string,
+    type: string
 }
     
 export interface EasyDataContextOptions {
@@ -36,6 +42,8 @@ export class DataContext {
     private http: HttpClient;
 
     private model: MetaData;
+
+    private exportFormats: ExportFormat[] = [];
 
     private data: EasyDataTable;
 
@@ -76,6 +84,10 @@ export class DataContext {
        return this.model;
     }
 
+    public getExportFormats(): ExportFormat[] {
+        return this.exportFormats;
+    }
+
     public getData() {
         return this.data;
     }
@@ -101,6 +113,10 @@ export class DataContext {
             .then(result => {
                 if (result.model) {
                     this.model.loadFromData(result.model);
+                }
+
+                if (result.exportFormats) {
+                    this.exportFormats = result.exportFormats;
                 }
 
                 return this.model;
@@ -134,6 +150,36 @@ export class DataContext {
 
                 return this.data;
             })
+    }
+
+    public exportDataSet(format: ExportFormat) {
+        const url = this.resolveEndpoint('ExportDataset', { format: format.name });
+        const responseType = format.type.startsWith('application') ? 'arraybuffer' : undefined;
+        this.startProcess();
+        const result = this.http.get(url, { responseType });
+        const request = result.getRequest();
+        return result
+            .then((responseData) => {
+                const blob = new Blob([responseData]);
+                const filename = request.getXMLHttpRequest()
+                    .getResponseHeader("Content-Disposition").match(/filename="(.*)"/)[1];
+
+                if (window.navigator['msSaveOrOpenBlob']) {
+                    // Internet Explorer
+                    window.navigator['msSaveOrOpenBlob'](blob, filename);
+                }
+                else {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style.display = "none";
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(a.href);
+                    document.body.removeChild(a);
+                }
+            })
+            .finally(() => this.endProcess());
     }
 
     public fetchRecord(keys : CompoundRecordKey, sourceId?: string) {
@@ -231,5 +277,6 @@ export class DataContext {
         this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
         this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
         this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
+        this.setEnpointIfNotExist('ExportDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/export/{format}'));
     }
 }

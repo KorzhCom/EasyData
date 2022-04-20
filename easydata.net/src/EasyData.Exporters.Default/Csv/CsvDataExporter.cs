@@ -179,7 +179,6 @@ namespace EasyData.Export
             return "text/csv";
         }
 
-
         /// <summary>
         /// Converts string into CVS format.
         /// </summary>

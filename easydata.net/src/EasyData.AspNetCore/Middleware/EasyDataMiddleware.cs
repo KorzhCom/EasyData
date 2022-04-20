@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Web;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 
 using EasyData.Services;
+using System.Collections.Generic;
 
 namespace EasyData.AspNetCore
 {
@@ -19,6 +19,7 @@ namespace EasyData.AspNetCore
         public const string CreateRecord = "CreateRecord";
         public const string UpdateRecord = "UpdateRecord";
         public const string DeleteRecord = "DeleteRecord";
+        public const string ExportDataset = "ExportDataset";
     }
 
     public class EasyDataMiddleware<THandler> where THandler: EasyDataApiHandler
@@ -47,7 +48,8 @@ namespace EasyData.AspNetCore
                 new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "GET"),
                 new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/sources/([^/]+?)/create$", "POST"),
                 new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/sources/([^/]+?)/update$", "POST"),
-                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST")
+                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST"),
+                new Endpoint(DataAction.ExportDataset, @"^/models/([^/]+?)/sources/([^/]+?)/export/([^/]+?)$", "GET")
             };
 
         public EasyDataMiddleware(RequestDelegate next, EasyDataOptions options)
@@ -68,15 +70,13 @@ namespace EasyData.AspNetCore
 
                 var actionUrl = HttpUtility.UrlDecode(command.ToString());
                 var action = "";
-                var modelId = "";
-                var entityTypeName = "";
+                var args = new List<string>();
 
                 foreach (var route in _routing) {
                     var matches = route.Regex.Matches(actionUrl);
                     if (matches.Count == 1 && context.Request.Method.ToUpper() == route.Method) {
-                        modelId = matches[0].Groups[1].Value;
-                        if (matches[0].Groups.Count > 2) {
-                            entityTypeName = matches[0].Groups[2].Value;
+                        for (int i = 0; i < matches[0].Groups.Count; i++)  {
+                            args.Add(matches[0].Groups[i + 1].Value);
                         }
                         action = route.Action;
                         break;
@@ -89,6 +89,9 @@ namespace EasyData.AspNetCore
                     var handler = (THandler)Activator.CreateInstance(typeof(THandler), manager, _options, context);
 
                     var ct = context.RequestAborted;
+
+                    var modelId = args[0];
+                    var entityTypeName = args.Count > 1 ? args[1] : "";
 
                     try {
                         switch (action) {
@@ -109,6 +112,10 @@ namespace EasyData.AspNetCore
                                 return;
                             case DataAction.DeleteRecord:
                                 await handler.HandleDeleteRecordAsync(modelId, entityTypeName, ct);
+                                return;
+                            case DataAction.ExportDataset:
+                                var format = args[2];
+                                await handler.HandleExportDatasetAsync(modelId, entityTypeName, format, ct);
                                 return;
                         }
                     }
