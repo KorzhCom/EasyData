@@ -173,17 +173,15 @@ namespace EasyData.Export
 
                     // setting the cell's format
                     cell.DataType = excelDataType;
-                    if (excelDataType == XLDataType.DateTime) {
-                        var format = Utils.GetExcelDateFormat(column.DataType, mappedSettings, dfmt);
-                        if (!string.IsNullOrEmpty(format))
-                            cell.Style.DateFormat.Format = format;
+                    var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
+                    if (!string.IsNullOrEmpty(cellFormat)) {
+                        if (excelDataType == XLDataType.Number) {
+                            cell.Style.NumberFormat.Format = cellFormat;
+                        }
+                        else {
+                            cell.Style.DateFormat.Format = cellFormat;
+                        }
                     }
-                    else if (excelDataType == XLDataType.Number) {
-                        var format = Utils.GetExcelNumberFormat(mappedSettings, dfmt);
-                        if (!string.IsNullOrEmpty(format))
-                            cell.Style.NumberFormat.Format = format;
-                    }
-
                     cell.Style.Alignment.Horizontal = MapAlignment(column.Style.Alignment);
 
                     if (isExtraRow)
@@ -198,15 +196,21 @@ namespace EasyData.Export
             WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) 
                 => WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
+            var currentRowNum = 0;
             foreach (var row in data.Rows) {
                 var add = settings?.RowFilter?.Invoke(row);
                 if (add.HasValue && !add.Value)
+                    continue;
+
+                if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
                     continue;
 
                 if (mappedSettings.BeforeRowInsert != null)
                     await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 await WriteRowAsync(row, cancellationToken: ct);
+
+                currentRowNum++;
             }
 
             if (mappedSettings.BeforeRowInsert != null)
@@ -361,6 +365,20 @@ namespace EasyData.Export
             }
 
             return result;
+        }
+
+        private static string GetCellFormat(XLDataType xlDataType, DataType dataType, ExcelDataExportSettings settings, string format)
+        {
+            switch (xlDataType) {
+                case XLDataType.DateTime:
+                    return Utils.GetExcelDateFormat(dataType, settings, format);
+                case XLDataType.Number:
+                    return Utils.GetExcelNumberFormat(settings, format);
+                case XLDataType.TimeSpan:
+                    return Utils.GetExcelTimeFormat(settings, format);
+                default:
+                    return null;
+            }
         }
     }
 

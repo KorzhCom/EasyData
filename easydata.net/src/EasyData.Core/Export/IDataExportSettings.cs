@@ -70,5 +70,7 @@ namespace EasyData.Export
         bool PreserveFormatting { get; set; }
 
         AggregationSettings Aggregation { get; set; }
+
+        int RowLimit { get; set; }
     }
 }

@@ -203,13 +203,19 @@ namespace EasyData.EntityFrameworkCore
         {
             var entity = Model.CreateEntity();
             entity.Id = GetEntityId(entityType);
+
             entity.Name = DataUtils.PrettifyName(Utils.GetEntityName(entityType));
-            entity.NamePlural = DataUtils.MakePlural(entity.Name);
+            if (entityType.ClrType.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
+                entity.Name = displayAttr.Name;
+                entity.Description = displayAttr.Description;
+            }
 
             var primaryKey = entityType.FindPrimaryKey();
             entity.IsEditable = primaryKey != null;
 
             entity.ClrType = entityType.ClrType;
+
+            entity.NamePlural = DataUtils.MakePlural(entity.Name);
 
             var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
             if (annotation != null) {
@@ -439,6 +445,7 @@ namespace EasyData.EntityFrameworkCore
             if (propInfo != null) {         
                 if (propInfo.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute displayAttr) {
                     entityAttr.Caption = displayAttr.Name;
+                    entityAttr.Description = displayAttr.Description;
                 }
                 else {
                     entityAttr.Caption = DataUtils.PrettifyName(entityAttr.Caption);

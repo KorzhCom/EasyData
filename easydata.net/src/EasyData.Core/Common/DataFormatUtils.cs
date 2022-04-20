@@ -50,9 +50,7 @@ namespace EasyData
                 return "";
             }
 
-            if (val is DateTime) {
-                DateTime dt = (DateTime)val;
-
+            if (val is DateTime dt) {
                 if (!string.IsNullOrEmpty(displayFormat)) {
                     return string.Format(culture, displayFormat, val);
                 }
@@ -60,16 +58,37 @@ namespace EasyData
                 var format = BuildShortDateTimeFormat(culture, dataType);
                 return dt.ToString(format, CultureInfo.InvariantCulture);
             }
-            else if (val is DateTimeOffset) {
-                DateTimeOffset dt = (DateTimeOffset)val;
-
+            else if (val is DateTimeOffset dto) {
                 if (!string.IsNullOrEmpty(displayFormat)) {
                     return string.Format(culture, displayFormat, val);
                 }
 
                 var format = BuildShortDateTimeFormat(culture, dataType);
-                return dt.ToString(format, CultureInfo.InvariantCulture);
+                return dto.ToString(format, CultureInfo.InvariantCulture);
             }
+            else if (val is TimeSpan ts) {
+                if (!string.IsNullOrEmpty(displayFormat)) {
+                    return string.Format(culture, displayFormat, val);
+                }
+
+                return ts.ToString(culture.DateTimeFormat.ShortTimePattern, CultureInfo.InvariantCulture);
+            }
+#if NET6_0_OR_GREATER
+            else if (val is DateOnly @do) {
+                if (!string.IsNullOrEmpty(displayFormat)) {
+                    return string.Format(culture, displayFormat, val);
+                }
+
+                return @do.ToString(culture.DateTimeFormat.ShortDatePattern, CultureInfo.InvariantCulture);
+            }
+            else if (val is TimeOnly to) {
+                if (!string.IsNullOrEmpty(displayFormat)) {
+                    return string.Format(culture, displayFormat, val);
+                }
+
+                return to.ToString(culture.DateTimeFormat.ShortTimePattern, CultureInfo.InvariantCulture);
+            }
+#endif
             else if (val is float || val is double || val is int || val is decimal) {
                 if (!string.IsNullOrEmpty(displayFormat))
                     return string.Format(culture, displayFormat, val);

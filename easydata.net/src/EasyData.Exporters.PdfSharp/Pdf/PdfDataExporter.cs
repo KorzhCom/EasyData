@@ -90,7 +90,9 @@ namespace EasyData.Export
             var mappedSettings = MapSettings(settings);
 
             var document = new Document();
-            document.Info.Title = settings.Title;
+            document.Info.Title = mappedSettings.Title;
+            document.DefaultPageSetup.Orientation = mappedSettings.Orientation;
+            document.DefaultPageSetup.PageFormat = mappedSettings.PageFormat;
 
             ApplyStyles(document, mappedSettings);
 
@@ -214,11 +216,17 @@ namespace EasyData.Export
             WriteRowFunc WriteExtraRowAsync = (extraRow, extraData, cancellationToken) => 
                 WriteRowAsync(extraRow, true, extraData, cancellationToken);
 
+            var currentRowNum = 0;
             foreach (var row in rows) {
                 if (mappedSettings.BeforeRowInsert != null)
                     await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
+                if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
+                    continue;
+
                 await WriteRowAsync(row);
+
+                currentRowNum++;
             }
 
             if (mappedSettings.BeforeRowInsert != null) {

@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Entities";
+}
+
+<div id="EasyDataContainer"></div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.3/easydata.min.css" />
+    <script src="https://cdn.korzh.com/ed/1.4.3/easydata.min.js" type="text/javascript"></script>
+
+    <script>
+        window.addEventListener('load', function () {
+            new easydata.crud.EasyDataViewDispatcher().run()
+        });
+    </script>
+}

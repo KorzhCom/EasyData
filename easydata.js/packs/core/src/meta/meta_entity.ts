@@ -270,7 +270,8 @@ export class MetaEntityAttr {
             this.dataAttr = dto.dattr;
             this.lookupDataAttr = dto.ldattr;
 
-            this.defaultValue = dto.defVal;
+            const isDataType = utils.getDateDataTypes().indexOf(this.dataType);
+            this.defaultValue = dto.defVal && isDataType ? new Date(dto.defVal) : dto.defVal;
 
             this.isNullable = utils.getIfDefined(dto.nul, this.isNullable);
             this.isEditable = utils.getIfDefined(dto.ied, this.isEditable);
