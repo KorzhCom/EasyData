@@ -52,6 +52,16 @@ namespace EasyData.Export
             return dataFormat;
         }
 
+        public static string GetExcelTimeFormat(IDataExportSettings setting, string dataFormat)
+        {
+            if (_formatRegex.IsMatch(dataFormat)) {
+                var format = _formatRegex.Match(dataFormat).Groups[1].Value;
+                return format;
+            }
+
+            return dataFormat;
+        }
+
         public static string GetExcelDateFormat(DataType dataType, IDataExportSettings settings, string dataFormat)
         {
             if (!string.IsNullOrEmpty(dataFormat)) {
