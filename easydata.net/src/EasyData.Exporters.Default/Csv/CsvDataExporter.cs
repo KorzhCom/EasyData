@@ -41,7 +41,10 @@ namespace EasyData.Export
         /// <param name="settings">The settings.</param>
         public void Export(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
         {          
-            ExportAsync(data, stream, settings).GetAwaiter().GetResult();
+            ExportAsync(data, stream, settings)
+                .ConfigureAwait(false)   
+                .GetAwaiter()
+                .GetResult();
         }
 
         /// <summary>
@@ -66,8 +69,9 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            var writer = new StreamWriter(stream, new UTF8Encoding(false));
-            await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
+            }
         }
 
         private async Task ExportAsync(IEasyDataResultSet data, TextWriter writer, IDataExportSettings settings, CancellationToken ct)
