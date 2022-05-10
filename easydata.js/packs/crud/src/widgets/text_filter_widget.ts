@@ -13,7 +13,6 @@ export interface TextFilterWidgetOptions {
 }
 
 export class TextFilterWidget {
-
     private options = {
         focus: false,
         instantMode: false,
@@ -45,8 +44,7 @@ export class TextFilterWidget {
 
     private filterInput: HTMLInputElement;
 
-    private render() {
-        
+    private render() {        
         const horizClass = browserUtils.IsIE() 
             ? 'kfrm-fields-ie is-horizontal' 
             : 'kfrm-fields is-horizontal';

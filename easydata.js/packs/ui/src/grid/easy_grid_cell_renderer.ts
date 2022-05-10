@@ -101,10 +101,7 @@ const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColum
         cellValueElement.classList.add(`${cssPrefix}-cell-value-bool`);
         cellValueElement.classList.add(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
     }
-
 }
-
-
 
 interface CellRendererCollection {
     [name: string]: GridCellRenderer;

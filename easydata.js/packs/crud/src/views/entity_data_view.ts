@@ -164,7 +164,7 @@ export class EntityDataView {
     }
 
     private editClickHandler(ev: MouseEvent, rowIndex: number) {
-        this.context.getData().getRow(rowIndex)
+        this.grid.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     this.showEditForm(row);
@@ -208,7 +208,7 @@ export class EntityDataView {
     }
 
     private deleteClickHandler(ev: MouseEvent, rowIndex: number) {
-        this.context.getData().getRow(rowIndex)
+        this.grid.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
@@ -228,6 +228,8 @@ export class EntityDataView {
                     )
                     .then((result) => {
                         if (result) {
+                            this.grid.getData().deleteCachedRow(rowIndex);
+                            this.grid.refresh();
                             this.context.deleteRecord(keys)
                                 .then(() => {
                                     return this.refreshData();
