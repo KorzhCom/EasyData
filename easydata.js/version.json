@@ -1,6 +1,6 @@
 {
-    "version": "1.4.4",
-    "baseVersion": "1.4.4",
-    "assetVersion": "01_04_04",
+    "version": "1.4.5-rc01",
+    "baseVersion": "1.4.5",
+    "assetVersion": "01_04_05",
     "tag": "latest"
 }
