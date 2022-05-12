@@ -285,9 +285,4 @@ export class EasyDataTable {
             this.onUpdate(this);
         }
     }
-
-    public deleteCachedRow(rowIndex: number, count : number = 1) : void {
-        if (rowIndex < 0 || rowIndex >= this.cachedRows.length) return;
-        this.cachedRows.splice(rowIndex, count);
-    }
 }

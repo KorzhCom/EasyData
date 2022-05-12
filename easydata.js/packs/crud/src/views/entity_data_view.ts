@@ -26,6 +26,8 @@ export class EntityDataView {
 
     private grid: EasyGrid;
 
+    private filterWidget : TextFilterWidget;
+
     private defaultValidators: Validator[] = [ new RequiredValidator(), new TypeValidator()];
 
     constructor (
@@ -103,7 +105,7 @@ export class EntityDataView {
                     this.slot.insertBefore(filterBarDiv, gridSlot);
     
                     const dataFilter = this.context.createFilter();
-                    new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);    
+                    this.filterWidget = new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);    
                 }
             });
     }
@@ -191,7 +193,7 @@ export class EntityDataView {
 
                 form.getData()
                     .then(obj => this.context.updateRecord(obj))
-                    .then(() => {
+                    .then(() => {                        
                         return this.refreshData();
                     })       
                     .catch((error) => {
@@ -228,8 +230,6 @@ export class EntityDataView {
                     )
                     .then((result) => {
                         if (result) {
-                            this.grid.getData().deleteCachedRow(rowIndex);
-                            this.grid.refresh();
                             this.context.deleteRecord(keys)
                                 .then(() => {
                                     return this.refreshData();
@@ -255,7 +255,14 @@ export class EntityDataView {
     private refreshData(): Promise<void> {
         return this.context.fetchDataset()
             .then(() => {
-                this.grid.refresh();
+                let processed = false;
+                if (this.filterWidget) {                   
+                    processed = this.filterWidget.applyFilter(false);
+                }
+
+                if (!processed) {
+                    this.grid.refresh();
+                }
             });
     }
 }

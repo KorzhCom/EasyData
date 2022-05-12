@@ -101,7 +101,7 @@ export class TextFilterWidget {
 
     private inputKeydownHandler(ev: Event) {
         if ((ev as KeyboardEvent).keyCode == 13) {
-            this.applyFilter();
+            this.applyFilter(true);
         }
     }
 
@@ -111,7 +111,7 @@ export class TextFilterWidget {
         }
 
         this.applyFilterTimeout = setTimeout(() => {
-            this.applyFilter();
+            this.applyFilter(true);
         }, this.options.instantTimeout);
     }
 
@@ -119,25 +119,27 @@ export class TextFilterWidget {
         this.filterInput.value = '';
         this.filterInput.focus();
 
-        this.applyFilter();
+        this.applyFilter(true);
     }
 
     private searchButtonClickHandler() {
-       this.applyFilter();
+       this.applyFilter(true);
     }
 
-    private applyFilter() {
+    public applyFilter(checkChange : boolean) : boolean {
         if (this.applyFilterTimeout) {
             clearTimeout(this.applyFilterTimeout);
         }
 
         const filterValue = this.filter.getValue();
-        if (filterValue != this.filterInput.value) {
+        if (!checkChange || filterValue != this.filterInput.value) {
             this.filter.apply(this.filterInput.value)
                 .then(data => {
                     this.grid.setData(data);
                 });
+            return true;
         }
+        return false;
     }
 
     private highlightCellRenderer(defaultRenderer: GridCellRenderer, value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) {   
