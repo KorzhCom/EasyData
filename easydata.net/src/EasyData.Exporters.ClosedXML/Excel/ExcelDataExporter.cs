@@ -206,15 +206,15 @@ namespace EasyData.Export
                     continue;
 
                 if (mappedSettings.BeforeRowInsert != null)
-                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
+                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct).ConfigureAwait(false);
 
-                await WriteRowAsync(row, cancellationToken: ct);
+                await WriteRowAsync(row, cancellationToken: ct).ConfigureAwait(false);
 
                 currentRowNum++;
             }
 
             if (mappedSettings.BeforeRowInsert != null)
-                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
+                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct).ConfigureAwait(false);
 
             cellNum--;
 
