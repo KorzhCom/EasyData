@@ -26,6 +26,8 @@ export class EntityDataView {
 
     private grid: EasyGrid;
 
+    private filterWidget : TextFilterWidget;
+
     private defaultValidators: Validator[] = [ new RequiredValidator(), new TypeValidator()];
 
     constructor (
@@ -103,7 +105,7 @@ export class EntityDataView {
                     this.slot.insertBefore(filterBarDiv, gridSlot);
     
                     const dataFilter = this.context.createFilter();
-                    new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);    
+                    this.filterWidget = new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);    
                 }
             });
     }
@@ -164,7 +166,7 @@ export class EntityDataView {
     }
 
     private editClickHandler(ev: MouseEvent, rowIndex: number) {
-        this.context.getData().getRow(rowIndex)
+        this.grid.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     this.showEditForm(row);
@@ -191,7 +193,7 @@ export class EntityDataView {
 
                 form.getData()
                     .then(obj => this.context.updateRecord(obj))
-                    .then(() => {
+                    .then(() => {                        
                         return this.refreshData();
                     })       
                     .catch((error) => {
@@ -208,7 +210,7 @@ export class EntityDataView {
     }
 
     private deleteClickHandler(ev: MouseEvent, rowIndex: number) {
-        this.context.getData().getRow(rowIndex)
+        this.grid.getData().getRow(rowIndex)
             .then(row => {
                 if (row) {
                     const activeEntity = this.context.getActiveEntity();
@@ -253,7 +255,14 @@ export class EntityDataView {
     private refreshData(): Promise<void> {
         return this.context.fetchDataset()
             .then(() => {
-                this.grid.refresh();
+                let processed = false;
+                if (this.filterWidget) {                   
+                    processed = this.filterWidget.applyFilter(false);
+                }
+
+                if (!processed) {
+                    this.grid.refresh();
+                }
             });
     }
 }

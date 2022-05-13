@@ -20,7 +20,7 @@ export type GridCellRenderer = (value: any, column: GridColumn,
 const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
     const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
 
-    cellValueElement.innerHTML = text;
+    cellValueElement.innerText = text;
     cellValueElement.title = text;
     if (column.align == GridColumnAlign.NONE) {
         cellValueElement.classList.add(`${cssPrefix}-cell-value-align-left`);
@@ -44,7 +44,7 @@ const NumberCellRendererDefault: GridCellRenderer = (value: any, column: GridCol
         }
     }
 
-    cellValueElement.innerHTML = strValue;
+    cellValueElement.innerText = strValue;
     cellValueElement.title = strValue;
     if (column.align == GridColumnAlign.NONE) {
         cellValueElement.classList.add(`${cssPrefix}-cell-value-align-right`);
@@ -80,7 +80,7 @@ const DateTimeCellRendererDefault: GridCellRenderer = (value: any, column: GridC
         }
     }
 
-    cellValueElement.innerHTML = strValue;
+    cellValueElement.innerText = strValue;
     cellValueElement.title = strValue;
     if (column.align == GridColumnAlign.NONE) {
         cellValueElement.classList.add(`${cssPrefix}-cell-value-align-right`);
@@ -101,10 +101,7 @@ const BoolCellRendererDefault: GridCellRenderer = (value: any, column: GridColum
         cellValueElement.classList.add(`${cssPrefix}-cell-value-bool`);
         cellValueElement.classList.add(`${cssPrefix}-${value ? 'cell-value-true' : 'cell-value-false'}`);
     }
-
 }
-
-
 
 interface CellRendererCollection {
     [name: string]: GridCellRenderer;

@@ -13,7 +13,6 @@ export interface TextFilterWidgetOptions {
 }
 
 export class TextFilterWidget {
-
     private options = {
         focus: false,
         instantMode: false,
@@ -45,8 +44,7 @@ export class TextFilterWidget {
 
     private filterInput: HTMLInputElement;
 
-    private render() {
-        
+    private render() {        
         const horizClass = browserUtils.IsIE() 
             ? 'kfrm-fields-ie is-horizontal' 
             : 'kfrm-fields is-horizontal';
@@ -103,7 +101,7 @@ export class TextFilterWidget {
 
     private inputKeydownHandler(ev: Event) {
         if ((ev as KeyboardEvent).keyCode == 13) {
-            this.applyFilter();
+            this.applyFilter(true);
         }
     }
 
@@ -113,7 +111,7 @@ export class TextFilterWidget {
         }
 
         this.applyFilterTimeout = setTimeout(() => {
-            this.applyFilter();
+            this.applyFilter(true);
         }, this.options.instantTimeout);
     }
 
@@ -121,25 +119,27 @@ export class TextFilterWidget {
         this.filterInput.value = '';
         this.filterInput.focus();
 
-        this.applyFilter();
+        this.applyFilter(true);
     }
 
     private searchButtonClickHandler() {
-       this.applyFilter();
+       this.applyFilter(true);
     }
 
-    private applyFilter() {
+    public applyFilter(checkChange : boolean) : boolean {
         if (this.applyFilterTimeout) {
             clearTimeout(this.applyFilterTimeout);
         }
 
         const filterValue = this.filter.getValue();
-        if (filterValue != this.filterInput.value) {
+        if (!checkChange || filterValue != this.filterInput.value) {
             this.filter.apply(this.filterInput.value)
                 .then(data => {
                     this.grid.setData(data);
                 });
+            return true;
         }
+        return false;
     }
 
     private highlightCellRenderer(defaultRenderer: GridCellRenderer, value: any, column: GridColumn, cellElement: HTMLElement, rowElement: HTMLElement) {   
@@ -157,29 +157,37 @@ export class TextFilterWidget {
                     value = value.toLocaleString();
                 }
 
-                value = this.highlightText(value.toString());
+                
+                const result = this.highlightText(value.toString());
+                if (result instanceof HTMLElement) {
+                    cellElement.title = value;
+                    cellElement.appendChild(result);
+                    return;
+                }
             }
         }
 
         defaultRenderer(value, column, cellElement, rowElement);
     }
 
-    private highlightText(content: string): string {
+    private highlightText(content: string): HTMLElement | string{
         const normalizedContent = content.toLowerCase();
         const filterValue = this.filter.getValue().toString();
         if (filterValue && filterValue.length > 0 && content && content.length > 0) {
-            const insertValue1 = `<span style='background-color: yellow'>`;
-            const insertValue2 = `</span>`;
-    
-            let indexInMas = [];
+ 
+            const indexInMas = [];
             const words = filterValue.split('||').map(w => w.trim().toLowerCase());
             for(let i = 0; i < words.length; i++) {
                 let pos = 0;
-                let lowerWord = words[i];
+                const lowerWord = words[i];
                 if (!lowerWord.length)
                     continue;
                 if (lowerWord === normalizedContent) {
-                    return insertValue1 + content + insertValue2;
+                    const highlightSpan = document.createElement('span');
+                    highlightSpan.style.backgroundColor = 'yellow';
+                    highlightSpan.innerText = content;
+    
+                    return highlightSpan;
                 }
                 while (pos < content.length - 1) {
                     const index = normalizedContent.indexOf(lowerWord, pos);
@@ -223,28 +231,30 @@ export class TextFilterWidget {
                     }
                 }
     
-                let result = '';
+                const div = document.createElement('div');
                 for (let i = 0; i < indexInMas.length; i++) {
                     if (i === 0) {
-                        result += content.substring(0, indexInMas[i].index);
+                        const text = document.createTextNode(content.substring(0, indexInMas[i].index));
+                        div.appendChild(text);
                     }
     
-                    result += insertValue1 
-                        + content.substring(indexInMas[i].index, 
-                            indexInMas[i].index + indexInMas[i].length) 
-                        + insertValue2;
-    
-                    if (i < indexInMas.length - 1) {
-                        result += content.substring(indexInMas[i].index 
-                            + indexInMas[i].length, indexInMas[i + 1].index);
-                    } else {
-                        result += content.substring(indexInMas[i].index 
-                            + indexInMas[i].length);
-                    }
-    
+                    const highlightSpan = document.createElement('span');
+                    highlightSpan.style.backgroundColor = 'yellow';
+                    highlightSpan.innerText = content.substring(indexInMas[i].index,
+                        indexInMas[i].index + indexInMas[i].length)
+                
+                    div.appendChild(highlightSpan);
+
+                    const text = (i < indexInMas.length - 1) 
+                        ? document.createTextNode(content.substring(indexInMas[i].index
+                            + indexInMas[i].length, indexInMas[i + 1].index))
+                        : document.createTextNode(content.substring(indexInMas[i].index
+                            + indexInMas[i].length));
+
+                    div.appendChild(text);
                 }
     
-                content = result;
+                return div;
             }
         }
 

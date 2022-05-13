@@ -41,7 +41,10 @@ namespace EasyData.Export
         /// <param name="settings">The settings.</param>
         public void Export(IEasyDataResultSet data, Stream stream, IDataExportSettings settings)
         {          
-            ExportAsync(data, stream, settings).GetAwaiter().GetResult();
+            ExportAsync(data, stream, settings)
+                .ConfigureAwait(false)   
+                .GetAwaiter()
+                .GetResult();
         }
 
         /// <summary>
@@ -66,8 +69,9 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            var writer = new StreamWriter(stream, new UTF8Encoding(false));
-            await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
+            }
         }
 
         private async Task ExportAsync(IEasyDataResultSet data, TextWriter writer, IDataExportSettings settings, CancellationToken ct)
@@ -155,15 +159,15 @@ namespace EasyData.Export
                     continue;
 
                 if (mappedSettings.BeforeRowInsert != null)
-                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
+                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct).ConfigureAwait(false);
 
-                await WriteRowAsync(row, false, null, ct);
+                await WriteRowAsync(row, false, null, ct).ConfigureAwait(false);
 
                 currentRowNum++;
             }
 
             if (mappedSettings.BeforeRowInsert != null) {
-                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
+                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct).ConfigureAwait(false);
             }
 
             await writer.FlushAsync().ConfigureAwait(false);
