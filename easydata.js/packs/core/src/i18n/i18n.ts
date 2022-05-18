@@ -430,7 +430,7 @@ export namespace i18n {
             }
             else if (['D', 'F', 'C'].indexOf(type) >= 0) {
                 const locale = getCurrentLocale();
-                return number.toLocaleString(locale, getNumberFromatOptions(format));
+                return number.toLocaleString(locale, getNumberFormatOptions(format));
             }
             else {
                 return convertWithMask(Math.trunc(number), format);
@@ -519,7 +519,7 @@ export namespace i18n {
         return result.split('').reverse().join('');
     }
 
-    function getNumberFromatOptions(format: string): Intl.NumberFormatOptions {
+    function getNumberFormatOptions(format: string): Intl.NumberFormatOptions {
         const localeSettings = getLocaleSettings();
         const type = format[0].toUpperCase();
         const digits = (format.length > 1) 
@@ -542,7 +542,8 @@ export namespace i18n {
             default: 
                 return {
                     style: 'decimal',
-                    minimumFractionDigits: digits
+                    minimumFractionDigits: digits,
+                    maximumFractionDigits: digits
                 }
         }
     }
