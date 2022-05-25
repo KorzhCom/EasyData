@@ -400,18 +400,21 @@ namespace EasyData.EntityFrameworkCore
         /// <returns>MetaEntityAttr.</returns>
         protected virtual MetaEntityAttr CreateEntityAttribute(MetaEntity entity, IEntityType entityType, IProperty property)
         {
+            var columnType = DataUtils.GetDataTypeBySystemType(property.ClrType);
+
+            if (columnType == DataType.Unknown) return null;
+
             var propertyName = property.Name;
             var columnName = property.GetDbColumnName();
 
-            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor()
-            {
+            var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() {
                 Parent = entity
             });
 
             entityAttr.Id = DataUtils.ComposeKey(entity.Id, propertyName);
             entityAttr.Expr = columnName;
             entityAttr.Caption = propertyName;
-            entityAttr.DataType = DataUtils.GetDataTypeBySystemType(property.ClrType);
+            entityAttr.DataType = columnType;
 
             entityAttr.PropInfo = property.PropertyInfo;
             entityAttr.PropName = property.Name;

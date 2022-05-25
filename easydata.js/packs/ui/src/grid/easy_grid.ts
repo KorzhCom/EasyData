@@ -187,6 +187,7 @@ export class EasyGrid {
                 widthOptions[dataType] = { ...widthOptions.otherColumns, ...widthOptions[dataType] };
             }
         });
+        widthOptions[DataType.Unknown] = widthOptions.otherColumns;
     }
 
     private setSlot(slot: HTMLElement | string) {

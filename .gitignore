@@ -372,3 +372,5 @@ dist/
 /easydata.net/src/**/EasyData*.xml
 /playground/EasyDataTest
 /playground/EasyDataTest02
+/playground/EasyDataAspNetCoreTest04
+/EasyData.Dev2.sln
