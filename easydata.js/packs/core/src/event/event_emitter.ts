@@ -11,7 +11,7 @@ interface EqEventTypeRec {
 }
 
 /**
- * Represents EasyQuery event type
+ * Represents EasyQuery event
  */
 export interface EqEvent {
 
@@ -35,7 +35,6 @@ export interface EqEvent {
  * The representation of event emitter.
  */
 export class EventEmitter {
-
     /**
      * The array of events.
      */
@@ -175,5 +174,4 @@ export class EventEmitter {
 
         return null;
     }
-
 }

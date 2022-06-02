@@ -32,6 +32,7 @@ interface PaginationInfo {
 const DEFAULT_ROW_HEIGHT = 36;
 const DEFAULT_ROW_COUNT = 15;
 
+/** Represents a grid widget with columns rows, paging, custom rendering and more */
 export class EasyGrid {
     protected eventEmitter: EventEmitter;
 
@@ -115,6 +116,7 @@ export class EasyGrid {
 
     public readonly options: EasyGridOptions;
 
+    /** Creates and initializes all internal properties of the grid object */
     constructor(options: EasyGridOptions) {
         if (options && options.paging) {
             options.paging = utils.assign(this.defaultDataGridOptions.paging,
@@ -214,6 +216,7 @@ export class EasyGrid {
 
     private rowsOnPagePromise: Promise<number> = null;
 
+    /** Initializes grid widget according to the options passed in the parameter */
     protected init(options: EasyGridOptions) {
         if (options.onInit) {
             this.addEventListener('init', options.onInit);
@@ -284,6 +287,10 @@ export class EasyGrid {
         this.fireEvent('init');
     }
 
+    /** Fires a grid event. You can pass either an event type 
+     * (like 'init', 'rowClick', 'pageChanged', etc ) 
+     * or a ready-to-use grid event object
+     * */
     public fireEvent(event: GridEvent | GridEventType) {
         if (typeof event === "string") {
             this.eventEmitter.fire(event);
@@ -293,24 +300,30 @@ export class EasyGrid {
         }
     }
 
+    /** Allows to set the data (represented by a EasyDataTable object)
+     *  or to replace the existing one associated with the grid */
     public setData(data: EasyDataTable) {
         this.dataTable = data;
         this.clear();
         this.refresh();
     }
 
+    /** Returns the EasyDataTable object associated with the grid via `setData()` call */
     public getData(): EasyDataTable {
         return this.dataTable;
     }
 
+    /** Gets the list of grid columns */
     public getColumns(): GridColumnList {
         return this.columns;
     }
 
+    /** This function is called when the grid is destroyed */
     public destroy() {
         this.slot.innerHTML = "";
     }
 
+    /** Clears the current DOM object and re-renders everything from the scratch */
     public refresh() {
         this.clearDOM();
         this.render();
@@ -320,6 +333,7 @@ export class EasyGrid {
         this.slot.innerHTML = '';
     }
 
+    /** Clears all DOM object in the grid and return it to its initial state */
     public clear() {
         this.pagination.page = 1;
         this.clearDOM();
@@ -329,6 +343,7 @@ export class EasyGrid {
 
     private firstRender = true;
 
+    /** Renders the grid */
     protected render() {
         if (!this.hasData() && !this.options.showPlusButton) 
             return;
@@ -998,6 +1013,7 @@ export class EasyGrid {
         return cellElement;
     }
 
+    /** Sets current grid pages (if paging is used) */
     public setPage(page: number) {
         this.pagination.page = page;
         this.fireEvent({ type: "pageChanged", page: page });
@@ -1314,10 +1330,12 @@ export class EasyGrid {
         return null;
     }
 
+    /** Makes the grid focused for keyboard events */
     public focus() {
         this.bodyViewportDiv.focus();
     }
 
+    /** Resizes columns according to the data they represent */
     public resizeColumns() {
         if (this.options.columnWidths.autoResize === AutoResizeColumns.Never) return;
 
