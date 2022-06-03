@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+
+using NodaTime;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -45,7 +46,7 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
         public static TestDbContext Create()
         {
             return new TestDbContext(new DbContextOptionsBuilder()
-                .UseSqlite("Data Source = :memory:")
+                .UseSqlite("Data Source = :memory:", opts => opts.UseNodaTime())
                 .Options);
         }
     }
@@ -73,6 +74,8 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
     {
         [Column("CustomerID")]
         public string Id { get; set; }
+
+        public Instant TimeCreated { get; set; }
 
         [Display(Name = "Company Name")]
         public string CompanyName { get; set; }

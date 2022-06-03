@@ -70,5 +70,20 @@ namespace EasyData.EntityFrameworkCore.Relational.Tests
             var attr = entity.FindAttribute(a => a.Id.Contains("Phone"));
             attr.Should().BeNull();
         }
+
+        [Fact]
+        public void SkipUnknownTypes()
+        {
+            var meta = new MetaData();
+            var loaderOptions = new DbContextMetaDataLoaderOptions();
+
+            meta.LoadFromDbContext(_dbContext, loaderOptions);
+
+            var entity = meta.FindEntity(ent => ent.ClrType.Equals(typeof(Customer)));
+            entity.Should().NotBeNull();
+
+            var attr = entity.FindAttributeByExpression("Customer.TimeCreated");
+            attr.Should().BeNull();
+        }
     }
 }
