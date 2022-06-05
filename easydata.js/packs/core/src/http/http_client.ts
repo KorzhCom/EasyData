@@ -34,6 +34,7 @@ export class HttpClient {
     public beforeEachRequest?: (request: HttpRequest) => void;
 
     public onRequest?: (request: HttpRequest) => void;
+    public onResponse?: (xhr: XMLHttpRequest) => void;
 
     public get<T = any>(url: string, options?: HttpRequestOptions): HttpActionResult<T> {
         return this.send<T>(HttpMethod.Get, url, null, options);
@@ -123,6 +124,9 @@ export class HttpClient {
                             : xhr.responseText);
 
                     this._responseBody = responseObj;
+                    if (this.onResponse) {
+                        this.onResponse(xhr);
+                    }
                     resolve(responseObj);
                 }
                 else {

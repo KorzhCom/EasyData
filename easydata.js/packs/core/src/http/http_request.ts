@@ -25,7 +25,6 @@ export interface HttpRequestDescriptor {
 }
 
 export class HttpRequest {
-
     public method: HttpMethod;
 
     public url: string;
@@ -77,7 +76,6 @@ export class HttpRequest {
     }
 
     public open() {
-
         if (this.xhr.readyState !== this.xhr.UNSENT)
             return;
 
