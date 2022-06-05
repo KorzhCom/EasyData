@@ -15,6 +15,8 @@ export class HttpClient {
     public customPayload: [string];
 
     private _responseBody: any;
+
+    /** Gets the response body for the latest request  */
     public get responseBody(): any {
         return this._responseBody;
     }
