@@ -14,6 +14,11 @@ export class HttpClient {
 
     public customPayload: [string];
 
+    private _responseBody: any;
+    public get responseBody(): any {
+        return this._responseBody;
+    }
+
     constructor() {
         this.defaultHeaders = {};
         this.customPayload = undefined;
@@ -115,6 +120,7 @@ export class HttpClient {
                             ? JSON.parse(xhr.responseText)
                             : xhr.responseText);
 
+                    this._responseBody = responseObj;
                     resolve(responseObj);
                 }
                 else {
@@ -127,6 +133,8 @@ export class HttpClient {
                         const responseObj = (responseContentType.indexOf('application/json') == 0)
                             ? JSON.parse(responseText)
                             : responseText;
+
+                        this._responseBody = responseObj;
 
                         const message = responseObj.message ||
                             (status == 404
