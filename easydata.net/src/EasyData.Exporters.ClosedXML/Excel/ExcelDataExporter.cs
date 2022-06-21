@@ -169,10 +169,10 @@ namespace EasyData.Export
                         }
                     }
 
+                    cell.DataType = excelDataType;
                     cell.Value = value;
 
                     // setting the cell's format
-                    cell.DataType = excelDataType;
                     var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
                     if (!string.IsNullOrEmpty(cellFormat)) {
                         if (excelDataType == XLDataType.Number) {
