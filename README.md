@@ -96,12 +96,12 @@ We also add EasyData styles and the script file (`easydata.min.js`), which rende
     ViewData["Title"] = "EasyData";
 }
 
-<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.3.0/easydata.min.css" />
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.8/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
-    <script src="https://cdn.korzh.com/ed/1.3.0/easydata.min.js" type="text/javascript"></script>
+    <script src="https://cdn.korzh.com/ed/1.4.8/easydata.min.js" type="text/javascript"></script>
     <script>
         window.addEventListener('load', function () {
             new easydata.crud.EasyDataViewDispatcher().run()
