@@ -170,7 +170,7 @@ namespace EasyData.Export
                     }
 
                     cell.DataType = excelDataType;
-                    cell.Value = value;
+                    cell.Value = excelDataType == XLDataType.Text ? "'" + value : value;
 
                     // setting the cell's format
                     var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
