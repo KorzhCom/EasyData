@@ -866,6 +866,8 @@ export class EasyGrid {
 
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise.then(count => {
+                this.footerDiv.innerHTML = '';
+                
                 this.footerPaginateDiv = this.renderPageNavigator();
                 this.footerDiv.appendChild(this.footerPaginateDiv);
                 const pageInfoBlock = this.renderPageInfoBlock(count);
