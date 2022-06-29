@@ -87,30 +87,30 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            var mappedSettings = MapSettings(settings);
+            var pdfSettings = MapSettings(settings);
 
             var document = new Document();
-            document.Info.Title = mappedSettings.Title;
-            document.DefaultPageSetup.Orientation = mappedSettings.Orientation;
-            document.DefaultPageSetup.PageFormat = mappedSettings.PageFormat;
+            document.Info.Title = pdfSettings.Title;
+            document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
+            document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
 
-            ApplyStyles(document, mappedSettings);
+            ApplyStyles(document, pdfSettings);
 
             var section = document.AddSection();
 
             if (settings.ShowDatasetInfo) {
                 // TODO: render paragrap with info here
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
+                if (!string.IsNullOrWhiteSpace(pdfSettings.Title)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Center;
                     p.Format.Font.Bold = true;
-                    p.AddText(mappedSettings.Title);
+                    p.AddText(pdfSettings.Title);
                 }
 
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Description)) {
+                if (!string.IsNullOrWhiteSpace(pdfSettings.Description)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Left;
-                    p.AddText(mappedSettings.Description);
+                    p.AddText(pdfSettings.Description);
                 }
             }
 
@@ -128,10 +128,11 @@ namespace EasyData.Export
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
 
-            // filling columns
-
-            //ignored columns
+            // getting ignored columns
             var ignoredCols = GetIgnoredColumns(data, settings);
+
+            var pageWidth = GetPageWidth(pdfSettings);
+            // filling columns
             int colsCount = 0;
             for (int i = 0; i < data.Cols.Count; i++) {
                 if (ignoredCols.Contains(i))
@@ -192,7 +193,7 @@ namespace EasyData.Export
                         value = string.Format(provider, dfmt, row[i]);
                     }
                     else {
-                        value = Utils.GetFormattedValue(row[i], type, mappedSettings, dfmt);
+                        value = Utils.GetFormattedValue(row[i], type, pdfSettings, dfmt);
                     }
 
                     if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
@@ -218,8 +219,8 @@ namespace EasyData.Export
 
             var currentRowNum = 0;
             foreach (var row in rows) {
-                if (mappedSettings.BeforeRowInsert != null)
-                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
+                if (pdfSettings.BeforeRowInsert != null)
+                    await pdfSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
                     continue;
@@ -229,8 +230,8 @@ namespace EasyData.Export
                 currentRowNum++;
             }
 
-            if (mappedSettings.BeforeRowInsert != null) {
-                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
+            if (pdfSettings.BeforeRowInsert != null) {
+                await pdfSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
             }
 
             // rendering pdf
@@ -243,6 +244,70 @@ namespace EasyData.Export
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
+            }
+        }
+
+        private int GetPageWidth(PdfDataExportSettings pdfSettings)
+        {
+            if (pdfSettings.Orientation == Orientation.Landscape) {
+                switch (pdfSettings.PageFormat) {
+                    case PageFormat.A0:
+                        return 1189;
+                    case PageFormat.A1:
+                        return 841;
+                    case PageFormat.A2:
+                        return 594;
+                    case PageFormat.A3:
+                        return 420;
+                    case PageFormat.A4:
+                        return 297;
+                    case PageFormat.A5:
+                        return 210;
+                    case PageFormat.A6:
+                        return 148;
+                    case PageFormat.B5:
+                        return 250;
+                    case PageFormat.Letter:
+                        return 279;
+                    case PageFormat.Legal:
+                        return 356;
+                    case PageFormat.Ledger:
+                        return 432;
+                    case PageFormat.P11x17:
+                        return 279;
+                    default:
+                        return 297;
+                }
+            }
+            else {
+                switch (pdfSettings.PageFormat) {
+                    case PageFormat.A0:
+                        return 841;
+                    case PageFormat.A1:
+                        return 594;
+                    case PageFormat.A2:
+                        return 420;
+                    case PageFormat.A3:
+                        return 297;
+                    case PageFormat.A4:
+                        return 210;
+                    case PageFormat.A5:
+                        return 148;
+                    case PageFormat.A6:
+                        return 105;
+                    case PageFormat.B5:
+                        return 176;
+                    case PageFormat.Letter:
+                        return 216;
+                    case PageFormat.Legal:
+                        return 216;
+                    case PageFormat.Ledger:
+                        return 279;
+                    case PageFormat.P11x17:
+                        return 432;
+                    default:
+                        return 210;
+                }
             }
         }
 
