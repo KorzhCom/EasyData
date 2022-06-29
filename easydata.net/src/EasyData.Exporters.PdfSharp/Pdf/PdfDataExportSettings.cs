@@ -26,8 +26,7 @@ namespace EasyData.Export
         /// Initializes a new instance of the<see cref="PdfDataExportSettings"/> class.
         /// </summary>
         public PdfDataExportSettings(CultureInfo culture) : base(culture)
-        {
-       
+        {       
         }
 
         /// <summary>

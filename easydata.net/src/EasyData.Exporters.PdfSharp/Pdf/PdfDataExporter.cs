@@ -133,9 +133,10 @@ namespace EasyData.Export
 
             var pageWidth = GetPageWidth(pdfSettings);
 
+            //calculating the width of one column
             var colCount = data.Cols.Count - ignoredCols.Count;
-
-            var colWidth = (double)(pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right) / colCount;
+            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
+            var colWidth = pageContentWidth / colCount;
 
             // filling columns
             int colsCount = 0;
@@ -143,7 +144,7 @@ namespace EasyData.Export
                 if (ignoredCols.Contains(i))
                     continue;
 
-                var column = table.AddColumn(Unit.FromMillimeter(Math.Round(colWidth)));
+                var column = table.AddColumn(Unit.FromMillimeter(colWidth));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 colsCount++;
             }
