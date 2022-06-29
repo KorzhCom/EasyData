@@ -40,5 +40,9 @@ namespace EasyData.Export
         /// </summary>
         public PageFormat PageFormat { get; set; } = PageFormat.A4;
 
+        /// <summary>
+        /// Page margins (in milimiters)
+        /// </summary>
+        public (short Left, short Top, short Right, short Bottom) Margins { get; set; } = (25, 25, 25, 25);
     }
 }

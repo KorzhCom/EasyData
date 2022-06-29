@@ -132,13 +132,18 @@ namespace EasyData.Export
             var ignoredCols = GetIgnoredColumns(data, settings);
 
             var pageWidth = GetPageWidth(pdfSettings);
+
+            var colCount = data.Cols.Count - ignoredCols.Count;
+
+            var colWidth = (double)(pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right) / colCount;
+
             // filling columns
             int colsCount = 0;
             for (int i = 0; i < data.Cols.Count; i++) {
                 if (ignoredCols.Contains(i))
                     continue;
 
-                var column = table.AddColumn(Unit.FromCentimeter(3));
+                var column = table.AddColumn(Unit.FromMillimeter(Math.Round(colWidth)));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 colsCount++;
             }
