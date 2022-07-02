@@ -94,9 +94,11 @@ namespace EasyData.Export
             document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
             document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
 
+
             ApplyStyles(document, pdfSettings);
 
             var section = document.AddSection();
+            section.PageSetup.PageFormat = pdfSettings.PageFormat;
 
             if (settings.ShowDatasetInfo) {
                 // TODO: render paragrap with info here
@@ -131,7 +133,10 @@ namespace EasyData.Export
             // getting ignored columns
             var ignoredCols = GetIgnoredColumns(data, settings);
 
-            var pageWidth = GetPageWidth(pdfSettings);
+            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
+            var pageWidth = pdfSettings.Orientation == Orientation.Landscape 
+                    ? pageSizes.Height 
+                    : pageSizes.Width;  
 
             //calculating the width of one column
             var colCount = data.Cols.Count - ignoredCols.Count;
@@ -253,67 +258,35 @@ namespace EasyData.Export
             }
         }
 
-        private int GetPageWidth(PdfDataExportSettings pdfSettings)
+        private (int Width, int Height) GetPageSizes(PageFormat pageFormat)
         {
-            if (pdfSettings.Orientation == Orientation.Landscape) {
-                switch (pdfSettings.PageFormat) {
-                    case PageFormat.A0:
-                        return 1189;
-                    case PageFormat.A1:
-                        return 841;
-                    case PageFormat.A2:
-                        return 594;
-                    case PageFormat.A3:
-                        return 420;
-                    case PageFormat.A4:
-                        return 297;
-                    case PageFormat.A5:
-                        return 210;
-                    case PageFormat.A6:
-                        return 148;
-                    case PageFormat.B5:
-                        return 250;
-                    case PageFormat.Letter:
-                        return 279;
-                    case PageFormat.Legal:
-                        return 356;
-                    case PageFormat.Ledger:
-                        return 432;
-                    case PageFormat.P11x17:
-                        return 279;
-                    default:
-                        return 297;
-                }
-            }
-            else {
-                switch (pdfSettings.PageFormat) {
-                    case PageFormat.A0:
-                        return 841;
-                    case PageFormat.A1:
-                        return 594;
-                    case PageFormat.A2:
-                        return 420;
-                    case PageFormat.A3:
-                        return 297;
-                    case PageFormat.A4:
-                        return 210;
-                    case PageFormat.A5:
-                        return 148;
-                    case PageFormat.A6:
-                        return 105;
-                    case PageFormat.B5:
-                        return 176;
-                    case PageFormat.Letter:
-                        return 216;
-                    case PageFormat.Legal:
-                        return 216;
-                    case PageFormat.Ledger:
-                        return 279;
-                    case PageFormat.P11x17:
-                        return 432;
-                    default:
-                        return 210;
-                }
+            switch (pageFormat) {
+                case PageFormat.A0:
+                    return (841, 1189);
+                case PageFormat.A1:
+                    return (594, 841);
+                case PageFormat.A2:
+                    return (420, 594);
+                case PageFormat.A3:
+                    return (297, 420);
+                case PageFormat.A4:
+                    return (210, 297);
+                case PageFormat.A5:
+                    return (148, 210);
+                case PageFormat.A6:
+                    return (105, 148);
+                case PageFormat.B5:
+                    return (176, 250);
+                case PageFormat.Letter:
+                    return (216, 279);
+                case PageFormat.Legal:
+                    return (216, 356);
+                case PageFormat.Ledger:
+                    return (279, 432);
+                case PageFormat.P11x17:
+                    return (432, 279);
+                default:
+                    return (210, 297); //return A4 sizes by default
             }
         }
 
