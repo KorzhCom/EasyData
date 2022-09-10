@@ -1,0 +1,14 @@
+﻿@page "/dashboard"
+@model EasyDataBasicDemo.Pages.EasyDashboardModel
+@{
+    ViewData["Title"] = "EasyDashboard";
+}
+
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.9/easydata.min.css" />
+
+<div id="EasyDashboardPanel">The dashboard panel goes here</div>
+
+@section Scripts {
+    <!--- When we want use the local compiled script -->
+    <script src="~/js/dashboard.js" type="text/javascript"></script>
+}

@@ -23,10 +23,12 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<None Remove="ts\dashboard.ts" />
 		<None Remove="ts\easydata.ts" />
 	</ItemGroup>
 	
   <ItemGroup>
+    <TypeScriptCompile Include="ts\dashboard.ts" />
     <TypeScriptCompile Include="ts\easydata.ts" />
   </ItemGroup>
 
