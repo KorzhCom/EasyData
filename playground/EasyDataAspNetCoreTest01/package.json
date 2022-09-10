@@ -9,6 +9,7 @@
     "build": "webpack --mode=production",
     "watch": "webpack --mode=development --watch",
     "dev": "webpack --mode=development",
+    "watch-dash": "webpack --config=webpack-dashboard.config --watch",
     "build-all": "npm install && webpack --mode=development"
   },
   "dependencies": {
