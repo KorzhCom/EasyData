@@ -1,12 +1,12 @@
 {
 	"name": "EasyData.JS",
-	"version": "1.4.1",
+	"version": "1.5.0",
 	"description": "",
 	"scripts": {
-		"installall": "cd packs/core && npm install --legacy-peer-deps && cd ../ui && npm install --legacy-peer-deps && cd ../crud && npm install --legacy-peer-deps && cd ../.. && npm run linkall",
-		"build:dev": "npm run linkall && cd packs/core && npm run build:dev && cd ../ui && npm run build:dev && cd ../crud && npm run build:dev && cd ../..",
-		"build:prod": "npm run linkall && cd packs/core && npm run build:prod && cd ../ui && npm run build:prod && cd ../crud && npm run build:prod && cd ../..",
-		"packall": "cd packs/core && npm pack && cd ../ui && npm pack && cd ../crud && npm pack && cd ../..",
+		"installall": "cd packs/core && npm install --legacy-peer-deps && cd ../ui && npm install --legacy-peer-deps && cd ../crud && npm install --legacy-peer-deps && cd ../dashboard && npm install --legacy-peer-deps && cd ../.. && npm run linkall",
+		"build:dev": "npm run linkall && cd packs/core && npm run build:dev && cd ../ui && npm run build:dev && cd ../crud && npm run build:dev && cd ../dashboard && npm run build:dev && cd ../..",
+		"build:prod": "npm run linkall && cd packs/core && npm run build:prod && cd ../ui && npm run build:prod && cd ../crud && npm run build:prod && cd ../dashboard && npm run build:prod && cd ../..",
+		"packall": "cd packs/core && npm pack && cd ../ui && npm pack && cd ../crud && npm pack && cd ../dashboard && npm pack && cd ../..",
 		"setver": "node ./tools/set_version.js",
 		"linkall": "node ./tools/set_links.js",
 		"test": "cd packs/core && npm run test && cd ../.."

@@ -12,6 +12,7 @@ cd @easydata
 mklink /D core ..\..\..\..\easydata.js\packs\core
 mklink /D ui ..\..\..\..\easydata.js\packs\ui
 mklink /D crud ..\..\..\..\easydata.js\packs\crud
+mklink /D dashboard ..\..\..\..\easydata.js\packs\dashboard
 
 
 cd ..\..\..
@@ -30,6 +31,7 @@ cd @easydata
 mklink /D core ..\..\..\..\easydata.js\packs\core
 mklink /D ui ..\..\..\..\easydata.js\packs\ui
 mklink /D crud ..\..\..\..\easydata.js\packs\crud
+mklink /D dashboard ..\..\..\..\easydata.js\packs\dashboard
 cd ..\..\..
 
 

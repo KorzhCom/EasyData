@@ -13,11 +13,19 @@ const unlink = process.argv.length > 2 ? process.argv[2] == "unlink" : false;
 const corePath = path.resolve(__dirname, "../packs/core");
 const uiPath = path.resolve(__dirname, "../packs/ui");
 const crudPath = path.resolve(__dirname, "../packs/crud");
+const dashboardPath = path.resolve(__dirname, "../packs/dashboard");
 
+// -------------- UI package --------------
 link(corePath, path.resolve(__dirname, "../packs/ui/node_modules/@easydata/core"));
 
+// -------------- CRUD package --------------
 link(corePath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/core"));
 link(uiPath, path.resolve(__dirname, "../packs/crud/node_modules/@easydata/ui"));
+
+// -------------- Dashboard package --------------
+link(corePath, path.resolve(__dirname, "../packs/dashboard/node_modules/@easydata/core"));
+link(uiPath, path.resolve(__dirname, "../packs/dashboard/node_modules/@easydata/ui"));
+
 
 // -------------- demo projects --------------
 link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/core"));

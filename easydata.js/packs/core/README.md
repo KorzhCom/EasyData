@@ -1,8 +1,8 @@
-# @easydata/core (part of EasyData library)
+# @easydata/core (a part of EasyData library)
 
 ## What is EasyData?
 
-EasyData is an open-source library that allows you to simplify data management tasks in your web applications. Here we are talking about usual CRUD (create, retrieve, update, delete) operations first of all.
+EasyData is an open-source library that allows you to simplify data management and data visualization tasks in your web applications. Here we are talking about usual CRUD (create, retrieve, update, delete) operations first of all.
 
 EasyData introduces a declarative approach to building a user interface for most data operations. 
 You simply describe your data: entities (tables), attributes (fields), relationships between them, data types, constraints, etc., and EasyData automatically, at run-time renders the necessary forms and dialogs to view, search and edit the data.
