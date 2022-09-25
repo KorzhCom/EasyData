@@ -7,31 +7,6 @@ const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
-const confLib = {
-    entry: {
-        "easydata.crud": "./src/public_api.ts",
-        "easydata.crud.min": "./src/public_api.ts"
-    },
-    devtool: 'source-map',
-    stats: { warnings:false },
-    output: {
-        path: path.resolve(__dirname, 'dist/lib'),
-        umdNamedDefine: true,
-        libraryTarget: 'umd'
-    },
-    resolve: {
-        extensions: ['.js', '.ts']
-    },
-    module: {
-        rules: [
-            {
-                test: /\.ts$/,
-                use: 'ts-loader'
-            }
-        ]
-    }
-};
-
 const confBundles = {
     entry: {
         "easydata.crud": "./src/public_api.ts",

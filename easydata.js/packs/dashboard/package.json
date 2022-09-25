@@ -9,7 +9,8 @@
         "clean": "rimraf ./dist",
         "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
         "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production",
-        "watch": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development --watch",
+        "watch": "nodemon",
+        "watch1": "webpack --mode=development --watch",
         "test": "npm run clean-test && tsc -p tsconfig-test.json && jasmine JASMINE_CONFIG_PATH=jasmine.json",
         "clean-test": "rimraf ./test/dist"
     },
