@@ -10,6 +10,7 @@
         "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
         "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production",
         "watch": "nodemon",
+        "watch1": "webpack --mode=development --watch",
         "test": "npm run clean-test && tsc -p tsconfig-test.json && jasmine JASMINE_CONFIG_PATH=jasmine.json",
         "clean-test": "rimraf ./test/dist"
     },
@@ -35,7 +36,6 @@
     "devDependencies": {
         "@types/node": "12.7.8",
         "@types/jasmine": "^3.3.12",
-        "@types/jsdom": "12.2.4",
         "autoprefixer": "^9.7.2",
         "css-loader": "^2.1.0",
         "es6-promise": "^4.2.8",
