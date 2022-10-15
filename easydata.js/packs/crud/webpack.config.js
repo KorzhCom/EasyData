@@ -131,4 +131,4 @@ const confBrowser = {
 	]
 }
 
-module.exports = [confLib, confBundles, confBrowser];
+module.exports = [confBundles, confBrowser];
