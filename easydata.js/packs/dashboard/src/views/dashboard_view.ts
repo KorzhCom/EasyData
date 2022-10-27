@@ -1,13 +1,13 @@
 import { DataRow, i18n, utils as dataUtils } from '@easydata/core';
-
 import { 
     DefaultDialogService, 
     DialogService, domel, EasyGrid, 
     GridCellRenderer, GridColumn, RowClickEvent 
 } from '@easydata/ui';
-
-
 import { DashboardViewOptions } from './dashboard_view_options'
+import {getContainer} from  "../utils/container"
+import {EasyDataToolbar} from "./toolbar_view"
+// import "../assets/css/dashboard.css"
 
 export class EasyDashboardView {
 
@@ -23,50 +23,55 @@ export class EasyDashboardView {
     constructor (options?: DashboardViewOptions) 
     {
         this.options = dataUtils.assignDeep(this.options, options || {});
-        this.setContainer(this.options.container);
+        this.container = getContainer(this.options.container);
 
         this.dlg = new DefaultDialogService();
        
         this.render();
     }
 
-    ///TODO: Move this to UI utils
-    private setContainer(container: HTMLElement | string) {
-        if (!container) {
-            throw 'Container is undefined';
-        }
-
-        if (typeof container === 'string') {
-            if (container.length){
-                if (container[0] === '.') {
-                    const result = document.getElementsByClassName(container.substring(1));
-                    if (result.length) 
-                        this.container = result[0] as HTMLElement;
-                }
-                else {
-                    if (container[0] === '#') {
-                        container = container.substring(1);
-                    }
-                    this.container = document.getElementById(container);
-                }
-                if (!this.container) {
-                    throw Error('Unrecognized `container` parameter: ' + container + '\n'  
-                        + 'It must be an element ID, a class name (starting with .) or an HTMLElement object itself.');
-                }
-            }
-        }
-        else {
-            this.container = container;
-        }
-    }
-
     private render() {
-        const dashboardStub = domel('div')
-            .setStyle('color', 'red')
-            .setStyle('font-size', '36px')
-            .addText('Hello from Ukraine! Dashboard will be here!!!!!!!!!!')
+        const dashboard = domel('div')
             .toDOM();
 
-        this.container.appendChild(dashboardStub);
+        this.container.appendChild(dashboard);
+
+        const toolbarContainer = domel('div')
+            .id('EasyDataToolbarContainer')
+            .toDOM()
+
+        dashboard.appendChild(toolbarContainer)
+
+        new EasyDataToolbar({
+            panels: [
+                {
+                    name: "System",
+                    buttons: [
+                        {
+                            caption: "Rotate",
+                            cls: "text-button"
+                        }
+                    ]
+                },
+                {
+                    name: "Work",
+                    buttons: [
+                        {
+                            caption: "Data Grid",
+                            cls: "text-button"
+                        },
+                        {
+                            caption: "Pie Chart",
+                            cls: "text-button"
+                        },
+                        {
+                            caption: "Bar Chart",
+                            cls: "text-button"
+                        }
+                    ]
+                }
+            ]
+        })
+
    }
 }

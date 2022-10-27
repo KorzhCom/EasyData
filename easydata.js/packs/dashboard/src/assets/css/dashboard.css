@@ -1,0 +1,116 @@
+:root {
+    --toolbar-background: #F0F8FFFF;
+    --toolbar-text: #000000;
+    --toolbar-panel-background: #F0F8FFFF;
+    --toolbar-panel-text: #000000;
+    --toolbar-button-background: #cecece;
+    --toolbar-button-text: #000000;
+    --toolbar-botton-hover-background: #cecece;
+    --toolbar-button-hover-text: #000000;
+    --toolbar-botton-active-background: #cecece;
+    --toolbar-button-active-text: #000000;
+}
+
+.dashboard {
+    display: block;
+    position: relative;
+    height: 100%;
+}
+
+.dashboard__content {
+    display: block;
+    position: relative;
+}
+
+.toolbar {
+    display: block;
+    position: relative;
+    background-color: var(--toolbar-background);
+    color: var(--toolbar-text);
+}
+
+.toolbar__panel {
+    display: inline-flex;
+    position: relative;
+    padding: 0 0 0 10px;
+    top: 2px;
+    flex-flow: row nowrap;
+    margin-left: 4px;
+}
+
+.toolbar__panel::before {
+    position: absolute;
+    content: "";
+    width: 4px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0, .20);
+    cursor: move;
+}
+
+.toolbar__panel.static::before {
+    display: none;
+}
+
+.toolbar__panel__button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+    display: inline-block;
+    text-align: center;
+    background-color: var(--toolbar-button-background);
+    color: var(--toolbar-button-text);
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    margin: 0 2px;
+    position: relative;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.toolbar__panel__button.text-button {
+    width: auto;
+    padding: 0 8px;
+}
+
+.toolbar__panel__button .icon {
+    width: 16px;
+    height: 16px;
+    line-height: 1.2;
+    font-size: 16px;
+}
+
+.toolbar__panel__button:hover {
+    background-color: var(--toolbar-botton-hover-background);
+    color: var(--toolbar-button-hover-text);
+}
+
+.toolbar__panel__button:active {
+    background-color: var(--toolbar-botton-active-background);
+    color: var(--toolbar-button-active-text);
+}
+
+.toolbar.vertical {
+    flex-flow: column nowrap;
+    padding: 10px 0 0 0;
+    width: 32px;
+    margin-left: 0;
+    margin-top: 4px;
+}
+
+.toolbar.vertical .toolbar__panel::before {
+    width: 32px;
+    height: 4px;
+}
+
+.toolbar.disabled,
+.toolbar__panel.disabled,
+.toolbar__panel__button.disabled {
+    opacity: .65;
+    pointer-events: none;
+}
