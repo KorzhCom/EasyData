@@ -368,7 +368,7 @@ dist/
 /playground/**/wwwroot/js/easydata.js
 /playground/**/wwwroot/js/easydata.js.map
 /playground/**/ts/**/*.js
-!/playground/**/ts/styles.js
+!/playground/**/ts/dashboard-styles.js
 /easydata.net/src/**/EasyData*.xml
 /playground/EasyDataTest
 /playground/EasyDataTest02
