@@ -79,7 +79,8 @@ const confBundles = {
             events: {
                 onEnd: {
                     copy: [
-                        { source: './src/assets/css/*', destination: './dist/assets/css' }
+                        { source: './src/assets/css', destination: './dist/assets/css' },
+                        { source: './src/assets/images', destination: './dist/assets/images' }
                     ]
                 }
             }
