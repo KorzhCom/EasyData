@@ -43,13 +43,13 @@ export class EasyDataToolbar {
     private render(){
         for(let panel of this.view.panels) {
             const toolbarPanel = domel('div')
-                .addClass("easydata-toolbar__panel static")
+                .addClass("toolbar__panel")
                 .title(panel.name)
                 .toDOM()
 
             for(let btn of panel.buttons) {
                 const button = domel('button')                    
-                    .addClass("easydata-toolbar__panel__button")
+                    .addClass("toolbar__panel__button")
                     .addClass(btn.cls)
                     .on("click", btn.onclick)
                                     

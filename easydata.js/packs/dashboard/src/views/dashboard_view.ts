@@ -9,6 +9,8 @@ import {getContainer} from  "../utils/container"
 import {EasyDataToolbar} from "./toolbar_view"
 import {componentsObserver} from "../utils/observer"
 
+const TBID = "EasyDataToolbarContainer"
+
 export class EasyDashboardView {
 
     private dlg: DialogService;
@@ -39,22 +41,14 @@ export class EasyDashboardView {
         this.container.appendChild(dashboard);
 
         const toolbarContainer = domel('div')
-            .id('EasyDataToolbarContainer')
+            .addClass('toolbar')
+            .id(TBID)
             .toDOM()
 
         dashboard.appendChild(toolbarContainer)
 
         new EasyDataToolbar({
             panels: [
-                {
-                    name: "System",
-                    buttons: [
-                        {
-                            caption: "Rotate",
-                            cls: "text-button"
-                        }
-                    ]
-                },
                 {
                     name: "Work",
                     buttons: [

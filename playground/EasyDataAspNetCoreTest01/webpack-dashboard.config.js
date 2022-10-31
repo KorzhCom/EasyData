@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ["./ts/dashboard.ts"],
+    entry: ["./ts/styles.js", "./ts/dashboard.ts"],
     stats: { warnings: false },
     devtool: "source-map",
     output: {
