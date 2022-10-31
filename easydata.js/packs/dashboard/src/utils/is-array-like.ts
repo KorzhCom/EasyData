@@ -1,0 +1,1 @@
+﻿export const isArrayLike = obj => obj && (Array.isArray(obj) || typeof obj.length === "number")
