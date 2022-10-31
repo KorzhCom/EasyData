@@ -6,7 +6,7 @@
 
 const roleAttribute = `data-role`
 
-export const ComponentsObserver = (
+export const componentsObserver = (
     root: HTMLElement | string,
     options: ObserverOptions = {
         childList: true,

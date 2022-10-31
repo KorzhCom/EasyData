@@ -7,7 +7,7 @@ import {
 import { DashboardViewOptions } from './dashboard_view_options'
 import {getContainer} from  "../utils/container"
 import {EasyDataToolbar} from "./toolbar_view"
-// import "../assets/css/dashboard.css"
+import {componentsObserver} from "../utils/observer"
 
 export class EasyDashboardView {
 
@@ -28,6 +28,8 @@ export class EasyDashboardView {
         this.dlg = new DefaultDialogService();
        
         this.render();
+
+        componentsObserver(this.container)
     }
 
     private render() {
@@ -72,6 +74,5 @@ export class EasyDashboardView {
                 }
             ]
         })
-
    }
 }
