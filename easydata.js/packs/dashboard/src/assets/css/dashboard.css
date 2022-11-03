@@ -26,6 +26,27 @@
     position: relative;
 }
 
+.dashboard-grid {
+    display: flex;
+    flex-flow: column;
+}
+
+.dashboard-grid__row {
+    display: flex;
+    flex-flow: row;
+}
+
+.dashboard-grid__cell {
+    display: flex;
+    width: 100%;
+}
+
+.dashboard-grid__cell.one-half { width: 50%; }
+.dashboard-grid__cell.one-third { width: 33.33%; }
+.dashboard-grid__cell.one-fourth { width: 25%; }
+.dashboard-grid__cell.one-fifth { width: 20%; }
+
+
 .toolbar {
     display: block;
     position: relative;

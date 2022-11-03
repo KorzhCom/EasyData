@@ -3,14 +3,14 @@ import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import {dataset} from "../utils/dataset"
 import {exec} from "../utils/exec" 
 
-export type EasyDataComponentOptions = {
+export type EasyDataWidgetOptions = {
     
 }
 
-export class EasyDataComponent {
+export class EasyDataWidget {
     private element: HTMLElement
     private elem: any
-    private options: EasyDataComponentOptions
+    private options: EasyDataWidgetOptions
     private name: string
     
     constructor(elem, name, options) {
