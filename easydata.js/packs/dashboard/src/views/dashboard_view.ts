@@ -76,13 +76,13 @@ export class EasyDashboardView {
                                     slot: "#content-wrapper",
                                     dataTable,
                                     paging: {
-                                        pageSize: 15,
+                                        // pageSize: 15,
                                         allowPageSizeChange: true,
-                                        pageSizeItems: [15, 30, 50, 100, 200]
+                                        // pageSizeItems: [15, 30, 50, 100, 200]
                                     },
-                                    showPlusButton: true,
-                                    plusButtonTitle: i18n.getText('AddRecordBtnTitle'),
-                                    showActiveRow: false
+                                    // showPlusButton: true,
+                                    // plusButtonTitle: i18n.getText('AddRecordBtnTitle'),
+                                    // showActiveRow: false
                                 }, gridOptions || {}))
                             }
                         },
