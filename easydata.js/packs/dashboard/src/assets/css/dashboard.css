@@ -32,14 +32,22 @@
     flex-flow: row wrap;
 }
 
-.dashboard-grid__cell {
+.dashboard-grid__cell, .dashboard-grid__widget-title {
     display: flex;
     width: 100%;
     flex-basis: 100%;
     flex-shrink: 0;
 }
 
-.dashboard-grid__cell > div {
+.dashboard-grid__cell {
+    flex-wrap: wrap;
+}
+
+.dashboard-grid__widget-title {
+    font-size: 36px;
+}
+
+.dashboard-grid__widget {
     width: 100%;
 }
 

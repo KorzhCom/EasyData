@@ -12,7 +12,7 @@ export const Layout1 = {
             }
         },
         {
-            "name": "Grid1",
+            "name": "Grid2",
             "class": "DataGrid",
             "size": "one-half",
             "options": {
@@ -20,7 +20,7 @@ export const Layout1 = {
             }
         },
         {
-            "name": "Grid1",
+            "name": "Grid3",
             "class": "DataGrid",
             "size": "one-half",
             "options": {

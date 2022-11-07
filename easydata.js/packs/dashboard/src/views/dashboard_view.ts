@@ -44,36 +44,33 @@ export class EasyDashboardView {
         componentsObserver(this.container)
     }
 
+    private createWrapper(cls, target){
+        const wrapper = domel('div')
+        .addClass(cls)
+        .toDOM();
+
+        if (target) target.appendChild(wrapper);
+
+        return wrapper
+    }
+
     private render() {
-        const dashboard = domel('div')
-            .addClass("dashboard")
-            .toDOM();
-
-        this.container.appendChild(dashboard);
-
-
-        const dashboardGrid = domel("div")
-            .addClass("dashboard-grid")
-            .toDOM()
-
-        dashboard.appendChild(dashboardGrid)
-
-        const dashboardGridRow = domel("div")
-            .addClass("dashboard-grid__row")
-            .toDOM()
-
-        dashboardGrid.appendChild(dashboardGridRow)
+        const dashboard = this.createWrapper("dashboard", this.container)
+        const dashboardGrid = this.createWrapper("dashboard-grid", dashboard)
+        const dashboardGridRow = this.createWrapper("dashboard-grid__row", dashboardGrid)
 
         for(let widget of Layout1.widgets) {
             console.log(widget)
 
-            const wrapper = domel("div")
-                .addClass(`dashboard-grid__cell ${widget.size}`)
-                .toDOM()
+            const cell = this.createWrapper(`dashboard-grid__cell ${widget.size}`, dashboardGridRow)
+            const widgetTitle = this.createWrapper(`dashboard-grid__widget-title`, cell)
+            const widgetWrapper = this.createWrapper(`dashboard-grid__widget`, cell)
 
-            dashboardGridRow.appendChild(wrapper)
+            if (widget.name) {
+                widgetTitle.innerHTML = widget.name
+            }
 
-            new (REGISTRY.getClass(widget.class))(wrapper, widget.options)
+            new (REGISTRY.getClass(widget.class))(widgetWrapper, widget.options)
         }
 
    }
