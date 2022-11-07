@@ -1,10 +1,13 @@
 ﻿import { utils as dataUtils } from '@easydata/core';
 import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
-import {dataset} from "../utils/dataset"
+import {data} from "../utils/data"
 import {exec} from "../utils/exec" 
+import {capitalize, stripDash} from "../utils/string"
+
+export type TDataSet = any
 
 export type EasyDataWidgetOptions = {
-    
+    dataset: TDataSet
 }
 
 export class EasyDataWidget {
@@ -17,16 +20,15 @@ export class EasyDataWidget {
         this.options = dataUtils.assignDeep(this.options, options || {})
         this.element = elem
         this.elem = domel(elem)
-        this.name = name || `component`
+        this.name = name || `widget`
 
         this.setOptionsFromAttributes()
     }
 
     private setOptionsFromAttributes(){
         const element = this.element, o = this.options;
-        const data = dataset(element)
 
-        for(const attr of data){
+        for(const attr of data(element)){
             if (attr.name in o) {
                 try {
                     o[attr.name] = JSON.parse(attr.value);
@@ -40,7 +42,7 @@ export class EasyDataWidget {
     
     private fire(name, data){
         const element = this.element
-        const _name = name.replace(/\-/g, "").toLowerCase()
+        const _name = stripDash(name)
         
         const e = new CustomEvent(_name, {
             bubbles: true,
@@ -49,14 +51,15 @@ export class EasyDataWidget {
         })
 
         element.dispatchEvent(e)
+
+        return this
     }
     
     protected fireEvent(eventName, data){
         const element = this.element, o = this.options;
-        const event = eventName.substring(0, 1).toUpperCase() + eventName.substring(1)
+        const event = capitalize(eventName)
 
         data = dataUtils.assignDeep({__this: element}, data || {})
-
         this.fire(event.toLowerCase(), data);
 
         return exec(o["on"+event], data, element[0]);

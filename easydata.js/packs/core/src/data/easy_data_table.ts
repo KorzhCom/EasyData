@@ -60,7 +60,9 @@ export class EasyDataTable {
 
         if (options.rows) {
             for (const rowData of options.rows) {
-                const row = this.createRow(rowData);
+                const row = rowData instanceof DataRow 
+                    ? this.createRow(rowData)
+                    : this.createRowByRawData(rowData);
                 this.addRow(row);
             }
         }
@@ -205,18 +207,29 @@ export class EasyDataTable {
         this.fireUpdated();
     }
 
-    protected createRow(dataOrRow?: DataRow | any): DataRow {
+    protected createRow(row: DataRow): DataRow {
+        const dateIdx = this._columns.getDateColumnIndexes();
+        const values: any[] = new Array(this._columns.count);
+        if (row) {
+            this.columns.getItems().forEach((column) => {
+                const value = row.getValue(column.id)
+                const index = this.columns.getIndex(column.id);
+                values[index] = (dateIdx.indexOf(index) >= 0)
+                    ? this.mapDate(value, column.type)
+                    : value;
+            });    
+        }
+       
+        return new DataRow(this._columns, values);
+    }
+
+    protected createRowByRawData(data: any[]): DataRow {
         const dateIdx = this._columns.getDateColumnIndexes();
         const values: any[] = new Array(this._columns.count);
 
-        const getValue = dataOrRow instanceof DataRow
-            ? (colId) => dataOrRow.getValue(colId)
-            : (colId) => dataOrRow[colId];
-
-        if (dataOrRow) {
-            this.columns.getItems().forEach((column) => {
-                const value = getValue(column.id);
-                const index = this.columns.getIndex(column.id);
+        if (data) {
+            this.columns.getItems().forEach((column, index) => {
+                const value = data[index];
                 values[index] = (dateIdx.indexOf(index) >= 0)
                     ? this.mapDate(value, column.type)
                     : value;

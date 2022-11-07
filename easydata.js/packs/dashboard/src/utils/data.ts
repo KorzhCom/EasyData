@@ -1,4 +1,4 @@
-﻿export const dataset = (elem: HTMLElement) => {
+﻿export const data = (elem: HTMLElement) => {
     const result = []
     if (elem.hasAttributes()) {
         // @ts-ignore
