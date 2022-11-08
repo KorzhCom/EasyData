@@ -7,7 +7,9 @@ import {capitalize, stripDash} from "../utils/string"
 export type TDataSet = any
 
 export type EasyDataWidgetOptions = {
-    dataset: TDataSet
+    dataset: TDataSet,
+    width?: number,
+    height?: number,
 }
 
 export class EasyDataWidget {

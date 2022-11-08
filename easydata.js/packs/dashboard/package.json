@@ -34,8 +34,8 @@
         "@easydata/ui": "^1.4.1"
     },
     "devDependencies": {
-        "@types/node": "12.7.8",
         "@types/jasmine": "^3.3.12",
+        "@types/node": "12.7.8",
         "autoprefixer": "^9.7.2",
         "css-loader": "^2.1.0",
         "es6-promise": "^4.2.8",
@@ -50,13 +50,13 @@
         "postcss-loader": "^3.0.0",
         "rimraf": "2.6.3",
         "style-loader": "^0.23.1",
+        "terser-webpack-plugin": "^4.2.3",
         "ts-loader": "^5.3.3",
         "ts-node": "^8.0.2",
         "typedoc": "^0.15.0",
         "typedoc-webpack-plugin": "^1.1.4",
         "typescript": "3.7.*",
         "typings-for-css-modules-loader": "1.7.0",
-        "terser-webpack-plugin": "^4.2.3",
         "webpack": "^4.36.1",
         "webpack-cli": "^3.3.6"
     },
@@ -70,5 +70,8 @@
         "delay": "1000",
         "ext": "ts,js",
         "exec": "tsc"
+    },
+    "dependencies": {
+        "chart.js": "^3.9.1"
     }
 }

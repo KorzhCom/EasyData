@@ -4,28 +4,32 @@ export const Layout1 = {
     "meta": {},
     "widgets": [
         {
-            "name": "Grid1",
+            "title": "Title Grid1",
             "class": "DataGrid",
             "size": "",
             "options": {
                 dataset: data1
-            }
+            },
+            "footer": "Footer for grid1"
         },
         {
-            "name": "Grid2",
+            "title": "Title Grid2",
             "class": "DataGrid",
-            "size": "one-half",
+            "size": "cell-one-half",
             "options": {
                 dataset: data1
-            }
+            },
+            "footer": "Footer for grid2"
         },
         {
-            "name": "Grid3",
-            "class": "DataGrid",
-            "size": "one-half",
+            "title": "Line Chart",
+            "class": "Chart",
+            "size": "cell-one-half",
             "options": {
-                dataset: data1
-            }
+                dataset: data1,
+                height: "292"
+            },
+            "footer": "Footer for line chart"
         }
     ]
 }

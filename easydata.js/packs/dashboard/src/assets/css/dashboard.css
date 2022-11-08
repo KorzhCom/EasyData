@@ -51,11 +51,28 @@
     width: 100%;
 }
 
-.dashboard-grid__cell.one-half { width: 50%; flex-basis: 50%;}
-.dashboard-grid__cell.one-third { width: 33.33%; flex-basis: 33.33%;}
-.dashboard-grid__cell.one-fourth { width: 25%; flex-basis: 25%;}
-.dashboard-grid__cell.one-fifth { width: 20%; flex-basis: 20%;}
-
+.dashboard-grid__cell.cell-1 { flex-basis: calc(100%/12*1); }
+.dashboard-grid__cell.cell-2 { flex-basis: calc(100%/12*2); }
+.dashboard-grid__cell.cell-3 { flex-basis: calc(100%/12*3); }
+.dashboard-grid__cell.cell-4 { flex-basis: calc(100%/12*4); }
+.dashboard-grid__cell.cell-5 { flex-basis: calc(100%/12*5); }
+.dashboard-grid__cell.cell-6 { flex-basis: calc(100%/12*6); }
+.dashboard-grid__cell.cell-7 { flex-basis: calc(100%/12*7); }
+.dashboard-grid__cell.cell-8 { flex-basis: calc(100%/12*8); }
+.dashboard-grid__cell.cell-9 { flex-basis: calc(100%/12*9); }
+.dashboard-grid__cell.cell-10 { flex-basis: calc(100%/12*10); }
+.dashboard-grid__cell.cell-11 { flex-basis: calc(100%/12*11); }
+.dashboard-grid__cell.cell-12 { flex-basis: 100%; }
+.dashboard-grid__cell.cell-one-half { flex-basis: 50%;}
+.dashboard-grid__cell.cell-one-third { flex-basis: 33.33%;}
+.dashboard-grid__cell.cell-two-third { flex-basis: 66.66%;}
+.dashboard-grid__cell.cell-one-fourth { flex-basis: 25%;}
+.dashboard-grid__cell.cell-two-fourth { flex-basis: 50%;}
+.dashboard-grid__cell.cell-three-fourth { flex-basis: 75%;}
+.dashboard-grid__cell.cell-one-fifth { flex-basis: 20%;}
+.dashboard-grid__cell.cell-two-fifth { flex-basis: 40%;}
+.dashboard-grid__cell.cell-tree-fifth { flex-basis: 60%;}
+.dashboard-grid__cell.cell-four-fifth { flex-basis: 80%;}
 
 .toolbar {
     display: block;

@@ -5,7 +5,6 @@ import {EasyGrid} from "@easydata/ui";
 export class EasyDatagrid extends EasyDataWidget {
     constructor(elem: HTMLElement, options: EasyDataWidgetOptions) {
         super(elem, "EasyDataGrid", options);
-        console.log(elem)
         const dataset = options.dataset
         const dataTable = new EasyDataTable({
             inMemory: true,

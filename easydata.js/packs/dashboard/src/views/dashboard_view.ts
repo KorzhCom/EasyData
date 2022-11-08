@@ -6,11 +6,8 @@ import {
 } from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
 import { getContainer } from  '../utils/container'
-import { EasyDataToolbar } from './toolbar_view'
 import { componentsObserver } from '../utils/observer'
-import { data1 } from '../assets/data/data1'
 import { Layout1 } from '../assets/data/layout1'
-import {defaultToolbarLayout} from "../assets/data/toolbar";
 import {Registry} from "../utils/registry";
 import {EasyDatagrid} from "../widgets/datagrid";
 import {EasyChart} from "../widgets/chart";
@@ -26,9 +23,11 @@ export class EasyDashboardView {
     private dlg: DialogService;
 
     private container : HTMLElement;
+    private layout : any;
 
     private options: DashboardViewOptions = {
-        container: '#EasyDashboardContainer'
+        container: '#EasyDashboardContainer',
+        layout: Layout1
     };
 
 
@@ -36,7 +35,7 @@ export class EasyDashboardView {
     {
         this.options = dataUtils.assignDeep(this.options, options || {});
         this.container = getContainer(this.options.container);
-
+        this.layout = this.options.layout
         this.dlg = new DefaultDialogService();
        
         this.render();
@@ -59,19 +58,23 @@ export class EasyDashboardView {
         const dashboardGrid = this.createWrapper("dashboard-grid", dashboard)
         const dashboardGridRow = this.createWrapper("dashboard-grid__row", dashboardGrid)
 
-        for(let widget of Layout1.widgets) {
+        for(let widget of this.layout.widgets) {
             console.log(widget)
 
             const cell = this.createWrapper(`dashboard-grid__cell ${widget.size}`, dashboardGridRow)
             const widgetTitle = this.createWrapper(`dashboard-grid__widget-title`, cell)
             const widgetWrapper = this.createWrapper(`dashboard-grid__widget`, cell)
+            const widgetFooter = this.createWrapper(`dashboard-grid__widget-footer`, cell)
 
-            if (widget.name) {
-                widgetTitle.innerHTML = widget.name
+            if (widget.title) {
+                widgetTitle.innerHTML = widget.title
+            }
+
+            if (widget.footer) {
+                widgetFooter.innerHTML = widget.footer
             }
 
             new (REGISTRY.getClass(widget.class))(widgetWrapper, widget.options)
         }
-
    }
 }
