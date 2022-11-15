@@ -2,31 +2,37 @@ import Chart from 'chart.js/auto';
 import {EasyDataWidget, EasyDataWidgetOptions, TDataSet, TWidget} from "../utils/widget";
 import {domel} from "@easydata/ui";
 
-const createChartJSChart = (ctx, dataset, options) => {
-    if (options.type === 'bar') {
-        const labels = [], data = []
+const createChartJSChart = (ctx, {axisX, axisY}, options) => {
+//     const axisX = [], axisY = []
+//
 
-        for (let r of dataset) {
-            labels.push(r[0])
-            data.push(r[1])
-        }
-
-        options.data.labels = labels
-        options.data.datasets[0].data = data
-    }
+    options.data.labels = axisX
+    options.data.datasets[0].data = axisY
 
     const myChart = new Chart(ctx, options);
-
 }
 
 export class EasyChart extends EasyDataWidget {
     constructor(elem: HTMLElement, widget: TWidget) {
         super(elem, "EasyChart", widget.options);
 
+        const axisX = [], axisY = []
+        const data = widget.dataset.resultSet.rows
+        for (let r of data) {
+            axisX.push(r[0])
+            axisY.push(r[1])
+        }
+
         if (widget.lib.toLowerCase() === 'chartjs') {
             const canvas = domel("canvas").toDOM()
             const ctx = canvas.getContext("2d")
-            createChartJSChart(ctx, widget.dataset.resultSet.rows, widget.options)
+            createChartJSChart(
+                ctx,
+                {
+                    axisX,
+                    axisY
+                },
+                widget.options)
             elem.appendChild(canvas)
         } else {
 
