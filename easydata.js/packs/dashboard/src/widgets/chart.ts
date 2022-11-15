@@ -24,7 +24,7 @@ export class EasyChart extends EasyDataWidget {
         super(elem, "EasyChart", widget.options);
 
         if (widget.lib.toLowerCase() === 'chartjs') {
-            const canvas = document.createElement('canvas')
+            const canvas = domel("canvas").toDOM()
             const ctx = canvas.getContext("2d")
             createChartJSChart(ctx, widget.dataset.resultSet.rows, widget.options)
             elem.appendChild(canvas)

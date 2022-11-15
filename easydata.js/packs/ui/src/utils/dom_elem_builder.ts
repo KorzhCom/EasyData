@@ -17,6 +17,7 @@ export class DomElementBuilder<TElement extends HTMLElement>  {
         }
     }
 
+    public addChild(tag: "canvas", childBuilder?: (builder: DomElementBuilder<HTMLCanvasElement>) => void): this
     public addChild(tag: "div", childBuilder?: (builder: DomElementBuilder<HTMLDivElement>) => void): this 
     public addChild(tag: "button", childBuilder?: (builder: DomElementBuilder<HTMLButtonElement>) => void): this  
     public addChild(tag: "a", childBuilder?: (builder: DomElementBuilder<HTMLAnchorElement>) => void): this
@@ -288,6 +289,7 @@ export class DomSelectElementBuilder extends DomElementBuilder<HTMLSelectElement
     }
 }
 
+export function domel(tag: "canvas" | HTMLCanvasElement, parent?: HTMLElement): DomElementBuilder<HTMLCanvasElement>
 export function domel(tag: "div" | HTMLDivElement, parent?: HTMLElement): DomElementBuilder<HTMLDivElement>
 export function domel(tag: "span" | HTMLSpanElement, parent?: HTMLElement): DomElementBuilder<HTMLSpanElement>
 export function domel(tag: "a" | HTMLAnchorElement, parent?: HTMLElement): DomElementBuilder<HTMLAnchorElement>
@@ -299,10 +301,13 @@ export function domel(tag: "select" | HTMLInputElement, parent?: HTMLElement): D
 export function domel(tag: string, parent?: HTMLElement): DomElementBuilder<HTMLElement>
 export function domel(tag: elementType | HTMLElement, parent?: HTMLElement) {
     
-    if (tag === "div" || tag instanceof HTMLDivElement) {
+    if (tag === "canvas" || tag instanceof HTMLCanvasElement) {
+        return new DomElementBuilder<HTMLCanvasElement>(tag, parent);
+    }
+    else if (tag === "div" || tag instanceof HTMLDivElement) {
         return new DomElementBuilder<HTMLDivElement>(tag, parent);
     }
-    if (tag === "span" || tag instanceof HTMLSpanElement) {
+    else if (tag === "span" || tag instanceof HTMLSpanElement) {
         return new DomElementBuilder<HTMLSpanElement>(tag, parent);
     }
     else if (tag === "a" || tag instanceof HTMLAnchorElement) {
