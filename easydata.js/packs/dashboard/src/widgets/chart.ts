@@ -19,8 +19,8 @@ export class EasyChart extends EasyDataWidget {
         const axisX = [], axisY = []
         const data = widget.dataset.resultSet.rows
         for (let r of data) {
-            axisX.push(r[0])
-            axisY.push(r[1])
+            axisX.push(r[widget.axis.x])
+            axisY.push(r[widget.axis.y])
         }
 
         if (widget.lib.toLowerCase() === 'chartjs') {
