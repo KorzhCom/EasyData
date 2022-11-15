@@ -1,15 +1,14 @@
-﻿import {EasyDataWidget, EasyDataWidgetOptions} from "../utils/widget"
+﻿import {EasyDataWidget, TWidget} from "../utils/widget"
 import {EasyDataTable, utils} from "@easydata/core";
 import {EasyGrid} from "@easydata/ui";
 
 export class EasyDatagrid extends EasyDataWidget {
-    constructor(elem: HTMLElement, options: EasyDataWidgetOptions) {
-        super(elem, "EasyDataGrid", options);
-        const dataset = options.dataset
+    constructor(elem: HTMLElement, widget: TWidget) {
+        super(elem, "EasyDataGrid", widget.options);
         const dataTable = new EasyDataTable({
             inMemory: true,
-            columns: dataset.resultSet.cols,
-            rows: dataset.resultSet.rows
+            columns: widget.dataset.resultSet.cols,
+            rows: widget.dataset.resultSet.rows
         });
 
         const gridOptions = {}

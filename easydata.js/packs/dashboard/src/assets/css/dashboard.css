@@ -9,6 +9,7 @@
     --toolbar-button-hover-text: #000000;
     --toolbar-botton-active-background: #cecece;
     --toolbar-button-active-text: #000000;
+    --border-color: #f8f8f8;
 }
 
 .dashboard {
@@ -45,6 +46,14 @@
 
 .dashboard-grid__widget-title {
     font-size: 36px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-grid__widget-footer {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-top: 1px solid var(--border-color);
 }
 
 .dashboard-grid__widget {

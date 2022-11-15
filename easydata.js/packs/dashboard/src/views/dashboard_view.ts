@@ -53,15 +53,15 @@ export class EasyDashboardView {
         return wrapper
     }
 
-    private render() {
+    private render() { 
         const dashboard = this.createWrapper("dashboard", this.container)
         const dashboardGrid = this.createWrapper("dashboard-grid", dashboard)
-        const dashboardGridRow = this.createWrapper("dashboard-grid__row", dashboardGrid)
+        const dashboardGridRow = this.createWrapper("dashboard-grid__row row", dashboardGrid)
 
         for(let widget of this.layout.widgets) {
             console.log(widget)
 
-            const cell = this.createWrapper(`dashboard-grid__cell ${widget.size}`, dashboardGridRow)
+            const cell = this.createWrapper(`dashboard-grid__cell ${widget.style}`, dashboardGridRow)
             const widgetTitle = this.createWrapper(`dashboard-grid__widget-title`, cell)
             const widgetWrapper = this.createWrapper(`dashboard-grid__widget`, cell)
             const widgetFooter = this.createWrapper(`dashboard-grid__widget-footer`, cell)
@@ -74,7 +74,7 @@ export class EasyDashboardView {
                 widgetFooter.innerHTML = widget.footer
             }
 
-            new (REGISTRY.getClass(widget.class))(widgetWrapper, widget.options)
+            new (REGISTRY.getClass(widget.class))(widgetWrapper, widget)
         }
    }
 }

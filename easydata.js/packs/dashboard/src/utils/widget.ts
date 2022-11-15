@@ -4,13 +4,10 @@ import {data} from "../utils/data"
 import {exec} from "../utils/exec" 
 import {capitalize, stripDash} from "../utils/string"
 
+export type TWidget = any
 export type TDataSet = any
 
-export type EasyDataWidgetOptions = {
-    dataset: TDataSet,
-    width?: number,
-    height?: number,
-}
+export type EasyDataWidgetOptions = any
 
 export class EasyDataWidget {
     private element: HTMLElement
