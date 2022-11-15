@@ -215,7 +215,7 @@ namespace EasyData.EntityFrameworkCore
 
             entity.ClrType = entityType.ClrType;
 
-            entity.NamePlural = DataUtils.MakePlural(entity.Name);
+            entity.NamePlural = entity.Name; // DataUtils.MakePlural(entity.Name);
 
             var annotation = (MetaEntityAttribute)entityType.ClrType.GetCustomAttribute(typeof(MetaEntityAttribute));
             if (annotation != null) {
