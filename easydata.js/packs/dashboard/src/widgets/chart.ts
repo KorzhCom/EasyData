@@ -1,15 +1,17 @@
-import Chart from 'chart.js/auto';
+// import Chart from 'chart.js/auto';
+
+import {panic} from "../utils/panic";
+
+declare var Chart
+
 import {EasyDataWidget, EasyDataWidgetOptions, TDataSet, TWidget} from "../utils/widget";
 import {domel} from "@easydata/ui";
 
-const createChartJSChart = (ctx, {axisX, axisY}, options) => {
-//     const axisX = [], axisY = []
-//
-
+const createBarPieChartJSChart = (ctx, {axisX, axisY}, options) => {
     options.data.labels = axisX
     options.data.datasets[0].data = axisY
 
-    const myChart = new Chart(ctx, options);
+    return typeof Chart !== "undefined" ? new Chart(ctx, options) : panic(`ChartJS library required!`);
 }
 
 export class EasyChart extends EasyDataWidget {
@@ -26,14 +28,17 @@ export class EasyChart extends EasyDataWidget {
         if (widget.lib.toLowerCase() === 'chartjs') {
             const canvas = domel("canvas").toDOM()
             const ctx = canvas.getContext("2d")
-            createChartJSChart(
-                ctx,
-                {
-                    axisX,
-                    axisY
-                },
-                widget.options)
             elem.appendChild(canvas)
+
+            if (['bar', 'pie', 'doughnut'].includes(widget.options.type)) {
+                createBarPieChartJSChart(
+                    ctx,
+                    {
+                        axisX,
+                        axisY
+                    },
+                    widget.options)
+            }
         } else {
 
         }

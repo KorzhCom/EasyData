@@ -10,10 +10,10 @@ export type TDataSet = any
 export type EasyDataWidgetOptions = any
 
 export class EasyDataWidget {
-    private element: HTMLElement
-    private elem: any
-    private options: EasyDataWidgetOptions
-    private name: string
+    protected element: HTMLElement
+    protected elem: any
+    protected options: EasyDataWidgetOptions
+    protected name: string
     
     constructor(elem, name, options) {
         this.options = dataUtils.assignDeep(this.options, options || {})

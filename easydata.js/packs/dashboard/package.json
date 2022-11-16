@@ -70,8 +70,5 @@
         "delay": "1000",
         "ext": "ts,js",
         "exec": "tsc"
-    },
-    "dependencies": {
-        "chart.js": "^3.9.1"
     }
 }
