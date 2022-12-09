@@ -1,9 +1,5 @@
-import { DataRow, i18n, utils as dataUtils, EasyDataTable } from '@easydata/core';
-import { 
-    DefaultDialogService, 
-    DialogService, domel, EasyGrid, 
-    GridCellRenderer, GridColumn, RowClickEvent 
-} from '@easydata/ui';
+import { utils as dataUtils } from '@easydata/core';
+import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
 import { getContainer } from  '../utils/container'
 import { componentsObserver } from '../utils/observer'
@@ -27,7 +23,7 @@ export class EasyDashboardView {
 
     private options: DashboardViewOptions = {
         container: '#EasyDashboardContainer',
-        layout: Layout1
+        layout: null
     };
 
 

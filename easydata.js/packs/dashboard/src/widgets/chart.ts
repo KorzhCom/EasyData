@@ -1,17 +1,18 @@
-// import Chart from 'chart.js/auto';
-
 import {panic} from "../utils/panic";
+import {EasyDataWidget, TWidget} from "../utils/widget";
+import {domel} from "@easydata/ui";
 
 declare var Chart
-
-import {EasyDataWidget, EasyDataWidgetOptions, TDataSet, TWidget} from "../utils/widget";
-import {domel} from "@easydata/ui";
 
 const createBarPieChartJSChart = (ctx, {axisX, axisY}, options) => {
     options.data.labels = axisX
     options.data.datasets[0].data = axisY
 
-    return typeof Chart !== "undefined" ? new Chart(ctx, options) : panic(`ChartJS library required!`);
+    if (typeof Chart === "undefined") {
+        panic(`ChartJS library required!`)
+    }
+
+    return new Chart(ctx, options)
 }
 
 export class EasyChart extends EasyDataWidget {
