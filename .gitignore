@@ -374,3 +374,8 @@ dist/
 /playground/EasyDataTest02
 /playground/EasyDataAspNetCoreTest04
 /EasyData.Dev2.sln
+playground/EasyDataAspNetCoreTest01/EasyDataTest01.db
+playground/EasyDataAspNetCoreTest01/EasyDataTest01.db-shm
+playground/EasyDataAspNetCoreTest01/EasyDataTest01.db-wal
+playground/EasyDataAspNetCoreTest01/wwwroot/js/dashboard.js
+playground/EasyDataAspNetCoreTest01/wwwroot/js/dashboard.js.map
