@@ -31,7 +31,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="ts\dashboard.ts" />
     <TypeScriptCompile Include="ts\easydata.ts" />
-    <None Include="ts\styles.js" />
   </ItemGroup>
 
   <ItemGroup>
