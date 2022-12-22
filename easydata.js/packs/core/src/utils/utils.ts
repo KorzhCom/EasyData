@@ -549,6 +549,7 @@ export namespace utils {
 
         const matches = {
             yyyy: year.toString(),
+            yy: year.toString().substring(2),
             MMMM: i18n.getLongMonthName(month),
             MMM: i18n.getShortMonthName(month),
             MM: (month < 10) ? '0' + month : month.toString(),
