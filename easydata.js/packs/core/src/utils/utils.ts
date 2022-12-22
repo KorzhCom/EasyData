@@ -527,7 +527,7 @@ export namespace utils {
         }
     }
 
-    const DT_FORMAT_RGEX = /\[([^\]]+)]|y{4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
+    const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
 
     /**
      * Returns string representation of the date/time value according to the custom format (second parameter) 
@@ -537,6 +537,7 @@ export namespace utils {
      */
     export function dateTimeToStr(date: Date, format: string): string {
         const year = date.getFullYear();
+        const yearStr = year.toString();
         const month = date.getMonth() + 1;
         const day = date.getDate();
         
@@ -548,7 +549,8 @@ export namespace utils {
         const isPm = hour > 11;
 
         const matches = {
-            yyyy: year.toString(),
+            yyyy: yearStr,
+            yy: yearStr.substring(yearStr.length - 2),
             MMMM: i18n.getLongMonthName(month),
             MMM: i18n.getShortMonthName(month),
             MM: (month < 10) ? '0' + month : month.toString(),
