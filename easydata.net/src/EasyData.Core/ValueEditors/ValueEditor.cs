@@ -385,30 +385,37 @@ namespace EasyData
     {
         private readonly Dictionary<string, int> _idSearchIndex = new Dictionary<string, int>();
 
-        private void InvalidateSearchIndex()
+        private void ClearSearchIndex()
         {
             _idSearchIndex.Clear();
-            for (int i = 0; i < Count; i++) {
-                _idSearchIndex[this[i].Id] = i;
-            }
+        }
+
+        private void AddToSearchIndex(string id, int index)
+        {
+            _idSearchIndex[id] = index;
+        }
+
+        private void DeleteFromSearchIndex(string id)
+        {
+            _idSearchIndex.Remove(id);
         }
 
         protected override void InsertItem(int index, ValueEditor item)
         {
             base.InsertItem(index, item);
-            InvalidateSearchIndex();
+            AddToSearchIndex(item.Id, index);
         }
 
         protected override void RemoveItem(int index)
         {
+            DeleteFromSearchIndex(this[index].Id);
             base.RemoveItem(index);
-            InvalidateSearchIndex();
         }
 
         protected override void ClearItems()
         {
             base.ClearItems();
-            InvalidateSearchIndex();
+            ClearSearchIndex();
         }
 
         /// <summary>
@@ -433,8 +440,9 @@ namespace EasyData
         public ValueEditor FindById(string editorId)
         {
             int index = IndexById(editorId);
-            if (index >= 0)
+            if (index >= 0) {
                 return this[index];
+            }
 
             return null;
         }
@@ -505,11 +513,24 @@ namespace EasyData
                 var editor = await ValueEditor.ReadFromJsonAsync(reader, ct)
                     .ConfigureAwait(false);
 
-                if (this.FindById(editor.Id) == null)
-                {
-                    this.Add(editor);
+                if (FindById(editor.Id) == null) {
+                    Add(editor);
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts the old "special dates" value editor to the new one
+        /// </summary>
+        /// <param name="editor"></param>
+        internal ValueEditor ConvertOldSpecialDateTimeEditor(ValueEditor editor) 
+        {
+            if (editor != null && editor is CustomListValueEditor clEditor
+                && (clEditor.ListName == "_DSDE" || clEditor.ListName == "_DSTE")) {
+                editor = this.FindById(clEditor.ListName);
+            }
+
+            return editor;
         }
 
         #endregion //New JSON format serialization
