@@ -666,8 +666,8 @@ export class EasyGrid {
     }
 
     private applyGroupColumnTemplate(template: string, value: any, count: number): string {
-        let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `<span>${value}</span>` : '-');
-        result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `<span>${count}</span>` : '-');
+        let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `${value}` : '-');
+        result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `${count}` : '-');
         return result;
     }
 
