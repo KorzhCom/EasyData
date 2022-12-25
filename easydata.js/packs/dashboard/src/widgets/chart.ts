@@ -15,6 +15,20 @@ const createChartJSChart = (ctx, type, data, options) => {
     checkChartJS()
 
     switch (type) {
+        case 'scatter': {
+            const data = []
+
+            data["axisX"].forEach((el, index)=>{
+                data.push({
+                    x: el,
+                    y: data["axisY"][index],
+                })
+            })
+            
+            options.datasets.data = data
+            
+            break
+        }
         case 'bubble': {
             const data = []
 
@@ -43,6 +57,8 @@ const createChartJSChart = (ctx, type, data, options) => {
             
             break
         }
+        case 'radar':
+        case 'polar':
         case 'pie':
         case 'bar':
         case 'doughnut': {
