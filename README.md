@@ -96,12 +96,12 @@ We also add EasyData styles and the script file (`easydata.min.js`), which rende
     ViewData["Title"] = "EasyData";
 }
 
-<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.3.0/easydata.min.css" />
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.8/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
-    <script src="https://cdn.korzh.com/ed/1.3.0/easydata.min.js" type="text/javascript"></script>
+    <script src="https://cdn.korzh.com/ed/1.4.8/easydata.min.js" type="text/javascript"></script>
     <script>
         window.addEventListener('load', function () {
             new easydata.crud.EasyDataViewDispatcher().run()
@@ -312,7 +312,7 @@ With this format EasyData will show only digits (no grouping by thousands) and w
 
 __Q:__ **What versions of .NET and ASP.NET (Core) does EasyData support?**
 
-__A:__ Currently, EasyData supports .NET Core 3.1 and .NET 5 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
+__A:__ Currently, EasyData supports .NET Core 3.1 and .NET 6 and, obviously, all versions of ASP.NET Core and Entity Framework Core that can work with these versions of .NET (Core). It’s not a great deal to add support for previous versions of .NET Core or even .NET Framework 4.x. If you really need it, please create a [GitHub issue](https://github.com/KorzhCom/EasyData/issues) about that.
 
 __Q:__ Is it possible to use EasyData API only without the UI?
 

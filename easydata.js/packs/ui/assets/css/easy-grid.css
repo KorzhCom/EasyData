@@ -153,13 +153,13 @@
 }
 
 .keg-cell-value-true::before {
-    content: "✔";
+    content: "\2714";
     color: #28a745;
     font-size: 16px;
 }
 
 .keg-cell-value-false::before {
-    content: "✖";
+    content: "\2716";
     color: #dc3545;
     font-size: 16px;
 }
