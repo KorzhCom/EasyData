@@ -99,6 +99,28 @@ export const Layout1 = {
                 }
             },
             "footer": "Footer for chart"
+        },
+        {
+            "title": "Pie Chart",
+            "class": "Chart",
+            "lib": "ChartJS",
+            "style": "p-2",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "options": {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            },
+            "footer": "Footer for chart"
         }
     ]
 }

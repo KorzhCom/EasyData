@@ -55,8 +55,6 @@ export class EasyDashboardView {
         const dashboardGridRow = this.createWrapper("dashboard-grid__row row", dashboardGrid)
 
         for(let widget of this.layout.widgets) {
-            console.log(widget)
-
             const cell = this.createWrapper(`dashboard-grid__cell ${widget.style}`, dashboardGridRow)
             const widgetTitle = this.createWrapper(`dashboard-grid__widget-title`, cell)
             const widgetWrapper = this.createWrapper(`dashboard-grid__widget`, cell)
