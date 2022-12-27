@@ -44,13 +44,17 @@
     flex-wrap: wrap;
 }
 
-.dashboard-grid__widget-title {
+.dashboard-grid__widget__title {
     font-size: 36px;
     padding: 4px 8px;
     border-bottom: 1px solid var(--border-color);
 }
 
-.dashboard-grid__widget-footer {
+.dashboard-grid__widget__subtitle {
+    font-size: 24px;
+}
+
+.dashboard-grid__widget__footer {
     font-size: 14px;
     padding: 4px 8px;
     border-top: 1px solid var(--border-color);

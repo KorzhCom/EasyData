@@ -1,76 +1,8 @@
 import {panic} from "../utils/panic";
 import {EasyDataWidget, TWidget} from "../utils/widget";
 import {domel} from "@easydata/ui";
-
-declare var Chart
-declare var google
-
-const checkChartJS = () => {
-    if (typeof Chart === "undefined") {
-        panic(`ChartJS library required!`)
-    }
-}
-
-const createChartJSChart = (ctx, type, data, options) => {
-    checkChartJS()
-
-    switch (type) {
-        case 'scatter': {
-            const data = []
-
-            data["axisX"].forEach((el, index)=>{
-                data.push({
-                    x: el,
-                    y: data["axisY"][index],
-                })
-            })
-            
-            options.datasets.data = data
-            
-            break
-        }
-        case 'bubble': {
-            const data = []
-
-            data["axisX"].forEach((el, index)=>{
-                data.push({
-                    x: el,
-                    y: data["axisY"][index],
-                    r: data["axisZ"][index],
-                })
-            })
-            
-            options.datasets.data = data
-            
-            break
-        }
-        case 'line': {
-            const {indexAxis = 'x'} = options
-
-            if (indexAxis === 'x') {
-                options.data.labels = data["axisX"]
-                options.data.datasets[0].data = data["axisY"]
-            } else {
-                options.data.labels = data["axisY"]
-                options.data.datasets[0].data = data["axisX"]
-            }
-            
-            break
-        }
-        case 'radar':
-        case 'polar':
-        case 'pie':
-        case 'bar':
-        case 'doughnut': {
-            options.data.labels = data["axisX"]
-            options.data.datasets[0].data = data["axisY"]
-            
-            break
-        }
-    }
-    
-    return new Chart(ctx, options)
-}
+import {checkChartJS, createChartJSChart} from "./chartjs"
+import {checkGoogleChart, createGoogleChart} from "./googlechart"
 
 export class EasyChart extends EasyDataWidget {
     constructor(elem: HTMLElement, widget: TWidget) {
@@ -85,22 +17,35 @@ export class EasyChart extends EasyDataWidget {
         }
 
         if (widget.lib.toLowerCase() === 'chartjs') {
+            checkChartJS()
+
             const canvas = domel("canvas").toDOM()
             const ctx = canvas.getContext("2d")
             elem.appendChild(canvas)
 
             createChartJSChart(
                 ctx, 
-                widget.options.type,
                 {
                     axisX, 
                     axisY, 
                     axisZ
-                }, 
-                widget.options
+                },
+                widget
             )
         } else {
+            checkGoogleChart()
 
+            const ctx = domel("div").id("google-chart-"+(new Date().getTime())).toDOM()
+
+            createGoogleChart(
+                ctx,
+                {
+                    axisX,
+                    axisY,
+                    axisZ
+                },
+                widget
+            )
         }
     }
 }

@@ -6,16 +6,23 @@ export const Layout1 = {
     },
     "widgets": [
         {
-            "title": "Title Grid1",
+            "title": "Grid Widget Example",
+            "titleClass": "dashboard-grid__widget__subtitle",
             "class": "DataGrid",
             "style": "p-2",
             "dataset": data1,
             "options": {
             },
             "footer": "Footer for grid1"
+        },{
+            "title": "ChartJS Using",
+            "class": null,
+            "style": "p-2",
+            "footer": "Below you can see examples of ChartJS using"
         },
         {
             "title": "Bar Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
             "class": "Chart",
             "lib": "ChartJS",
             "style": "p-2 cell-one-half",
@@ -24,8 +31,16 @@ export const Layout1 = {
                 "x": 0,
                 "y": 1
             },
+            "type": 'bar',
+            "colors": [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+            ],
             "options": {
-                type: 'bar',
                 data: {
                     datasets: [{
                         backgroundColor: [
@@ -64,7 +79,8 @@ export const Layout1 = {
             "footer": "Footer for chart"
         },
         {
-            "title": "Pie Chart",
+            "title": "Doughnut Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
             "class": "Chart",
             "lib": "ChartJS",
             "style": "p-2 cell-one-half",
@@ -73,8 +89,8 @@ export const Layout1 = {
                 "x": 0,
                 "y": 1
             },
+            "type": 'doughnut',
             "options": {
-                type: 'doughnut',
                 data: {
                     datasets: [{
                         backgroundColor: [
@@ -101,17 +117,18 @@ export const Layout1 = {
             "footer": "Footer for chart"
         },
         {
-            "title": "Pie Chart",
+            "title": "Line Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
             "class": "Chart",
             "lib": "ChartJS",
-            "style": "p-2",
+            "style": "p-2 cell-one-half",
             "dataset": data1,
             "axis": {
                 "x": 0,
                 "y": 1
             },
+            "type": 'line',
             "options": {
-                type: 'line',
                 data: {
                     datasets: [{
                         fill: false,

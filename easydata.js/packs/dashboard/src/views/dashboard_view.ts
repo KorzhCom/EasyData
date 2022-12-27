@@ -3,7 +3,6 @@ import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
 import { getContainer } from  '../utils/container'
 import { componentsObserver } from '../utils/observer'
-import { Layout1 } from '../assets/data/layout1'
 import {Registry} from "../utils/registry";
 import {EasyDatagrid} from "../widgets/datagrid";
 import {EasyChart} from "../widgets/chart";
@@ -56,9 +55,9 @@ export class EasyDashboardView {
 
         for(let widget of this.layout.widgets) {
             const cell = this.createWrapper(`dashboard-grid__cell ${widget.style}`, dashboardGridRow)
-            const widgetTitle = this.createWrapper(`dashboard-grid__widget-title`, cell)
-            const widgetWrapper = this.createWrapper(`dashboard-grid__widget`, cell)
-            const widgetFooter = this.createWrapper(`dashboard-grid__widget-footer`, cell)
+            const widgetTitle = this.createWrapper(`dashboard-grid__widget__title ${widget.titleClass ? widget.titleClass : ''}`, cell)
+            const widgetWrapper = this.createWrapper(`dashboard-grid__widget ${widget.widgetClass ? widget.widgetClass : ''}`, cell)
+            const widgetFooter = this.createWrapper(`dashboard-grid__widget__footer ${widget.footerClass ? widget.footerClass : ''}`, cell)
 
             if (widget.title) {
                 widgetTitle.innerHTML = widget.title
@@ -68,7 +67,11 @@ export class EasyDashboardView {
                 widgetFooter.innerHTML = widget.footer
             }
 
-            new (REGISTRY.getClass(widget.class))(widgetWrapper, widget)
+            if (widget.class) {
+                new (REGISTRY.getClass(widget.class))(widgetWrapper, widget)
+            } else {
+                
+            }
         }
    }
 }
