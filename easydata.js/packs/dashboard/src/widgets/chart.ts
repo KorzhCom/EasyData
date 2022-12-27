@@ -36,7 +36,7 @@ export class EasyChart extends EasyDataWidget {
             checkGoogleChart()
 
             const ctx = domel("div").id("google-chart-"+(new Date().getTime())).toDOM()
-
+            elem.appendChild(ctx)
             createGoogleChart(
                 ctx,
                 {

@@ -14,7 +14,8 @@ export const Layout1 = {
             "options": {
             },
             "footer": "Footer for grid1"
-        },{
+        },
+        {
             "title": "ChartJS Using",
             "class": null,
             "style": "p-2",
@@ -136,6 +137,32 @@ export const Layout1 = {
                         tension: 0.1
                     }]
                 }
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Google Chart Using",
+            "class": null,
+            "style": "p-2",
+            "footer": "Below you can see examples of Google Chart using"
+        },
+        {
+            "title": "Bar Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'bar',
+            "options": {
+                title: "Demo BarChart",
+                legend: { position: "none" },
+                'width':"100%",
+                'height':300
             },
             "footer": "Footer for chart"
         }

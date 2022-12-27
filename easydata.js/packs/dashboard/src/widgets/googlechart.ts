@@ -11,20 +11,30 @@ export const checkGoogleChart = () => {
 }
 
 export const createGoogleChart = (ctx, data, widget) => {
-    let chart;
-    const options = widget.options
-        
-    switch (widget.type) {
-        case 'bar': {
-            const data = google.visualization.arrayToDataTable()
-            data.push('axisX', 'axisY')
-            for(let i = 0; i < data['axisX'].length; i++) {
-                data.push[data['axisX'][i], data['axisY'][i], widget && widget.colors[i] || data['axisZ'][i]]
+    function drawChart(){
+        let chart;
+        const _data = new google.visualization.DataTable()
+
+        switch (widget.type) {
+            case 'bar': {
+                const _rows = []
+
+                _data.addColumn('string', 'X')
+                _data.addColumn('number', 'Y')
+
+                for(let i = 0; i < data['axisX'].length; i++) {
+                    _rows.push([data['axisX'][i], data['axisY'][i]])
+                }
+                _data.addRows(_rows)
+                
+                chart = new google.visualization.BarChart(ctx)
+                console.log(ctx)
+                break
             }
-            chart = new google.visualization.ColumnChart(ctx)
-            break
         }
-    }        
         // = new google.visualization.PieChart(ctx);
-    chart.draw(data, options);
+        chart.draw(_data, widget.options);
+    }
+    
+    google.charts.setOnLoadCallback(drawChart)
 }
