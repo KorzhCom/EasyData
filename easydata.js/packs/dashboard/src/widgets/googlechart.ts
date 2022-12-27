@@ -14,9 +14,16 @@ export const createGoogleChart = (ctx, data, widget) => {
     function drawChart(){
         let chart;
         const _data = new google.visualization.DataTable()
+        const chartFun = {
+            "bar": "BarChart",
+            "pie": "PieChart",
+            "line": "LineChart",
+        }
 
         switch (widget.type) {
-            case 'bar': {
+            case 'bar': 
+            case 'pie': 
+            {
                 const _rows = []
 
                 _data.addColumn('string', 'X')
@@ -27,8 +34,24 @@ export const createGoogleChart = (ctx, data, widget) => {
                 }
                 _data.addRows(_rows)
                 
-                chart = new google.visualization.BarChart(ctx)
-                console.log(ctx)
+                chart = new google.visualization[chartFun[widget.type]](ctx)
+
+                break
+            }
+            case "line":
+            {
+                const _rows = []
+
+                _data.addColumn('string', 'X')
+                _data.addColumn('number', 'Y')
+
+                for(let i = 0; i < data['axisX'].length; i++) {
+                    _rows.push([data['axisX'][i], data['axisY'][i]])
+                }
+                _data.addRows(_rows)
+
+                chart = new google.visualization[chartFun[widget.type]](ctx)
+                
                 break
             }
         }

@@ -159,8 +159,43 @@ export const Layout1 = {
             },
             "type": 'bar',
             "options": {
-                title: "Demo BarChart",
                 legend: { position: "none" },
+                'width':"100%",
+                'height':300
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Pie Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'pie',
+            "options": {
+                'width':"100%",
+                'height':300
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Line Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'line',
+            "options": {
                 'width':"100%",
                 'height':300
             },
