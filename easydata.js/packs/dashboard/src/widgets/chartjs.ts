@@ -13,6 +13,9 @@ export const createChartJSChart = (ctx, data, widget) => {
         widget.options = {}
     }
     
+    if (widget.type === 'polar') {
+        widget.type = 'polarArea'
+    }
     widget.options.type = widget.type
     
     switch (widget.type) {
@@ -83,7 +86,7 @@ export const createChartJSChart = (ctx, data, widget) => {
             break
         }
         case 'radar':
-        case 'polar':
+        case 'polarArea':
         case 'pie': 
         case 'bar':
         case 'doughnut': {

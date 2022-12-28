@@ -139,6 +139,70 @@ export const Layout1 = {
             "footer": "Footer for chart"
         },
         {
+            "title": "Radar Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "ChartJS",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'radar',
+            "options": {
+                data: {
+                    datasets: [{
+                        backgroundColor: [
+                            ...colors
+                        ],
+                    }]
+                },
+                options: {
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            position: "right",
+                            onClick: () => {}
+                        }
+                    }
+                }
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Polar Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "ChartJS",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'polar',
+            "options": {
+                data: {
+                    datasets: [{
+                        backgroundColor: [
+                            ...colors
+                        ],
+                    }]
+                },
+                options: {
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            position: "right",
+                            onClick: () => {}
+                        }
+                    }
+                }
+            },
+            "footer": "Footer for chart"
+        },
+        {
             "title": "Line Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
             "class": "Chart",
