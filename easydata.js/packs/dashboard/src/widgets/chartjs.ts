@@ -26,7 +26,16 @@ export const createChartJSChart = (ctx, data, widget) => {
                 })
             })
 
-            widget.options.datasets = {data: _data}
+            widget.options.data = {
+                datasets: []
+            }
+            
+            widget.options.data.datasets[0] = {
+                data: _data,
+                label: widget.graphTitle || ""
+            }
+            // widget.options.data.datasets[0].data = _data
+            // widget.options.data.datasets[0].label = widget.graphTitle || ""
 
             break
         }
@@ -78,6 +87,10 @@ export const createChartJSChart = (ctx, data, widget) => {
         case 'pie': 
         case 'bar':
         case 'doughnut': {
+            if (!widget.options.data) {
+                widget.options.data = {}
+            }
+            
             widget.options.data.labels = data["axisX"]
             widget.options.data.datasets[0].data = data["axisY"]
 

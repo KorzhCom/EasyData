@@ -1,6 +1,15 @@
 import {data1} from "./data1";
 import {data2} from "./data2";
 
+const colors = [
+    'rgb(255, 99, 132)',
+    'rgb(54, 162, 235)',
+    'rgb(255, 206, 86)',
+    'rgb(75, 192, 192)',
+    'rgb(153, 102, 255)',
+    'rgb(255, 159, 64)',
+]
+
 export const Layout1 = {
     "meta": {
         chartLib: "ChartJS", // 
@@ -33,6 +42,35 @@ export const Layout1 = {
             "footer": "Below you can see examples of ChartJS using"
         },
         {
+            "title": "Scatter Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "Scatter Demo",
+            "class": "Chart",
+            "lib": "ChartJS",
+            "style": "p-2 cell-one-half",
+            "dataset": data2,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'scatter',
+            "options": {
+                data: {
+                    datasets: [{
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            },
+            "footer": "Footer for chart"
+        },
+        {
             "title": "Bar Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
             "class": "Chart",
@@ -44,34 +82,12 @@ export const Layout1 = {
                 "y": 1
             },
             "type": 'bar',
-            "colors": [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-            ],
             "options": {
                 data: {
                     datasets: [{
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
+                            ...colors
                         ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -106,21 +122,15 @@ export const Layout1 = {
                 data: {
                     datasets: [{
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
+                            ...colors
                         ],
-                        hoverOffset: 10
                     }]
                 },
                 options: {
                     aspectRatio: 2,
                     plugins: {
                         legend: {
-                            position: "bottom",
+                            position: "right",
                             onClick: () => {}
                         }
                     }
@@ -144,7 +154,7 @@ export const Layout1 = {
             "options": {
                 data: {
                     datasets: [{
-                        fill: false,
+                        fill: true,
                         borderColor: 'rgb(75, 192, 192)',
                         tension: 0.1
                     }]
@@ -243,6 +253,7 @@ export const Layout1 = {
             },
             "type": 'bubble',
             "options": {
+                colorAxis: {colors: ['#cae5eb', '#6495ed']},
                 'width':"100%",
                 'height':300
             },
