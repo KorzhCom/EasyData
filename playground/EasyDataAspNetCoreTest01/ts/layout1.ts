@@ -1,4 +1,5 @@
 import {data1} from "./data1";
+import {data2} from "./data2";
 
 export const Layout1 = {
     "meta": {
@@ -9,8 +10,18 @@ export const Layout1 = {
             "title": "Grid Widget Example",
             "titleClass": "dashboard-grid__widget__subtitle",
             "class": "DataGrid",
-            "style": "p-2",
+            "style": "p-2 cell-one-half",
             "dataset": data1,
+            "options": {
+            },
+            "footer": "Footer for grid1"
+        },
+        {
+            "title": "Grid Widget Example",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "DataGrid",
+            "style": "p-2 cell-one-half",
+            "dataset": data2,
             "options": {
             },
             "footer": "Footer for grid1"
@@ -124,6 +135,7 @@ export const Layout1 = {
             "lib": "ChartJS",
             "style": "p-2 cell-one-half",
             "dataset": data1,
+            graphTitle: "Products",
             "axis": {
                 "x": 0,
                 "y": 1
@@ -138,6 +150,22 @@ export const Layout1 = {
                     }]
                 }
             },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Bubble Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "ChartJS",
+            "style": "p-2 cell-one-half",
+            "graphTitle": "Bubbles Demo",
+            "dataset": data2,
+            "axis": {
+                "x": 0,
+                "y": 1,
+                "z": 2,
+            },
+            "type": 'bubble',
             "footer": "Footer for chart"
         },
         {
@@ -192,9 +220,28 @@ export const Layout1 = {
             "dataset": data1,
             "axis": {
                 "x": 0,
-                "y": 1
+                "y": 1,
             },
             "type": 'line',
+            "options": {
+                'width':"100%",
+                'height':300
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Bubble Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": data2,
+            "axis": {
+                "x": 0,
+                "y": 1,
+                "z": 2,
+            },
+            "type": 'bubble',
             "options": {
                 'width':"100%",
                 'height':300

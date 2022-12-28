@@ -9,40 +9,57 @@ export const checkChartJS = () => {
 }
 
 export const createChartJSChart = (ctx, data, widget) => {
+    if (!widget.options) {
+        widget.options = {}
+    }
+    
     widget.options.type = widget.type
     
     switch (widget.type) {
         case 'scatter': {
-            const data = []
+            const _data = []
 
-            data["axisX"].forEach((el, index)=>{
-                data.push({
-                    x: el,
+            data["axisX"].forEach((x, index)=>{
+                _data.push({
+                    x: x,
                     y: data["axisY"][index],
                 })
             })
 
-            widget.options.datasets.data = data
+            widget.options.datasets = {data: _data}
 
             break
         }
         case 'bubble': {
-            const data = []
+            const _data = []
 
-            data["axisX"].forEach((el, index)=>{
-                data.push({
-                    x: el,
+            data["axisX"].forEach((x, index)=>{
+                _data.push({
+                    x: x,
                     y: data["axisY"][index],
                     r: data["axisZ"][index],
                 })
             })
 
-            widget.options.datasets.data = data
+            widget.options.data = {
+                datasets: [{
+                    label: widget.graphTitle || "",
+                    data: _data
+                }]
+            }
 
             break
         }
         case 'line': {
             const {indexAxis = 'x'} = widget.options
+            
+            if (!widget.options.data || !widget.options.data.datasets) {
+                widget.options.data = {
+                    datasets: [{
+                        data: null
+                    }]
+                }
+            }
             
             if (indexAxis === 'x') {
                 widget.options.data.labels = data["axisX"]
@@ -52,6 +69,8 @@ export const createChartJSChart = (ctx, data, widget) => {
                 widget.options.data.datasets[0].data = data["axisX"]
             }
 
+            widget.options.data.datasets[0].label = widget.graphTitle || ""
+            
             break
         }
         case 'radar':
@@ -62,6 +81,8 @@ export const createChartJSChart = (ctx, data, widget) => {
             widget.options.data.labels = data["axisX"]
             widget.options.data.datasets[0].data = data["axisY"]
 
+            widget.options.data.datasets[0].label = widget.graphTitle || ""
+            
             break
         }
     }

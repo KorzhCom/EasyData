@@ -18,16 +18,18 @@ export const createGoogleChart = (ctx, data, widget) => {
             "bar": "BarChart",
             "pie": "PieChart",
             "line": "LineChart",
+            "bubble": "BubbleChart",
         }
 
         switch (widget.type) {
             case 'bar': 
             case 'pie': 
+            case 'line': 
             {
                 const _rows = []
 
-                _data.addColumn('string', 'X')
-                _data.addColumn('number', 'Y')
+                _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
+                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
 
                 for(let i = 0; i < data['axisX'].length; i++) {
                     _rows.push([data['axisX'][i], data['axisY'][i]])
@@ -38,15 +40,17 @@ export const createGoogleChart = (ctx, data, widget) => {
 
                 break
             }
-            case "line":
+            case "bubble":
             {
                 const _rows = []
-
-                _data.addColumn('string', 'X')
-                _data.addColumn('number', 'Y')
+                
+                _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'ID')
+                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
+                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
+                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.z].label || 'R')
 
                 for(let i = 0; i < data['axisX'].length; i++) {
-                    _rows.push([data['axisX'][i], data['axisY'][i]])
+                    _rows.push(['', data['axisX'][i], data['axisY'][i], data['axisZ'][i]])
                 }
                 _data.addRows(_rows)
 
