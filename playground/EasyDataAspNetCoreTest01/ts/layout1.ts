@@ -313,16 +313,18 @@ export const Layout1 = {
         {
             "title": "Line Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "Products1, Products2",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
-            "dataset": data1,
+            "dataset": [data1, data3],
             "axis": {
                 "x": 0,
                 "y": 1,
             },
             "type": 'line',
             "options": {
+                legend: { position: 'top', alignment: 'center' },
                 'width':"100%",
                 'height':300
             },

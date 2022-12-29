@@ -49,7 +49,7 @@ export class EasyChart extends EasyDataWidget {
 
             const ctx = domel("div").id("google-chart-"+(new Date().getTime())).toDOM()
             elem.appendChild(ctx)
-            // createGoogleChart(ctx, datasets, widget)
+            createGoogleChart(ctx, datasets, widget)
         }
     }
 }

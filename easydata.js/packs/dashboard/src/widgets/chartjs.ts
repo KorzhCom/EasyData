@@ -113,7 +113,7 @@ export const createChartJSChart = (ctx, datasets, widget) => {
 
             let k = 0
             for(let ds of datasets) {
-                console.log(k,widget.options.data.datasets)
+                // console.log(k,widget.options.data.datasets)
                 widget.options.data.datasets[k].data = ds["axisY"]
                 widget.options.data.datasets[k].label = graphTitles[k]
                 k++

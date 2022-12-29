@@ -10,10 +10,12 @@ export const checkGoogleChart = () => {
     google.charts.load('current', {packages: ['corechart']});
 }
 
-export const createGoogleChart = (ctx, data, widget) => {
+export const createGoogleChart = (ctx, datasets, widget) => {
+    
+    const graphTitles = widget.graphTitle ? widget.graphTitle.split(",").map(s => s.trim()) : ""
+
     function drawChart(){
-        let chart;
-        const _data = new google.visualization.DataTable()
+        let chart, data
         const chartFun = {
             "bar": "BarChart",
             "pie": "PieChart",
@@ -22,45 +24,62 @@ export const createGoogleChart = (ctx, data, widget) => {
         }
 
         switch (widget.type) {
-            case 'bar': 
-            case 'pie': 
+            // case 'bar': 
+            // case 'pie': 
             case 'line': 
             {
-                const _rows = []
-
-                _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
-                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
-
-                for(let i = 0; i < data['axisX'].length; i++) {
-                    _rows.push([data['axisX'][i], data['axisY'][i]])
-                }
-                _data.addRows(_rows)
+                const rows = []
                 
-                chart = new google.visualization[chartFun[widget.type]](ctx)
+                let row = []
+                datasets[0]["axisX"].forEach( (ax, i) => {
+                    row.push(ax)
+                    datasets.forEach(ds => {
+                        row.push(ds["axisY"][i])
+                    })
+                    rows.push(row)
+                    row = []
+                })
+
+                console.log(["id", ...graphTitles])                
+                
+                data = google.visualization.arrayToDataTable([
+                    ["id", ...graphTitles],
+                    ...rows
+                ])
+                //
+                // _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
+                // _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
+                //
+                // for(let i = 0; i < data['axisX'].length; i++) {
+                //     _rows.push([data['axisX'][i], data['axisY'][i]])
+                // }
+                // _data.addRows(_rows)
+                
 
                 break
             }
-            case "bubble":
-            {
-                const _rows = []
-                
-                _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'ID')
-                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
-                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
-                _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.z].label || 'R')
-
-                for(let i = 0; i < data['axisX'].length; i++) {
-                    _rows.push(['', data['axisX'][i], data['axisY'][i], data['axisZ'][i]])
-                }
-                _data.addRows(_rows)
-
-                chart = new google.visualization[chartFun[widget.type]](ctx)
-                
-                break
-            }
+            // case "bubble":
+            // {
+            //     const _rows = []
+            //    
+            //     _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'ID')
+            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
+            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
+            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.z].label || 'R')
+            //
+            //     for(let i = 0; i < data['axisX'].length; i++) {
+            //         _rows.push(['', data['axisX'][i], data['axisY'][i], data['axisZ'][i]])
+            //     }
+            //     _data.addRows(_rows)
+            //
+            //     chart = new google.visualization[chartFun[widget.type]](ctx)
+            //    
+            //     break
+            // }
         }
         // = new google.visualization.PieChart(ctx);
-        chart.draw(_data, widget.options);
+        chart = new google.visualization[chartFun[widget.type]](ctx)
+        chart.draw(data, widget.options);
     }
     
     google.charts.setOnLoadCallback(drawChart)
