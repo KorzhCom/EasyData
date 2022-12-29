@@ -46,7 +46,7 @@ export const Layout1 = {
             "footer": "Footer for grid1"
         },
         {
-            "title": "ChartJS Using",
+            "title": "ChartJS",
             "class": null,
             "style": "p-2",
             "footer": "Below you can see examples of ChartJS using"
@@ -268,25 +268,46 @@ export const Layout1 = {
             "footer": "Footer for chart"
         },
         {
-            "title": "Google Chart Using",
+            "title": "Google Charts",
             "class": null,
             "style": "p-2",
             "footer": "Below you can see examples of Google Chart using"
         },
         {
-            "title": "Bar Chart",
+            "title": "Scatter Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "val1, val2",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
-            "dataset": data1,
+            "dataset": [data2],
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'scatter',
+            "options": {
+                legend: { position: 'top', alignment: 'center' },
+                'width':"100%",
+                'height':300
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Bar Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "Products1, Products2",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": [data1, data3],
             "axis": {
                 "x": 0,
                 "y": 1
             },
             "type": 'bar',
             "options": {
-                legend: { position: "none" },
+                legend: { position: 'top', alignment: 'center' },
                 'width':"100%",
                 'height':300
             },
@@ -295,6 +316,7 @@ export const Layout1 = {
         {
             "title": "Pie Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "Products1",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",

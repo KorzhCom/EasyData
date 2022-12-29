@@ -21,11 +21,12 @@ export const createGoogleChart = (ctx, datasets, widget) => {
             "pie": "PieChart",
             "line": "LineChart",
             "bubble": "BubbleChart",
+            "scatter": "ScatterChart",
         }
 
         switch (widget.type) {
-            // case 'bar': 
-            // case 'pie': 
+            case 'bar': 
+            case 'pie': 
             case 'line': 
             {
                 const rows = []
@@ -40,24 +41,33 @@ export const createGoogleChart = (ctx, datasets, widget) => {
                     row = []
                 })
 
-                console.log(["id", ...graphTitles])                
-                
                 data = google.visualization.arrayToDataTable([
                     ["id", ...graphTitles],
                     ...rows
                 ])
-                //
-                // _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
-                // _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
-                //
-                // for(let i = 0; i < data['axisX'].length; i++) {
-                //     _rows.push([data['axisX'][i], data['axisY'][i]])
-                // }
-                // _data.addRows(_rows)
-                
 
                 break
             }
+            
+            case "scatter": 
+            {
+                const ds = datasets[0]
+                const rows = []
+
+                ds["axisX"].forEach((ax, i) => {
+                    rows.push([
+                        ax, ds["axisY"][i]
+                    ])
+                })
+
+                data = google.visualization.arrayToDataTable([
+                    [...graphTitles],
+                    ...rows
+                ])
+
+                break
+            }
+            
             // case "bubble":
             // {
             //     const _rows = []
