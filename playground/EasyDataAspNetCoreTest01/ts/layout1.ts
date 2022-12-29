@@ -276,7 +276,7 @@ export const Layout1 = {
         {
             "title": "Scatter Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
-            "graphTitle": "val1, val2",
+            "graphTitle": "Scatter, Scatter",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
@@ -316,7 +316,7 @@ export const Layout1 = {
         {
             "title": "Pie Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
-            "graphTitle": "Products1",
+            "graphTitle": "Category, Count",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
@@ -329,6 +329,26 @@ export const Layout1 = {
             "options": {
                 'width':"100%",
                 'height':300
+            },
+            "footer": "Footer for chart"
+        },
+        {
+            "title": "Doughnut Chart",
+            "titleClass": "dashboard-grid__widget__subtitle",
+            "graphTitle": "Category, Count",
+            "class": "Chart",
+            "lib": "google",
+            "style": "p-2 cell-one-half",
+            "dataset": data1,
+            "axis": {
+                "x": 0,
+                "y": 1
+            },
+            "type": 'doughnut',
+            "options": {
+                'width':"100%",
+                'height':300,
+                pieHole: 0.4,
             },
             "footer": "Footer for chart"
         },

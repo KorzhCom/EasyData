@@ -19,6 +19,7 @@ export const createGoogleChart = (ctx, datasets, widget) => {
         const chartFun = {
             "bar": "BarChart",
             "pie": "PieChart",
+            "doughnut": "PieChart",
             "line": "LineChart",
             "bubble": "BubbleChart",
             "scatter": "ScatterChart",
@@ -26,7 +27,6 @@ export const createGoogleChart = (ctx, datasets, widget) => {
 
         switch (widget.type) {
             case 'bar': 
-            case 'pie': 
             case 'line': 
             {
                 const rows = []
@@ -49,6 +49,8 @@ export const createGoogleChart = (ctx, datasets, widget) => {
                 break
             }
             
+            case "pie": 
+            case "doughnut": 
             case "scatter": 
             {
                 const ds = datasets[0]
