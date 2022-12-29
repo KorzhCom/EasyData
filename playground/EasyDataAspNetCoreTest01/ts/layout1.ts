@@ -276,7 +276,7 @@ export const Layout1 = {
         {
             "title": "Scatter Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
-            "graphTitle": "Scatter, Scatter",
+            "graphTitle": "X, Y",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
@@ -375,6 +375,7 @@ export const Layout1 = {
         {
             "title": "Bubble Chart",
             "titleClass": "dashboard-grid__widget__subtitle",
+            graphTitle: "X, Y, Z",
             "class": "Chart",
             "lib": "google",
             "style": "p-2 cell-one-half",
@@ -386,7 +387,7 @@ export const Layout1 = {
             },
             "type": 'bubble',
             "options": {
-                colorAxis: {colors: ['#cae5eb', '#6495ed']},
+                legend: { position: 'top', alignment: 'center' },
                 'width':"100%",
                 'height':300
             },

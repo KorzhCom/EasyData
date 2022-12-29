@@ -12,12 +12,14 @@ export const checkGoogleChart = () => {
 
 export const createGoogleChart = (ctx, datasets, widget) => {
     
-    const graphTitles = widget.graphTitle ? widget.graphTitle.split(",").map(s => s.trim()) : ""
+    const graphTitle = widget.graphTitle
+    const graphTitles = graphTitle ? graphTitle.split(",").map(s => s.trim()) : ""
 
     function drawChart(){
         let chart, data
         const chartFun = {
             "bar": "BarChart",
+            "column": "ColumnChart",
             "pie": "PieChart",
             "doughnut": "PieChart",
             "line": "LineChart",
@@ -27,6 +29,7 @@ export const createGoogleChart = (ctx, datasets, widget) => {
 
         switch (widget.type) {
             case 'bar': 
+            case 'column': 
             case 'line': 
             {
                 const rows = []
@@ -70,24 +73,24 @@ export const createGoogleChart = (ctx, datasets, widget) => {
                 break
             }
             
-            // case "bubble":
-            // {
-            //     const _rows = []
-            //    
-            //     _data.addColumn('string', widget.dataset.resultSet.cols[widget.axis.x].label || 'ID')
-            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.x].label || 'X')
-            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.y].label || 'Y')
-            //     _data.addColumn('number', widget.dataset.resultSet.cols[widget.axis.z].label || 'R')
-            //
-            //     for(let i = 0; i < data['axisX'].length; i++) {
-            //         _rows.push(['', data['axisX'][i], data['axisY'][i], data['axisZ'][i]])
-            //     }
-            //     _data.addRows(_rows)
-            //
-            //     chart = new google.visualization[chartFun[widget.type]](ctx)
-            //    
-            //     break
-            // }
+            case "bubble":
+            {
+                const ds = datasets[0]
+                const rows = []
+
+                ds["axisX"].forEach((ax, i) => {
+                    rows.push([
+                        "", ax, ds["axisY"][i], ds["axisZ"][i]
+                    ])
+                })
+
+                data = google.visualization.arrayToDataTable([
+                    ["", ...graphTitles],
+                    ...rows
+                ])
+
+                break
+            }
         }
         // = new google.visualization.PieChart(ctx);
         chart = new google.visualization[chartFun[widget.type]](ctx)
