@@ -1,4 +1,4 @@
-﻿export const data1 = {
+﻿export const data3 = {
     "result": "ok",
     "resultSet": {
         "cols": [
@@ -32,35 +32,35 @@
         "rows": [
             [
                 "Beverages",
-                11811.65
+                10000
             ],
             [
                 "Condiments",
-                4605.300000000001
+                2000
             ],
             [
                 "Confections",
-                7549.29999999999
+                7000
             ],
             [
                 "Dairy Products",
-                9875.800000000001
+                12000
             ],
             [
                 "Grains/Cereals",
-                4164.3
+                1000
             ],
             [
                 "Meat/Poultry",
-                7417.33
+                5000
             ],
             [
                 "Produce",
-                4786.449999999999
+                9000
             ],
             [
                 "Seafood",
-                6290.779999999995
+                6000
             ]
         ]
     },

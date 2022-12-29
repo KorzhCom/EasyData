@@ -1,4 +1,5 @@
 ﻿import { Layout1 } from './layout1'
+import { Layout2 } from './layout2'
 import { EasyDashboardView } from '@easydata/dashboard';
 
 window.addEventListener('load', () => {
