@@ -64,7 +64,7 @@ export class EasyDashboardView {
         const dashboardStub = domel('div')
             .setStyle('color', 'red')
             .setStyle('font-size', '36px')
-            .addText('Hello from Ukraine! Dashboard will be here!!!!!!!!!!')
+            .addText('Hello world! Dashboard will be here!')
             .toDOM();
 
         this.container.appendChild(dashboardStub);
