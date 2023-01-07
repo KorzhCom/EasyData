@@ -1,72 +1,77 @@
-import { DataRow, i18n, utils as dataUtils } from '@easydata/core';
-
-import { 
-    DefaultDialogService, 
-    DialogService, domel, EasyGrid, 
-    GridCellRenderer, GridColumn, RowClickEvent 
-} from '@easydata/ui';
-
-
+import { utils as dataUtils } from '@easydata/core';
+import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
+import { getContainer } from  '../utils/container'
+import { componentsObserver } from '../utils/observer'
+import {Registry} from "../utils/registry";
+import {EasyDatagrid} from "../widgets/datagrid";
+import {EasyChart} from "../widgets/chart";
+
+const TBID = 'EasyDataToolbarContainer'
+const REGISTRY = new Registry(globalThis.registry = {})
+
+REGISTRY.register('DataGrid', EasyDatagrid)
+REGISTRY.register('Chart', EasyChart)
 
 export class EasyDashboardView {
 
     private dlg: DialogService;
 
     private container : HTMLElement;
+    private layout : any;
 
     private options: DashboardViewOptions = {
-        container: '#EasyDashboardContainer'
+        container: '#EasyDashboardContainer',
+        layout: null
     };
 
 
-    constructor (options?: DashboardViewOptions) 
+    constructor (options?: DashboardViewOptions)
     {
         this.options = dataUtils.assignDeep(this.options, options || {});
-        this.setContainer(this.options.container);
-
+        this.container = getContainer(this.options.container);
+        this.layout = this.options.layout
         this.dlg = new DefaultDialogService();
-       
+
         this.render();
+
+        componentsObserver(this.container)
     }
 
-    ///TODO: Move this to UI utils
-    private setContainer(container: HTMLElement | string) {
-        if (!container) {
-            throw 'Container is undefined';
-        }
+    private createWrapper(cls, target){
+        const wrapper = domel('div')
+            .addClass(cls)
+            .toDOM();
 
-        if (typeof container === 'string') {
-            if (container.length){
-                if (container[0] === '.') {
-                    const result = document.getElementsByClassName(container.substring(1));
-                    if (result.length) 
-                        this.container = result[0] as HTMLElement;
-                }
-                else {
-                    if (container[0] === '#') {
-                        container = container.substring(1);
-                    }
-                    this.container = document.getElementById(container);
-                }
-                if (!this.container) {
-                    throw Error('Unrecognized `container` parameter: ' + container + '\n'  
-                        + 'It must be an element ID, a class name (starting with .) or an HTMLElement object itself.');
-                }
-            }
-        }
-        else {
-            this.container = container;
-        }
+        if (target) target.appendChild(wrapper);
+
+        return wrapper
     }
 
     private render() {
-        const dashboardStub = domel('div')
-            .setStyle('color', 'red')
-            .setStyle('font-size', '36px')
-            .addText('Hello world! Dashboard will be here!')
-            .toDOM();
+        const dashboard = this.createWrapper("dashboard", this.container)
+        const dashboardGrid = this.createWrapper("dashboard-grid", dashboard)
+        const dashboardGridRow = this.createWrapper("dashboard-grid__row row", dashboardGrid)
 
-        this.container.appendChild(dashboardStub);
-   }
+        for(let widget of this.layout.widgets) {
+            const cell = this.createWrapper(`dashboard-grid__cell ${widget.style}`, dashboardGridRow)
+            const widgetTitle = this.createWrapper(`dashboard-grid__widget__title ${widget.titleClass ? widget.titleClass : ''}`, cell)
+            const widgetWrapper = this.createWrapper(`dashboard-grid__widget ${widget.widgetClass ? widget.widgetClass : ''}`, cell)
+            const widgetFooter = this.createWrapper(`dashboard-grid__widget__footer ${widget.footerClass ? widget.footerClass : ''}`, cell)
+
+            if (widget.title) {
+                widgetTitle.innerHTML = widget.title
+            }
+
+            if (widget.footer) {
+                widgetFooter.innerHTML = widget.footer
+            }
+
+            if (widget.class) {
+                new (REGISTRY.getClass(widget.class))(widgetWrapper, widget)
+            } else {
+
+            }
+        }
+    }
 }

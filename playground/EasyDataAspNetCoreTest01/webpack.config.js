@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ["./ts/styles.js", "./ts/easydata.ts"],
+    entry: ["./ts/styles-crud.js", "./ts/easydata.ts"],
     stats: { warnings: false },
     devtool: "source-map",
     output: {

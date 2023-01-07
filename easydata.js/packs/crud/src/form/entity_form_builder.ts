@@ -2,7 +2,7 @@ import {
     DataRow, DataType, EasyDataTable, 
     EditorTag, EntityAttrKind, i18n, 
     MetaEntityAttr, utils as dataUtils,
-    ValueEditor
+    ValueEditor, DataContext
 } from '@easydata/core';
 
 import { 
@@ -12,8 +12,6 @@ import {
 } from '@easydata/ui';
 
 import * as crudUtils from '../utils/utils';
-
-import { DataContext } from '../main/data_context';
 import { EntityEditForm } from './entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 

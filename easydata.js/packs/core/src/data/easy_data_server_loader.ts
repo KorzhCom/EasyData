@@ -1,8 +1,5 @@
-import { 
-    DataChunkDescriptor, 
-    DataLoader, EasyDataTable 
-} from '@easydata/core';
-
+import { DataLoader, DataChunkDescriptor } from './data_loader';
+import { EasyDataTable } from './easy_data_table';
 import { DataContext } from './data_context';
 
 export class EasyDataServerLoader implements DataLoader {
@@ -19,7 +16,6 @@ export class EasyDataServerLoader implements DataLoader {
         const http = this.context.getHttpClient();
         return http.post(url, params)
             .then((result) => {
-
                 const dataTable = new EasyDataTable({
                     chunkSize: 1000
                 });

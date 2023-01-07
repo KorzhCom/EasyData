@@ -1,10 +1,9 @@
-import { i18n, utils as dataUtils } from '@easydata/core';
+import { i18n, utils as dataUtils, DataFilter } from '@easydata/core';
 import { 
     browserUtils, CellRendererType,
     domel, EasyGrid, 
     GridCellRenderer, GridColumn, DFMT_REGEX
 } from '@easydata/ui';
-import { DataFilter } from '../filter/data_filter';
 
 export interface TextFilterWidgetOptions {
     focus?: boolean,

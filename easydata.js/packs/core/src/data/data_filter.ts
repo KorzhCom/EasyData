@@ -1,4 +1,4 @@
-import { EasyDataTable } from '@easydata/core';
+import { EasyDataTable } from './easy_data_table';
 
 export interface DataFilter {
     getValue();

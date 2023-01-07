@@ -1,11 +1,11 @@
-import { 
-    HttpClient, MetaData,
-    MetaEntity, combinePath, 
-    EasyDataTable, EasyDataTableOptions,
-    DataLoader
-} from '@easydata/core';
-import { DataFilter } from '../filter/data_filter';
-import { TextDataFilter } from '../filter/text_data_filter';
+import { HttpClient} from '../http/http_client';
+import { MetaData } from '../meta/meta_data';
+import { MetaEntity } from '../meta/meta_entity';
+import { combinePath } from '../utils/string_utils' 
+import { EasyDataTable, EasyDataTableOptions } from '../data/easy_data_table';
+import { DataLoader } from '../data/data_loader';
+import { DataFilter } from './data_filter';
+import { TextDataFilter } from './text_data_filter';
 
 import { EasyDataServerLoader } from './easy_data_server_loader';
 

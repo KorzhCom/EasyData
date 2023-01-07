@@ -1,7 +1,6 @@
-import { utils as dataUtils } from '@easydata/core';
+import { DataContext, utils as dataUtils } from '@easydata/core';
 
 import { ProgressBar } from '../widgets/progress_bar';
-import { DataContext } from '../main/data_context';
 import { EntityDataView } from './entity_data_view';
 import { EasyDataViewDispatcherOptions } from './options';
 import { RootDataView } from './root_data_view';

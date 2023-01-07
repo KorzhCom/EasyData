@@ -1,0 +1,185 @@
+:root {
+    --toolbar-background: #f8f8f8;
+    --toolbar-text: #000000;
+    --toolbar-panel-background: #f8f8f8;
+    --toolbar-panel-text: #000000;
+    --toolbar-button-background: #cecece;
+    --toolbar-button-text: #000000;
+    --toolbar-botton-hover-background: #cecece;
+    --toolbar-button-hover-text: #000000;
+    --toolbar-botton-active-background: #cecece;
+    --toolbar-button-active-text: #000000;
+    --border-color: #f8f8f8;
+}
+
+.dashboard {
+    display: block;
+    position: relative;
+    height: 100%;
+}
+
+.dashboard__content {
+    display: block;
+    position: relative;
+}
+
+.dashboard-grid {
+    display: flex;
+    flex-flow: column;
+}
+
+.dashboard-grid__row {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.dashboard-grid__cell, .dashboard-grid__widget-title {
+    display: flex;
+    width: 100%;
+    flex-basis: 100%;
+    flex-shrink: 0;
+}
+
+.dashboard-grid__cell {
+    flex-wrap: wrap;
+}
+
+.dashboard-grid__widget__title {
+    font-size: 36px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-grid__widget__subtitle {
+    font-size: 24px;
+}
+
+.dashboard-grid__widget__footer {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+.dashboard-grid__widget {
+    width: 100%;
+}
+
+.dashboard-grid__cell.cell-1 { flex-basis: calc(100%/12*1); }
+.dashboard-grid__cell.cell-2 { flex-basis: calc(100%/12*2); }
+.dashboard-grid__cell.cell-3 { flex-basis: calc(100%/12*3); }
+.dashboard-grid__cell.cell-4 { flex-basis: calc(100%/12*4); }
+.dashboard-grid__cell.cell-5 { flex-basis: calc(100%/12*5); }
+.dashboard-grid__cell.cell-6 { flex-basis: calc(100%/12*6); }
+.dashboard-grid__cell.cell-7 { flex-basis: calc(100%/12*7); }
+.dashboard-grid__cell.cell-8 { flex-basis: calc(100%/12*8); }
+.dashboard-grid__cell.cell-9 { flex-basis: calc(100%/12*9); }
+.dashboard-grid__cell.cell-10 { flex-basis: calc(100%/12*10); }
+.dashboard-grid__cell.cell-11 { flex-basis: calc(100%/12*11); }
+.dashboard-grid__cell.cell-12 { flex-basis: 100%; }
+.dashboard-grid__cell.cell-one-half { flex-basis: 50%;}
+.dashboard-grid__cell.cell-one-third { flex-basis: 33.33%;}
+.dashboard-grid__cell.cell-two-third { flex-basis: 66.66%;}
+.dashboard-grid__cell.cell-one-fourth { flex-basis: 25%;}
+.dashboard-grid__cell.cell-two-fourth { flex-basis: 50%;}
+.dashboard-grid__cell.cell-three-fourth { flex-basis: 75%;}
+.dashboard-grid__cell.cell-one-fifth { flex-basis: 20%;}
+.dashboard-grid__cell.cell-two-fifth { flex-basis: 40%;}
+.dashboard-grid__cell.cell-tree-fifth { flex-basis: 60%;}
+.dashboard-grid__cell.cell-four-fifth { flex-basis: 80%;}
+
+.toolbar {
+    display: block;
+    position: relative;
+    background-color: var(--toolbar-background);
+    color: var(--toolbar-text);
+    padding: 10px;
+}
+
+.toolbar__panel {
+    display: inline-flex;
+    position: relative;
+    padding: 0 0 0 10px;
+    top: 2px;
+    flex-flow: row nowrap;
+    margin-left: 4px;
+}
+
+.toolbar__panel::before {
+    position: absolute;
+    content: "";
+    width: 4px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0, .20);
+    cursor: move;
+}
+
+.toolbar__panel.static::before {
+    display: none;
+}
+
+.toolbar__panel__button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: var(--toolbar-button-background);
+    color: var(--toolbar-button-text);
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    margin: 0 2px;
+    position: relative;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.toolbar__panel__button.text-button {
+    width: auto;
+    padding: 0 8px;
+}
+
+.toolbar__panel__button .icon {
+    width: 16px;
+    height: 16px;
+    line-height: 1.2;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.toolbar__panel__button:hover {
+    background-color: var(--toolbar-botton-hover-background);
+    color: var(--toolbar-button-hover-text);
+}
+
+.toolbar__panel__button:active {
+    background-color: var(--toolbar-botton-active-background);
+    color: var(--toolbar-button-active-text);
+}
+
+.toolbar.vertical {
+    flex-flow: column nowrap;
+    padding: 10px 0 0 0;
+    width: 32px;
+    margin-left: 0;
+    margin-top: 4px;
+}
+
+.toolbar.vertical .toolbar__panel::before {
+    width: 32px;
+    height: 4px;
+}
+
+.toolbar.disabled,
+.toolbar__panel.disabled,
+.toolbar__panel__button.disabled {
+    opacity: .65;
+    pointer-events: none;
+}

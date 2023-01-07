@@ -1,7 +1,6 @@
-import { i18n, MetaData } from '@easydata/core';
+import { i18n, MetaData, DataContext } from '@easydata/core';
 import { domel } from '@easydata/ui';
 import { setLocation } from '../utils/utils';
-import { DataContext } from '../main/data_context';
 
 export class RootDataView {
     private metaData: MetaData;

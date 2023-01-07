@@ -6,12 +6,11 @@ using Korzh.DbUtils;
 using EasyData;
 
 using EasyDataBasicDemo;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options
-    => options.UseSqlServer(builder.Configuration.GetConnectionString("EasyDataDB")));
+    => options.UseSqlite(builder.Configuration.GetConnectionString("EasyDataDB")));
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -94,7 +93,7 @@ static void EnsureDbInitialized(WebApplication app)
     using (var context = scope.ServiceProvider.GetService<AppDbContext>()) {
         if (context.Database.EnsureCreated()) {
             DbInitializer.Create(options => {
-                options.UseSqlServer(app.Configuration.GetConnectionString("EasyDataDB"));
+                options.UseSqlite(app.Configuration.GetConnectionString("EasyDataDB"));
                 options.UseZipPacker(System.IO.Path.Combine(app.Environment.ContentRootPath, "App_Data", "EqDemoData.zip"));
             })
             .Seed();

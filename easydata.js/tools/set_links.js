@@ -31,6 +31,7 @@ link(uiPath, path.resolve(__dirname, "../packs/dashboard/node_modules/@easydata/
 link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/core"));
 link(uiPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/ui"));
 link(crudPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/crud"));
+link(dashboardPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest01/node_modules/@easydata/dashboard"));
 
 link(corePath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest02/node_modules/@easydata/core"));
 link(uiPath, path.resolve(__dirname, "../../playground/EasyDataAspNetCoreTest02/node_modules/@easydata/ui"));
