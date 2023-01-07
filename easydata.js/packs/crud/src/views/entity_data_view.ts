@@ -1,4 +1,4 @@
-import { DataRow, i18n, utils as dataUtils } from '@easydata/core';
+import { DataContext, DataRow, i18n, utils as dataUtils } from '@easydata/core';
 
 import { 
     DefaultDialogService, 
@@ -8,8 +8,6 @@ import {
 
 import { EntityEditFormBuilder } from '../form/entity_form_builder';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
-
-import { DataContext } from '../main/data_context';
 import { RequiredValidator } from '../validators/required_validator';
 import { TypeValidator } from '../validators/type_validator';
 import { Validator } from '../validators/validator';

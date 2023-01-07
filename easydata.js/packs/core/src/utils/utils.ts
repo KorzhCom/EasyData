@@ -580,6 +580,4 @@ export namespace utils {
         decimalSeparator = decimalSeparator || i18n.getLocaleSettings().decimalSeparator;
         return number.toString().replace('.', decimalSeparator);
     }
-
-
 }

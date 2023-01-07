@@ -19,12 +19,16 @@ export * from './meta/meta_entity'
 export * from './meta/value_editor'
 
 //data
-export * from './data/aggr_structures'
-export * from './data/aggr_settings'
+export * from './data/data_context'
 export * from './data/data_column'
-export * from './data/data_loader'
 export * from './data/data_row'
 export * from './data/easy_data_table'
+export * from './data/data_loader'
+export * from './data/easy_data_server_loader'
+export * from './data/data_filter'
+export * from './data/text_data_filter'
+export * from './data/aggr_structures'
+export * from './data/aggr_settings'
 
 //event
 export * from './event/event_emitter'

@@ -1,14 +1,11 @@
 import { 
     DataType, utils as dataUtils, 
     MetaEntityAttr, 
+    DataContext
 } from '@easydata/core';
 
 import { domel } from '@easydata/ui';
-
-import { DataContext } from '../main/data_context';
-
 import { ValidationResult, Validator } from '../validators/validator';
-
 import * as crudUtils from '../utils/utils';
 import { DateTimeValidator } from '../validators/datetime_validator';
 

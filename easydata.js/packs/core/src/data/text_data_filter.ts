@@ -1,8 +1,7 @@
-import { 
-    DataLoader, DataRow, 
-    EasyDataTable, utils as dataUtils 
-} from '@easydata/core';
-
+import { DataLoader } from './data_loader';
+import { DataRow} from './data_row';
+import { EasyDataTable } from './easy_data_table';
+import { utils as dataUtils } from '../utils/utils' ;
 import { DataFilter } from './data_filter';
 
 export class TextDataFilter implements DataFilter {
