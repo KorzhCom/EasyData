@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 using Newtonsoft.Json;
 
 namespace EasyData
 {
-
     public enum ColumnAlignment
     {
         None,
@@ -169,24 +168,77 @@ namespace EasyData
         /// <summary>
         /// Gets columns
         /// </summary>
-        IReadOnlyList<EasyDataCol> Cols { get; }
+        List<EasyDataCol> Cols { get; }
 
         /// <summary>
         /// Gets rows.
         /// </summary>
-        IEnumerable<EasyDataRow> Rows { get; }
+        IEnumerable<EasyDataRow> Rows { get; set; }
     }
 
 
     public class EasyDataResultSet : IEasyDataResultSet
     {
         [JsonProperty("cols")]
-        public List<EasyDataCol> Cols { get; } = new List<EasyDataCol>();
+        public List<EasyDataCol> Cols { get; private set; } = new List<EasyDataCol>();
+
         [JsonProperty("rows")]
-        public List<EasyDataRow> Rows { get; } = new List<EasyDataRow>();
+        public IEnumerable<EasyDataRow> Rows { get; set; } = Enumerable.Empty<EasyDataRow>();
 
-        IReadOnlyList<EasyDataCol> IEasyDataResultSet.Cols => Cols;
+        public EasyResultSetOptions Options { get; private set; }
 
-        IEnumerable<EasyDataRow> IEasyDataResultSet.Rows => Rows;
+        public EasyDataResultSet(EasyResultSetOptions options) 
+        {
+            Options = options;
+        }
+    }
+
+    public class EasyResultSetOptions
+    {
+        /// <summary>
+        /// Gets or sets the callback function that is called before adding a column to the result set.
+        /// </summary>
+        /// <value>The function that will be called on column addition.</value>
+        public Func<EasyDataCol, bool> BeforeAddColumn { get; set; }
+
+        /// <summary>
+        /// Gets or sets the callback function that is called before adding a row to the result set.
+        /// </summary>
+        /// <value>The function that will be called on row addition.</value>
+        public Func<EasyDataRow, IReadOnlyList<EasyDataCol>, bool> BeforeAddRow { get; set; }
+
+        /// <summary>
+        /// Gets or sets the callback function that is called after the column list is filled (so befor adding the first row)
+        /// </summary>
+        /// <value>The function that will be called when the column list is ready.</value>
+        public Action<IEasyDataResultSet> AfterColumnsAdded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the column that holds the number of rows in the result set.
+        /// </summary>
+        /// <value>The name of the column where the number of rows is stored</value>
+        public string RowNumberColumnName { get; set; }
+
+        /// <summary>
+        /// Gets or sets value indicating wether timezone offset from query
+        /// should be applied to the result
+        /// </summary>
+        public bool UseTimezoneOffset { get; set; } = false;
+
+        /// <summary>
+        /// Timezone offset (in minutes) for all dates used in the result set
+        /// </summary>
+        public int TimezoneOffset { get; set; } = 0;
+
+
+        private static EasyResultSetOptions _defaultOptions = null;
+        public static EasyResultSetOptions Default {
+            get {
+                if (_defaultOptions == null) {
+                    _defaultOptions = new EasyResultSetOptions();
+                }
+                return _defaultOptions;
+            }
+        }
     }
 }

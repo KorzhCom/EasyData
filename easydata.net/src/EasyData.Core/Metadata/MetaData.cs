@@ -528,6 +528,13 @@ namespace EasyData
 
         }
 
+        public bool TryGetDataSource(string sourceId, out DataSource source) 
+        {
+            //TODO: Replace this stab implementation with the real one
+            source = new DataSource(this);
+            return true;
+        }
+
         protected BitOptions DefaultRWOptions = MetaDataReadWriteOptions.Defaults;
 
         #region JSON Serialization
