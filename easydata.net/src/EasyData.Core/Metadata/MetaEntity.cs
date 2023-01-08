@@ -29,7 +29,7 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Korzh.EasyData.MetaEntity"/> class.
         /// </summary>
-        /// <param name="model">The mofrl.</param>
+        /// <param name="model">The MetaData object this data source belongs to.</param>
         protected internal MetaEntity(MetaData model)
         {
             _model = model;
