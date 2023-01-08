@@ -84,18 +84,6 @@ namespace EasyData
 
 
         /// <summary>
-        /// Gets or sets the name of the DbSet associated with entity
-        /// </summary>
-        /// <value>The name of the associated column.</value>
-        public string DbSetName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path for building query for complex types
-        /// </summary>
-        /// <value>The complex type path.</value>
-        public string TypeName { get; set; }
-
-        /// <summary>
         /// Gets or sets the index of the entity
         /// </summary>
         public int Index { get; set; } = int.MaxValue;
