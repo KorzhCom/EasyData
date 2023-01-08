@@ -11,7 +11,7 @@ import { EasyDataServerLoader } from './easy_data_server_loader';
 
 type EasyDataEndpointKey = 
     'GetMetaData'   |
-    'FetchDataset'  | 
+    'FetchData'     | 
     'FetchRecord'   |
     'CreateRecord'  |
     'UpdateRecord'  |
@@ -118,7 +118,15 @@ export class DataContext {
         return this.http;
     }
 
-    public fetchDataset() {
+    /**
+     * @deprecated Use fetchData instead
+     */
+    public fetchDataset(){
+        console.warn('"fetchDataset() method is deprecated. Use "fetchData()" instead');
+        this.fetchData();
+    }
+
+    public fetchData() {
         this.data.clear();
         return this.dataLoader.loadChunk({offset: 0, limit: this.data.chunkSize, needTotal: true})
             .then(result => {                
@@ -226,7 +234,7 @@ export class DataContext {
 
     private setDefaultEndpoints(endpointBase : string) {
         this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
-        this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+        this.setEnpointIfNotExist('FetchData', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
         this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
         this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
         this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));

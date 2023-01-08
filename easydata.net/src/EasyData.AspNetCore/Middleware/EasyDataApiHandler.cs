@@ -91,7 +91,7 @@ namespace EasyData.AspNetCore
             await model.WriteToJsonAsync(jsonWriter, MetaDataReadWriteOptions.ClientSideContent, ct);
         }
 
-        public virtual async Task HandleFetchDatasetAsync(string modelId, string sourceId, CancellationToken ct = default)
+        public virtual async Task HandleFetchDataAsync(string modelId, string sourceId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -133,7 +133,7 @@ namespace EasyData.AspNetCore
 
             var sorters = await Manager.GetDefaultSortersAsync(modelId, sourceId);
 
-            var result = await Manager.FetchDatasetAsync(modelId, sourceId, filters, sorters, isLookup, offset, fetch);
+            var result = await Manager.FetchDataAsync(modelId, sourceId, filters, sorters, isLookup, offset, fetch);
             await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
                 await WriteFetchDatasetResponseAsync(jsonWriter, result, total, cancellationToken);
             }, ct);

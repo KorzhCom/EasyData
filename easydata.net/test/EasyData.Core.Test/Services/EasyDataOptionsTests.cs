@@ -123,7 +123,7 @@ namespace EasyData.Core.Services.Tests
                 throw new NotImplementedException();
             }
 
-            public override Task<EasyDataResultSet> FetchDatasetAsync(string modelId, string sourceId, IEnumerable<EasyFilter> filters = null, IEnumerable<EasySorter> sorters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
+            public override Task<EasyDataResultSet> FetchDataAsync(string modelId, string sourceId, IEnumerable<EasyFilter> filters = null, IEnumerable<EasySorter> sorters = null, bool isLookup = false, int? offset = null, int? fetch = null, CancellationToken ct = default)
             {
                 throw new NotImplementedException();
             }

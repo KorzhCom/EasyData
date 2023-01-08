@@ -51,7 +51,7 @@ namespace EasyData.Services
                     });
         }
 
-        public override async Task<EasyDataResultSet> FetchDatasetAsync(string modelId,
+        public override async Task<EasyDataResultSet> FetchDataAsync(string modelId,
                 string sourceId,
                 IEnumerable<EasyFilter> filters = null,
                 IEnumerable<EasySorter> sorters = null,

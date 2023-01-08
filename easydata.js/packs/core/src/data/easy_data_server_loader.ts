@@ -4,11 +4,10 @@ import { DataContext } from './data_context';
 
 export class EasyDataServerLoader implements DataLoader {
     constructor(protected context: DataContext) {
-
     }
 
     loadChunk(params: DataChunkDescriptor | any) {
-        const url = this.context.resolveEndpoint('FetchDataset', 
+        const url = this.context.resolveEndpoint('FetchData', 
             { sourceId: params.sourceId || this.context.getActiveEntity().id });
         delete params.sourceId;
 
