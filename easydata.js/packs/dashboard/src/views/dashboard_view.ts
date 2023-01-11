@@ -3,16 +3,7 @@ import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
 import { getContainer } from  '../utils/container'
 import { componentsObserver } from '../utils/observer'
-import {Registry} from "../utils/registry";
-import {EasyDatagrid} from "../widgets/datagrid";
-import {EasyChart} from "../widgets/chart";
-
-const TBID = 'EasyDataToolbarContainer'
-const REGISTRY = new Registry(globalThis.registry = {})
-
-REGISTRY.register('DataGrid', EasyDatagrid)
-REGISTRY.register('Chart', EasyChart)
-
+import REGISTRY from "./widget_registry"
 export class EasyDashboardView {
 
     private dlg: DialogService;
@@ -24,8 +15,7 @@ export class EasyDashboardView {
         container: '#EasyDashboardContainer',
         layout: null
     };
-
-
+    
     constructor (options?: DashboardViewOptions)
     {
         this.options = dataUtils.assignDeep(this.options, options || {});
@@ -55,9 +45,9 @@ export class EasyDashboardView {
 
         for(let widget of this.layout.widgets) {
             const cell = this.createWrapper(`dashboard-grid__cell ${widget.style}`, dashboardGridRow)
-            const widgetTitle = this.createWrapper(`dashboard-grid__widget__title ${widget.titleClass ? widget.titleClass : ''}`, cell)
-            const widgetWrapper = this.createWrapper(`dashboard-grid__widget ${widget.widgetClass ? widget.widgetClass : ''}`, cell)
-            const widgetFooter = this.createWrapper(`dashboard-grid__widget__footer ${widget.footerClass ? widget.footerClass : ''}`, cell)
+            const widgetTitle = this.createWrapper(`dashboard-grid__widget__title ${widget.titleClass || ''}`, cell)
+            const widgetWrapper = this.createWrapper(`dashboard-grid__widget ${widget.widgetClass || ''}`, cell)
+            const widgetFooter = this.createWrapper(`dashboard-grid__widget__footer ${widget.footerClass || ''}`, cell)
 
             if (widget.title) {
                 widgetTitle.innerHTML = widget.title

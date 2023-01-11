@@ -1,11 +1,11 @@
 import {panic} from "../utils/panic";
-import {EasyDataWidget, TWidget} from "../utils/widget";
+import {EasyDataWidget, WidgetOptions} from "../utils/widget";
 import {domel} from "@easydata/ui";
 import {checkChartJS, createChartJSChart} from "./chartjs"
 import {checkGoogleChart, createGoogleChart} from "./googlechart"
 
 export class EasyChart extends EasyDataWidget {
-    constructor(elem: HTMLElement, widget: TWidget) {
+    constructor(elem: HTMLElement, widget: WidgetOptions) {
         super(elem, "EasyChart", widget.options);
 
         if (!Array.isArray(widget.dataset)) {

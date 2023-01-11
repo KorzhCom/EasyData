@@ -6,6 +6,25 @@ import {capitalize, stripDash} from "../utils/string"
 
 export type TWidget = any
 export type TDataSet = any
+export type DataSet = any
+
+export type WidgetOptions = {
+    title?: string,
+    titleClass?: string,
+    footer?: string,
+    footerClass?: string,
+    class?: string,
+    lib?: string,
+    type?: string,
+    style?: string | {},
+    dataset?: DataSet | DataSet[],
+    axis?: {
+        x?: number,
+        y?: number,
+        z?: number
+    },
+    options?: {}
+}
 
 export type EasyDataWidgetOptions = any
 
