@@ -29,7 +29,7 @@ namespace EasyData
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Korzh.EasyData.MetaEntity"/> class.
         /// </summary>
-        /// <param name="model">The mofrl.</param>
+        /// <param name="model">The MetaData object this data source belongs to.</param>
         protected internal MetaEntity(MetaData model)
         {
             _model = model;
@@ -82,18 +82,6 @@ namespace EasyData
         /// <value>The type of the entity.</value>
         public Type ClrType { get; set; }
 
-
-        /// <summary>
-        /// Gets or sets the name of the DbSet associated with entity
-        /// </summary>
-        /// <value>The name of the associated column.</value>
-        public string DbSetName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path for building query for complex types
-        /// </summary>
-        /// <value>The complex type path.</value>
-        public string TypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the index of the entity

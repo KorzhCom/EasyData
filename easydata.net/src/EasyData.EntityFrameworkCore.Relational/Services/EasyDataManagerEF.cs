@@ -11,6 +11,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Data;
+using System.Runtime;
+using System.Data.Common;
+
 namespace EasyData.Services
 {
     public class EasyDataManagerEF<TDbContext> : EasyDataManager where TDbContext : DbContext
@@ -51,7 +56,7 @@ namespace EasyData.Services
                     });
         }
 
-        public override async Task<EasyDataResultSet> FetchDatasetAsync(string modelId,
+        public override async Task<EasyDataResultSet> FetchDataAsync(string modelId,
                 string sourceId,
                 IEnumerable<EasyFilter> filters = null,
                 IEnumerable<EasySorter> sorters = null,
@@ -64,11 +69,15 @@ namespace EasyData.Services
 
             await GetModelAsync(modelId);
 
+            if (Model.TryGetDataSource(sourceId, out var dataSource)) {
+                return await FetchFromDataSourceAsync(dataSource, filters, sorters, offset, fetch, ct);
+            }
+
             var entityType = GetCurrentEntityType(DbContext, sourceId);
             var records = GetRecordsQuery(DbContext, entityType.ClrType,
                     filters, sorters, isLookup, offset, fetch, ct);
 
-            var result = new EasyDataResultSet();
+            var result = new EasyDataResultSet(EasyResultSetOptions.Default);
 
             var modelEntity = Model.EntityRoot.SubEntities.FirstOrDefault(e => e.ClrType == entityType.ClrType);
             var attrIdProps = entityType.GetProperties()
@@ -98,6 +107,7 @@ namespace EasyData.Services
                 }));
             }
 
+            var rows = new List<EasyDataRow>();
             foreach (var record in records) {
                 var values = attrs.Select(attr => {
                     var prop = attrIdProps[attr.Id];
@@ -105,10 +115,53 @@ namespace EasyData.Services
                         ? prop.PropertyInfo.GetValue(record)
                         : null);
                 }).ToList();
-                result.Rows.Add(new EasyDataRow(values));
+                rows.Add(new EasyDataRow(values));
             }
+            result.Rows = rows;
 
             return result;
+        }
+
+
+        private string testSqlQuery = @"
+SELECT Ctg.CategoryName, SUM(OD.UnitPrice * OD.Quantity) as Total
+FROM Categories Ctg 
+	JOIN Products P ON P.CategoryID = Ctg.CategoryID
+	JOIN Order_Details OD ON OD.ProductID = P.ProductID
+
+GROUP BY Ctg.CategoryName
+ORDER By 1
+        ";
+
+        public virtual async Task<EasyDataResultSet> FetchFromDataSourceAsync(DataSource source,
+                    IEnumerable<EasyFilter> filters = null,
+                    IEnumerable<EasySorter> sorters = null,
+                    int? offset = null, int? fetch = null, 
+                    CancellationToken ct = default)
+        {
+            var options = new EasyResultSetOptions();
+
+            if (!string.IsNullOrEmpty(testSqlQuery)) {
+                var command = PrepareDbCommand(testSqlQuery);
+
+                var dr = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, ct).ConfigureAwait(false);
+                var resultSet = new EasyDbResultSet(dr, options);
+
+                return resultSet;
+            }
+
+            return new EasyDataResultSet(EasyResultSetOptions.Default);
+        }
+
+
+        protected virtual DbCommand PrepareDbCommand(string sql, bool useCountCommand = false)
+        {
+            var connection = DbContext.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+
+            return command;
         }
 
         public override async Task<long> GetTotalRecordsAsync(string modelId, string sourceId,

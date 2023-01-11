@@ -41,7 +41,7 @@ namespace EasyData.Services
             return Task.CompletedTask;
         }
 
-        public abstract Task<EasyDataResultSet> FetchDatasetAsync(
+        public abstract Task<EasyDataResultSet> FetchDataAsync(
                                                     string modelId, string sourceId,
                                                     IEnumerable<EasyFilter> filters = null,
                                                     IEnumerable<EasySorter> sorters = null,

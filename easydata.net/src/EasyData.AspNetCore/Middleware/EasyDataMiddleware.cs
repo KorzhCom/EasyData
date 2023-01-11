@@ -99,7 +99,7 @@ namespace EasyData.AspNetCore
                                 await handler.HandleFetchRecordAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.FetchDataset:
-                                await handler.HandleFetchDatasetAsync(modelId, entityTypeName, ct);
+                                await handler.HandleFetchDataAsync(modelId, entityTypeName, ct);
                                 return;
                             case DataAction.CreateRecord:
                                 await handler.HandleCreateRecordAsync(modelId, entityTypeName, ct);

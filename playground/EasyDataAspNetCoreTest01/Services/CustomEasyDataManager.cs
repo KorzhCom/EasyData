@@ -11,7 +11,7 @@ namespace EasyDataBasicDemo
         {
         }
 
-        public override async Task<EasyDataResultSet> FetchDatasetAsync(
+        public override async Task<EasyDataResultSet> FetchDataAsync(
                 string modelId,
                 string sourceId,
                 IEnumerable<EasyFilter> filters = null,
@@ -22,7 +22,7 @@ namespace EasyDataBasicDemo
             var myFilters = new List<EasyFilter>(filters);
             myFilters.Add(new MyCustomFilter(Model));
 
-            return await base.FetchDatasetAsync(modelId, sourceId, myFilters, sorters, isLookup, offset, fetch, ct);
+            return await base.FetchDataAsync(modelId, sourceId, myFilters, sorters, isLookup, offset, fetch, ct);
         }
     }
 }
