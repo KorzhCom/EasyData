@@ -1,9 +1,9 @@
 import {panic} from "../utils/panic";
 import {EasyDataWidget, WidgetOptions} from "../utils/widget";
 import {domel} from "@easydata/ui";
-import {checkChartJS, createChartJSChart} from "./chartjs"
-import {checkGoogleChart, createGoogleChart} from "./googlechart"
-
+// import {checkChartJS, createChartJSChart} from "./chartjs"
+// import {checkGoogleChart, createGoogleChart} from "./googlechart"
+import ADAPTER_REGISTRY from "./adapter_registry"
 export class EasyChart extends EasyDataWidget {
     constructor(elem: HTMLElement, widget: WidgetOptions) {
         super(elem, "EasyChart", widget.options);
@@ -35,21 +35,30 @@ export class EasyChart extends EasyDataWidget {
         }
 
         // console.log(datasets)
+        const _class = ADAPTER_REGISTRY.getClass(widget.lib.toLowerCase())
 
-        if (widget.lib.toLowerCase() === 'chartjs') {
-            checkChartJS()
-
-            const canvas = domel("canvas").toDOM()
-            const ctx = canvas.getContext("2d")
-            elem.appendChild(canvas)
-
-            createChartJSChart(ctx, datasets, widget)
-        } else {
-            checkGoogleChart()
-
-            const ctx = domel("div").id("google-chart-"+(new Date().getTime())).toDOM()
-            elem.appendChild(ctx)
-            createGoogleChart(ctx, datasets, widget)
+        if (!_class.checkLib()) {
+            panic(`Required library not found!`)
         }
+        
+        const _ctx = _class.createContext()
+        _class.createChart(_ctx.ctx, datasets, widget)
+        elem.appendChild(_ctx.elem)
+        
+        // if (widget.lib.toLowerCase() === 'chartjs') {
+        //     checkChartJS()
+        //
+        //     const canvas = domel("canvas").toDOM()
+        //     const ctx = canvas.getContext("2d")
+        //     elem.appendChild(canvas)
+        //
+        //     createChartJSChart(ctx, datasets, widget)
+        // } else {
+        //     checkGoogleChart()
+        //
+        //     const ctx = domel("div").id("google-chart-"+(new Date().getTime())).toDOM()
+        //     elem.appendChild(ctx)
+        //     createGoogleChart(ctx, datasets, widget)
+        // }
     }
 }

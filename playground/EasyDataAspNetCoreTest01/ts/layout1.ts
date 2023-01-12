@@ -278,7 +278,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             "graphTitle": "X, Y",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": [data2],
             "axis": {
@@ -298,7 +298,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             "graphTitle": "Products1, Products2",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": [data1, data3],
             "axis": {
@@ -318,7 +318,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             "graphTitle": "Category, Count",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": data1,
             "axis": {
@@ -337,7 +337,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             "graphTitle": "Category, Count",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": data1,
             "axis": {
@@ -357,7 +357,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             "graphTitle": "Products1, Products2",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": [data1, data3],
             "axis": {
@@ -377,7 +377,7 @@ export const Layout1 = {
             "titleClass": "dashboard-grid__widget__subtitle",
             graphTitle: "X, Y, Z",
             "class": "Chart",
-            "lib": "google",
+            "lib": "googlechart",
             "style": "p-2 cell-one-half",
             "dataset": data2,
             "axis": {

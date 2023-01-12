@@ -3,7 +3,7 @@ import { DefaultDialogService, DialogService, domel} from '@easydata/ui';
 import { DashboardViewOptions } from './dashboard_view_options'
 import { getContainer } from  '../utils/container'
 import { componentsObserver } from '../utils/observer'
-import REGISTRY from "./widget_registry"
+import REGISTRY from "./class_registry"
 export class EasyDashboardView {
 
     private dlg: DialogService;
@@ -59,8 +59,6 @@ export class EasyDashboardView {
 
             if (widget.class) {
                 new (REGISTRY.getClass(widget.class))(widgetWrapper, widget)
-            } else {
-
             }
         }
     }
