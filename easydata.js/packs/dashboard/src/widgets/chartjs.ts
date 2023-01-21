@@ -18,6 +18,7 @@ export class ChartJSAdapter implements ChartAdapter {
         const ctx = canvas.getContext("2d")
         return {ctx: ctx, elem: canvas}
     }
+    
     createChart(ctx, datasets, widget){
         if (!widget.options) {
             widget.options = {}
