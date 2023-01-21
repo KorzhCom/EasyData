@@ -25,7 +25,7 @@ export class EasyDashboardView {
 
         this.render();
 
-        componentsObserver(this.container)
+        componentsObserver(this.container);
     }
 
     private createWrapper(cls, target){
@@ -35,7 +35,7 @@ export class EasyDashboardView {
 
         if (target) target.appendChild(wrapper);
 
-        return wrapper
+        return wrapper;
     }
 
     private render() {

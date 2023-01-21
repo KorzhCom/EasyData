@@ -69,7 +69,7 @@ export class EntityDataView {
     }
 
     private renderGrid() {
-        this.context.fetchDataset()
+        this.context.fetchData()
             .then(result => {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
@@ -251,7 +251,7 @@ export class EntityDataView {
     }
 
     private refreshData(): Promise<void> {
-        return this.context.fetchDataset()
+        return this.context.fetchData()
             .then(() => {
                 let processed = false;
                 if (this.filterWidget) {                   

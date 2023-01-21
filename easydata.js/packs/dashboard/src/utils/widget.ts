@@ -56,7 +56,6 @@ export class EasyDataWidget {
             }
         }
     }
-
     
     private fire(name, data){
         const element = this.element

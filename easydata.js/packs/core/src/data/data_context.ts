@@ -123,7 +123,7 @@ export class DataContext {
      */
     public fetchDataset(){
         console.warn('"fetchDataset() method is deprecated. Use "fetchData()" instead');
-        this.fetchData();
+        return this.fetchData();
     }
 
     public fetchData() {
