@@ -5,6 +5,7 @@ export interface DataLoader {
 }
 
 export interface DataChunkDescriptor {
+    sourceId?: string;
     offset: number;
     limit: number;
     needTotal: boolean;
