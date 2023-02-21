@@ -71,7 +71,7 @@ namespace EasyData
                     return string.Format(culture, displayFormat, val);
                 }
 
-                return ts.ToString(culture.DateTimeFormat.ShortTimePattern, CultureInfo.InvariantCulture);
+                return ts.ToString("c", CultureInfo.InvariantCulture);
             }
 #if NET6_0_OR_GREATER
             else if (val is DateOnly @do) {
