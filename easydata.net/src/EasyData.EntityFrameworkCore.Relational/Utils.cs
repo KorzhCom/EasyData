@@ -77,7 +77,9 @@ namespace EasyData.EntityFrameworkCore
         {
 #if NET
             var entityType = property.DeclaringEntityType;
+            if (entityType == null) return null;
             var tableName = entityType.GetDbTableName();
+            if (tableName == null) return null;
             var schema = entityType.GetDbSchema();
             var storeObjectIdentifier = StoreObjectIdentifier.Table(tableName, schema);
             var result = property.GetColumnName(storeObjectIdentifier);

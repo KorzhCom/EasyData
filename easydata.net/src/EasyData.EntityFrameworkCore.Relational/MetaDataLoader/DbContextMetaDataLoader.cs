@@ -406,6 +406,7 @@ namespace EasyData.EntityFrameworkCore
 
             var propertyName = property.Name;
             var columnName = property.GetDbColumnName();
+            if (columnName == null) return null;
 
             var entityAttr = Model.CreateEntityAttr(new MetaEntityAttrDescriptor() {
                 Parent = entity
