@@ -218,13 +218,22 @@ export class AggregationSettings {
 
     //returns true if value1 == value2
     private strictCompare(value1: any, value2: any) : boolean {
-        return value1 === value2;
+        if (value1 instanceof Date) {
+            return value1.getTime() === value2.getTime();
+        }
+        else 
+            return value1 === value2;
     }
 
     //makes a case insensative comparision of two values and return true if there are equal
     private caseInsensitiveCompare(value1: any, value2: any) : boolean {
-        const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
-        const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
-        return val1 === val2;
+        if (value1 instanceof Date) {
+            return value1.getTime() === value2.getTime();
+        }
+        else {
+            const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
+            const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
+            return val1 === val2;    
+        }
     }
 }
