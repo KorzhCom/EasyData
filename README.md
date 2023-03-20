@@ -4,7 +4,7 @@
 |---|---|---|---|
 | [![Build status](https://github.com/KorzhCom/EasyData/workflows/EasyData.NET%20Pipeline/badge.svg?branch=master&event=push)](https://github.com/KorzhCom/EasyData/actions?query=workflow%3A%22EasyData.NET+Pipeline%22+event%3Apush+branch%3Amaster)  | [![Build status](https://github.com/KorzhCom/EasyData/workflows/EasyData.JS%20Pipeline/badge.svg?branch=master&event=push)](https://github.com/KorzhCom/EasyData/actions?query=workflow%3A%22EasyData.JS+Pipeline%22+event%3Apush+branch%3Amaster) | [![NuGet](https://img.shields.io/nuget/v/EasyData.AspNetCore.svg)](https://www.nuget.org/packages/EasyData.AspNetCore) | [![Npm](https://img.shields.io/npm/v/@easydata/crud/latest)](https://www.npmjs.com/package/@easydata/crud) |
 
-## About
+## The easiest way to do CRUD in ASP.NET Core projects!
 
 EasyData library lets you quickly build a UI for CRUD (Create, Read, Update, Delete) operations in any ASP.NET Core application that uses Entity Framework Core.
 
