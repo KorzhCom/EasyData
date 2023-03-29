@@ -169,8 +169,17 @@ namespace EasyData.Export
                         }
                     }
 
-                    cell.DataType = excelDataType;
-                    cell.Value = excelDataType == XLDataType.Text ? "'" + value : value;
+                    switch (excelDataType) {
+                        case XLDataType.DateTime:
+                            cell.Value = Convert.ToDateTime(value); 
+                            break;
+                        case XLDataType.Text:
+                            cell.Value = "'" + value;
+                            break;
+                        default:
+                            cell.Value = value.ToString();
+                            break;
+                    }
 
                     // setting the cell's format
                     var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
