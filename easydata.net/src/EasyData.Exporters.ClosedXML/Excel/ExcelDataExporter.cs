@@ -176,6 +176,9 @@ namespace EasyData.Export
                         case XLDataType.Text:
                             cell.Value = "'" + value;
                             break;
+                        case XLDataType.Number:
+                            cell.Value = Convert.ToDouble(value);
+                            break;
                         default:
                             cell.Value = value.ToString();
                             break;
