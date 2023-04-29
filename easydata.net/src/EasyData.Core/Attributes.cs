@@ -741,7 +741,7 @@ namespace EasyData
                     _lookupEntityId = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 case "opg":
-                    await reader.SkipAsync(ct).ConfigureAwait(false);
+                    await reader.ReadAsync(ct).ConfigureAwait(false);
                     break;
                 case "desc":
                     Description = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
@@ -754,7 +754,7 @@ namespace EasyData
                     DefaultValue = jObj.ToObject<string>();
                     break;
                 default:
-                    await reader.SkipAsync(ct).ConfigureAwait(false);
+                    await reader.ReadAsync(ct).ConfigureAwait(false);
                     break;
             }
         }
