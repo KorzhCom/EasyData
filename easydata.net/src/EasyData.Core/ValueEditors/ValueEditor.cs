@@ -527,6 +527,20 @@ namespace EasyData
             }
         }
 
+        /// <summary>
+        /// Converts the old "special dates" value editor to the new one
+        /// </summary>
+        /// <param name="editor"></param>
+        internal ValueEditor ConvertOldSpecialDateTimeEditor(ValueEditor editor) 
+        {
+            if (editor != null && editor is CustomListValueEditor clEditor
+                && (clEditor.ListName == "_DSDE" || clEditor.ListName == "_DSTE")) {
+                editor = this.FindById(clEditor.ListName);
+            }
+
+            return editor;
+        }
+
         #endregion //New JSON format serialization
     }
 
