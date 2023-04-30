@@ -171,7 +171,9 @@ namespace EasyData.Export
 
                     switch (excelDataType) {
                         case XLDataType.DateTime:
-                            cell.Value = Convert.ToDateTime(value); 
+                            cell.Value = value is DateTimeOffset 
+                                            ? ((DateTimeOffset)value).DateTime
+                                            : Convert.ToDateTime(value); 
                             break;
                         case XLDataType.Text:
                             cell.Value = "'" + value;
