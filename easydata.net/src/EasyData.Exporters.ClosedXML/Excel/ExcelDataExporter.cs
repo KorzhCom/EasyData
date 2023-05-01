@@ -171,13 +171,25 @@ namespace EasyData.Export
 
                     switch (excelDataType) {
                         case XLDataType.DateTime:
-                            cell.Value = Convert.ToDateTime(value); 
+                            cell.Value = value is DateTimeOffset 
+                                            ? ((DateTimeOffset)value).DateTime
+                                            : Convert.ToDateTime(value); 
                             break;
                         case XLDataType.Text:
-                            cell.Value = "'" + value;
+                            if (!string.IsNullOrEmpty(value.ToString())) {
+                                cell.Value = "'" + value;
+                            }
+                            else {
+                                cell.Value = Blank.Value;
+                            }
                             break;
                         case XLDataType.Number:
-                            cell.Value = Convert.ToDouble(value);
+                            if (value is DBNull) {
+                                cell.Value = Blank.Value;
+                            }
+                            else {
+                                cell.Value = Convert.ToDouble(value);
+                            }
                             break;
                         default:
                             cell.Value = value.ToString();

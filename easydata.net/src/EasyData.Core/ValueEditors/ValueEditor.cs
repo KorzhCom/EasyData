@@ -328,6 +328,11 @@ namespace EasyData
 
             await writer.WritePropertyNameAsync("rtype", ct).ConfigureAwait(false);
             await writer.WriteValueAsync(ResultType, ct).ConfigureAwait(false);
+
+            if (!string.IsNullOrEmpty(DefaultValue)) {
+                await writer.WritePropertyNameAsync("dval", ct).ConfigureAwait(false);
+                await writer.WriteValueAsync(DefaultValue, ct).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -368,6 +373,9 @@ namespace EasyData
                     break;
                 case "rtype":
                     ResultType = (DataType)await reader.ReadAsInt32Async(ct).ConfigureAwait(false);
+                    break;
+                case "dval":
+                    DefaultValue = await reader.ReadAsStringAsync(ct).ConfigureAwait(false);
                     break;
                 default:
                     await reader.SkipAsync(ct).ConfigureAwait(false);

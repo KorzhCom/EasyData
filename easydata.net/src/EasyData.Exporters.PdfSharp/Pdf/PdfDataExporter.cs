@@ -94,7 +94,6 @@ namespace EasyData.Export
             document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
             document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
 
-
             ApplyStyles(document, pdfSettings);
 
             var section = document.AddSection();

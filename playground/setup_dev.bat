@@ -33,6 +33,4 @@ mklink /D crud ..\..\..\..\easydata.js\packs\crud
 cd ..\..\..
 
 
-cd ..
-
 @echo ----- ALL DONE! ---- 
