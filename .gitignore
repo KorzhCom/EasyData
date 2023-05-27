@@ -379,3 +379,5 @@ playground/EasyDataAspNetCoreTest01/EasyDataTest01.db-shm
 playground/EasyDataAspNetCoreTest01/EasyDataTest01.db-wal
 playground/EasyDataAspNetCoreTest01/wwwroot/js/dashboard.js
 playground/EasyDataAspNetCoreTest01/wwwroot/js/dashboard.js.map
+
+.idea
