@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
+const TypedocWebpackPlugin = require('@olton/typedoc-webpack-plugin');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
@@ -35,8 +35,8 @@ const confBundles = {
     optimization: {
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
-            sourceMap: true,
 			terserOptions: {
+                sourceMap: true,
 				compress: {
 					pure_funcs: ['console.log', 'console.info', 'console.debug']
 				}
@@ -45,10 +45,11 @@ const confBundles = {
     },
 	plugins: [
 		new TypedocWebpackPlugin({
-            mode: 'file',
             json: '../../../../docs/easydata-crud.json',
-            includeDeclarations: false,
-			ignoreCompilerErrors: true
+            out: "docs",
+            entryPoints: ["./src/**/*.ts"],
+            tsconfig: "tsconfig.json",
+            compilerOptions: {}
         }),
 		new FileManagerPlugin({
             events: {
@@ -96,9 +97,11 @@ const confBrowser = {
 					{
 						loader: 'postcss-loader',
 						options: {
-							plugins: [
-								autoprefixer()
-							],
+                            postcssOptions: {
+                                plugins: [
+                                	autoprefixer()
+                                ],
+                            },
 							sourceMap: true
 						}
 					}
@@ -109,9 +112,9 @@ const confBrowser = {
     optimization: {
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
-            sourceMap: true,
 			extractComments: true,
 			terserOptions: {
+                sourceMap: true,
 				compress: {
 					pure_funcs: ['console.log', 'console.info', 'console.debug']
 				}

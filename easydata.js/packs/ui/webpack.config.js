@@ -1,7 +1,7 @@
 const path = require("path");
 const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
-const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
+const TypedocWebpackPlugin = require('@olton/typedoc-webpack-plugin');
 
 let confBundles = {
     entry: {
@@ -31,8 +31,8 @@ let confBundles = {
     optimization: {
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
-            sourceMap: true,
 			terserOptions: {
+                sourceMap: true,
 				compress: {
 					pure_funcs: ['console.log', 'console.info', 'console.debug']
 				}
@@ -41,10 +41,11 @@ let confBundles = {
     },
 	plugins: [
 		new TypedocWebpackPlugin({
-            mode: 'file',
             json: '../../../../docs/easydataui.json',
-            includeDeclarations: false,
-			ignoreCompilerErrors: true
+            out: "docs",
+            entryPoints: ["./src/**/*.ts"],
+            tsconfig: "tsconfig.json",
+            compilerOptions: {}
         }),
 		new FileManagerPlugin({
             events: {
@@ -58,8 +59,10 @@ let confBundles = {
 	]
 };
 
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const easyFormsCss = new ExtractTextPlugin("./assets/css/[name].css");
+// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// const easyFormsCss = new ExtractTextPlugin("./assets/css/[name].css");
+
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 let confEasyForms = {
     entry: {
@@ -68,16 +71,25 @@ let confEasyForms = {
     module: {
         rules: [
             {
-                test: /.*\.css$/,
-                use: easyFormsCss.extract({
-                    fallback: "style-loader",
-                    use: "css-loader"
-                })
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: (resourcePath, context) => {
+                                return path.relative(path.dirname(resourcePath), context) + "/";
+                            },
+                        },
+                    },
+                    "css-loader",
+                ],
             }
         ]
     },
     plugins: [
-        easyFormsCss,
+        new MiniCssExtractPlugin({
+            filename: "assets/css/[name].css",
+        }),
         new FileManagerPlugin({
             events: {
                 onEnd: {
