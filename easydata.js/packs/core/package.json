@@ -6,9 +6,10 @@
     "main": "./dist/bundles/easydata.core.js",
     "module": "./dist/lib/public_api.js",
     "scripts": {
+        "typedoc": "typedoc --out docs --json ../../../../docs/easydatacore.json --tsconfig tsconfig.json ./src/**/*.ts",
         "clean": "rimraf ./dist",
         "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
-        "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production",
+        "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production && typedoc",
         "watch": "nodemon",
         "test": "npm run clean-test && tsc -p tsconfig-test.json && jasmine JASMINE_CONFIG_PATH=jasmine.json",
         "clean-test": "rimraf ./test/dist"
@@ -29,23 +30,23 @@
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "12.7.8",
-        "@types/jasmine": "^3.3.12",
-        "bufferutil": "^4.0.1",
+        "@types/jasmine": "^4.3.2",
+        "@types/node": "20.2.5",
+        "bufferutil": "^4.0.7",
         "es6-promise": "^4.2.8",
-        "jasmine": "^3.4.0",
+        "jasmine": "^5.0.0",
         "jasmine-ts-console-reporter": "^3.1.1",
-        "nodemon": "1.18.10",
-        "rimraf": "2.6.3",
-        "terser-webpack-plugin": "^4.2.3",
-        "ts-loader": "^5.3.3",
-        "ts-node": "^8.0.2",
-        "typedoc": "^0.15.0",
-        "typedoc-webpack-plugin": "^1.1.4",
-        "typescript": "3.7.*",
-        "utf-8-validate": "^5.0.2",
-        "webpack": "^4.36.1",
-        "webpack-cli": "^3.3.6"
+        "nodemon": "2.0.22",
+        "rimraf": "5.0.1",
+        "terser-webpack-plugin": "^5.3.9",
+        "ts-loader": "^9.4.3",
+        "ts-node": "^10.9.1",
+        "typedoc": "^0.24.7",
+        "typescript": "5.0.*",
+        "utf-8-validate": "^6.0.3",
+        "webpack": "^5.84.1",
+        "webpack-cli": "^5.1.1",
+        "@olton/typedoc-webpack-plugin": "^0.1.0"
     },
     "nodemonConfig": {
         "watch": [
@@ -54,5 +55,7 @@
         "delay": "1000",
         "ext": "ts,js",
         "exec": "tsc"
+    },
+    "dependencies": {
     }
 }
