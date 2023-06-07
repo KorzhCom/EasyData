@@ -1,6 +1,6 @@
 const path = require("path");
 const TerserPlugin = require('terser-webpack-plugin');
-const TypedocWebpackPlugin = require('typedoc-webpack-plugin');
+const TypedocWebpackPlugin = require('@olton/typedoc-webpack-plugin');
 
 let confBundles = {
     entry: {
@@ -30,8 +30,8 @@ let confBundles = {
     optimization: {
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/,
-            sourceMap: true,
 			terserOptions: {
+                sourceMap: true,
 				compress: {
 					pure_funcs: ['console.log', 'console.info', 'console.debug']
 				}
@@ -40,11 +40,11 @@ let confBundles = {
     },
 	plugins: [
 		new TypedocWebpackPlugin({
-            skipLibCkeck: true,
-            mode: 'file',
             json: '../../../../docs/easydatacore.json',
-            includeDeclarations: false,
-			ignoreCompilerErrors: true
+            out: "docs",
+            entryPoints: ["./src/**/*.ts"],
+            tsconfig: "tsconfig.json",
+            compilerOptions: {}
         })
 	]
 };
