@@ -110,7 +110,6 @@ namespace EasyData.Export
                     ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Description;
                     cellNum++;
                 }
-
             }
 
             var ignoredCols = GetIgnoredColumns(data, settings);
@@ -177,7 +176,7 @@ namespace EasyData.Export
                                                 : Convert.ToDateTime(value);
                                 break;
                             case XLDataType.Text:
-                                cell.Value = string.IsNullOrEmpty(value.ToString())
+                                cell.Value = !string.IsNullOrEmpty(value.ToString())
                                     ? (XLCellValue)("'" + value)
                                     : Blank.Value;
                                 break;
