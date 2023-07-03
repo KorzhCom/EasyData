@@ -69,6 +69,9 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
+#if NETSTANDARD2_1
+            await
+#endif
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 2048, true)) {
                 await ExportAsync(data, writer, settings, ct).ConfigureAwait(false);
             }
