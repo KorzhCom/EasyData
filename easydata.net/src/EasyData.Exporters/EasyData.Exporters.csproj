@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <EnableApiCheck>false</EnableApiCheck>
     <PackageId>EasyData.Exporters</PackageId>
     <PackageDescription>

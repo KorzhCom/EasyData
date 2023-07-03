@@ -4,17 +4,18 @@
     ViewData["Title"] = "EasyData";
 }
 
-<!--link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.1/easydata.min.css" /-->
+<link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.12/easydata.min.css" />
 
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
     <!--- When we want use the local compiled script -->
+    <!--
     <script src="~/js/easydata.js" type="text/javascript"></script>
+    -->
 
     <!--- When we want to use the already published script -->
-    <!--
-    <script src="https://cdn.korzh.com/ed/1.4.1/easydata.min.js" type="text/javascript"></script>
+    <script src="https://cdn.korzh.com/ed/1.4.12/easydata.min.js" type="text/javascript"></script>
     
     <script>
     window.addEventListener('load', () => {
@@ -28,5 +29,4 @@
         }).run()
     });
     </script>
-    -->
 }

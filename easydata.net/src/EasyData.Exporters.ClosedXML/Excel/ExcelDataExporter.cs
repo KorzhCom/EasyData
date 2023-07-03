@@ -110,7 +110,6 @@ namespace EasyData.Export
                     ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Description;
                     cellNum++;
                 }
-
             }
 
             var ignoredCols = GetIgnoredColumns(data, settings);
@@ -169,31 +168,28 @@ namespace EasyData.Export
                         }
                     }
 
-                    switch (excelDataType) {
-                        case XLDataType.DateTime:
-                            cell.Value = value is DateTimeOffset 
-                                            ? ((DateTimeOffset)value).DateTime
-                                            : Convert.ToDateTime(value); 
-                            break;
-                        case XLDataType.Text:
-                            if (!string.IsNullOrEmpty(value.ToString())) {
-                                cell.Value = "'" + value;
-                            }
-                            else {
-                                cell.Value = Blank.Value;
-                            }
-                            break;
-                        case XLDataType.Number:
-                            if (value is DBNull) {
-                                cell.Value = Blank.Value;
-                            }
-                            else {
+                    if (!(value is DBNull)) {
+                        switch (excelDataType) {
+                            case XLDataType.DateTime:
+                                cell.Value = value is DateTimeOffset
+                                                ? ((DateTimeOffset)value).DateTime
+                                                : Convert.ToDateTime(value);
+                                break;
+                            case XLDataType.Text:
+                                cell.Value = !string.IsNullOrEmpty(value.ToString())
+                                    ? (XLCellValue)("'" + value)
+                                    : Blank.Value;
+                                break;
+                            case XLDataType.Number:
                                 cell.Value = Convert.ToDouble(value);
-                            }
-                            break;
-                        default:
-                            cell.Value = value.ToString();
-                            break;
+                                break;
+                            default:
+                                cell.Value = value.ToString();
+                                break;
+                        }
+                    }
+                    else {
+                        cell.Value = Blank.Value;
                     }
 
                     // setting the cell's format
