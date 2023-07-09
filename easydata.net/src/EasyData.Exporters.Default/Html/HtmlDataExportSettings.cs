@@ -45,6 +45,8 @@ namespace EasyData.Export
             HeaderBgColor = "navy";
             HeaderFgColor = "#ffffff";
             HeaderFontWeight = "bold";
+
+            AddBOM = true;
         }
 
         /// <summary>
@@ -120,5 +122,11 @@ namespace EasyData.Export
         ///     <see langword="true"/> if HTML tags will be replaced to plain text; otherwise, <see langword="false"/>.
         /// </value>
         public bool FixHtmlTags { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether we should add BOM at the beginning of the result stream.
+        /// </summary>
+        /// <value><c>true</c> to add the BOM at the start; otherwise, <c>false</c>.</value>
+        public bool AddBOM { get; set; }
     }
 }
