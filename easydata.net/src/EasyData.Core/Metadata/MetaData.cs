@@ -921,12 +921,26 @@ namespace EasyData
             await writer.WritePropertyNameAsync("displayFormats", ct).ConfigureAwait(false);
             await WriteDisplayFormatsToJsonAsync(writer, ct).ConfigureAwait(false);
 
+            await WriteBasicNodesAsync(writer, rwOptions, ct).ConfigureAwait(false);
+
+            await WriteEntitiesAsync(writer, rwOptions, ct).ConfigureAwait(false);
+        }
+
+        protected virtual async Task WriteBasicNodesAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
+        {
+
+            await writer.WritePropertyNameAsync("displayFormats", ct).ConfigureAwait(false);
+            await WriteDisplayFormatsToJsonAsync(writer, ct).ConfigureAwait(false);
+
             // Editors must be saved before operators
             if (rwOptions.Contains(MetaDataReadWriteOptions.Editors)) {
                 await writer.WritePropertyNameAsync("editors", ct).ConfigureAwait(false);
                 await Editors.WriteToJsonAsync(writer, rwOptions, true, ct).ConfigureAwait(false);
             }
+        }
 
+        protected virtual async Task WriteEntitiesAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
+        {
             if (rwOptions.Contains(MetaDataReadWriteOptions.Entities)) {
                 await writer.WritePropertyNameAsync("maxAttrId", ct).ConfigureAwait(false);
                 await writer.WriteValueAsync(_maxEntAttrId, ct).ConfigureAwait(false);

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <PackageId>EasyData.Exporters.ClosedXML</PackageId>
     <DocumentationFile>EasyData.Exporters.ClosedXML.xml</DocumentationFile>
     <Description>
@@ -12,8 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.95.4" />
-    <PackageReference Include="System.Drawing.Common" Version="[4.5,6)" />
+    <PackageReference Include="ClosedXML" Version="0.100.3" />
   </ItemGroup>
   
   <ItemGroup>

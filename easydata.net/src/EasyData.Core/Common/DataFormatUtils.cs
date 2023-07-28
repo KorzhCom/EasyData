@@ -18,7 +18,7 @@ namespace EasyData
 
         public static void CheckFormat(string dataFormat)
         {
-            if (!_formatRegex.IsMatch(dataFormat))
+            if (!string.IsNullOrEmpty(dataFormat) && !_formatRegex.IsMatch(dataFormat))
                 throw new InvalidDataFormatException("Invalid display format: " + dataFormat);
         }
 

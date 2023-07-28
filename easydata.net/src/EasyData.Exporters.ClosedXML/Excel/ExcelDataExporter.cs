@@ -110,7 +110,6 @@ namespace EasyData.Export
                     ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Description;
                     cellNum++;
                 }
-
             }
 
             var ignoredCols = GetIgnoredColumns(data, settings);
@@ -169,8 +168,29 @@ namespace EasyData.Export
                         }
                     }
 
-                    cell.DataType = excelDataType;
-                    cell.Value = excelDataType == XLDataType.Text ? "'" + value : value;
+                    if (!(value is DBNull)) {
+                        switch (excelDataType) {
+                            case XLDataType.DateTime:
+                                cell.Value = value is DateTimeOffset
+                                                ? ((DateTimeOffset)value).DateTime
+                                                : Convert.ToDateTime(value);
+                                break;
+                            case XLDataType.Text:
+                                cell.Value = !string.IsNullOrEmpty(value.ToString())
+                                    ? (XLCellValue)("'" + value)
+                                    : Blank.Value;
+                                break;
+                            case XLDataType.Number:
+                                cell.Value = Convert.ToDouble(value);
+                                break;
+                            default:
+                                cell.Value = value.ToString();
+                                break;
+                        }
+                    }
+                    else {
+                        cell.Value = Blank.Value;
+                    }
 
                     // setting the cell's format
                     var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);

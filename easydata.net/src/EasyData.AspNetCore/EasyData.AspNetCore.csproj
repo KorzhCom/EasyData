@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>		
     <RootNamespace>EasyData.AspNetCore</RootNamespace>
     <Description>ASP.NET Core classes for EasyData library.</Description>
     <DocumentationFile>EasyData.AspNetCore.xml</DocumentationFile>
