@@ -39,6 +39,8 @@ namespace EasyData.Export
             QuoteAlways = false;
             Separator = ",";
             CommentCharacter = "#";
+
+            AddBOM = true;
         }
 
         /// <summary>
@@ -63,5 +65,11 @@ namespace EasyData.Export
         /// </summary>
         /// <value><c>true</c> if all fields must be quoted; otherwise, <c>false</c>.</value>
         public bool QuoteAlways { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether we should add BOM at the beginning of the result stream.
+        /// </summary>
+        /// <value><c>true</c> to add the BOM at the start; otherwise, <c>false</c>.</value>
+        public bool AddBOM { get; set; }
     }
 }
