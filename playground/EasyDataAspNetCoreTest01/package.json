@@ -12,18 +12,18 @@
     "build-all": "npm install && webpack --mode=development"
   },
   "dependencies": {
-    "es6-promise": "^4.2.6"
+    "es6-promise": "^4.2.8"
   },
   "devDependencies": {
-    "@types/jquery": "^3.3.32",
-    "css-loader": "2.1.1",
-    "filemanager-webpack-plugin": "2.0.5",
-    "onchange": "^5.2.0",
+    "@types/jquery": "^3.5.16",
+    "css-loader": "6.8.1",
+    "filemanager-webpack-plugin": "8.0.0",
+    "onchange": "^7.1.0",
     "require": "^2.4.20",
-    "style-loader": "0.23.1",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3",
-    "webpack": "^4.36.1",
-    "webpack-cli": "^3.3.6"
+    "style-loader": "3.3.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   }
 }

@@ -32,3 +32,5 @@ import { DefaultDialogService } from './dialogs/default_dialog_service'
 // export dialogs to use outside of context as global
 const dialogs = new DefaultDialogService();
 export { dialogs };
+
+export * from './timespanpicker'

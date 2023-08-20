@@ -1,0 +1,40 @@
+:root {
+    --tps-border-color: #000000;
+}
+
+.tsp__container {
+    display: flex;
+    flex-flow: row;
+}
+
+    .tsp__intervals {
+        border-right: 1px solid var(--tps-border-color);
+    }
+
+        .tsp__button {
+            border: 1px solid var(--tps-border-color);
+        }
+    
+    .tsp__form {
+        display: flex;
+        flex-flow: row;
+    }
+    
+        .tsp__date {
+            display: flex;
+            width: 50%;
+        }
+        
+            .tps__date__label {}
+            
+            .tps__date__select {
+                margin-left: auto;
+            }
+        
+        .tps__calendar {
+            
+        }
+        
+        .tps__input {
+            
+        }
