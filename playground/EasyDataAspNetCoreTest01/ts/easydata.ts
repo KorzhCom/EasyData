@@ -6,5 +6,10 @@ window.addEventListener('load', () => {
 });
 
 globalThis.showPicker = () => {
-    alert('showTimeSpanPicker');
+    showTimeSpanPicker({
+        title: "Select Period",
+        submitButtonText: "Ok",
+        cancelButtonText: "Cancel",
+        onSubmit: ()=>{}
+    });
 }
