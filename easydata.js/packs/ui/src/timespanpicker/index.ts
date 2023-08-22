@@ -51,6 +51,12 @@ export class TimeSpanPicker extends DefaultDialog {
         });
         
         this.bodyElement.append( this.drawDialog() )
+
+        this.calendar1.render()
+        this.calendar2.render()
+
+        this.calendar1.setDate(new Date())
+        this.calendar2.setDate(new Date())
     }
     
     drawDialog(){
@@ -96,10 +102,7 @@ export class TimeSpanPicker extends DefaultDialog {
                             .addChild('div', b => {
                                 b
                                     .addClass('tsp__calendar')
-                                    .addChild('div', b => {
-                                        this.calendar1 = new DefaultCalendar(b.toDOM(), {})
-                                        this.calendar1.render()
-                                    })
+                                    this.calendar1 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
                             })
                             .addChild('div', b => {
                                 b
@@ -134,8 +137,7 @@ export class TimeSpanPicker extends DefaultDialog {
                                 b
                                     .addClass('tsp__calendar')
                                     .addChild('div', b => {
-                                        this.calendar2 = new DefaultCalendar(b.toDOM(), {})
-                                        this.calendar2.render()
+                                        this.calendar2 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
                                     })
                             })
                             .addChild('div', b => {
