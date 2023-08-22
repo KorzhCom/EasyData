@@ -4,6 +4,7 @@ import {DefaultCalendar} from "../datetimepicker/default_calendar"
 import { domel } from '../utils/dom_elem_builder';
 
 export interface TimeSpanPickerOptions {
+    weekStart?: 0,
     title?: string,
     submitButtonText?: string,
     cancelButtonText?: string,
@@ -22,16 +23,19 @@ export enum PRE_SELECT {
     QUARTER_4,
 }
 
+const DEFAULT_WEEK_START = 1
 
 export class TimeSpanPicker extends DefaultDialog {
     protected layout: string | HTMLElement
-    protected from: any
-    protected to: any
+    protected input1: any
+    protected input2: any
     protected calendar1: any
     protected calendar2: any
+    protected from: Date
+    protected to: Date
+    protected weekStart: number
     
     constructor(options: TimeSpanPickerOptions) {
-
         super({
             title: options.title || `Select a period`,
             body: "",
@@ -49,7 +53,7 @@ export class TimeSpanPicker extends DefaultDialog {
                 }
             }
         });
-        
+        this.weekStart = options.weekStart || DEFAULT_WEEK_START
         this.bodyElement.append( this.drawDialog() )
     }
     
@@ -105,7 +109,7 @@ export class TimeSpanPicker extends DefaultDialog {
                                 b
                                     .addClass('tsp__input')
                                     .addChild('input', b => {
-                                        this.from = b.type('text').name('').toDOM()
+                                        this.input1 = b.type('text').name('').toDOM()
                                     })
                             })
                     })
@@ -142,7 +146,7 @@ export class TimeSpanPicker extends DefaultDialog {
                                 b
                                     .addClass('tsp__input')
                                     .addChild('input', b => {
-                                        this.to = b.type('text').name('').toDOM()
+                                        this.input2 = b.type('text').name('').toDOM()
                                     })
                             })
                     })
@@ -156,8 +160,30 @@ export class TimeSpanPicker extends DefaultDialog {
         
     }
     
-    select(interval){
+    represent(){
+        console.log(this.weekStart, this.from, this.to)
+    }
+    
+    select(interval: PRE_SELECT){
         
+        switch (interval) {
+            case PRE_SELECT.THIS_WEEK: {
+                const curr = new Date()
+                this.from = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
+                this.to = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
+                this.represent()
+                break
+            }
+            case PRE_SELECT.LAST_WEEK: {
+                const curr = new Date
+                const first = curr.getDate()
+                const last = first + 6
+                this.from = new Date(curr.setDate(first))
+                this.from = new Date(curr.setDate(last))
+                this.represent()
+                break
+            }
+        }
     }
 }
 
