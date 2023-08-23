@@ -15,12 +15,26 @@ export enum PRE_SELECT {
     THIS_WEEK,
     LAST_WEEK,
     THIS_MONTH,
+    FIRST_MONTH,
     LAST_MONTH,
     THIS_YEAR,
     QUARTER_1,
     QUARTER_2,
     QUARTER_3,
     QUARTER_4,
+}
+
+export enum JUMP_TO {
+    UNDEF = '-1',
+    TODAY = '1',
+    YESTERDAY = '2',
+    TOMORROW = '3',
+    WEEK_START = '4',
+    WEEK_END = '5',
+    MONTH_START = '6',
+    MONTH_END = '7',
+    YEAR_START = '8',
+    YEAR_END = '9'
 }
 
 const DEFAULT_WEEK_START = 0
@@ -72,6 +86,7 @@ export class TimeSpanPicker extends DefaultDialog {
                     .addChild('button', b => b.addClass('tsp__button').addText('This Week').on('click', () => {this.select(PRE_SELECT.THIS_WEEK)}))
                     .addChild('button', b => b.addClass('tsp__button').addText('Last Week').on('click', () => {this.select(PRE_SELECT.LAST_WEEK)}))
                     .addChild('button', b => b.addClass('tsp__button').addText('This Month').on('click', () => {this.select(PRE_SELECT.THIS_MONTH)}))
+                    .addChild('button', b => b.addClass('tsp__button').addText('First Month').on('click', () => {this.select(PRE_SELECT.FIRST_MONTH)}))
                     .addChild('button', b => b.addClass('tsp__button').addText('Last Month').on('click', () => {this.select(PRE_SELECT.LAST_MONTH)}))
                     .addChild('button', b => b.addClass('tsp__button').addText('This Year').on('click', () => {this.select(PRE_SELECT.THIS_YEAR)}))
                     .addChild('button', b => b.addClass('tsp__button').addText('Quarter 1').on('click', () => {this.select(PRE_SELECT.QUARTER_1)}))
@@ -93,14 +108,21 @@ export class TimeSpanPicker extends DefaultDialog {
                                     })
                                     .addChild('select', b => {
                                         b
-                                            .addOption({value: '-1', title: 'Jump To'})
-                                            .addOption({value: '1', title: 'Today'})
-                                            .addOption({value: '2', title: 'Yesterday'})
-                                            .addOption({value: '3', title: 'Week Start'})
-                                            .addOption({value: '4', title: 'Month Start'})
-                                            .addOption({value: '5', title: 'Week End'})
-                                            .addOption({value: '6', title: 'Month End'})
-                                            .addOption({value: '7', title: 'Year End'})
+                                            .addOption({value: JUMP_TO.UNDEF, title: 'Jump To'})
+                                            .addOption({value: JUMP_TO.TODAY, title: 'Today'})
+                                            .addOption({value: JUMP_TO.YESTERDAY, title: 'Yesterday'})
+                                            .addOption({value: JUMP_TO.TOMORROW, title: 'Tomorrow'})
+                                            .addOption({value: JUMP_TO.WEEK_START, title: 'Week Start'})
+                                            .addOption({value: JUMP_TO.WEEK_END, title: 'Week End'})
+                                            .addOption({value: JUMP_TO.MONTH_START, title: 'Month Start'})
+                                            .addOption({value: JUMP_TO.MONTH_END, title: 'Month End'})
+                                            .addOption({value: JUMP_TO.YEAR_START, title: 'Year Start'})
+                                            .addOption({value: JUMP_TO.YEAR_END, title: 'Year End'})
+                                        
+                                        b.on('change', (event) => {
+                                            // @ts-ignore
+                                            this.jump(1, event.target.value)
+                                        })
                                     })
                             })
                             .addChild('div', b => {
@@ -119,14 +141,21 @@ export class TimeSpanPicker extends DefaultDialog {
                                     })
                                     .addChild('select', b => {
                                         b
-                                            .addOption({value: '-1', title: 'Jump To'})
-                                            .addOption({value: '1', title: 'Today'})
-                                            .addOption({value: '2', title: 'Yesterday'})
-                                            .addOption({value: '3', title: 'Week Start'})
-                                            .addOption({value: '4', title: 'Month Start'})
-                                            .addOption({value: '5', title: 'Week End'})
-                                            .addOption({value: '6', title: 'Month End'})
-                                            .addOption({value: '7', title: 'Year End'})
+                                            .addOption({value: JUMP_TO.UNDEF, title: 'Jump To'})
+                                            .addOption({value: JUMP_TO.TODAY, title: 'Today'})
+                                            .addOption({value: JUMP_TO.YESTERDAY, title: 'Yesterday'})
+                                            .addOption({value: JUMP_TO.TOMORROW, title: 'Tomorrow'})
+                                            .addOption({value: JUMP_TO.WEEK_START, title: 'Week Start'})
+                                            .addOption({value: JUMP_TO.WEEK_END, title: 'Week End'})
+                                            .addOption({value: JUMP_TO.MONTH_START, title: 'Month Start'})
+                                            .addOption({value: JUMP_TO.MONTH_END, title: 'Month End'})
+                                            .addOption({value: JUMP_TO.YEAR_START, title: 'Year Start'})
+                                            .addOption({value: JUMP_TO.YEAR_END, title: 'Year End'})
+
+                                        b.on('change', (event) => {
+                                            // @ts-ignore
+                                            this.jump(2, event.target.value)
+                                        })
                                     })
                             })
                             .addChild('div', b => {
@@ -144,6 +173,57 @@ export class TimeSpanPicker extends DefaultDialog {
         
     }
     
+    jump(cal: number, to: JUMP_TO){
+        let target = cal === 1 ? 'from' : 'to'
+        switch (to) {
+            case JUMP_TO.TODAY: {
+                this[target] = new Date()
+                break
+            }
+            case JUMP_TO.YESTERDAY: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1)
+                break
+            }
+            case JUMP_TO.TOMORROW: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1)
+                break
+            }
+            case JUMP_TO.WEEK_START: {
+                const curr = new Date()
+                this[target] = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
+                break
+            }
+            case JUMP_TO.WEEK_END: {
+                const curr = new Date()
+                this[target] = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
+                break
+            }
+            case JUMP_TO.MONTH_START: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), curr.getMonth(), 1)
+                break
+            }
+            case JUMP_TO.MONTH_END: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+                break
+            }
+            case JUMP_TO.YEAR_START: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), 0, 1)
+                break
+            }
+            case JUMP_TO.YEAR_END: {
+                const curr = new Date()
+                this[target] = new Date(curr.getFullYear(), 12, 0)
+                break
+            }
+        }
+        this.represent()
+    }
+    
     represent(){
         console.log(this.weekStart, this.from, this.to)
         this.calendar1.setDate(this.from)
@@ -159,12 +239,21 @@ export class TimeSpanPicker extends DefaultDialog {
                 break
             }
             case PRE_SELECT.LAST_WEEK: {
+                const curr = new Date()
+                this.to = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+                this.from = new Date(this.to.getFullYear(), this.to.getMonth(), this.to.getDate() - 7 + this.to.getDay() - 1)
                 break
             }
             case PRE_SELECT.THIS_MONTH: {
                 const curr = new Date()
                 this.from = new Date(curr.getFullYear(), curr.getMonth(), 1)
                 this.to = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+                break
+            }
+            case PRE_SELECT.FIRST_MONTH: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 0, 1)
+                this.to = new Date(curr.getFullYear(), 1, 0)
                 break
             }
             case PRE_SELECT.LAST_MONTH: {
