@@ -5,6 +5,7 @@ import { domel } from '../utils/dom_elem_builder';
 
 export interface TimeSpanPickerOptions {
     weekStart?: 0,
+    yearRange?: string;
     title?: string,
     submitButtonText?: string,
     cancelButtonText?: string,
@@ -48,6 +49,7 @@ export class TimeSpanPicker extends DefaultDialog {
     protected from: Date
     protected to: Date
     protected weekStart: number
+    protected yearRange?: string;
     
     constructor(options: TimeSpanPickerOptions) {
         super({
@@ -67,14 +69,18 @@ export class TimeSpanPicker extends DefaultDialog {
                 }
             }
         });
+        
+        this.yearRange = options.yearRange
         this.weekStart = options.weekStart || DEFAULT_WEEK_START
         this.bodyElement.append( this.drawDialog() )
 
         this.calendar1.render()
         this.calendar2.render()
 
-        this.calendar1.setDate(new Date())
-        this.calendar2.setDate(new Date())
+        this.from = new Date()
+        this.to = new Date()
+
+        this.represent()        
     }
     
     drawDialog(){
@@ -121,13 +127,19 @@ export class TimeSpanPicker extends DefaultDialog {
                                         
                                         b.on('change', (event) => {
                                             // @ts-ignore
-                                            this.jump(1, event.target.value)
+                                            this.jump(1, event.target.value, event.target)
                                         })
                                     })
                             })
                             .addChild('div', b => {
                                 b.addClass('tsp__calendar')
-                                this.calendar1 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
+                                this.calendar1 = new DefaultCalendar(b.toDOM(), {
+                                    yearRange: this.yearRange,
+                                    showDateTimeInput: true,
+                                    onDateChanged: (date?: Date) => {
+                                        if (date) this.from = date
+                                    }
+                                })
                             })
                     })
                     .addChild('div', b => {
@@ -154,13 +166,19 @@ export class TimeSpanPicker extends DefaultDialog {
 
                                         b.on('change', (event) => {
                                             // @ts-ignore
-                                            this.jump(2, event.target.value)
+                                            this.jump(2, event.target.value, event.target)
                                         })
                                     })
                             })
                             .addChild('div', b => {
                                 b.addClass('tsp__calendar')
-                                this.calendar2 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
+                                this.calendar2 = new DefaultCalendar(b.toDOM(), {
+                                    yearRange: this.yearRange,
+                                    showDateTimeInput: true,
+                                    onDateChanged: (date: Date) => {
+                                        if (date) this.to = date
+                                    }
+                                })
                             })
                     })
             })
@@ -173,7 +191,7 @@ export class TimeSpanPicker extends DefaultDialog {
         
     }
     
-    jump(cal: number, to: JUMP_TO){
+    jump(cal: number, to: JUMP_TO, select: any){
         let target = cal === 1 ? 'from' : 'to'
         switch (to) {
             case JUMP_TO.TODAY: {
@@ -221,6 +239,7 @@ export class TimeSpanPicker extends DefaultDialog {
                 break
             }
         }
+        select.value = JUMP_TO.UNDEF
         this.represent()
     }
     
@@ -296,4 +315,4 @@ export class TimeSpanPicker extends DefaultDialog {
     }
 }
 
-export const showTimeSpanPicker = (options: TimeSpanPickerOptions) => new TimeSpanPicker(options).open()
+export const showTimeSpanPicker = (options?: TimeSpanPickerOptions) => new TimeSpanPicker(options).open()
