@@ -14,6 +14,7 @@
         padding-right: 10px;
         display: flex;
         flex-flow: column;
+        /*justify-content: space-between;*/
     }
 
         .tsp__button {
@@ -28,9 +29,9 @@
             vertical-align: middle;
             user-select: none;
             border: 1px solid transparent;
-            padding: 0 12px;
+            padding: 4px 12px;
             line-height: 1.2;
-            height: 24px;
+            /*height: 24px;*/
             transition: all .15s ease-in-out;
             cursor: pointer;
             outline: none;
@@ -68,6 +69,10 @@
                 flex-flow: row nowrap;
             }
 
+                .tsp__label label {
+                    font-weight: bold;
+                }
+                
                 .tsp__label select {
                     margin-left: auto;
                     border-color: var(--tsp-border-color);
@@ -76,12 +81,63 @@
         
         .tsp__calendar {
             margin: 10px 0;
+            width: 230px;
         }
-        
-        .tsp__input {
-            
-        }
-            .tsp__input input{
-                width: 100%;
-                border: 1px solid var(--tsp-border-color);
-            }
+
+.tsp__calendar .kdtp-cal-header input {
+    /*font-size: 14px!important;*/
+    border: 1px solid var(--tsp-border-color)!important; 
+}            
+
+.tsp__calendar {
+    display: flex;
+    flex-flow: column;
+}
+
+.tsp__calendar .kdtp-cal-body {
+    margin: 10px 0!important;
+}
+.tsp__calendar .kdtp-cal-header {
+    /*order: 3!important;*/
+    margin-bottom: 10px!important;
+}
+
+.tsp__calendar .kdtp-cal-nav-selectors {
+    font-size: 16px!important;
+}
+
+.tsp__calendar .kdtp-cal-body {
+    grid-gap: 2px!important;
+    padding: 0!important;
+}
+
+.tsp__calendar .kdtp-cal-nav-prev, .tsp__calendar .kdtp-cal-nav-next {
+    width: auto!important;
+    font-size: 2em!important;
+} 
+
+.tsp__calendar .kdtp-cal-body {
+    border: 1px solid var(--tsp-border-color);
+    padding: 5px!important;
+}
+
+.tsp__calendar .kdtp-cal-day {
+    border: 1px solid var(--tsp-border-color);
+    font-size: 14px;
+    width: 30px;
+    height: 30px;
+}
+
+.tsp__calendar .kdtp-cal-day-selected {
+    background: #0077cc!important;
+    color: #ffffff!important;
+}
+
+.tsp__calendar .kdtp-cal-day-current {
+    background: #3ab93c;
+    color: #ffffff;
+}
+
+.kdlg-footer {
+    border-top: 1px solid var(--tsp-border-color);
+}

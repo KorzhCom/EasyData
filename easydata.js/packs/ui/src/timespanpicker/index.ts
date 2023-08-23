@@ -23,7 +23,7 @@ export enum PRE_SELECT {
     QUARTER_4,
 }
 
-const DEFAULT_WEEK_START = 1
+const DEFAULT_WEEK_START = 0
 
 export class TimeSpanPicker extends DefaultDialog {
     protected layout: string | HTMLElement
@@ -104,16 +104,8 @@ export class TimeSpanPicker extends DefaultDialog {
                                     })
                             })
                             .addChild('div', b => {
-                                b
-                                    .addClass('tsp__calendar')
-                                    this.calendar1 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
-                            })
-                            .addChild('div', b => {
-                                b
-                                    .addClass('tsp__input')
-                                    .addChild('input', b => {
-                                        this.input1 = b.type('text').name('').toDOM()
-                                    })
+                                b.addClass('tsp__calendar')
+                                this.calendar1 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
                             })
                     })
                     .addChild('div', b => {
@@ -138,18 +130,8 @@ export class TimeSpanPicker extends DefaultDialog {
                                     })
                             })
                             .addChild('div', b => {
-                                b
-                                    .addClass('tsp__calendar')
-                                    .addChild('div', b => {
-                                        this.calendar2 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
-                                    })
-                            })
-                            .addChild('div', b => {
-                                b
-                                    .addClass('tsp__input')
-                                    .addChild('input', b => {
-                                        this.input2 = b.type('text').name('').toDOM()
-                                    })
+                                b.addClass('tsp__calendar')
+                                this.calendar2 = new DefaultCalendar(b.toDOM(), {showDateTimeInput: true})
                             })
                     })
             })
@@ -164,28 +146,65 @@ export class TimeSpanPicker extends DefaultDialog {
     
     represent(){
         console.log(this.weekStart, this.from, this.to)
+        this.calendar1.setDate(this.from)
+        this.calendar2.setDate(this.to)
     }
     
     select(interval: PRE_SELECT){
-        
         switch (interval) {
             case PRE_SELECT.THIS_WEEK: {
                 const curr = new Date()
                 this.from = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
                 this.to = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
-                this.represent()
                 break
             }
             case PRE_SELECT.LAST_WEEK: {
-                const curr = new Date
-                const first = curr.getDate()
-                const last = first + 6
-                this.from = new Date(curr.setDate(first))
-                this.from = new Date(curr.setDate(last))
-                this.represent()
+                break
+            }
+            case PRE_SELECT.THIS_MONTH: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), curr.getMonth(), 1)
+                this.to = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+                break
+            }
+            case PRE_SELECT.LAST_MONTH: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 11, 1)
+                this.to = new Date(curr.getFullYear(), 12, 0)
+                break
+            }
+            case PRE_SELECT.THIS_YEAR: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 0, 1)
+                this.to = new Date(curr.getFullYear(), 12, 0)
+                break
+            }
+            case PRE_SELECT.QUARTER_1: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 0, 1)
+                this.to = new Date(curr.getFullYear(), 3, 0)
+                break
+            }
+            case PRE_SELECT.QUARTER_2: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 3, 1)
+                this.to = new Date(curr.getFullYear(), 6, 0)
+                break
+            }
+            case PRE_SELECT.QUARTER_3: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 6, 1)
+                this.to = new Date(curr.getFullYear(), 9, 0)
+                break
+            }
+            case PRE_SELECT.QUARTER_4: {
+                const curr = new Date()
+                this.from = new Date(curr.getFullYear(), 9, 1)
+                this.to = new Date(curr.getFullYear(), 12, 0)
                 break
             }
         }
+        this.represent()
     }
 }
 
