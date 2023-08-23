@@ -225,7 +225,6 @@ export class TimeSpanPicker extends DefaultDialog {
     }
     
     represent(){
-        console.log(this.weekStart, this.from, this.to)
         this.calendar1.setDate(this.from)
         this.calendar2.setDate(this.to)
     }
