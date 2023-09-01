@@ -10,6 +10,22 @@ globalThis.showPicker = () => {
         title: "Select Period",
         submitButtonText: "Ok",
         cancelButtonText: "Cancel",
-        onSubmit: ()=>{}
+        onSubmit: (start: Date, finish: Date)=> alert(`
+            You select interval with\n
+            Start: ${start}\n
+            Finish: ${finish}
+        `)
+    });
+}
+
+globalThis.showPickerWithPreset = () => {
+    showTimeSpanPicker({
+        start: new Date(2023, 7, 11),
+        finish: new Date(2023, 7, 21),
+        onSubmit: (start: Date, finish: Date)=> alert(`
+            You select interval with\n
+            Start: ${start}\n
+            Finish: ${finish}
+        `)
     });
 }
