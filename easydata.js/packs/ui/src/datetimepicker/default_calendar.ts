@@ -285,6 +285,16 @@ export class DefaultCalendar extends Calendar {
             if (dayOfWeek == 0 || dayOfWeek == 6) {
                 builder.addClass(`${this.cssPrefix}-weekend`);
             }
+            
+            if (typeof this.options.onDrawDay === "function") {
+                this.options.onDrawDay.apply(
+                    builder.toDOM(), 
+                    [
+                        builder.toDOM(), 
+                        new Date(this.selectedYear, this.selectedMonth, day)
+                    ]
+                )
+            }
         }
 
         // Add empty cells after last day

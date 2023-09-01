@@ -4,6 +4,8 @@ import {DefaultCalendar} from "../datetimepicker/default_calendar"
 import { domel } from '../utils/dom_elem_builder';
 
 export interface TimeSpanPickerOptions {
+    start?: Date,
+    finish?: Date,
     weekStart?: 0,
     yearRange?: string;
     title?: string,
@@ -76,11 +78,19 @@ export class TimeSpanPicker extends DefaultDialog {
 
         this.calendar1.render()
         this.calendar2.render()
-
-        this.from = new Date()
-        this.to = new Date()
+        
+        this.from = this.alignDate(options.start ? options.start : new Date())
+        this.to = this.alignDate(options.finish && this.alignDate(options.finish) > this.from ? options.finish : new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 1))
 
         this.represent()        
+    }
+    
+    alignDate(date: Date){
+        date.setHours(0)
+        date.setMinutes(0)
+        date.setSeconds(0)
+        date.setMilliseconds(0)
+        return date
     }
     
     drawDialog(){
@@ -137,7 +147,21 @@ export class TimeSpanPicker extends DefaultDialog {
                                     yearRange: this.yearRange,
                                     showDateTimeInput: true,
                                     onDateChanged: (date?: Date) => {
-                                        if (date) this.from = date
+                                        if (this.alignDate(date) < this.to) {
+                                            this.from = this.alignDate(date)
+                                            console.log(this.from)
+                                        } else {
+                                            this.calendar1.setDate(this.from)
+                                        }
+                                        this.represent()
+                                    },
+                                    onDrawDay: (cell, date) => {
+                                        console.log(date, this.from)
+                                        if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
+                                            cell.classList.add("day-in-range")
+                                        } else {
+                                            cell.classList.remove("day-in-range")
+                                        }
                                     }
                                 })
                             })
@@ -176,7 +200,20 @@ export class TimeSpanPicker extends DefaultDialog {
                                     yearRange: this.yearRange,
                                     showDateTimeInput: true,
                                     onDateChanged: (date: Date) => {
-                                        if (date) this.to = date
+                                        if (this.alignDate(date) > this.from) {
+                                            this.to = this.alignDate(date)
+                                        } else {
+                                            this.calendar2.setDate(this.to)
+                                        }
+                                        this.represent()
+                                    },
+                                    onDrawDay: (cell, date) => {
+                                        console.log(date)
+                                        if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
+                                            cell.classList.add("day-in-range")
+                                        } else {
+                                            cell.classList.remove("day-in-range")
+                                        }
                                     }
                                 })
                             })
@@ -193,53 +230,62 @@ export class TimeSpanPicker extends DefaultDialog {
     
     jump(cal: number, to: JUMP_TO, select: any){
         let target = cal === 1 ? 'from' : 'to'
+        let jumpTo: Date
+        const curr = new Date()
+
         switch (to) {
             case JUMP_TO.TODAY: {
-                this[target] = new Date()
+                jumpTo = curr
                 break
             }
             case JUMP_TO.YESTERDAY: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1)
+                jumpTo = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1)
                 break
             }
             case JUMP_TO.TOMORROW: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1)
+                jumpTo = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1)
                 break
             }
             case JUMP_TO.WEEK_START: {
-                const curr = new Date()
-                this[target] = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
+                jumpTo = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
                 break
             }
             case JUMP_TO.WEEK_END: {
-                const curr = new Date()
-                this[target] = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
+                jumpTo = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
                 break
             }
             case JUMP_TO.MONTH_START: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), curr.getMonth(), 1)
+                jumpTo = new Date(curr.getFullYear(), curr.getMonth(), 1)
                 break
             }
             case JUMP_TO.MONTH_END: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
+                jumpTo = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
                 break
             }
             case JUMP_TO.YEAR_START: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), 0, 1)
+                jumpTo = new Date(curr.getFullYear(), 0, 1)
                 break
             }
             case JUMP_TO.YEAR_END: {
-                const curr = new Date()
-                this[target] = new Date(curr.getFullYear(), 12, 0)
+                jumpTo = new Date(curr.getFullYear(), 12, 0)
                 break
             }
         }
+        
+        jumpTo = this.alignDate(jumpTo)
+        
         select.value = JUMP_TO.UNDEF
+        
+        if (target === "from") {
+            if (jumpTo < this.to) {
+                this[target] = jumpTo
+            }
+        } else {
+            if (jumpTo > this.from) {
+                this[target] = jumpTo
+            }
+        }        
+        
         this.represent()
     }
     

@@ -129,13 +129,17 @@
 }
 
 .tsp__calendar .kdtp-cal-day-selected {
-    background: #0077cc!important;
-    color: #ffffff!important;
+    /*background: #0077cc!important;*/
+    /*color: #ffffff!important;*/
 }
 
 .tsp__calendar .kdtp-cal-day-current {
     background: #3ab93c;
     color: #ffffff;
+}
+
+.tsp__calendar .day-in-range {
+    background: #c6e3ff!important;
 }
 
 .kdlg-footer {
