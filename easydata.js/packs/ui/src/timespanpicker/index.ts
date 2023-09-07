@@ -67,7 +67,7 @@ export class TimeSpanPicker extends DefaultDialog {
             },
             onSubmit: (dlg) => {
                 if (typeof options.onSubmit === "function") {
-                    options.onSubmit.apply(dlg, [this.from, this.to])
+                    options.onSubmit.apply(dlg, [this.result(this.from), this.result(this.to)])
                 }
             }
         });
@@ -147,16 +147,14 @@ export class TimeSpanPicker extends DefaultDialog {
                                     yearRange: this.yearRange,
                                     showDateTimeInput: true,
                                     onDateChanged: (date?: Date) => {
-                                        if (this.alignDate(date) < this.to) {
-                                            this.from = this.alignDate(date)
-                                            console.log(this.from)
-                                        } else {
-                                            this.calendar1.setDate(this.from)
+                                        this.from = this.alignDate(date)
+                                        this.calendar1.setDate(this.from)
+                                        if (this.to < this.from) {
+                                            this.to = this.from
                                         }
                                         this.represent()
                                     },
                                     onDrawDay: (cell, date) => {
-                                        console.log(date, this.from)
                                         if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
                                             cell.classList.add("day-in-range")
                                         } else {
@@ -200,7 +198,7 @@ export class TimeSpanPicker extends DefaultDialog {
                                     yearRange: this.yearRange,
                                     showDateTimeInput: true,
                                     onDateChanged: (date: Date) => {
-                                        if (this.alignDate(date) > this.from) {
+                                        if (this.alignDate(date) >= this.from) {
                                             this.to = this.alignDate(date)
                                         } else {
                                             this.calendar2.setDate(this.to)
@@ -208,7 +206,6 @@ export class TimeSpanPicker extends DefaultDialog {
                                         this.represent()
                                     },
                                     onDrawDay: (cell, date) => {
-                                        console.log(date)
                                         if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
                                             cell.classList.add("day-in-range")
                                         } else {
@@ -277,11 +274,12 @@ export class TimeSpanPicker extends DefaultDialog {
         select.value = JUMP_TO.UNDEF
         
         if (target === "from") {
-            if (jumpTo < this.to) {
-                this[target] = jumpTo
+            this.from = jumpTo
+            if (this.to < this.from) {
+                this.to = this.from
             }
         } else {
-            if (jumpTo > this.from) {
+            if (jumpTo >= this.from) {
                 this[target] = jumpTo
             }
         }        
@@ -358,6 +356,29 @@ export class TimeSpanPicker extends DefaultDialog {
             }
         }
         this.represent()
+    }
+    
+    result(date: Date){
+        const curr = this.alignDate(new Date())
+        const constants = {
+            "Today": this.alignDate(new Date()),
+            "Yesterday": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1)),
+            "Tomorrow": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1)),
+            "FirstDayOfMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), 1)),
+            "LastDayOfMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth()+1, 0)),
+            "FirstDayOfWeek": this.alignDate(new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))),
+            "FirstDayOfYear": this.alignDate(new Date(curr.getFullYear(), 0, 1)),
+            "FirstDayOfNextWeek": this.alignDate(new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart + 7))),
+            "FirstDayOfNextMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth() + 1, 1)),
+            "FirstDayOfNextYear": this.alignDate(new Date(curr.getFullYear() + 1, 0, 1)),
+        }
+        for(let k in constants) {
+            console.log(constants[k], date)
+            if (constants[k].getTime() === date.getTime()) {
+                return `\${{${k}}}`
+            }
+        }
+        return date.toDateString()
     }
 }
 
