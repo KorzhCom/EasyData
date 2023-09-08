@@ -1,8 +1,7 @@
-import {DialogOptions} from "../dialogs/dialog_service"
 import {DefaultDialog} from "../dialogs/default_dialog_service"
 import {DefaultCalendar} from "../datetimepicker/default_calendar"
 import { domel } from '../utils/dom_elem_builder';
-
+import { i18n, utils } from '@easydata/core';
 export interface TimeSpanPickerOptions {
     start?: Date,
     finish?: Date,
@@ -296,14 +295,14 @@ export class TimeSpanPicker extends DefaultDialog {
         switch (interval) {
             case PRE_SELECT.THIS_WEEK: {
                 const curr = new Date()
-                this.from = new Date(curr.setDate(curr.getDate() - curr.getDay()  + this.weekStart))
-                this.to = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart))
+                this.from = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - curr.getDay())
+                this.to = new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 6)
                 break
             }
             case PRE_SELECT.LAST_WEEK: {
                 const curr = new Date()
-                this.to = new Date(curr.getFullYear(), curr.getMonth() + 1, 0)
-                this.from = new Date(this.to.getFullYear(), this.to.getMonth(), this.to.getDate() - 7 + this.to.getDay() - 1)
+                this.from = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - curr.getDay() - 7)
+                this.to = new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 6)
                 break
             }
             case PRE_SELECT.THIS_MONTH: {
@@ -320,8 +319,8 @@ export class TimeSpanPicker extends DefaultDialog {
             }
             case PRE_SELECT.LAST_MONTH: {
                 const curr = new Date()
-                this.from = new Date(curr.getFullYear(), 11, 1)
-                this.to = new Date(curr.getFullYear(), 12, 0)
+                this.from = new Date(curr.getFullYear(), curr.getMonth() - 1, 1)
+                this.to = new Date(curr.getFullYear(), curr.getMonth(), 0)
                 break
             }
             case PRE_SELECT.THIS_YEAR: {
@@ -378,7 +377,7 @@ export class TimeSpanPicker extends DefaultDialog {
                 return `\${{${k}}}`
             }
         }
-        return date.toDateString()
+        return utils.dateTimeToStr(date, i18n.getLocaleSettings().editDateFormat)
     }
 }
 
