@@ -15,7 +15,7 @@ export class TimeValue {
         }
     }
 
-    public asTime(): Date {
+    public asTime(settings?: TimeSettings): Date {
         if (this.date) {
             return this.date;
         }
@@ -34,9 +34,9 @@ export interface TimeSettings {
 }
 
 export class SpecialDatesResolver {
-    public getDateByName(name: string) {
+    public getDateByName(name: string, settings?: TimeSettings) {
         if (this[name]) {
-            return this[name]();
+            return this[name](settings);
         }
         else {
             return undefined;
