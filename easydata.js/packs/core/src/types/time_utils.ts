@@ -1,27 +1,31 @@
 
 /**
- * Represents a date value that can return either a date itself or a special date name
+ * Represents a date/time value that can return either a date itself or a special date name
  */
-export class DateValue {
+export class TimeValue {
     private date?: Date;
-    private name?: string;
+    private _name?: string;
 
     constructor(dt : Date | string) {
         if (dt instanceof Date) {   
             this.date = dt;
         }
         else {
-            this.name = dt;
+            this._name = dt;
         }
     }
 
-    public AsDate(): Date {
+    public asTime(): Date {
         if (this.date) {
             return this.date;
         }
         else {
-            specialDatesResolver.getDateByName(this.name);
+            specialDatesResolver.getDateByName(this._name);
         }
+    }
+
+    get name() : string {
+        return this.name;
     }
 }
 
