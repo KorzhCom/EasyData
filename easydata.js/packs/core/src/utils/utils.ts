@@ -349,29 +349,26 @@ export namespace utils {
             prfx += "-";
         }
 
-        //adding 2 random symbols
-        var randValue = strf.repeatString(' ', 2);
-
-        randValue = replaceAtString(randValue, 0, symbols[getRandomInt(0, symbols.length)]);
-        randValue = replaceAtString(randValue, 1, symbols[getRandomInt(0, symbols.length)]);
+        //adding 3 random symbols
+        var randValue = symbols[getRandomInt(0, symbols.length)] +  
+                        symbols[getRandomInt(0, symbols.length)] +
+                        symbols[getRandomInt(0, symbols.length)];
         
-        //generating main ID part (64-base representation of the current value of the time ticks)
-        let ticksNum64 = intToNum36(getNowTicks() - magicTicks);
-        return prfx + randValue + ticksNum64;
+        //generating main ID part (36-base representation of the current value of the time ticks)
+        let ticksNum36 = intToNumBase(getNowTicks() - magicTicks);
+        return prfx + randValue + ticksNum36;
     }
 
-    function intToNum36(value: number) {
-        const targetBase = 36;
-        let i = 14;
-        var buffer = strf.repeatString(' ', i);
+    function intToNumBase(value: number, targetBase = 36) {
+        var buffer = '';
         var rest = value;
         do {
-            buffer = replaceAtString(buffer, i--, symbols[rest % targetBase]);
+            buffer = symbols[rest % targetBase] + buffer;
             rest = Math.floor(rest /= targetBase);
         }
         while (rest > 0);
 
-        return strf.reverseString(buffer.trim());
+        return buffer;
     }
 
     function squeezeMoniker(str: string, maxlen: number): string {
