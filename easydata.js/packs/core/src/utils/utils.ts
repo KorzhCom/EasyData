@@ -352,9 +352,8 @@ export namespace utils {
         //adding 2 random symbols
         var randValue = strf.repeatString(' ', 2);
 
-        const maxSymbolIndex = symbols.length - 1;
-        randValue = replaceAtString(randValue, 0, symbols[getRandomInt(0, maxSymbolIndex)]);
-        randValue = replaceAtString(randValue, 1, symbols[getRandomInt(0, maxSymbolIndex)]);
+        randValue = replaceAtString(randValue, 0, symbols[getRandomInt(0, symbols.length)]);
+        randValue = replaceAtString(randValue, 1, symbols[getRandomInt(0, symbols.length)]);
         
         //generating main ID part (64-base representation of the current value of the time ticks)
         let ticksNum64 = intToNum36(getNowTicks() - magicTicks);
