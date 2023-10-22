@@ -350,7 +350,7 @@ export namespace utils {
         }
 
         //adding 2 random symbols
-        var randValue = strf.repeatString("", 2);;
+        var randValue = strf.repeatString(' ', 2);
 
         const maxSymbolIndex = symbols.length - 1;
         randValue = replaceAtString(randValue, 0, symbols[getRandomInt(0, maxSymbolIndex)]);
@@ -364,7 +364,7 @@ export namespace utils {
     function intToNum36(value: number) {
         const targetBase = 36;
         let i = 14;
-        var buffer = strf.repeatString("", i);
+        var buffer = strf.repeatString(' ', i);
         var rest = value;
         do {
             buffer = replaceAtString(buffer, i--, symbols[rest % targetBase]);
@@ -415,8 +415,8 @@ export namespace utils {
         }
     }
 
-    function replaceAtString(str: string, index: number, value: string): string {
-        return str.substr(0, index) + value + str.substr(index + value.length);
+    function replaceAtString(str: string, index: number, replacement: string): string {
+        return str.substring(0, index) + replacement + str.substring(index + replacement.length);
     }
 
     function getRandomInt(min, max) {
