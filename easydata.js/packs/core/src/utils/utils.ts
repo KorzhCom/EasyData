@@ -350,13 +350,15 @@ export namespace utils {
         }
 
         //adding 3 random symbols
-        var randValue = symbols[getRandomInt(0, symbols.length)] +  
+        var randCharPart = symbols[getRandomInt(0, symbols.length)] +  
                         symbols[getRandomInt(0, symbols.length)] +
                         symbols[getRandomInt(0, symbols.length)];
         
-        //generating main ID part (36-base representation of the current value of the time ticks)
-        let ticksNum36 = intToNumBase(getNowTicks() - magicTicks);
-        return prfx + randValue + ticksNum36;
+        var randInt = getRandomInt(0, 10000);
+        //generating main ID part 
+        //it's a 36-base representation of some random number based on current value of ticks
+        let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+        return prfx + randCharPart + ticksNum36;
     }
 
     function intToNumBase(value: number, targetBase = 36) {
