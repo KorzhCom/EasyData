@@ -349,30 +349,28 @@ export namespace utils {
             prfx += "-";
         }
 
-        //adding 2 random symbols
-        var randValue = strf.repeatString("", 2);;
-
-        const maxSymbolIndex = symbols.length - 1;
-        randValue = replaceAtString(randValue, 0, symbols[getRandomInt(0, maxSymbolIndex)]);
-        randValue = replaceAtString(randValue, 1, symbols[getRandomInt(0, maxSymbolIndex)]);
+        //adding 3 random symbols
+        var randCharPart = symbols[getRandomInt(0, symbols.length)] +  
+                        symbols[getRandomInt(0, symbols.length)] +
+                        symbols[getRandomInt(0, symbols.length)];
         
-        //generating main ID part (64-base representation of the current value of the time ticks)
-        let ticksNum64 = intToNum36(getNowTicks() - magicTicks);
-        return prfx + randValue + ticksNum64;
+        var randInt = getRandomInt(0, 10000);
+        //generating main ID part 
+        //it's a 36-base representation of some random number based on current value of ticks
+        let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+        return prfx + randCharPart + ticksNum36;
     }
 
-    function intToNum36(value: number) {
-        const targetBase = 36;
-        let i = 14;
-        var buffer = strf.repeatString("", i);
+    function intToNumBase(value: number, targetBase = 36) {
+        var buffer = '';
         var rest = value;
         do {
-            buffer = replaceAtString(buffer, i--, symbols[rest % targetBase]);
+            buffer = symbols[rest % targetBase] + buffer;
             rest = Math.floor(rest /= targetBase);
         }
         while (rest > 0);
 
-        return strf.reverseString(buffer.trim());
+        return buffer;
     }
 
     function squeezeMoniker(str: string, maxlen: number): string {
@@ -415,8 +413,8 @@ export namespace utils {
         }
     }
 
-    function replaceAtString(str: string, index: number, value: string): string {
-        return str.substr(0, index) + value + str.substr(index + value.length);
+    function replaceAtString(str: string, index: number, replacement: string): string {
+        return str.substring(0, index) + replacement + str.substring(index + replacement.length);
     }
 
     function getRandomInt(min, max) {
