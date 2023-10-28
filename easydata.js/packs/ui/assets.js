@@ -1,0 +1,8 @@
+import './assets/css/easy-forms/buttons.css'
+import './assets/css/easy-forms/columns.css'
+import './assets/css/easy-forms/controls.css'
+import './assets/css/easy-forms/forms.css'
+import './assets/css/easy-forms/datetimepicker.css'
+import './assets/css/easy-forms/timespanpicker.css'
+import './assets/css/easy-dialog.css'
+import './assets/css/easy-grid.css'

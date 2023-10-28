@@ -20,7 +20,9 @@ export namespace browserUtils {
     }
 
     export function IsEdge(): boolean {
-        return !IsIE() && eval('!!window.StyleMedia');
+        const ua = window.navigator.userAgent;
+
+        return !IsIE() && ua.includes('Edge/')
     }
 
     export function IsFirefox(): boolean {

@@ -6,6 +6,9 @@
     "main": "./dist/bundles/easydata.ui.js",
     "module": "./dist/lib/public_api.js",
     "scripts": {
+        "clear": "shx rm -rf dist2/*",
+        "build": "npm run clear && npm install && rollup --config",
+        "docs": "typedoc src/public_api.ts --out ./docs2",
         "clean": "rimraf ./dist",
         "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
         "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production",
@@ -36,30 +39,22 @@
         "@easydata/core": "^1.4.1"
     },
     "devDependencies": {
-        "@olton/typedoc-webpack-plugin": "^0.1.0",
-        "@types/jasmine": "^4.3.2",
-        "@types/node": "20.2.5",
-        "autoprefixer": "^10.4.14",
-        "css-loader": "^6.7.4",
-        "es6-promise": "^4.2.8",
-        "filemanager-webpack-plugin": "^8.0.0",
-        "jasmine": "^5.0.0",
-        "jasmine-ts-console-reporter": "^3.1.1",
-        "jsdom": "^22.1.0",
-        "mini-css-extract-plugin": "^2.7.6",
-        "nodemon": "2.0.22",
-        "optimize-css-assets-webpack-plugin": "6.0.1",
-        "postcss-loader": "^7.3.1",
-        "rimraf": "5.0.1",
-        "style-loader": "^3.3.3",
-        "terser-webpack-plugin": "^5.3.9",
-        "ts-loader": "^9.4.3",
-        "ts-node": "^10.9.1",
-        "typedoc": "^0.24.7",
-        "typescript": "5.0.*",
-        "typings-for-css-modules-loader": "1.7.0",
-        "webpack": "^5.84.1",
-        "webpack-cli": "^5.1.1"
+        "@olton/rollup-plugin-typedoc": "^0.1.3",
+        "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-replace": "^5.0.4",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^11.1.5",
+        "autoprefixer": "^10.4.16",
+        "nodemon": "3.0.1",
+        "rollup": "^4.1.5",
+        "rollup-plugin-no-emit": "^1.1.1",
+        "rollup-plugin-postcss": "^4.0.2",
+        "rollup-plugin-progress": "^1.1.2",
+        "shx": "^0.3.4",
+        "tslib": "^2.6.2",
+        "typedoc": "^0.25.2",
+        "typescript": "^5.2.2"
     },
     "browserslist": [
         "defaults"
@@ -68,7 +63,7 @@
         "watch": [
             "src"
         ],
-        "delay": "1000",
+        "delay": 1000,
         "ext": "ts,js",
         "exec": "tsc"
     },

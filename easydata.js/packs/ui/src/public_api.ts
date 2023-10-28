@@ -33,4 +33,4 @@ import { DefaultDialogService } from './dialogs/default_dialog_service'
 const dialogs = new DefaultDialogService();
 export { dialogs };
 
-export * from './timespanpicker'
+export * from './timespanpicker/index'
