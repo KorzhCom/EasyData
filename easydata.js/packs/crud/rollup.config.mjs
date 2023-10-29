@@ -1,14 +1,14 @@
 import {nodeResolve} from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
-import postcss from 'rollup-plugin-postcss'
-import autoprefixer from "autoprefixer"
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
 import typedoc from '@olton/rollup-plugin-typedoc'
-import noEmit from 'rollup-plugin-no-emit'
 import * as path from "path";
 import { fileURLToPath } from 'url';
+import noEmit from 'rollup-plugin-no-emit'
+import postcss from 'rollup-plugin-postcss'
+import autoprefixer from "autoprefixer"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +19,7 @@ const
 
 const banner = `
 /*!
- * EasyData.JS UI
+ * EasyData.JS CRUD
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  !*/
@@ -42,7 +42,7 @@ export default [
             }),
             commonjs(),
             typedoc({
-                json: '../../docs/easydata-ui.json',
+                json: '../../docs/easydata-crud.json',
                 out: './docs',
                 entryPoints: ['./src/**/*.ts'],
                 tsconfig: './tsconfig.json'
@@ -50,7 +50,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/bundles/easydata.ui.es.js',
+                file: './dist/bundles/easydata.crud.es.js',
                 format: 'es',
                 sourcemap,
                 banner,
@@ -59,7 +59,7 @@ export default [
                 ]
             },
             {
-                file: './dist/bundles/easydata.ui.cjs.js',
+                file: './dist/bundles/easydata.crud.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,
@@ -70,7 +70,7 @@ export default [
         ]
     },
     {
-        input: './assets/css/easy-forms.js',
+        input: './src/ed-view.js',
         plugins: [
             progress({
                 clearLine: true,
@@ -86,7 +86,7 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'easy-forms.js' === fileName
+                    return 'ed-view.js' === fileName
                 }
             }),
         ],
@@ -96,55 +96,27 @@ export default [
         }
     },
     {
-        input: './assets/css/easy-dialog.js',
+        input: './src/api-easydata.js',
         plugins: [
             progress({
                 clearLine: true,
             }),
-            postcss({
-                extract: true,
-                minimize: true,
-                use: ['less'],
-                sourceMap: sourcemap,
-                plugins: [
-                    autoprefixer(),
-                ]
+            nodeResolve({
+                browser: true
             }),
-            noEmit({
-                match(fileName, output) {
-                    return 'easy-dialog.js' === fileName
-                }
-            }),
+            commonjs(),
         ],
-        output: {
-            dir: './dist/assets/css',
-            banner,
-        }
-    },
-    {
-        input: './assets/css/easy-grid.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            postcss({
-                extract: true,
-                minimize: true,
-                use: ['less'],
-                sourceMap: sourcemap,
+        output: [
+            {
+                file: './dist/browser/easydata.js',
+                format: 'iife',
+                name: 'easydata',
+                sourcemap,
+                banner,
                 plugins: [
-                    autoprefixer(),
+                    terser(),
                 ]
-            }),
-            noEmit({
-                match(fileName, output) {
-                    return 'easy-grid.js' === fileName
-                }
-            }),
-        ],
-        output: {
-            dir: './dist/assets/css',
-            banner,
-        }
+            }
+        ]
     }
-];
+]

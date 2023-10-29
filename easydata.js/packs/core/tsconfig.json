@@ -13,14 +13,14 @@
 		"allowSyntheticDefaultImports": true,
 		"target": "es5",
 		"typeRoots": ["node_modules/@types"],
-		"lib": ["es2017", "dom"],
+		"lib": ["es2018", "dom"],
 		"baseUrl": ".",
 		"outDir": "./dist/lib"
 	  },
 	"include": [
 		"./src/**/*.ts"
 	],
-        "exclude": [
-            "node_modules"
-        ]
+	"exclude": [
+		"node_modules"
+	]
 }

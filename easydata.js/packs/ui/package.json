@@ -4,11 +4,11 @@
     "description": "EasyData.JS: DOM manipulation functions and UI widgets",
     "types": "./dist/bundles/lib/public_api.d.ts",
     "main": "./dist/bundles/easydata.ui.cjs.js",
-    "module": "./dist/bundles/easydata.ui.cjs.js",
+    "module": "./dist/bundles/easydata.ui.es.js",
     "scripts": {
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && npm install && rollup --config",
-        "docs": "typedoc src/public_api.ts --out ./docs2",
+        "docs": "typedoc src/public_api.ts --out ./docs",
         "watch": "nodemon"
     },
     "author": "Korzh.com",
@@ -37,7 +37,6 @@
         "@olton/rollup-plugin-typedoc": "^0.1.3",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
-        "@rollup/plugin-replace": "^5.0.4",
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^11.1.5",
         "autoprefixer": "^10.4.16",
