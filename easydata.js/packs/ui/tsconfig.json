@@ -15,7 +15,7 @@
 		"typeRoots": ["node_modules/@types"],
 		"lib": ["es2017", "dom"],
 		"baseUrl": ".",
-		"outDir": "./dist2/lib"
+		"outDir": "./dist/lib"
 	  },
 	"include": [
 		"./src/**/*.ts"

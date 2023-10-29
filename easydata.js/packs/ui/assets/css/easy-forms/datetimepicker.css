@@ -61,7 +61,6 @@
     -ms-grid-columns: minmax(1em, 1fr) 5px minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr) 0.5em minmax(1em, 1fr);
     grid-template-columns: repeat(7, minmax(1em, 1fr));
     grid-gap: 0.5em;
-    -webkit-box-sizing: border-box;
 	box-sizing: border-box;
     padding: 0 12px;
     -ms-grid-rows: 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr 0.5em 1fr;
@@ -266,13 +265,7 @@
 
 .kdtp-cal-header-input {
     width: 100%;
-    width: -moz-available;          /* WebKit-based browsers will ignore this. */
-    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-    width: fill-available;
     height: 100%;
-    height: -moz-available;          /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-    height: fill-available;
 
     font-size: 1em;
     padding: 2px 5px;

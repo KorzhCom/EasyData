@@ -43,14 +43,14 @@ export default [
             commonjs(),
             typedoc({
                 json: '../../../../docs/easydataui.json',
-                out: './docs2',
+                out: './docs',
                 entryPoints: ['./src/**/*.ts'],
                 tsconfig: './tsconfig.json'
             }),
         ],
         output: [
             {
-                file: './dist2/bundles/easydata.ui.es.js',
+                file: './dist/bundles/easydata.ui.es.js',
                 format: 'es',
                 sourcemap,
                 banner,
@@ -59,9 +59,8 @@ export default [
                 ]
             },
             {
-                file: './dist2/bundles/easydata.ui.cjs.js',
+                file: './dist/bundles/easydata.ui.cjs.js',
                 format: 'cjs',
-                name: 'easydataUI',
                 sourcemap,
                 banner,
                 plugins: [
@@ -69,7 +68,7 @@ export default [
                 ]
             },
             {
-                file: './dist2/bundles/easydata.ui.js',
+                file: './dist/bundles/easydata.ui.js',
                 format: 'iife',
                 name: 'easydataUI',
                 sourcemap,
@@ -81,13 +80,13 @@ export default [
         ]
     },
     {
-        input: ['./assets.js'],
+        input: './assets/css/easy-forms.js',
         plugins: [
             progress({
                 clearLine: true,
             }),
             postcss({
-                extract: 'easy-ui.css',
+                extract: true,
                 minimize: true,
                 use: ['less'],
                 sourceMap: sourcemap,
@@ -97,12 +96,64 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return fileName === 'assets.js'
+                    return 'easy-forms.js' === fileName
                 }
             }),
         ],
         output: {
-            dir: './dist2/assets/css',
+            dir: './dist/assets/css',
+            banner,
+        }
+    },
+    {
+        input: './assets/css/easy-dialog.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            postcss({
+                extract: true,
+                minimize: true,
+                use: ['less'],
+                sourceMap: sourcemap,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'easy-dialog.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            dir: './dist/assets/css',
+            banner,
+        }
+    },
+    {
+        input: './assets/css/easy-grid.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            postcss({
+                extract: true,
+                minimize: true,
+                use: ['less'],
+                sourceMap: sourcemap,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'easy-grid.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            dir: './dist/assets/css',
             banner,
         }
     }
