@@ -1,11 +1,10 @@
 {
-	"name": "EasyData.JS",
+	"name": "easydata.js",
 	"version": "1.4.1",
 	"description": "",
 	"scripts": {
-		"installall": "cd packs/core && npm install --legacy-peer-deps && cd ../ui && npm install --legacy-peer-deps && cd ../crud && npm install --legacy-peer-deps && cd ../.. && npm run linkall",
-		"build:dev": "npm run linkall && cd packs/core && npm run build:dev && cd ../ui && npm run build:dev && cd ../crud && npm run build:dev && cd ../..",
-		"build:prod": "npm run linkall && cd packs/core && npm run build:prod && cd ../ui && npm run build:prod && cd ../crud && npm run build:prod && cd ../..",
+		"install": "cd packs/core && npm i && cd ../ui && npm i && cd ../crud && npm i && cd ../..",
+		"build": "npm run linkall && cd packs/core && npm run build && cd ../ui && npm run build && cd ../crud && npm run build && cd ../..",
 		"packall": "cd packs/core && npm pack && cd ../ui && npm pack && cd ../crud && npm pack && cd ../..",
 		"setver": "node ./tools/set_version.js",
 		"linkall": "node ./tools/set_links.js",
@@ -14,6 +13,5 @@
 	"author": " ",
 	"license": "ISC",
 	"dependencies": {
-		"cpx": "^1.5.0"
 	}
 }
