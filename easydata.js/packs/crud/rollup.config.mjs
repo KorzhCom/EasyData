@@ -75,6 +75,7 @@ export default [
             progress({
                 clearLine: true,
             }),
+            nodeResolve(),
             postcss({
                 extract: true,
                 minimize: true,
