@@ -42,7 +42,7 @@ export default [
                 json: '../../docs/easydata-core.json',
                 out: './docs',
                 entryPoints: ['./src/**/*.ts'],
-                tsconfig: './tsconfig.json'
+                tsconfig: './tsconfig.json',
             }),
         ],
         output: [
