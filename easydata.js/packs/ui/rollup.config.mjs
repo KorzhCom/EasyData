@@ -70,7 +70,7 @@ export default [
         ]
     },
     {
-        input: './assets/css/easy-forms.js',
+        input: './src/easy-forms.js',
         plugins: [
             progress({
                 clearLine: true,
@@ -96,7 +96,7 @@ export default [
         }
     },
     {
-        input: './assets/css/easy-dialog.js',
+        input: './src/easy-dialog.js',
         plugins: [
             progress({
                 clearLine: true,
@@ -122,7 +122,7 @@ export default [
         }
     },
     {
-        input: './assets/css/easy-grid.js',
+        input: './src/easy-grid.js',
         plugins: [
             progress({
                 clearLine: true,
