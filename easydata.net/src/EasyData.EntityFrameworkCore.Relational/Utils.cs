@@ -76,7 +76,7 @@ namespace EasyData.EntityFrameworkCore
         public static string GetDbColumnName(this IProperty property)
         {
 #if NET
-            var entityType = property.DeclaringEntityType;
+            var entityType = property.DeclaringType as IEntityType;
             if (entityType == null) return null;
             var tableName = entityType.GetDbTableName();
             if (tableName == null) return null;
