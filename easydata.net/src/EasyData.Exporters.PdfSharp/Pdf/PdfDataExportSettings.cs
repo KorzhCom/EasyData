@@ -39,8 +39,14 @@ namespace EasyData.Export
         /// </summary>
         public PageFormat PageFormat { get; set; } = PageFormat.A4;
 
+
         /// <summary>
-        /// Page margins (in milimiters)
+        /// Minimum width of columns (in millimeters)
+        /// </summary>
+        public int MinColWidth { get; set; } = 16;
+
+        /// <summary>
+        /// Page margins (in millimeters)
         /// </summary>
         public (short Left, short Top, short Right, short Bottom) Margins { get; set; } = (25, 25, 25, 25);
     }
