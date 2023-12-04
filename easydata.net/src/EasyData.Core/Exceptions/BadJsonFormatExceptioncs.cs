@@ -29,6 +29,7 @@ namespace EasyData
         {
         }
 
+#if !NET8_0_OR_GREATER
         /// <summary>
         /// Initializes a new instance of the <see cref="BadJsonFormatException"/> class.
         /// </summary>
@@ -37,5 +38,6 @@ namespace EasyData
         protected BadJsonFormatException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }
