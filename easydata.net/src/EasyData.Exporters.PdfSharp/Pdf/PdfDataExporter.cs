@@ -116,10 +116,11 @@ namespace EasyData.Export
 
             if (pdfSettings.MinColWidth > 0 && colWidth < pdfSettings.MinColWidth) {
                 colWidth = pdfSettings.MinColWidth;
-                section.PageSetup.PageFormat = PageFormat.A0;
-                pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
-                section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
-                section.PageSetup.PageHeight = Unit.FromMillimeter(pageSizes.Height);
+                if (pdfSettings.FlexiblePageSize) {
+                    pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
+                    section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
+                    section.PageSetup.PageHeight = Unit.FromMillimeter(pageSizes.Height);
+                }
             }
 
             if (settings.ShowDatasetInfo) {
