@@ -104,9 +104,10 @@ namespace EasyData.Export
             var ignoredCols = GetIgnoredColumns(data, settings);
 
             var pageSizes = GetPageSizes(pdfSettings.PageFormat);
-            var pageWidth = pdfSettings.Orientation == Orientation.Landscape
-                    ? pageSizes.Height
-                    : pageSizes.Width;
+            if (pdfSettings.Orientation == Orientation.Landscape) { 
+                (pageSizes.Width, pageSizes.Height) = (pageSizes.Height, pageSizes.Width);
+            }
+            var pageWidth = pageSizes.Width;
 
             //calculating the width of one column
             var colCount = data.Cols.Count - ignoredCols.Count;
@@ -115,6 +116,10 @@ namespace EasyData.Export
 
             if (pdfSettings.MinColWidth > 0 && colWidth < pdfSettings.MinColWidth) {
                 colWidth = pdfSettings.MinColWidth;
+                section.PageSetup.PageFormat = PageFormat.A0;
+                pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
+                section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
+                section.PageSetup.PageHeight = Unit.FromMillimeter(pageSizes.Height);
             }
 
             if (settings.ShowDatasetInfo) {
