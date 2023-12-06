@@ -98,6 +98,24 @@ namespace EasyData.Export
 
             var section = document.AddSection();
             section.PageSetup.PageFormat = pdfSettings.PageFormat;
+            section.PageSetup.HorizontalPageBreak = true;
+
+            // getting ignored columns
+            var ignoredCols = GetIgnoredColumns(data, settings);
+
+            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
+            var pageWidth = pdfSettings.Orientation == Orientation.Landscape
+                    ? pageSizes.Height
+                    : pageSizes.Width;
+
+            //calculating the width of one column
+            var colCount = data.Cols.Count - ignoredCols.Count;
+            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
+            var colWidth = (int)Math.Ceiling(pageContentWidth / colCount);
+
+            if (pdfSettings.MinColWidth > 0 && colWidth < pdfSettings.MinColWidth) {
+                colWidth = pdfSettings.MinColWidth;
+            }
 
             if (settings.ShowDatasetInfo) {
                 // TODO: render paragraph with info here
@@ -128,23 +146,6 @@ namespace EasyData.Export
 
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
-
-            // getting ignored columns
-            var ignoredCols = GetIgnoredColumns(data, settings);
-
-            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
-            var pageWidth = pdfSettings.Orientation == Orientation.Landscape 
-                    ? pageSizes.Height 
-                    : pageSizes.Width;  
-
-            //calculating the width of one column
-            var colCount = data.Cols.Count - ignoredCols.Count;
-            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
-            var colWidth = pageContentWidth / colCount;
-
-            if (pdfSettings.MinColWidth > 0 && colWidth > pdfSettings.MinColWidth) {
-                colWidth = pdfSettings.MinColWidth;
-            }
 
             // filling columns
             int colsCount = 0;

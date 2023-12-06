@@ -43,7 +43,7 @@ namespace EasyData.Export
         /// <summary>
         /// Minimum width of columns (in millimeters)
         /// </summary>
-        public int MinColWidth { get; set; } = 16;
+        public int MinColWidth { get; set; } = 18;
 
         /// <summary>
         /// Page margins (in millimeters)
