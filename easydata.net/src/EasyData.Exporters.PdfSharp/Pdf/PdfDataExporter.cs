@@ -98,6 +98,7 @@ namespace EasyData.Export
 
             var section = document.AddSection();
             section.PageSetup.PageFormat = pdfSettings.PageFormat;
+            section.PageSetup.Orientation = pdfSettings.Orientation;
             section.PageSetup.HorizontalPageBreak = true;
 
             // getting ignored columns
@@ -118,10 +119,13 @@ namespace EasyData.Export
                 colWidth = pdfSettings.MinColWidth;
                 if (pdfSettings.FlexiblePageSize) {
                     pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
+                    var delta = (double)pageWidth / pageSizes.Width;
+                    section.PageSetup.Orientation = Orientation.Portrait;
                     section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
-                    section.PageSetup.PageHeight = Unit.FromMillimeter(pageSizes.Height);
+                    section.PageSetup.PageHeight = Unit.FromMillimeter((int)Math.Ceiling(pageSizes.Height*delta));
                 }
             }
+
 
             if (settings.ShowDatasetInfo) {
                 // TODO: render paragraph with info here
