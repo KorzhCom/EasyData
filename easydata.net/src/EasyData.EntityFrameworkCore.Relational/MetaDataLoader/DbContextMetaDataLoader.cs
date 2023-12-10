@@ -497,7 +497,7 @@ namespace EasyData.EntityFrameworkCore
                     value = dva?.Value;
 
                     if (value == null) {
-                        var instance = ResolveInstance(property.DeclaringEntityType);
+                        var instance = ResolveInstance(property.DeclaringType as IEntityType);
                         value = property.PropertyInfo.GetValue(instance);
                     }
                 }

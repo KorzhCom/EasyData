@@ -79,7 +79,7 @@ namespace EasyData.AspNetCore
 
         /// <summary>
         /// Writes the model's content to the JsonWriter.
-        /// Can be overriden in the derived classes to write some extra data to the response for GetModel request .
+        /// Can be overridden in the derived classes to write some extra data to the response for GetModel request .
         /// </summary>
         /// <param name="jsonWriter">An instance of JsonWriter.</param>
         /// <param name="model">The data model.</param>

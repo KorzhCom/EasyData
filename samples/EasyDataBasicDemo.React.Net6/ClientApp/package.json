@@ -28,9 +28,9 @@
     "workbox-routing": "^5.1.3",
     "workbox-strategies": "^5.1.3",
     "workbox-streams": "^5.1.3",
-    "@easydata/core": "1.4.3",
-    "@easydata/ui": "1.4.3",
-    "@easydata/crud": "1.4.3"
+    "@easydata/core": "1.4.18",
+    "@easydata/ui": "1.4.18",
+    "@easydata/crud": "1.4.18"
   },
   "devDependencies": {
     "ajv": "^6.9.1",

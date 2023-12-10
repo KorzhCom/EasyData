@@ -1,10 +1,5 @@
-export function repeatString(str: string, times: number): string{
-	let result = "";
-	for(let i = 0; i < times; i++){
-		result += str;
-	}
-	
-	return result;
+export function repeatString(str: string, times: number): string {
+	return str.repeat(times);
 }
 
 export function reverseString(str: string): string{
