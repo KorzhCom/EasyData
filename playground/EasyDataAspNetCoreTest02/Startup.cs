@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using Korzh.DbUtils;
+using EasyData.Services;
 
 using EasyDataBasicDemo.Data;
-using EasyData.Services;
 
 namespace EasyDataBasicDemo
 {
@@ -75,9 +76,14 @@ namespace EasyDataBasicDemo
         private static void EnsureDbInitialized(IApplicationBuilder app, IConfiguration config, IWebHostEnvironment env)
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>())
-            {
-                context.Database.EnsureCreated();
+            using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>()) {
+                if (context.Database.EnsureCreated()) {
+                    DbInitializer.Create(options => {
+                        options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
+                        options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EdDemoData.zip"));
+                    })
+                    .Seed();
+                }
             }
         }
     }
