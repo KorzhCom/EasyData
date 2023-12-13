@@ -40,8 +40,21 @@ namespace EasyData.Export
         public PageFormat PageFormat { get; set; } = PageFormat.A4;
 
         /// <summary>
-        /// Page margins (in milimiters)
+        /// Page margins (in millimeters)
         /// </summary>
         public (short Left, short Top, short Right, short Bottom) Margins { get; set; } = (25, 25, 25, 25);
+
+        /// <summary>
+        /// Minimum width of columns (in millimeters)
+        /// </summary>
+        public int MinColWidth { get; set; } = 18;
+
+        /// <summary>
+        /// Gets or sets the value indicating whether we can set custom page size if the table width exceeds the page width
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if flexible page size is used; otherwise, <c>false</c>.
+        /// </value>
+        public bool FlexiblePageSize { get; set; } = false;
     }
 }
