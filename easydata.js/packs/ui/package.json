@@ -61,6 +61,7 @@
         "exec": "tsc"
     },
     "dependencies": {
-        "@juggle/resize-observer": "^3.4.0"
+        "@juggle/resize-observer": "^3.4.0",
+        "@easydata/core": "^1.4.18"
     }
 }

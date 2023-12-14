@@ -63,5 +63,7 @@
         "exec": "tsc"
     },
     "dependencies": {
+        "@easydata/core": "^1.4.18",
+        "@easydata/ui": "^1.4.18"
     }
 }
