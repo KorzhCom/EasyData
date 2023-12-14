@@ -66,7 +66,7 @@ namespace EasyData.Export
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="PdfDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
+        /// Asynchronous version of <see cref="PdfDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
@@ -78,7 +78,7 @@ namespace EasyData.Export
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="PdfDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
+        /// Asynchronous version of <see cref="PdfDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
@@ -98,9 +98,37 @@ namespace EasyData.Export
 
             var section = document.AddSection();
             section.PageSetup.PageFormat = pdfSettings.PageFormat;
+            section.PageSetup.Orientation = pdfSettings.Orientation;
+            section.PageSetup.HorizontalPageBreak = true;
+
+            // getting ignored columns
+            var ignoredCols = GetIgnoredColumns(data, settings);
+
+            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
+            if (pdfSettings.Orientation == Orientation.Landscape) { 
+                (pageSizes.Width, pageSizes.Height) = (pageSizes.Height, pageSizes.Width);
+            }
+            var pageWidth = pageSizes.Width;
+
+            //calculating the width of one column
+            var colCount = data.Cols.Count - ignoredCols.Count;
+            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
+            var colWidth = (int)Math.Ceiling(pageContentWidth / colCount);
+
+            if (pdfSettings.MinColWidth > 0 && colWidth < pdfSettings.MinColWidth) {
+                colWidth = pdfSettings.MinColWidth;
+                if (pdfSettings.FlexiblePageSize) {
+                    pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
+                    var delta = (double)pageWidth / pageSizes.Width;
+                    section.PageSetup.Orientation = Orientation.Portrait;
+                    section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
+                    section.PageSetup.PageHeight = Unit.FromMillimeter((int)Math.Ceiling(pageSizes.Height*delta));
+                }
+            }
+
 
             if (settings.ShowDatasetInfo) {
-                // TODO: render paragrap with info here
+                // TODO: render paragraph with info here
                 if (!string.IsNullOrWhiteSpace(pdfSettings.Title)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Center;
@@ -129,19 +157,6 @@ namespace EasyData.Export
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
 
-            // getting ignored columns
-            var ignoredCols = GetIgnoredColumns(data, settings);
-
-            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
-            var pageWidth = pdfSettings.Orientation == Orientation.Landscape 
-                    ? pageSizes.Height 
-                    : pageSizes.Width;  
-
-            //calculating the width of one column
-            var colCount = data.Cols.Count - ignoredCols.Count;
-            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
-            var colWidth = pageContentWidth / colCount;
-
             // filling columns
             int colsCount = 0;
             for (int i = 0; i < data.Cols.Count; i++) {
@@ -158,18 +173,19 @@ namespace EasyData.Export
                 var row = table.AddRow();
                 row.HeadingFormat = true;
                 row.Format.Alignment = ParagraphAlignment.Center;
-                row.Format.Font.Bold = true;
+                  row.Format.Font.Bold = true;
                 row.Shading.Color = Color.FromRgb(0, 191, 255);
                 for (int i = 0; i < data.Cols.Count; i++) { 
                     if (ignoredCols.Contains(i))
                         continue;
 
                     var colName = data.Cols[i].Label;
+                    var cell = row.Cells[i];
 
-                    row.Cells[i].AddParagraph(colName);
-                    row.Cells[i].Format.Font.Bold = false;
-                    row.Cells[i].Format.Alignment = ParagraphAlignment.Center;
-                    row.Cells[i].VerticalAlignment = VerticalAlignment.Center;
+                    cell.AddParagraph(colName);
+                    cell.Format.Font.Bold = false;
+                    cell.Format.Alignment = ParagraphAlignment.Center;
+                    cell.VerticalAlignment = VerticalAlignment.Center;
                 }
 
                 table.SetEdge(0, 0, colsCount, 1, Edge.Box, BorderStyle.Single, 0.75, Color.Empty);
@@ -210,12 +226,13 @@ namespace EasyData.Export
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 
-                    pdfRow.Cells[i].Shading.Color = Color.FromRgb(255, 255, 255);
-                    pdfRow.Cells[i].VerticalAlignment = VerticalAlignment.Center;
-                    pdfRow.Cells[i].Format.Alignment = MapAlignment(col.Style.Alignment);
-                    pdfRow.Cells[i].Format.FirstLineIndent = 1;
-                    pdfRow.Cells[i].Format.Font.Bold = isExtra;
-                    pdfRow.Cells[i].AddParagraph(value);
+                    var cell = pdfRow.Cells[i];
+                    cell.Shading.Color = Color.FromRgb(255, 255, 255);
+                    cell.VerticalAlignment = VerticalAlignment.Center;
+                    cell.Format.Alignment = MapAlignment(col.Style.Alignment);
+                    cell.Format.FirstLineIndent = 1;
+                    cell.Format.Font.Bold = isExtra;
+                    cell.AddParagraph(value);
 
                     table.SetEdge(0, 1, colsCount, 1,
                          Edge.Box, BorderStyle.Single, 0.75);
