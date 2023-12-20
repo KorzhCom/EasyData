@@ -2,9 +2,9 @@
     "name": "@easydata/crud",
     "version": "1.4.1",
     "description": "EasyData.JS UI widgets and view for CRUD manipulations",
-    "types": "./dist/bundlers/lib/public_api.d.ts",
-    "main": "./dist/bundles/easydata.crud.cjs.js",
-    "module": "./dist/bundles/easydata.crud.es.js",
+    "types": "./dist/types/public_api.d.ts",
+    "main": "./dist/easydata.crud.cjs.js",
+    "module": "./dist/easydata.crud.es.js",
     "scripts": {
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",

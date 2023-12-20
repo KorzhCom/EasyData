@@ -2,9 +2,9 @@
     "name": "@easydata/core",
     "version": "1.4.1",
     "description": "EasyData.JS core functions, classes, and data structures",
-    "types": "./dist/boundles/lib/public_api.d.ts",
-    "main": "./dist/bundles/easydata.core.cjs.js",
-    "module": "./dist/bundles/easydata.core.es.js",
+    "types": "./dist/types/public_api.d.ts",
+    "main": "./dist/easydata.core.cjs.js",
+    "module": "./dist/easydata.core.es.js",
     "scripts": {
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",

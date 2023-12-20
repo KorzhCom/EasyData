@@ -50,7 +50,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/bundles/easydata.ui.es.js',
+                file: './dist/easydata.ui.es.js',
                 format: 'es',
                 sourcemap,
                 banner,
@@ -59,7 +59,7 @@ export default [
                 ]
             },
             {
-                file: './dist/bundles/easydata.ui.cjs.js',
+                file: './dist/easydata.ui.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,

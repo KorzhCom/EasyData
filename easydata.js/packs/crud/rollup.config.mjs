@@ -50,7 +50,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/bundles/easydata.crud.es.js',
+                file: './dist/easydata.crud.es.js',
                 format: 'es',
                 sourcemap,
                 banner,
@@ -59,7 +59,7 @@ export default [
                 ]
             },
             {
-                file: './dist/bundles/easydata.crud.cjs.js',
+                file: './dist/easydata.crud.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,
