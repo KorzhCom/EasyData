@@ -129,7 +129,7 @@ namespace EasyDataBasicDemo
                 {
                     DbInitializer.Create(options => {
                         options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
-                        options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EqDemoData.zip"));
+                        options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EdDemoData.zip"));
                     })
                     .Seed();
                 }
