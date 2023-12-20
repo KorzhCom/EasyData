@@ -55,7 +55,7 @@ export default [
         ]
     },
     {
-        input: './ts/easydata.css.js',
+        input: './ts/styles.js',
         plugins: [
             progress({
                 clearLine: true,
@@ -72,7 +72,7 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'easydata.css.js' === fileName
+                    return 'styles.js' === fileName
                 }
             }),
         ],
