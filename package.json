@@ -7,6 +7,7 @@
   "scripts": {
     "test": "lerna run test",
     "build": "lerna run build",
+    "build:remote": "cd easydata.js/packs/core && npm run build && cd .. && cd ui && npm run build && cd .. && cd crud && npm run build && cd ../../..",
     "build:core": "lerna run build --scope@easydata/core",
     "build:crud": "lerna run build --scope@easydata/crud",
     "build:ui": "lerna run build --scope@easydata/ui"
