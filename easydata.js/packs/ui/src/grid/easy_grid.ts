@@ -20,8 +20,9 @@ import {
     ActiveRowChangedEvent
 } from './easy_grid_events';
 
+import { EasyGridBase } from './easy_grid_types';
 import { GridColumnList, GridColumn, GridColumnAlign } from './easy_grid_columns';
-import { GridCellRendererStore } from './easy_grid_cell_renderer';
+import { CellRendererType, GridCellRenderer, GridCellRendererStore } from './easy_grid_cell_renderer';
 
 interface PaginationInfo {
     page: number,
@@ -33,7 +34,7 @@ const DEFAULT_ROW_HEIGHT = 36;
 const DEFAULT_ROW_COUNT = 15;
 
 /** Represents a grid widget with columns rows, paging, custom rendering and more */
-export class EasyGrid {
+export class EasyGrid implements EasyGridBase {
     protected eventEmitter: EventEmitter;
 
     protected slot: HTMLElement;
@@ -1008,11 +1009,29 @@ export class EasyGrid {
             .toDOM()
         );
 
-        if (column.cellRenderer) {
-            column.cellRenderer(value, column, valueCell, rowElement);
+        const cellRenderer = this.getCellRenderer(column);
+
+        if (cellRenderer) {
+            cellRenderer(value, column, valueCell, rowElement);
         }
 
         return cellElement;
+    }
+
+    public getCellRenderer(column : GridColumn) : GridCellRenderer {
+        let cellRenderer : GridCellRenderer;
+        if (column.isRowNum) {
+            cellRenderer = this.cellRendererStore.getDefaultRendererByType(CellRendererType.NUMBER);
+        }
+        else {
+            cellRenderer = this.cellRendererStore.getDefaultRenderer(column.type);
+        }
+
+        if (this.options && this.options.onGetCellRenderer) {
+            cellRenderer = this.options.onGetCellRenderer(column, cellRenderer) || cellRenderer;
+        }
+
+        return cellRenderer;
     }
 
     /** Sets current grid pages (if paging is used) */
