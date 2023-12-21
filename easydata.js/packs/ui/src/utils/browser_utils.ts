@@ -5,18 +5,12 @@ export namespace browserUtils {
     let _isIE: boolean = null;
 
     export function IsIE(): boolean {
-        // return eval('/*@cc_on!@*/false || !!document.documentMode');
-
         if (_isIE === null) {
-
              const ua = navigator.userAgent;
-
             /* MSIE used to detect old browsers and Trident used to newer ones*/
             _isIE = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
         }
-
         return _isIE;
-        
     }
 
     export function IsEdge(): boolean {
