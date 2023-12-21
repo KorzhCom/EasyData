@@ -1,4 +1,4 @@
-import { i18n, utils as dataUtils } from '@easydata/core';
+import { i18n, utils as coreUtils } from '@easydata/core';
 
 import { domel } from '../utils/dom_elem_builder';
 import { Calendar, CalendarOptions } from './calendar';
@@ -88,7 +88,7 @@ export class DefaultCalendar extends Calendar {
                 builder.removeClass('error');
                 try {
                     this.isManualInputChanging = true;
-                    const newDate = dataUtils.strToDateTime(this.manualInputElem.value, format);
+                    const newDate = coreUtils.strToDateTime(this.manualInputElem.value, format);
                     this.currentDate = newDate;
                     this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
                     this.dateChanged(false);
@@ -127,7 +127,7 @@ export class DefaultCalendar extends Calendar {
             if (!this.isManualInputChanging) {
                 const format = this.getInputDateFormat();
 
-                this.manualInputElem.value = dataUtils.dateTimeToStr(this.currentDate, format);
+                this.manualInputElem.value = i18n.dateTimeToStr(this.currentDate, format);
                 this.manualInputElem.focus();
             }
         }
