@@ -30,38 +30,11 @@
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
-    "peerDependencies": {
-    },
-    "devDependencies": {
-        "@olton/rollup-plugin-typedoc": "^0.1.4",
-        "@rollup/plugin-commonjs": "^25.0.7",
-        "@rollup/plugin-node-resolve": "^15.2.3",
-        "@rollup/plugin-terser": "^0.4.4",
-        "@rollup/plugin-typescript": "^11.1.5",
-        "autoprefixer": "^10.4.16",
-        "nodemon": "3.0.2",
-        "rollup": "^4.9.1",
-        "rollup-plugin-no-emit": "^1.1.1",
-        "rollup-plugin-postcss": "^4.0.2",
-        "rollup-plugin-progress": "^1.1.2",
-        "shx": "^0.3.4",
-        "tslib": "^2.6.2",
-        "typedoc": "^0.25.4",
-        "typescript": "^5.3.3"
-    },
     "browserslist": [
         "defaults"
     ],
-    "nodemonConfig": {
-        "watch": [
-            "src"
-        ],
-        "delay": 1000,
-        "ext": "ts,js",
-        "exec": "tsc"
-    },
     "dependencies": {
         "@juggle/resize-observer": "^3.4.0",
-        "@easydata/core": "^1.4.18"
+        "@easydata/core": "*"
     }
 }
