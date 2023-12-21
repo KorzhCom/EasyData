@@ -93,6 +93,10 @@ export default [
         output: {
             dir: './dist/assets/css',
             banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
         }
     },
     {
@@ -119,6 +123,10 @@ export default [
         output: {
             dir: './dist/assets/css',
             banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
         }
     },
     {
@@ -145,6 +153,10 @@ export default [
         output: {
             dir: './dist/assets/css',
             banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
         }
     }
 ];

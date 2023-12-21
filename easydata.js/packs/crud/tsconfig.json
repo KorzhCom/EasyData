@@ -13,7 +13,7 @@
 		"allowSyntheticDefaultImports": true,
 		"target": "es6",
 		"typeRoots": ["node_modules/@types"],
-		"lib": ["ES2015","es2017", "dom"],
+		"lib": ["ESNext", "dom"],
 		"baseUrl": ".",
 		"outDir": "./dist/types"
 	  },
