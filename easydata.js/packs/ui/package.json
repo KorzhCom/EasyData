@@ -6,6 +6,7 @@
     "main": "./dist/easydata.ui.cjs.js",
     "module": "./dist/easydata.ui.es.js",
     "scripts": {
+        "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",
         "watch": "npm run clear && rollup --config -w",

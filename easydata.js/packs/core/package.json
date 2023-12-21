@@ -9,7 +9,8 @@
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",
         "watch": "npm run clear && rollup --config -w",
-        "docs": "typedoc src/public_api.ts --out ./docs"
+        "docs": "typedoc src/public_api.ts --out ./docs",
+        "test": "vitest run"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",

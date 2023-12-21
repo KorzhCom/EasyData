@@ -1,4 +1,5 @@
-import {utils} from "../src/utils/utils";
+import { expect, test } from 'vitest'
+import {utils} from "../src/public_api"
 
 test('AssignDeep', () => {
     function A() {}

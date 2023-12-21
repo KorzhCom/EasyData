@@ -1,5 +1,7 @@
-import {utils} from "../src/utils/utils";
+import { expect, test } from 'vitest'
+import {utils} from "../src/public_api";
 
+// @ts-ignore
 test('Generate ID', async () => {
     const array = []
 
@@ -10,6 +12,7 @@ test('Generate ID', async () => {
     }
 
     const delay = (ms: number) => {
+        // @ts-ignore
         return new Promise((resolve, reject) => {
             setTimeout(resolve, ms);
         });
@@ -22,6 +25,7 @@ test('Generate ID', async () => {
         gen_pack()
     }
 
+    // @ts-ignore
     const test = new Set(array)
 
     expect(array.length).toEqual(test.size)

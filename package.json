@@ -4,6 +4,13 @@
   "workspaces": [
     "easydata.js/packs/*"
   ],
+  "scripts": {
+    "test": "lerna run test",
+    "build": "lerna run build",
+    "build:core": "lerna run build --scope@easydata/core",
+    "build:crud": "lerna run build --scope@easydata/crud",
+    "build:ui": "lerna run build --scope@easydata/ui"
+  },
   "devDependencies": {
     "@olton/rollup-plugin-typedoc": "^0.1.4",
     "@rollup/plugin-commonjs": "^25.0.7",
