@@ -8,7 +8,8 @@ export type GridEventType =
     'addColumnClick'    |
     'columnChanged'     |
     'columnDeleted'     |
-    'columnMoved';
+    'columnMoved'       |
+    'bulkDeleteClick';
 
 export interface GridEvent {
     type: GridEventType | string; 
@@ -52,4 +53,9 @@ export interface ActiveRowChangedEvent extends GridEvent {
     oldValue: number;
     newValue: number;
     rowIndex: number;
+}
+
+export interface BulkDeleteClickEvent extends GridEvent {
+    type: 'bulkDeleteClick';
+    rowIndices: number[];
 }

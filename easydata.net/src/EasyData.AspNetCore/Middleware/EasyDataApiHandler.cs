@@ -255,6 +255,24 @@ namespace EasyData.AspNetCore
             }          
         }
 
+        /// <summary>
+        /// Delete records in bulk.
+        /// </summary>
+        /// <param name="modelId">Id of the model.</param>
+        /// <param name="sourceId">Entity type.</param>
+        /// <param name="ct">Cancellation token.</param>
+        public virtual async Task HandleDeleteRecordsInBulkAsync(string modelId, string sourceId, CancellationToken ct = default)
+        {
+            using (var reader = new HttpRequestStreamReader(HttpContext.Request.Body, Encoding.UTF8))
+            using (var jsReader = new JsonTextReader(reader)) {
+                var props = await JObject.LoadAsync(jsReader, ct);
+                await Manager.DeleteRecordsInBulkAsync(modelId, sourceId, props, ct);
+                await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
+                    await WriteDeleteRecordResponseAsync(jsonWriter, cancellationToken);
+                }, ct);
+            };
+        }
+
         protected virtual Task WriteDeleteRecordResponseAsync(JsonWriter jsonWriter, CancellationToken ct)
         {
             return Task.CompletedTask;

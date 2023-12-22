@@ -6,7 +6,8 @@ import {
     AddColumnClickEvent,
     PageChangedEvent,
     RowClickEvent,
-    ActiveRowChangedEvent
+    ActiveRowChangedEvent,
+    BulkDeleteClickEvent
 } from './easy_grid_events';
 
 import { GridColumn } from './easy_grid_columns';
@@ -49,6 +50,8 @@ export interface EasyGridOptions {
     plusButtonTitle?: string;
     useRowNumeration?: boolean;
     allowDragDrop?: boolean;
+    showBulkDeleteButton?: boolean;
+    bulkDeleteButtonTitle?: string
 
     fixHeightOnFirstRender?: boolean;
 
@@ -85,6 +88,7 @@ export interface EasyGridOptions {
     onColumnDeleted?: (ev: ColumnDeletedEvent) => void;
     onColumnMoved?: (ev: ColumnMovedEvent) => void;
     onActiveRowChanged?: (ev:ActiveRowChangedEvent) => void;
+    onBulkDeleteButtonClick?: (ev: BulkDeleteClickEvent) => void;
 
     onSyncGridColumn?: (column: GridColumn) => void;
     onGetCellRenderer?: (column: GridColumn, defaultRenderer: GridCellRenderer) => GridCellRenderer;

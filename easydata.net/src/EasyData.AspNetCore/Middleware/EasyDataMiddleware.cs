@@ -19,6 +19,7 @@ namespace EasyData.AspNetCore
         public const string CreateRecord = "CreateRecord";
         public const string UpdateRecord = "UpdateRecord";
         public const string DeleteRecord = "DeleteRecord";
+        public const string DeleteRecordsInBulk = "DeleteRecordsInBulk";
     }
 
     public class EasyDataMiddleware<THandler> where THandler: EasyDataApiHandler
@@ -47,7 +48,8 @@ namespace EasyData.AspNetCore
                 new Endpoint(DataAction.FetchRecord, @"^/models/([^/]+?)/sources/([^/]+?)/fetch$", "GET"),
                 new Endpoint(DataAction.CreateRecord, @"^/models/([^/]+?)/sources/([^/]+?)/create$", "POST"),
                 new Endpoint(DataAction.UpdateRecord,@"^/models/([^/]+?)/sources/([^/]+?)/update$", "POST"),
-                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST")
+                new Endpoint(DataAction.DeleteRecord, @"^/models/([^/]+?)/sources/([^/]+?)/delete$", "POST"),
+                new Endpoint(DataAction.DeleteRecordsInBulk, @"^/models/([^/]+?)/sources/([^/]+?)/bulk-delete", "POST")
             };
 
         public EasyDataMiddleware(RequestDelegate next, EasyDataOptions options)
@@ -109,6 +111,9 @@ namespace EasyData.AspNetCore
                                 return;
                             case DataAction.DeleteRecord:
                                 await handler.HandleDeleteRecordAsync(modelId, entityTypeName, ct);
+                                return;
+                            case DataAction.DeleteRecordsInBulk:
+                                await handler.HandleDeleteRecordsInBulkAsync(modelId, entityTypeName, ct);
                                 return;
                         }
                     }

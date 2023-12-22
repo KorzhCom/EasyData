@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Newtonsoft.Json.Linq;
 
 using EasyData.EntityFrameworkCore;
+using EasyData.EntityFrameworkCore.Models;
+
 namespace EasyData.Services
 {
     public class EasyDataManagerEF<TDbContext> : EasyDataManager where TDbContext : DbContext
@@ -194,6 +196,38 @@ namespace EasyData.Services
 
             DbContext.Remove(record);
             await DbContext.SaveChangesAsync(ct);
+        }
+
+        /// <inheritdoc />
+        public override async Task DeleteRecordsInBulkAsync(string modelId, string sourceId, JObject primaryKeys, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+            var entityType = GetCurrentEntityType(DbContext, sourceId);
+            var recordsPrimaryKeys = GetRecordsPrimaryKeys(primaryKeys);
+            var recordsToDelete = new List<object>();
+
+            foreach (var pk in recordsPrimaryKeys) {
+                var keys = GetKeys(entityType, pk);
+                var record = FindRecord(DbContext, entityType.ClrType, keys.Values);
+
+                if (record == null) {
+                    throw new RecordNotFoundException(sourceId,
+                        $"({string.Join(";", keys.Select(kv => $"{kv.Key.Name}: {kv.Value}"))})");
+                }
+
+                recordsToDelete.Add(record);
+            }
+
+            DbContext.RemoveRange(recordsToDelete);
+            await DbContext.SaveChangesAsync(ct);
+        }
+
+        /// <summary>
+        /// Get primary keys of records from the request body.
+        /// </summary>
+        private IEnumerable<JObject> GetRecordsPrimaryKeys(JObject fields)
+        {
+            return fields.ToObject<BulkDeleteDTO>().PrimaryKeys;
         }
 
         private static IEntityType GetCurrentEntityType(DbContext dbContext, string sourceId)

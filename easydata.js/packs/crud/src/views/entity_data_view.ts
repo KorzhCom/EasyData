@@ -3,7 +3,7 @@ import { DataRow, i18n, utils as dataUtils } from '@easydata/core';
 import { 
     DefaultDialogService, 
     DialogService, domel, EasyGrid, 
-    GridCellRenderer, GridColumn, RowClickEvent 
+    GridCellRenderer, GridColumn, RowClickEvent, BulkDeleteClickEvent
 } from '@easydata/ui';
 
 import { EntityEditFormBuilder } from '../form/entity_form_builder';
@@ -86,11 +86,14 @@ export class EntityDataView {
                     },
                     showPlusButton: this.context.getActiveEntity().isEditable,
                     plusButtonTitle: i18n.getText('AddRecordBtnTitle'),
+                    showBulkDeleteButton: this.context.getActiveEntity().isEditable,
+                    bulkDeleteButtonTitle: i18n.getText('BulkDeleteBtnTitle'),
                     showActiveRow: false,
                     onPlusButtonClick: this.addClickHandler.bind(this),
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this),
-                    onSyncGridColumn: this.syncGridColumnHandler.bind(this)
+                    onSyncGridColumn: this.syncGridColumnHandler.bind(this),
+                    onBulkDeleteButtonClick: this.bulkDeleteClickHandler.bind(this)
                 }, this.options.grid || {}));
 
                 if (this.options.showFilterBox) {
@@ -133,6 +136,12 @@ export class EntityDataView {
                                 parseInt(rowEl.getAttribute('data-row-idx'))))
                     );
                 }
+            }
+        }
+        else if (column.isSelectCol) {
+            column.width = 110;
+            return (value: any, column: GridColumn, cell: HTMLElement, rowEl: HTMLElement) => {                
+                domel('div', cell).addChild('input', b => b.attr('type', 'checkbox'));
             }
         }
     }
@@ -241,6 +250,57 @@ export class EntityDataView {
                     })
                 }
             });
+    }
+
+    private bulkDeleteClickHandler(ev: BulkDeleteClickEvent) {
+        const activeEntity = this.context.getActiveEntity();
+        const keyAttrs = activeEntity.getPrimaryAttrs();
+
+        let promises: Promise<DataRow>[] = [];
+
+        // Get record rows to delete in bulk.
+        ev.rowIndices.forEach(index => {
+            promises.push(this.context.getData().getRow(index));
+        })
+
+        let recordKeys: object[] = [];
+
+        Promise.all(promises).then((rows) => {
+            recordKeys = rows.map(row => { 
+                if (!row) return;
+                let keyVals = keyAttrs.map(attr => row.getValue(attr.id));
+                let keys = keyAttrs.reduce((val, attr, index) => { 
+                    const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                    val[property] = keyVals[index];
+                    return val; 
+                }, {}); 
+                return keys;
+            });
+
+            if (recordKeys.length == 0) {
+                return;
+            }
+
+            this.dlg.openConfirm(
+                i18n.getText('BulkDeleteDlgCaption')
+                    .replace('{entity}', activeEntity.caption), 
+                i18n.getText('BulkDeleteDlgMessage')
+                    .replace('recordIds', recordKeys.map(
+                            keys => '{' + Object.keys(keys).map(key => `${key}:${keys[key]}`).join('; ') + '}'
+                        ).join("; ")
+                    ), 
+            )
+            .then((result) => {
+                if (!result) return;
+                this.context.bulkDeleteRecords({'pks': recordKeys})                            
+                    .then(() => {
+                        return this.refreshData();
+                    })
+                    .catch((error) => {
+                        this.processError(error);
+                    });
+            });
+        });
     }
 
     private processError(error) {
