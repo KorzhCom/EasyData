@@ -370,6 +370,8 @@ dist/
 /playground/**/ts/**/*.js
 !/playground/**/ts/styles.js
 /easydata.net/src/**/EasyData*.xml
+/playground/**/wwwroot/css/easydata.css
+/playground/**/wwwroot/css/easydata.css.map
 /playground/EasyDataTest
 /playground/EasyDataTest02
 /playground/EasyDataAspNetCoreTest04
