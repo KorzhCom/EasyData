@@ -1,4 +1,3 @@
-import * as strf from './string_utils';
 import { DataType } from '../types/data_type';
 
 export namespace utils {
