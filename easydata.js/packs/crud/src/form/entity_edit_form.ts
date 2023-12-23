@@ -1,5 +1,7 @@
 import { 
-    DataType, utils as dataUtils, 
+    DataType,
+    i18n, 
+    utils as coreUtils, 
     MetaEntityAttr, 
 } from '@easydata/core';
 
@@ -112,22 +114,22 @@ export class EntityEditForm {
     }
 
     private mapValue(type: DataType, value: string) {
-        if (dataUtils.getDateDataTypes().indexOf(type) >= 0) {
+        if (coreUtils.getDateDataTypes().indexOf(type) >= 0) {
             if (type !== DataType.Time && value && value.length) {
                 const editFormat =  crudUtils.getEditDateTimeFormat(type);
                 const internalFormat = crudUtils.getInternalDateTimeFormat(type);
 
-                const date = dataUtils.strToDateTime(value, editFormat);
-                return dataUtils.dateTimeToStr(date, internalFormat)
+                const date = coreUtils.strToDateTime(value, editFormat);
+                return i18n.dateTimeToStr(date, internalFormat)
             }     
 
             return value && value.length ? value : null;
         }
 
-        if (dataUtils.isIntType(type))
+        if (coreUtils.isIntType(type))
             return parseInt(value);
 
-        if (dataUtils.isNumericType(type))
+        if (coreUtils.isNumericType(type))
             return parseFloat(value);
 
         return value;

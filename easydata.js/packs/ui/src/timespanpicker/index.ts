@@ -377,7 +377,7 @@ export class TimeSpanPicker extends DefaultDialog {
                 return `\${{${k}}}`
             }
         }
-        return utils.dateTimeToStr(date, i18n.getLocaleSettings().editDateFormat)
+        return i18n.dateTimeToStr(date, i18n.getLocaleSettings().editDateFormat)
     }
 }
 

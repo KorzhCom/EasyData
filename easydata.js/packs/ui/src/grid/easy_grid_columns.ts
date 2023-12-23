@@ -4,9 +4,9 @@ import {
     ColumnAlignment
 } from '@easydata/core';
 
-import { EasyGrid } from './easy_grid';
-import { CellRendererType } from "./easy_grid_cell_renderer";
-import { GridCellRenderer } from './easy_grid_cell_renderer';
+import { EasyGridBase } from './easy_grid_types';
+//import { CellRendererType } from "./easy_grid_cell_renderer";
+//import { GridCellRenderer } from './easy_grid_cell_renderer';
 
 const DEFAULT_WIDTH_STRING = 250;
 const ROW_NUM_WIDTH = 60;
@@ -32,7 +32,7 @@ function MapAlignment(alignment: ColumnAlignment): GridColumnAlign {
 }
 export class GridColumn {
     private _label : string = null;
-    private grid: EasyGrid;
+    private grid: EasyGridBase;
     private _description: string = null;
 
     public readonly dataColumn: DataColumn;
@@ -45,11 +45,10 @@ export class GridColumn {
 
     public readonly isRowNum: boolean = false;
 
-    public cellRenderer: GridCellRenderer;
 
     public calculatedWidth: number;
 
-    constructor(column: DataColumn, grid: EasyGrid, isRowNum: boolean = false) {
+    constructor(column: DataColumn, grid: EasyGridBase, isRowNum: boolean = false) {
         this.dataColumn = column;
         this.grid = grid;
         const widthOptions = grid.options.columnWidths || {};
@@ -60,20 +59,12 @@ export class GridColumn {
             }
 
             this.width = (widthOptions && widthOptions[this.type]) ? widthOptions[this.type].default : DEFAULT_WIDTH_STRING;
-
-            this.cellRenderer = this.grid.cellRendererStore.getDefaultRenderer(column.type);
             this._description = column.description;
         }
         else if (isRowNum) {
             this.isRowNum = true;
             this.width = (widthOptions && widthOptions.rowNumColumn) ? widthOptions.rowNumColumn.default : ROW_NUM_WIDTH;
             this._label = '';
-
-            this.cellRenderer = this.grid.cellRendererStore.getDefaultRendererByType(CellRendererType.NUMBER);
-        }
-
-        if (grid && grid.options && grid.options.onGetCellRenderer) {
-            this.cellRenderer = grid.options.onGetCellRenderer(this, this.cellRenderer) || this.cellRenderer;
         }
     }
 
@@ -98,9 +89,9 @@ export class GridColumn {
 
 export class GridColumnList {
     private items: GridColumn[] = [];
-    private grid: EasyGrid;
+    private grid: EasyGridBase;
     
-    constructor(columnList: DataColumnList, grid: EasyGrid) {
+    constructor(columnList: DataColumnList, grid: EasyGridBase) {
         this.grid = grid;
         this.sync(columnList);
     }
