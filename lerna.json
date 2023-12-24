@@ -2,7 +2,7 @@
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "0.1.0",
   "packages": [
-    "easydata.js/packs/*"
+    "easydata.js/packs/*", "playground/*"
   ],
   "command": {
     "run": {
