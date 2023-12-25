@@ -8,7 +8,7 @@
     "scripts": {
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",
-        "watch": "npm run clear && rollup --config -w",
+        "dev": "npm run clear && rollup --config -w",
         "docs": "typedoc src/public_api.ts --out ./docs",
         "test": "vitest run"
     },
@@ -26,5 +26,8 @@
         "data filter"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
-    "license": "MIT"
+    "license": "MIT",
+    "files": [
+        "dist"
+    ]
 }

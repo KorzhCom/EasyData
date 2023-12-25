@@ -8,7 +8,7 @@
     "clean": "lerna clean",
     "test": "lerna run test",
     "build": "lerna run build",
-    "watch": "lerna run watch --parallel",
+    "dev": "lerna run dev --parallel",
     "build:core": "lerna run build --scope=@easydata/core",
     "build:crud": "lerna run build --scope=@easydata/crud",
     "build:ui": "lerna run build --scope=@easydata/ui",

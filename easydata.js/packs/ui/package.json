@@ -9,7 +9,7 @@
         "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",
-        "watch": "npm run clear && rollup --config -w",
+        "dev": "npm run clear && rollup --config -w",
         "docs": "typedoc src/public_api.ts --out ./docs"
     },
     "author": "Korzh.com",
@@ -37,5 +37,8 @@
     "dependencies": {
         "@juggle/resize-observer": "^3.4.0",
         "@easydata/core": "*"
-    }
+    },
+    "files": [
+        "dist"
+    ]
 }
