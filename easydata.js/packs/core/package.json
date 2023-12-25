@@ -8,7 +8,7 @@
     "scripts": {
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup --config",
-        "dev": "npm run clear && rollup --config -w",
+        "watch": "npm run clear && rollup --config -w",
         "docs": "typedoc src/public_api.ts --out ./docs",
         "test": "vitest run"
     },

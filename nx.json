@@ -5,7 +5,7 @@
       "options": {
         "cacheableOperations": [
           "build",
-          "dev",
+          "watch",
           "test"
         ]
       }
@@ -14,9 +14,6 @@
   "targetDefaults": {
     "build": {
       "dependsOn": [
-        "^build"
-      ],
-      "dev": [
         "^build"
       ]
     }
