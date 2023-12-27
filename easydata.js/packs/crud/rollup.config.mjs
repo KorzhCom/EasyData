@@ -70,7 +70,7 @@ export default [
         ]
     },
     {
-        input: './src/ed-view.js',
+        input: './src/css-easydata.js',
         plugins: [
             progress({
                 clearLine: true,
@@ -87,12 +87,43 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'ed-view.js' === fileName
+                    return 'css-easydata.js' === fileName
                 }
             }),
         ],
         output: {
-            dir: './dist/browser',
+            file: './dist/browser/easydata.min.css',
+            banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
+        }
+    },
+    {
+        input: './src/css-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
+            postcss({
+                extract: true,
+                minimize: false,
+                use: ['less'],
+                sourceMap: false,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'css-easydata.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            file: './dist/browser/easydata.css',
             banner,
         },
         onwarn: message => {
@@ -113,7 +144,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/browser/easydata.js',
+                file: './dist/browser/easydata.min.js',
                 format: 'iife',
                 name: 'easydata',
                 sourcemap,
@@ -123,5 +154,28 @@ export default [
                 ]
             }
         ]
-    }
+    },
+    {
+        input: './src/api-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve({
+                browser: true
+            }),
+            commonjs(),
+        ],
+        output: [
+            {
+                file: './dist/browser/easydata.js',
+                format: 'iife',
+                name: 'easydata',
+                sourcemap: false,
+                banner,
+                plugins: [
+                ]
+            }
+        ]
+    },
 ]
