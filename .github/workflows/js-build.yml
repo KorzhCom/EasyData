@@ -73,8 +73,8 @@ jobs:
       with:
         name: browser
         path: | 
-          ./easydata.js/packs/crud/browser/*.js
-          ./easydata.js/packs/crud/browser/*.css
+          ./easydata.js/packs/crud/lib/*.js
+          ./easydata.js/packs/crud/lib/*.css
 
   release_dev:
     name: Development Release
@@ -98,7 +98,7 @@ jobs:
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
@@ -107,7 +107,7 @@ jobs:
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: packs
         path: packs
@@ -154,7 +154,7 @@ jobs:
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}

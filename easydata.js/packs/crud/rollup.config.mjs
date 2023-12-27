@@ -92,7 +92,7 @@ export default [
             }),
         ],
         output: {
-            file: './dist/browser/easydata.min.css',
+            file: './lib/easydata.min.css',
             banner,
         },
         onwarn: message => {
@@ -123,7 +123,7 @@ export default [
             }),
         ],
         output: {
-            file: './dist/browser/easydata.css',
+            file: './lib/easydata.css',
             banner,
         },
         onwarn: message => {
@@ -144,7 +144,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/browser/easydata.min.js',
+                file: './lib/easydata.min.js',
                 format: 'iife',
                 name: 'easydata',
                 sourcemap,
@@ -168,7 +168,7 @@ export default [
         ],
         output: [
             {
-                file: './dist/browser/easydata.js',
+                file: './lib/easydata.js',
                 format: 'iife',
                 name: 'easydata',
                 sourcemap: false,

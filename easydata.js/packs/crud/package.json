@@ -7,7 +7,7 @@
     "module": "./dist/easydata.crud.es.js",
     "scripts": {
         "test": "vitest run",
-        "clear": "shx rm -rf dist/* docs/*",
+        "clear": "shx rm -rf dist/* docs/* lib/*",
         "build": "npm run clear && rollup --config",
         "watch": "npm run clear && rollup --config -w",
         "docs": "typedoc src/public_api.ts --out ./docs"
