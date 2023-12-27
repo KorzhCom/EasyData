@@ -59,13 +59,14 @@ jobs:
       with:
         name: packs
         path: | 
+          !./easydata.js/packs/**/node_modules/**/*.*
           ./easydata.js/packs/*/dist/**/*.*
           ./easydata.js/packs/*/package.json
-          ./easydata.js/packs/*/LICENSE.md
-          ./easydata.js/packs/*/README.md
           ./easydata.js/packs/*/tsconfig.json
           ./easydata.js/packs/*/*.js
-          !./easydata.js/packs/**/node_modules/**/*.*
+          ./easydata.js/packs/*/*.mjs
+          ./easydata.js/packs/*/LICENSE.md
+          ./easydata.js/packs/*/README.md
 
     - name: Upload browser artifacts
       uses: actions/upload-artifact@v2
@@ -73,7 +74,7 @@ jobs:
         name: browser
         path: | 
           ./easydata.js/packs/crud/dist/browser/*.js
-          ./easydata.js/packs/crud/dist/assets/*.css
+          ./easydata.js/packs/crud/dist/assets/css/*.css
 
   release_dev:
     name: Development Release
