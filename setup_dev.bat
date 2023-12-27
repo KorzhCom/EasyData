@@ -1,7 +1,5 @@
-cd playground
-call setup_dev.bat
-cd ..
-
+call npm install
+call npm link -ws
 call npm run build
 
 
