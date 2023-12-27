@@ -19,7 +19,7 @@
     "build:demo1": "lerna run build --scope=demo1",
     "build:demo2": "lerna run build --scope=demo2",
     "dev": "lerna run watch --parallel --scope=@easydata/*",
-    "setver": "node ./easyquery.js/tools/set_version.js",
+    "setver": "node ./easyquery.js/tools/set_version.js"
   },
   "devDependencies": {
     "@olton/rollup-plugin-typedoc": "^0.1.4",
