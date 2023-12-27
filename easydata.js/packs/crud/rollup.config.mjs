@@ -92,7 +92,7 @@ export default [
             }),
         ],
         output: {
-            dir: './dist/assets/css',
+            dir: './dist/browser',
             banner,
         },
         onwarn: message => {
