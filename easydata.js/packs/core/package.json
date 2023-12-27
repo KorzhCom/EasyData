@@ -26,5 +26,8 @@
         "data filter"
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
-    "license": "MIT"
+    "license": "MIT",
+    "files": [
+        "dist"
+    ]
 }

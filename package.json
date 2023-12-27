@@ -2,16 +2,23 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "easydata.js/packs/*"
+    "easydata.js/packs/*", "playground/*"
   ],
   "scripts": {
     "clean": "lerna clean",
     "test": "lerna run test",
+    "watch": "lerna run watch --parallel --scope=@easydata/*",
+    "watch:all": "lerna run watch --parallel",
+    "watch:core": "lerna run watch --scope=@easydata/core",
+    "watch:crud": "lerna run watch --scope=@easydata/crud",
+    "watch:ui": "lerna run watch --scope=@easydata/ui",
     "build": "lerna run build",
-    "build:remote": "cd easydata.js/packs/core && npm run build && cd .. && cd ui && npm run build && cd .. && cd crud && npm run build && cd ../../..",
-    "build:core": "lerna run build --scope@easydata/core",
-    "build:crud": "lerna run build --scope@easydata/crud",
-    "build:ui": "lerna run build --scope@easydata/ui"
+    "build:core": "lerna run build --scope=@easydata/core",
+    "build:crud": "lerna run build --scope=@easydata/crud",
+    "build:ui": "lerna run build --scope=@easydata/ui",
+    "build:demo1": "lerna run build --scope=demo1",
+    "build:demo2": "lerna run build --scope=demo2",
+    "dev": "lerna run watch --parallel --scope=@easydata/*"
   },
   "devDependencies": {
     "@olton/rollup-plugin-typedoc": "^0.1.4",

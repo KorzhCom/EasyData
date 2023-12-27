@@ -15,7 +15,8 @@
 		"typeRoots": ["node_modules/@types"],
 		"lib": ["ESNext", "dom"],
 		"baseUrl": ".",
-		"outDir": "./dist/types"
+		"outDir": "./dist/types",
+		"noEmitOnError": true
 	  },
 	"include": [
 		"./src/**/*.ts"
