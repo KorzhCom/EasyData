@@ -120,17 +120,17 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/core
-      run: npm publish packs/core
+      run: npm publish packs/core --registry=https://www.myget.org/F/korzh-npm/npm
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui
+      run: npm publish packs/ui --registry=https://www.myget.org/F/korzh-npm/npm
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud
+      run: npm publish packs/crud --registry=https://www.myget.org/F/korzh-npm/npm
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
