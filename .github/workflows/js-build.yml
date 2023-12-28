@@ -116,21 +116,19 @@ jobs:
       uses: actions/setup-node@v4
       with:
         registry-url: 'https://www.myget.org/F/korzh-npm/npm/'
-      env: 
-        NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/core
-      run: npm publish packs/core --registry=https://www.myget.org/F/korzh-npm/npm
+      run: npm publish ./packs/core
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui --registry=https://www.myget.org/F/korzh-npm/npm
+      run: npm publish ./packs/ui
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud --registry=https://www.myget.org/F/korzh-npm/npm
+      run: npm publish ./packs/crud
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
@@ -174,20 +172,18 @@ jobs:
       uses: actions/setup-node@v4
       with: 
         registry-url: 'https://registry.npmjs.org'
-      env: 
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/core
-      run: npm publish packs/core --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/core --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/ui --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/crud --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
