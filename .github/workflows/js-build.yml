@@ -79,7 +79,7 @@ jobs:
   release_dev:
     name: Development Release
     needs: [ build_and_test ]
-    if: github.event.inputs.release_mode == 'dev' && needs.build_and_test.result == 'success'
+    if: (github.ref_name == 'setver' || github.event.inputs.release_mode == 'dev') && needs.build_and_test.result == 'success'
     runs-on: windows-latest
     
     steps: 
