@@ -116,6 +116,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         registry-url: 'https://www.myget.org/F/korzh-npm/npm/'
+      env: 
+        NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/core
       run: npm publish packs/core
@@ -172,6 +174,8 @@ jobs:
       uses: actions/setup-node@v4
       with: 
         registry-url: 'https://registry.npmjs.org'
+      env: 
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/core
       run: npm publish packs/core --access public --tag ${{ env.ed_tag }}
