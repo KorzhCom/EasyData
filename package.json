@@ -1,0 +1,42 @@
+{
+  "name": "easydata.js",
+  "private": true,
+  "workspaces": [
+    "easydata.js/packs/*", "playground/*"
+  ],
+  "scripts": {
+    "clean": "lerna clean",
+    "test": "lerna run test",
+    "watch": "lerna run watch --parallel --scope=@easydata/*",
+    "watch:all": "lerna run watch --parallel",
+    "watch:core": "lerna run watch --scope=@easydata/core",
+    "watch:crud": "lerna run watch --scope=@easydata/crud",
+    "watch:ui": "lerna run watch --scope=@easydata/ui",
+    "build": "lerna run build",
+    "build:core": "lerna run build --scope=@easydata/core",
+    "build:crud": "lerna run build --scope=@easydata/crud",
+    "build:ui": "lerna run build --scope=@easydata/ui",
+    "build:demo1": "lerna run build --scope=demo1",
+    "build:demo2": "lerna run build --scope=demo2",
+    "dev": "lerna run watch --parallel --scope=@easydata/*",
+    "setver": "node ./easydata.js/tools/set_version.js"
+  },
+  "devDependencies": {
+    "@olton/rollup-plugin-typedoc": "^0.1.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "autoprefixer": "^10.4.16",
+    "lerna": "^8.0.0",
+    "rollup": "^4.9.0",
+    "rollup-plugin-no-emit": "^1.1.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-progress": "^1.1.2",
+    "shx": "^0.3.4",
+    "tslib": "^2.6.2",
+    "typedoc": "^0.25.4",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}

@@ -1,29 +1,15 @@
 {
-  "name": "mainpagescripts",
+  "name": "demo1",
   "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "ISC",
   "scripts": {
-    "test": "test",
-    "build": "webpack --mode=production",
-    "watch": "webpack --mode=development --watch",
-    "dev": "webpack --mode=development",
-    "build-all": "npm install && webpack --mode=development"
+    "build": "rollup --config",
+    "watch": "rollup --config -w"
   },
   "dependencies": {
-    "es6-promise": "^4.2.6"
-  },
-  "devDependencies": {
-    "@types/jquery": "^3.3.32",
-    "css-loader": "2.1.1",
-    "filemanager-webpack-plugin": "2.0.5",
-    "onchange": "^5.2.0",
-    "require": "^2.4.20",
-    "style-loader": "0.23.1",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3",
-    "webpack": "^4.36.1",
-    "webpack-cli": "^3.3.6"
+    "@easydata/ui": "*",
+    "@easydata/crud": "*"
   }
 }

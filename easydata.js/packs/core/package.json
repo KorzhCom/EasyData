@@ -1,18 +1,16 @@
 {
     "name": "@easydata/core",
-    "version": "1.4.1",
+    "version": "1.4.20",
     "description": "EasyData.JS core functions, classes, and data structures",
-    "types": "./dist/lib/public_api.d.ts",
-    "main": "./dist/bundles/easydata.core.js",
-    "module": "./dist/lib/public_api.js",
+    "types": "./dist/types/public_api.d.ts",
+    "main": "./dist/easydata.core.cjs.js",
+    "module": "./dist/easydata.core.es.js",
     "scripts": {
-        "typedoc": "typedoc --out docs --json ../../../../docs/easydatacore.json --tsconfig tsconfig.json ./src/**/*.ts",
-        "clean": "rimraf ./dist",
-        "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
-        "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production && typedoc",
-        "watch": "nodemon",
-        "test": "npm run clean-test && tsc -p tsconfig-test.json && jasmine JASMINE_CONFIG_PATH=jasmine.json",
-        "clean-test": "rimraf ./test/dist"
+        "clear": "shx rm -rf dist/* docs/*",
+        "build": "npm run clear && rollup --config",
+        "watch": "npm run clear && rollup --config -w",
+        "docs": "typedoc src/public_api.ts --out ./docs",
+        "test": "vitest run"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",
@@ -29,33 +27,7 @@
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
-    "devDependencies": {
-        "@types/jasmine": "^4.3.2",
-        "@types/node": "20.2.5",
-        "bufferutil": "^4.0.7",
-        "es6-promise": "^4.2.8",
-        "jasmine": "^5.0.0",
-        "jasmine-ts-console-reporter": "^3.1.1",
-        "nodemon": "2.0.22",
-        "rimraf": "5.0.1",
-        "terser-webpack-plugin": "^5.3.9",
-        "ts-loader": "^9.4.3",
-        "ts-node": "^10.9.1",
-        "typedoc": "^0.24.7",
-        "typescript": "5.0.*",
-        "utf-8-validate": "^6.0.3",
-        "webpack": "^5.84.1",
-        "webpack-cli": "^5.1.1",
-        "@olton/typedoc-webpack-plugin": "^0.1.0"
-    },
-    "nodemonConfig": {
-        "watch": [
-            "src"
-        ],
-        "delay": "1000",
-        "ext": "ts,js",
-        "exec": "tsc"
-    },
-    "dependencies": {
-    }
+    "files": [
+        "dist"
+    ]
 }

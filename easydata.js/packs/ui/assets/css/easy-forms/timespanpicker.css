@@ -1,0 +1,147 @@
+:root {
+    --tsp-border-color: #e8e8e8;
+    --tsp-control-background: #ebebeb;
+    --tsp-control-text-color: #000000;
+}
+
+.tsp__container {
+    display: flex;
+    flex-flow: row;
+}
+
+    .tsp__intervals {
+        border-right: 1px solid var(--tsp-border-color);
+        padding-right: 10px;
+        display: flex;
+        flex-flow: column;
+        /*justify-content: space-between;*/
+    }
+
+        .tsp__button {
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 4px 12px;
+            line-height: 1.2;
+            /*height: 24px;*/
+            transition: all .15s ease-in-out;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            overflow: visible;
+            opacity: .8;
+            box-sizing: border-box;
+            background-color: var(--tsp-control-background);
+            color: var(--tsp-control-text-color);
+        }
+        
+        .tsp__button:hover {
+            opacity: 1;
+            border-color: var(--tsp-border-color)
+        }
+        .tsp__button:active {
+            opacity: .9;
+        }
+    
+    .tsp__form {
+        display: flex;
+        flex-flow: row nowrap;
+        width: 100%;
+    }
+    
+        .tsp__date {
+            display: flex;
+            width: 50%;
+            flex-flow: column;
+            padding: 0 10px;
+        }
+        
+            .tsp__label {
+                display: flex;
+                flex-flow: row nowrap;
+            }
+
+                .tsp__label label {
+                    font-weight: bold;
+                }
+                
+                .tsp__label select {
+                    margin-left: auto;
+                    border-color: var(--tsp-border-color);
+                    font-size: 12px;
+                }
+        
+        .tsp__calendar {
+            margin: 10px 0;
+            width: 230px;
+        }
+
+.tsp__calendar .kdtp-cal-header input {
+    /*font-size: 14px!important;*/
+    border: 1px solid var(--tsp-border-color)!important; 
+}            
+
+.tsp__calendar {
+    display: flex;
+    flex-flow: column;
+}
+
+.tsp__calendar .kdtp-cal-body {
+    margin: 10px 0!important;
+}
+.tsp__calendar .kdtp-cal-header {
+    /*order: 3!important;*/
+    margin-bottom: 10px!important;
+}
+
+.tsp__calendar .kdtp-cal-nav-selectors {
+    font-size: 16px!important;
+}
+
+.tsp__calendar .kdtp-cal-body {
+    grid-gap: 2px!important;
+    padding: 0!important;
+}
+
+.tsp__calendar .kdtp-cal-nav-prev, .tsp__calendar .kdtp-cal-nav-next {
+    width: auto!important;
+    font-size: 2em!important;
+} 
+
+.tsp__calendar .kdtp-cal-body {
+    border: 1px solid var(--tsp-border-color);
+    padding: 5px!important;
+}
+
+.tsp__calendar .kdtp-cal-day {
+    border: 1px solid var(--tsp-border-color);
+    font-size: 14px;
+    width: 30px;
+    height: 30px;
+}
+
+.tsp__calendar .kdtp-cal-day-selected {
+    /*background: #0077cc!important;*/
+    /*color: #ffffff!important;*/
+}
+
+.tsp__calendar .kdtp-cal-day-current {
+    background: #3ab93c;
+    color: #ffffff;
+}
+
+.tsp__calendar .day-in-range {
+    background: #c6e3ff!important;
+}
+
+.kdlg-footer {
+    border-top: 1px solid var(--tsp-border-color);
+}
