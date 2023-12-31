@@ -6,6 +6,7 @@ import typescript from '@rollup/plugin-typescript'
 import typedoc from '@olton/rollup-plugin-typedoc'
 import * as path from "path";
 import { fileURLToPath } from 'url';
+import pkg from './package.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,7 @@ const
 
 const banner = `
 /*!
- * EasyData.JS Core
+ * EasyData.JS Core v${pkg.version}
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import noEmit from 'rollup-plugin-no-emit'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
+import pkg from './package.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,7 @@ const
 
 const banner = `
 /*!
- * EasyData.JS CRUD
+ * EasyData.JS CRUD v${pkg.version}
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */
