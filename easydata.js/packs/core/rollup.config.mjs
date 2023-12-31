@@ -19,7 +19,7 @@ const banner = `
  * EasyData.JS Core
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
- !*/
+ */
 `
 
 export default [

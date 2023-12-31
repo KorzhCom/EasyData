@@ -22,7 +22,7 @@ const banner = `
  * EasyData.JS CRUD
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
- !*/
+ */
 `
 
 export default [
@@ -93,7 +93,6 @@ export default [
         ],
         output: {
             file: './lib/easydata.min.css',
-            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
@@ -124,7 +123,6 @@ export default [
         ],
         output: {
             file: './lib/easydata.css',
-            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
