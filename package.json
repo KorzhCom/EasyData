@@ -28,8 +28,8 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
     "autoprefixer": "^10.4.16",
-    "lerna": "^8.0.0",
-    "rollup": "^4.9.0",
+    "lerna": "^8.0.1",
+    "rollup": "^4.9.2",
     "rollup-plugin-no-emit": "^1.1.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-progress": "^1.1.2",
@@ -37,6 +37,6 @@
     "tslib": "^2.6.2",
     "typedoc": "^0.25.4",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
+    "vitest": "^1.1.1"
   }
 }
