@@ -26,7 +26,7 @@ export default [
     {
         input: './src/public_api.ts',
         watch: {
-            include: 'src/**/*.ts',
+            include: 'src/**',
             clearScreen: false
         },
         plugins: [

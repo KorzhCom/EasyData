@@ -1,14 +1,14 @@
 {
-  "name": "easydata.js",
+  "name": "@easydata/root",
   "private": true,
   "workspaces": [
-    "easydata.js/packs/*", "playground/*"
+    "easydata.js/packs/*", 
+    "playground/*"
   ],
   "scripts": {
     "clean": "lerna clean",
     "test": "lerna run test",
-    "watch": "lerna run watch --parallel --scope=@easydata/*",
-    "watch:all": "lerna run watch --parallel",
+    "watch": "lerna run build --scope=@easydata/* && lerna watch --scope=@easydata/* -- lerna run build --since --include-dependents",
     "watch:core": "lerna run watch --scope=@easydata/core",
     "watch:crud": "lerna run watch --scope=@easydata/crud",
     "watch:ui": "lerna run watch --scope=@easydata/ui",

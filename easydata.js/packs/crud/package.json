@@ -8,8 +8,8 @@
     "scripts": {
         "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/* lib/*",
-        "build": "npm run clear && rollup --config",
-        "watch": "npm run clear && rollup --config -w",
+        "build": "npm run clear && rollup -c",
+        "watch": "rollup -c -w",
         "docs": "typedoc src/public_api.ts --out ./docs"
     },
     "author": "Korzh.com",
