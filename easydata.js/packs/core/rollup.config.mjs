@@ -53,7 +53,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             },
             {
@@ -62,7 +62,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             }
         ]

@@ -56,7 +56,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             },
             {
@@ -65,7 +65,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             }
         ]
@@ -78,7 +78,7 @@ export default [
             }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -107,7 +107,7 @@ export default [
             }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -136,7 +136,7 @@ export default [
             }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [

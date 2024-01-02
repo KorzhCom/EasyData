@@ -6,159 +6,16317 @@
  */
 
 var easydata = (function (exports) {
-	'use strict';
+    'use strict';
 
-	/*!
-	 * EasyData.JS Core v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	var t$2,e$2;!function(t){t[t.Unknown=0]="Unknown",t[t.String=1]="String",t[t.Byte=2]="Byte",t[t.Word=3]="Word",t[t.Int32=4]="Int32",t[t.Int64=5]="Int64",t[t.Bool=6]="Bool",t[t.Float=7]="Float",t[t.Currency=8]="Currency",t[t.BCD=9]="BCD",t[t.Date=10]="Date",t[t.Time=11]="Time",t[t.DateTime=12]="DateTime",t[t.Autoinc=13]="Autoinc",t[t.Memo=14]="Memo",t[t.Blob=15]="Blob",t[t.FixedChar=16]="FixedChar",t[t.Guid=17]="Guid",t[t.Geometry=18]="Geometry",t[t.Geography=19]="Geography";}(t$2||(t$2={})),function(t){t[t.Data=0]="Data",t[t.Virtual=1]="Virtual",t[t.Lookup=2]="Lookup";}(e$2||(e$2={}));const s$2={Unknown:"Unknown",Edit:"EDIT",DateTime:"DATETIME",List:"LIST",CustomList:"CUSTOMLIST",File:"FILE"};let i$2 = class i{constructor(t){t instanceof Date?this.date=t:this._name=t;}asTime(t){if(this.date)return this.date;u$2.getDateByName(this._name);}get name(){return this.name}};let n$2 = class n{getDateByName(t,e){return this[t]?this[t](e):void 0}Today(t){return new Date}Yesterday(t){let e=new Date;return e.setDate(e.getDate()-1),e}Tomorrow(t){let e=new Date;return e.setDate(e.getDate()+1),e}FirstDayOfMonth(t){let e=new Date;return e.setDate(1),e}LastDayOfMonth(t){let e=new Date;return e.setMonth(e.getMonth()+1,0),e}FirstDayOfNextMonth(t){let e=new Date;return e.setMonth(e.getMonth()+1,1),e}FirstDayOfPrevMonth(t){let e=new Date;return e.setMonth(e.getMonth()-1,1),e}FirstDayOfYear(t){const e=new Date;return e.setMonth(0,1),e}FirstDayOfPrevYear(t){let e=new Date;return e.setFullYear(e.getFullYear()-1,0,1),e}FirstDayOfNextYear(t){let e=new Date;return e.setFullYear(e.getFullYear()+1,0,1),e}FirstDayOfWeek(t){const e=new Date;let s=e.getDay();return s=0==s?6:s-1,e.setDate(e.getDate()-s),e}FirstDayOfPrevWeek(t){let e=new Date,s=e.getDay();return s=0==s?1:8-s,e.setDate(e.getDate()-s),e}FirstDayOfNextWeek(t){let e=new Date;var s=e.getDay();return s=0==s?1:8-s,e.setDate(e.getDate()+s),e}};var r$2,o$2,a$2,h$2,l$2,u$2=new n$2;function c$2(t){u$2=t;}!function(t){t.Trace="TRACE",t.Options="OPTIONS",t.Get="GET",t.Put="PUT",t.Post="POST",t.Delete="DELETE";}(r$2||(r$2={}));let d$2 = class d{constructor(t,e){this.xhr=t,this.method=e.method,this.url=e.url,this.headers=e.headers,this.queryParams=e.queryParams,this.data=e.data;}setHeader(t,e){this.headers[t]=e;}setQueryParam(t,e){this.queryParams[t]=e;}getXMLHttpRequest(){return this.xhr}getResponseHeaders(){if(this.xhr.readyState==this.xhr.HEADERS_RECEIVED){const t=this.xhr.getAllResponseHeaders().trim().split(/[\r\n]+/),e={};for(const s of t){const t=s.split(": "),i=t.shift(),n=t.join(": ");e[i]=n;}return e}return {}}open(){if(this.xhr.readyState!==this.xhr.UNSENT)return;let t=this.url;this.queryParams&&Object.keys(this.queryParams).length>0&&(t+=encodeURI("?"+Object.keys(this.queryParams).map((t=>t+"="+this.queryParams[t])).join("&"))),this.xhr.open(this.method,t,!0),this.xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");for(const t in this.headers)this.xhr.setRequestHeader(t,this.headers[t]);}abort(){this.xhr.abort();}};!function(e){e.getAllDataTypes=function(){return Object.values(t$2).filter((t=>"number"==typeof t))},e.getDateDataTypes=function(){return [t$2.Time,t$2.Date,t$2.DateTime]},e.getStringDataTypes=function(){return [t$2.String,t$2.Memo,t$2.FixedChar]};const s=[t$2.Byte,t$2.Word,t$2.Int32,t$2.Int64,t$2.Float,t$2.Currency,t$2.Autoinc];e.getNumericDataTypes=function(){return s};const i=[t$2.Byte,t$2.Word,t$2.Int32,t$2.Int64,t$2.Autoinc];function n(t,e,s){e||(e={});for(let i of s)if(i)for(let s in i)if(i.hasOwnProperty(s)){let o=i[s];null!==o&&"object"==typeof o?t.has(o)?e[s]=t.get(o):Array.isArray(o)?(e[s]=r(o),t.set(o,e[s])):(void 0!==e[s]&&null!=e[s]||(e[s]=Object.create(Object.getPrototypeOf(o))),t.set(o,e[s]),n(t,e[s],[o])):e[s]=o;}return e}function r(t){let e=[];for(let s of t)e.push(s);return e}e.assign=function(t,...e){for(let s=0;s<e.length;s++){let i=e[s];if(i)for(let e in i)i.hasOwnProperty(e)&&(t[e]=i[e]);}return t},e.assignDeep=function(t,...e){return n(new WeakMap,t,e)},e.getIfDefined=function(t,e){return void 0!==t?t:e},e.IsDefinedAndNotNull=function(t){return null!=t},e.copyArrayTo=function(t,e){const s=t.length,i=e.length;for(let n=0;n<s&&n<i;n++)e[n]=t[n];},e.createArrayFrom=r,e.findItemById=function(t,e){for(var s=t.length,i=0;i<s;i++)if(t[i].id===e)return t[i];return null},e.findItemIndexById=function(t,e){for(var s=t.length,i=0;i<s;i++)if(t[i].id===e)return i;return -1},e.indexOfArrayItem=function(t,e){if(t.indexOf)return t.indexOf(e);{let s=t.length;for(let i=0;i<s;i++)if(e==t[i])return i;return -1}},e.moveArrayItem=function(t,e,s){if(e>=t.length)throw "Index out of bounds: "+e;s>=t.length&&(s=t.length-1);let i=t.splice(e,1)[0];t.splice(s,0,i);},e.removeArrayItem=function(t,e){let s=t.indexOf(e);if(-1!=s)return t.splice(s,1)[0]},e.insertArrayItem=function(t,e,s){t.splice(e,0,s);},e.fillArray=function(t,e,s=0,i){let n=t.length>>>0;var r=s>>0,o=r<0?Math.max(n+r,0):Math.min(r,n),a=void 0===i?n:i>>0;let h=a<0?Math.max(n+a,0):Math.min(a,n);for(;o<h;)t[o]=e,o++;return t},e.shiftToFitWindow=function(t,e){let s=document.getElementsByTagName("body")[0],i=window.innerWidth||document.documentElement.clientWidth||s.clientWidth;var n=t+e;let r=0;return n>i&&(r=i-n-10,t+r<0&&(r=10-t)),r},e.isObject=function(t){return null!==t&&("function"==typeof t||"object"==typeof t)},e.isNumericType=function(t){return s.indexOf(t)>=0},e.isIntType=function(t){return i.indexOf(t)>=0},e.isNumeric=function(t){return !isNaN(parseFloat(t))&&isFinite(t)},e.areCompatibleDataTypes=function(e,s){return void 0===e||void 0===s||e==t$2.Unknown||s==t$2.Unknown||e==s||e==t$2.Date&&s==t$2.DateTime||e==t$2.DateTime&&s==t$2.Date},e.isPropSet=function(t,e){return t[e]||t[e.toLowerCase()]||t[e.toUpperCase()]};const o="0123456789abcdefghijklmnopqrstuvwxyz";function a(t,e){const s=t.length;if(s>e){let i=s/e,n="";n+=t[0];let r,o=i;for(let e=1;e<s;e++)r=t[e],e+1>o&&(n+=r,o+=i);return n}return t}function h(t,e){return Math.floor(Math.random()*(e-t))+t}function l(t){const e=parseInt(t);if(isNaN(e))throw `"${t}" is not a valid number`;return e}e.generateId=function(t){t||(t="easy");let e=t.length>4?function(t,e){let s=t.split("-"),i=1,n=e;s.length<e&&(i=e/s.length,n=s.length);let r="";for(let t=0;t<n;t++)r+=a(s[t],i);return r}(t,4):t;e&&e.length>0&&(e+="-");var s=o[h(0,o.length)]+o[h(0,o.length)]+o[h(0,o.length)],i=h(0,1e4);return e+s+function(t,e=36){var s="",i=t;do{s=o[i%e]+s,i=Math.floor(i/=e);}while(i>0);return s}(621355968e9+1e4*(new Date).getTime()-0x8d60e562e627800-i)},e.strToDateTime=function(t,e){if(!t||0==t.length)return new Date;const s=t.replace(/[^a-zA-Z0-9_]/g,"-"),i=e.replace(/[^a-zA-Z0-9_]/g,"-").split("-"),n=s.split("-"),r=i.indexOf("MM"),o=i.indexOf("dd"),a=i.indexOf("yyyy"),h=i.indexOf("HH"),u=i.indexOf("mm"),c=i.indexOf("ss"),d=new Date;try{const t=a>-1&&a<n.length?l(n[a]):d.getFullYear(),e=r>-1&&r<n.length?l(n[r])-1:d.getMonth()-1;if(e>11)throw "";const s=o>-1&&o<n.length?l(n[o]):d.getDate();if(s>function(t,e){return new Date(e,t+1,0).getDate()}(e,t))throw "";const i=h>-1&&h<n.length?l(n[h]):0;if(i>23)throw "";const g=u>-1&&u<n.length?l(n[u]):0;if(g>59)throw "";const f=c>-1&&c<n.length?l(n[c]):0;if(f>59)throw "";return new Date(t,e,s,i,g,f)}catch(e){throw `${t} is not a valid date.`}},e.strToTime=function(t){const e=t.split(":");try{const t=e.length>0?l(e[0]):0;if(t>23)throw "";const s=e.length>1?l(e[1]):0;if(s>59)throw "";const i=e.length>1?l(e[1]):0;if(i>59)throw "";return new Date(0,0,0,t,s,i)}catch(e){throw `${t} is not a valid time.`}};}(o$2||(o$2={}));let g$2 = class g{constructor(t,e){this.request=t,this.promise=e;}getPromise(){return this.promise}getRequest(){return this.request}then(t,e){return this.promise.then(t,e)}catch(t){return this.promise.catch(t)}finally(t){return this.promise.finally(t)}};let f$2 = class f extends Error{constructor(t,e){super(e),this.status=t;}};let m$2 = class m{get responseBody(){return this._responseBody}constructor(){this.defaultHeaders={},this.customPayload=void 0;}get(t,e){return this.send(r$2.Get,t,null,e)}post(t,e,s){return this.send(r$2.Post,t,e,s)}put(t,e,s){return this.send(r$2.Put,t,e,s)}delete(t,e,s){return this.send(r$2.Delete,t,e,s)}send(t,e,s,i){const n=(i=i||{}).dataType||"json",r=i.contentType||"form-data"!==n?"application/json":null;s&&"form-data"!=n&&this.customPayload&&(s.data=o$2.assignDeep(s.data||{},this.customPayload));const a=new("onload"in new XMLHttpRequest?XMLHttpRequest:window.XDomainRequest),h={method:t,url:e,headers:Object.assign(Object.assign({},this.defaultHeaders),i.headers||{}),queryParams:i.queryParams||{},data:s};r&&(h.headers["Content-Type"]=r);const l=new d$2(a,h);this.beforeEachRequest&&(console.warn("HttpClient: 'beforeEachRequest' is deprecated and will be removed in future updates.\n            Use 'onRequest' instead"),this.beforeEachRequest(l)),this.onRequest&&this.onRequest(l);const u=l.data&&"string"!=typeof l.data&&"json"==n?JSON.stringify(l.data):l.data;return l.open(),new g$2(l,new Promise(((t,s)=>{i.responseType&&(a.responseType=i.responseType),a.onerror=t=>{s(new f$2(a.status,a.responseText));},a.onreadystatechange=()=>{if(4!=a.readyState)return;const i=a.getResponseHeader("Content-Type")||"",n=a.status;if(0===n)s(new f$2(n,"Network error or the request was aborted"));else if(n>=200&&n<400){const e="arraybuffer"===a.responseType||"blob"===a.responseType?a.response:0==i.indexOf("application/json")?JSON.parse(a.responseText):a.responseText;this._responseBody=e,this.onResponse&&this.onResponse(a),t(e);}else {("arraybuffer"===a.responseType||"blob"===a.responseType?m.decodeArrayBuffer(a.response):Promise.resolve(a.responseText)).then((t=>{const r=0==i.indexOf("application/json")?JSON.parse(t):t;this._responseBody=r;const o=r.message||(404==n?`No such endpoint: ${e}`:r);s(new f$2(n,o));}));}},a.send(u);})))}static decodeArrayBuffer(t){var e=new FileReader;return new Promise((s=>{e.onloadend=function(){e.readyState==FileReader.DONE&&s(e.result);},e.readAsText(new Blob([t]));}))}};!function(e){let s,i={shortDateFormat:"MM/dd/yyyy",longDateFormat:"dd MMM, yyyy",editDateFormat:"MM/dd/yyyy",shortTimeFormat:"HH:mm",editTimeFormat:"HH:mm",longTimeFormat:"HH:mm:ss",shortMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],longMonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],shortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],longWeekDayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],decimalSeparator:".",currency:"USD"},n={localeId:"en-US",englishName:"English",displayName:"English",texts:{ButtonOK:"OK",ButtonCancel:"Cancel",Yes:"Yes",No:"No",True:"True",False:"False"},settings:i},r={"en-US":n};const a=[];function h(t){for(const e of a)e(t);}function l(){return s.localeId}function u(t){const e=r[t];e?o$2.assignDeep(s,e):(s.englishName=t,s.displayName=t,s.texts=o$2.assignDeep({},n.texts)),s.localeId=t;}function c(){return s.settings}function d(t){s.settings||(s.settings=o$2.assignDeep({},i)),s.settings=o$2.assignDeep(s.settings,t);}function g(t,e){h(e);let i=s;t&&(e.localeId||(e.localeId=t),i=r[t],i||(i=o$2.assignDeep({},n),r[t]=i)),o$2.assignDeep(i,e);}function f(){!function(t){const e=new Date(2020,5,7,19,34,56,88),i=e.toLocaleDateString(t,{year:"numeric",month:"numeric",day:"numeric"}),n=e.toLocaleTimeString(t,{hour:"numeric",minute:"numeric",second:"numeric"});let r=i.replace("07","dd").replace("7","d").replace("06","MM").replace("6","M").replace("2020","yyyy").replace("20","yy"),o=n.replace("19","HH").replace("07","hh").replace("7","h").replace("34","mm").replace("56","ss").replace("PM","tt");s.settings||(s.settings={}),d({shortDateFormat:r,shortTimeFormat:o});}("object"==typeof navigator?navigator.language:void 0);}e.addMapper=function(t){a.push(t);},e.getLocales=function(){let t=[];for(let e in r)t.push({locale:e,englishName:r[e].englishName,displayName:r[e].displayName});return t.sort(((t,e)=>t.englishName>e.englishName?1:t.englishName===e.englishName?0:-1))},e.getCurrentLocale=l,e.setLocale=function(t){console.warn("This method is deprecated. Use setCurrentLocale instead"),u(t);},e.setCurrentLocale=u,e.getText=function(...t){let e=s.texts,i="";if(t&&t.length){const s=t.length;for(let n=0;n<s&&(i=e[t[n]],"object"==typeof i);n++)e=i;}return i},e.getLocaleSettings=c,e.getOneLocaleSetting=function(t){return s.settings[t]},e.getShortMonthName=function(t){const e=c();if(t>0&&t<13)return e.shortMonthNames[t-1];throw "Wrong month number: "+t},e.getLongMonthName=function(t){const e=c();if(t>0&&t<13)return e.longMonthNames[t-1];throw "Wrong month number: "+t},e.getShortWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.shortWeekDayNames.length>=t?e.shortWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.getLongWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.longWeekDayNames.length>=t?e.longWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.updateLocaleSettings=d,e.updateLocaleTexts=function(t){"object"==typeof t?(h({localeId:s.localeId,texts:t}),o$2.assignDeep(s.texts,t)):console.error("Wrong parameter type in updateLocaleTexts function call.The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead");},e.updateDefaultTexts=function(t){for(let e in r){let s=r[e];s.texts=o$2.assignDeep({},t,s.texts);}s.texts=o$2.assignDeep({},t,s.texts);},e.updateLocaleInfo=g,e.addLocale=function(t,e){g(t,e);},e.resetLocales=function(){s||(s=o$2.assignDeep({},n),f());};const m=/\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;function p(t,s){const i=t.getFullYear().toString(),n=t.getMonth()+1,r=t.getDate(),o=t.getHours(),a=t.getMinutes(),h=t.getSeconds(),l=o%12||12,u=o>11,c={yyyy:i,yy:i.substring(i.length-2),MMMM:e.getLongMonthName(n),MMM:e.getShortMonthName(n),MM:n<10?"0"+n:n.toString(),M:n.toString(),dd:r<10?"0"+r:r.toString(),d:r.toString(),HH:o<10?"0"+o:o.toString(),H:o.toString(),hh:l<10?"0"+l:l.toString(),h:l.toString(),tt:u?"PM":"AM",mm:a<10?"0"+a:a.toString(),ss:h<10?"0"+h:h.toString()};return s.replace(m,((t,e)=>e||c[t]))}function y(e){const s=c();let i;switch(e){case t$2.Date:i=s.shortDateFormat;break;case t$2.Time:i=s.shortTimeFormat;break;default:i=s.shortDateFormat+" "+s.shortTimeFormat;}return i}function D(e){const s=c();let i;switch(e){case t$2.Date:i=s.longDateFormat;break;case t$2.Time:i=s.longTimeFormat;break;default:i=s.longDateFormat+" "+s.longTimeFormat;}return i}e.dateTimeToStr=p,e.dateTimeToStrEx=function(e,s,i){return i?"d"==i?i=y(t$2.Date):"D"==i?i=D(t$2.Date):"f"==i?i=y(t$2.DateTime):"F"==i&&(i=D(t$2.DateTime)):i=y(s),p(e,i)},e.numberToStr=function(t,s,i){if(s&&s.length>0){const i=s.charAt(0).toUpperCase();if("S"===i)return function(t,s){if(!w[s]){const t=s.split("|").filter((t=>t.length>0)).map((t=>t.split("=")));if(w[s]={},t.length>0)if(t[0].length>1)for(const e of t)w[s][Number.parseInt(e[1])]=e[0];else t.forEach(((t,e)=>{w[s][e]=t[0];}));}const i=w[s];if(void 0!==i[t]){const s=i[t];return e.getText(s)||s}return t.toString()}(t,s.slice(1));if(["D","F","C"].indexOf(i)>=0){const e=l();return t.toLocaleString(e,function(t){const e=c(),s=t[0].toUpperCase(),i=t.length>1?Number.parseInt(t.slice(1)):"D"==s?1:2;switch(s){case"D":return {style:"decimal",useGrouping:!1,minimumIntegerDigits:i};case"C":return {style:"currency",currency:e.currency,minimumFractionDigits:i};default:return {style:"decimal",minimumFractionDigits:i,maximumFractionDigits:i}}}(s))}return function(t,e){let s=t.toString(),i="",n=s.length-1;for(let t=e.length-1;t>=0;t--){const r=e.charAt(t);"#"===r||"0"===r?n>=0?(i+=s.charAt(n),n--):"0"===r&&(i+=0):i+=r;}return i.split("").reverse().join("")}(Math.trunc(t),s)}const n=c();return i=i||n.decimalSeparator,t.toString().replace(".",i)},e.booleanToStr=function(t,s){if(s&&s.length>0){if("S"===s.charAt(0).toUpperCase()){const i=s.slice(1).split("|");if(i.length>1){const s=i[t?1:0];return e.getText(s)||s}}}return `${t}`};const w={};}(a$2||(a$2={}));let p$2 = class p{constructor(t){this.isEditable=!0,this.name="",this.caption="",this.description="",this.parent=t,this.attributes=new Array,this.subEntities=new Array;}loadFromData(t,e){if(e){if(this.id=e.id,this.name=e.name,this.captionPlural=e.namePlur,this.caption=e.name,this.description=e.desc,void 0!==e.ied&&(this.isEditable=e.ied),this.subEntities=new Array,e.ents)for(let s=0;s<e.ents.length;s++){let i=t.createEntity(this);i.loadFromData(t,e.ents[s]),this.subEntities.push(i);}if(this.attributes=new Array,e.attrs)for(let s=0;s<e.attrs.length;s++){let i=t.createEntityAttr(this);i.loadFromData(t,e.attrs[s]),this.attributes.push(i);}}}scan(t,e){let s={stop:!1},i=n=>{if(e&&e(n,s),n.attributes){let e=n.attributes.length;for(let i=0;i<e&&!s.stop;i++){let e=n.attributes[i];if(t&&t(e,s),s.stop)return}}if(n.subEntities){let t=n.subEntities.length;for(let e=0;e<t&&!s.stop;e++)i(n.subEntities[e]);}};i(this);}getFirstPrimaryAttr(){return this.getPrimaryAttrs()[0]}getPrimaryAttrs(){return this.attributes.filter((t=>t.isPrimaryKey))}};let y$2 = class y{constructor(s){this.id="",this.caption="{Unrecognized attribute}",this.dataType=t$2.String,this.size=0,this.isPrimaryKey=!1,this.isForeignKey=!1,this.isNullable=!0,this.showOnView=!0,this.isEditable=!0,this.showOnCreate=!0,this.showOnEdit=!0,this.showInLookup=!1,this.lookupAttr="",this.expr="",this.entity=s,this.kind=e$2.Data;}loadFromData(t,e){if(e){this.id=e.id,this.description=e.desc,this.caption=e.cptn,this.dataType=e.dtype,this.isPrimaryKey=e.ipk,this.isForeignKey=e.ifk,this.size=e.size,this.lookupAttr=e.lattr,this.lookupEntity=e.lent,this.dataAttr=e.dattr,this.lookupDataAttr=e.ldattr;const s=o$2.getDateDataTypes().indexOf(this.dataType);this.defaultValue=e.defVal&&s?new Date(e.defVal):e.defVal,this.isNullable=o$2.getIfDefined(e.nul,this.isNullable),this.isEditable=o$2.getIfDefined(e.ied,this.isEditable),this.showOnView=o$2.getIfDefined(e.ivis||e.sov,this.showOnView),this.showOnCreate=o$2.getIfDefined(e.soc,this.showOnCreate),this.showOnEdit=o$2.getIfDefined(e.soe,this.showOnEdit),this.showInLookup=o$2.getIfDefined(e.sil,this.showInLookup),this.kind=e.kind,this.displayFormat=e.dfmt,e.udata&&(this.userData=e.udata),e.edtr&&(this.defaultEditor=t.getEditorById(e.edtr)||t.createValueEditor());}}};let D$2 = class D{constructor(){this.id="",this.tag=s$2.Unknown,this.resType=t$2.Unknown,this.defValue="";}loadFromData(t){t&&(this.id=t.id,this.tag=t.tag,this.defValue=t.defval,this.resType=t.rtype,this.accept=t.accept,this.multiline=t.multiline,t.subType&&(this.resType=t.subType),t.name&&(this.name=t.name),t.values&&(this.values=t.values));}getValueText(t){let e="";if(!this.values)return e;if(Array.isArray(t))for(let s of this.values)t.indexOf(s.id)>=0&&(e+=s.text+",");else for(let s of this.values)s.id===t&&(e+=s.text+",");return e&&(e=e.substring(0,e.length-1)),e}};let w$2 = class w{constructor(){this.mainEntity=null,this.id="__none",this.name="Empty model",this.rootEntity=this.createEntity(),this.displayFormats=new Map;}getMainEntity(){return this.mainEntity}createEntity(t){return new p$2(t)}createEntityAttr(t){return new y$2(t)}createValueEditor(){return new D$2}loadFromJSON(t){let e=JSON.parse(t);this.loadFromData(e);}loadFromData(e){if(this.id=e.id,this.name=e.name,this.version=e.vers,this.editors=new Array,e.editors)for(let t=0;t<e.editors.length;t++){let s=this.createValueEditor();s.loadFromData(e.editors[t]),this.editors.push(s);}if(this.rootEntity.loadFromData(this,e.entroot),this.displayFormats=new Map,e.displayFormats)for(const s in e.displayFormats){const i=t$2[s],n=e.displayFormats[s]||new Array;this.displayFormats.set(i,n);}}getDisplayFormats(){return this.displayFormats}getDisplayFormatsForType(t){return this.displayFormats.has(t)?this.displayFormats.get(t):[]}getDefaultFormat(t){return this.displayFormats.has(t)?this.displayFormats.get(t).filter((t=>t.isdef))[0]:null}setData(t){"string"==typeof t?this.loadFromJSON(t):this.loadFromData(t);}isEmpty(){return 0===this.rootEntity.subEntities.length&&0===this.rootEntity.attributes.length}getId(){return this.id}getName(){return this.name}getRootEntity(){return this.rootEntity}getEditorById(t){for(let e of this.editors)if(e.id===t)return e;return null}getAttributeById(t){let e=this.getEntityAttrById(this.getRootEntity(),t);return e||null}checkAttrProperty(t,e){let s=this.getAttributeById(t);if(s){if(void 0===s[e])throw "No such property: "+e;return !!s[e]||!!s.lookupAttr&&(t=s.lookupAttr,s=this.getAttributeById(t),s&&s[e])}return !1}getEntityAttrById(t,e){let s,i;if(t.attributes){let i=t.attributes.length;for(s=0;s<i;s++)if(t.attributes[s].id==e)return t.attributes[s]}if(t.subEntities){let n=t.subEntities.length;for(s=0;s<n;s++)if(i=this.getEntityAttrById(t.subEntities[s],e),i)return i}return null}listByEntityWithFilter(t,e){let s,i=new Array,n=null;if(t.subEntities){let r=t.subEntities.length;for(let h=0;h<r;h++)if(n=t.subEntities[h],!e||e(n,null)){s=a$2.getText("Entities",n.name),s||(s=n.caption);let t=o$2.assign(this.createEntity(),{id:n.name,text:s,items:[],isEntity:!0});t.items=this.listByEntityWithFilter(n,e),t.items.length>0&&i.push(t);}}let r=null;if(t.attributes){let n=t.attributes.length;for(let h=0;h<n;h++)if(r=t.attributes[h],!e||e(t,r)){s=a$2.getText("Attributes",r.id),s||(s=r.caption);let t=o$2.assign(this.createEntity(),{id:r.id,text:s,dataType:r.dataType});i.push(t);}}return i}listByEntity(t,e,s){e=e||{};let i,n=[],r=[],h=null;if(t.subEntities){let r=t.subEntities.length;for(let l=0;l<r;l++)if(h=t.subEntities[l],!s||s(h,null)){i=a$2.getText("Entities",h.name)||h.caption;let t=o$2.assign(this.createEntity(),{id:h.name,text:i,items:[],isEntity:!0,description:h.description}),r=o$2.assign({},e);r.includeRootData=!1,t.items=this.listByEntity(h,r,s),t.items.length>0&&n.push(t);}}let l=null;if(t.attributes){let e=t.attributes.length;for(let n=0;n<e;n++)l=t.attributes[n],s&&!s(t,l)||(i=a$2.getText("Attributes",l.id)||l.caption,r.push(o$2.assign(this.createEntityAttr(t),{id:l.id,text:i,dataType:l.dataType,lookupAttr:l.lookupAttr,description:l.description})));}let u,c=(t,e)=>t.text.toLowerCase()==e.text.toLowerCase()?0:t.text.toLowerCase()>e.text.toLowerCase()?1:-1;return e.sortEntities&&(n.sort(c),r.sort(c)),u=e.attrPlacement&&0!=e.attrPlacement?r.concat(n):n.concat(r),2==e.attrPlacement&&u.sort(c),e.includeRootData?(i=a$2.getText("Entities",t.name),i||(i=t.caption),{id:t.name,text:i,items:u}):u}clear(){this.rootEntity=this.createEntity(),this.editors=[],this.version="";}addDefaultValueEditors(){let e;e=this.addOrUpdateValueEditor("_DTE",s$2.Edit,t$2.String),e.defValue="",this.addOrUpdateValueEditor("_DPDE",s$2.DateTime,t$2.DateTime),this.addOrUpdateValueEditor("_DPTE",s$2.DateTime,t$2.DateTime);}addOrUpdateValueEditor(t,e,s){let i=o$2.findItemById(this.editors,t);return i||(i=this.createValueEditor(),i.id=t,this.editors.push(i)),i.tag=e,i.resType=s,i}getEntitiesTree(t,e){return this.listByEntity(this.getRootEntity(),t,e)}getEntitiesTreeWithFilter(t){return this.listByEntityWithFilter(this.getRootEntity(),t)}getFullEntityPathByAttr(t,e){return e=e||" ",this.getEntityPathByAttr(this.getRootEntity(),t,e,!0)}getEntityPathByAttr(t,e,s,i){if(!t)return "";s=s||" ";let n="";if(t.caption&&!i){let e=a$2.getText("Entities",t.caption);n=e||t.caption;}if(t.attributes){let s=t.attributes.length;for(let i=0;i<s;i++)if(t.attributes[i].id==e)return n}if(t.subEntities){let i=t.subEntities.length;for(let r=0;r<i;r++){let i=t.subEntities[r],o=this.getEntityPathByAttr(i,e,s,!1);if(""!==o)return ""!==n&&(o=n+s+o),o}}return ""}getAttributeText(t,e){let s=a$2.getText("Attributes",t.id);if(s||(s=t.caption),!e)return s;let i="",n=this.getFullEntityPathByAttr(t.id," ");return n?(i=e.replace(new RegExp("{attr}","g"),s),i=i.replace(new RegExp("{entity}","g"),n)):i=s,i.trim()}runThroughEntities(t,e){this.getRootEntity().scan(t,e);}getFirstAttributeByFilter(t){let e=null;return this.runThroughEntities((function(s,i){t(s)&&(i.stop=!0,e=s);}),null),e}};let T$2 = class T{constructor(t){this.colStore=t,this.aggregates=[],this.groups=[],this.useGrandTotals=!1,this.useRecordCount=!1,this._caseSensitiveGroups=!1,this.COUNT_FIELD_NAME="GRPRECCNT";}get caseSensitiveGroups(){return this._caseSensitiveGroups}set caseSensitiveGroups(t){this._caseSensitiveGroups=t,this.updateCompareProc();}updateCompareProc(){this.compareValues=this._caseSensitiveGroups?this.strictCompare:this.caseInsensitiveCompare;}addGroup(t){const e=t.columns||this.colStore.getColumnIds(t.from,t.to);if(!this.colStore.validateColumns(e))throw "Invalid columns: "+e;if(this.hasColumnsInUse(e))throw "Can't add same columns to different groups/aggregates";return this.groups.push(Object.assign({columns:e},t)),this}addAggregateColumn(t,e){const s="string"==typeof t?t:this.colStore.getColumnIds(t,t)[0];if(this.hasColumnsInUse([s])||!this.colStore.validateAggregate(s,e))throw "Invalid aggregation function for the column: "+s;return this.aggregates.push({colId:s,funcId:e}),this}addGrandTotals(){return this.useGrandTotals=!0,this}addCounts(){return this.useRecordCount=!0,this}getGroups(){let t=[];return this.groups.map((e=>(t=t.concat(e.columns),Object.assign(Object.assign({},e),{columns:Array.from(t),aggregates:Array.from(this.aggregates)}))))}getInternalGroups(){return this.groups}lastGroup(){const t=this.getGroups();return t[t.length-1]}getAggregates(){return this.aggregates}hasAggregates(){return this.aggregates.length>0}hasGroups(){return this.groups.length>0}hasGrandTotals(){return this.useGrandTotals}hasRecordCount(){return this.useRecordCount}isEmpty(){return !(this.hasAggregates()||this.hasGroups()||this.hasAggregates()||this.hasRecordCount())}drop(){console.warn('"drop()" method is obsolete. Use "clear()" instead'),this.clear();}clear(){return this.groups=[],this.aggregates=[],this.useGrandTotals=!1,this.useRecordCount=!1,this.caseSensitiveGroups=!1,this}hasColumnsInUse(t){for(const e of this.groups){if(e.columns.filter((e=>t.indexOf(e)>=0)).length>0)return !0}for(const e of this.aggregates)if(t.indexOf(e.colId)>=0)return !0;return !1}needAggrCalculation(){return (this.hasAggregates()||this.hasRecordCount())&&(this.hasGrandTotals()||this.hasGroups())}saveToData(){return {groups:Array.from(this.groups),ugt:this.useGrandTotals,urc:this.useRecordCount,csg:this.caseSensitiveGroups,aggregates:Array.from(this.aggregates)}}loadFromData(t){t&&(void 0!==t.ugt&&(this.useGrandTotals=t.ugt),void 0!==t.urc&&(this.useRecordCount=t.urc),void 0!==t.csg&&(this.caseSensitiveGroups=t.csg),t.groups&&(this.groups=Array.from(t.groups)),t.aggregates&&(this.aggregates=Array.from(t.aggregates)));}buildGroupKey(t,e){const s=!this.caseSensitiveGroups;let i={};if(t)for(const n of t.columns){let t=e.getValue(n);s&&"string"==typeof t&&(t=t.toLowerCase()),i[n]=t;}return i}strictCompare(t,e){return t instanceof Date?t.getTime()===e.getTime():t===e}caseInsensitiveCompare(t,e){if(t instanceof Date)return t.getTime()===e.getTime();return ("string"==typeof t?t.toLowerCase():t)===("string"==typeof e?e.toLowerCase():e)}};!function(t){t[t.None=0]="None",t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(h$2||(h$2={}));let x$2 = class x{constructor(e){if(!e)throw Error("Options are required");if(!e.id)throw Error("Field Id is required");if(!e.label)throw Error("Label is required");this.id=e.id,this.type=o$2.getIfDefined(e.type,t$2.String),this.label=e.label,this.originAttrId=e.originAttrId,this.isAggr=e.isAggr||!1,this.displayFormat=e.dfmt,this.groupFooterColumnTemplate=e.gfct,this.style=e.style||{},this.description=e.description,this.calculatedWidth=0;}};let E$2 = class E{constructor(){this.items=[],this.mapper={},this._dateColumnIdx=[];}get count(){return this.items.length}add(e){let s;s=e instanceof x$2?e:new x$2(e);const i=this.items.length;return this.items.push(s),this.mapper[s.id]=i,[t$2.Date,t$2.DateTime,t$2.Time].indexOf(s.type)>=0&&this._dateColumnIdx.push(i),i}updateDateColumnIdx(){this._dateColumnIdx=this.getItems().filter((e=>[t$2.Date,t$2.DateTime,t$2.Time].indexOf(e.type)>=0)).map(((t,e)=>e));}put(t,e){t>=0&&t<this.count&&(this.items[t]=e,this.updateDateColumnIdx());}move(t,e){let s=this.items.indexOf(t);s>=0&&s!=e&&(o$2.moveArrayItem(this.items,s,e),this.updateDateColumnIdx());}get(t){return t>=0&&t<this.count?this.items[t]:null}getIndex(t){return this.mapper[t]}getItems(){return this.items}getDateColumnIndexes(){return this._dateColumnIdx}removeAt(t){const e=this.get(t);this.items.splice(t,1);const s=this._dateColumnIdx.indexOf(t);s>=0&&this._dateColumnIdx.splice(s,1),delete this.mapper[e.id];}clear(){this.items=[],this._dateColumnIdx=[],this.mapper={};}};let b$2 = class b{constructor(t,e){this.columns=t,this.values=e;}toArray(){return Array.from(this.values)}size(){return this.values.length}getValue(t){let e;if("string"==typeof t){if(e=this.columns.getIndex(t),void 0===e)throw new RangeError(`No column with id '${t}'`)}else e=t;if(e>=this.values.length)throw new RangeError("Out of range: "+e);return this.values[e]}setValue(t,e){let s;if("string"==typeof t){if(s=this.columns.getIndex(t),void 0===s)throw new RangeError(`No column with id '${t}'`)}else s=t;if(s>=this.values.length)throw new RangeError("Out of range: "+s);this.values[s]=e;}};let C$2 = class C{constructor(t){if(this._chunkSize=1e3,this._elasticChunks=!1,this.cachedRows=[],this.total=0,this.loader=null,this.needTotal=!0,this.isInMemory=!1,t=t||{},this._chunkSize=t.chunkSize||this._chunkSize,this._elasticChunks=t.elasticChunks||this._elasticChunks,this.loader=t.loader,void 0!==t.inMemory&&(this.isInMemory=t.inMemory),this.isInMemory&&(this.needTotal=!1),this._columns=new E$2,this.onUpdate=t.onUpdate,t.columns)for(const e of t.columns)this._columns.add(e);if(t.rows)for(const e of t.rows){const t=this.createRow(e);this.addRow(t);}this.needTotal=!this._elasticChunks;}get columns(){return this._columns}get chunkSize(){return this._chunkSize}set chunkSize(t){this._chunkSize=t,this.total=0,this.needTotal=!this.elasticChunks,this.cachedRows=[];}get elasticChunks(){return this._elasticChunks}set elasticChunks(t){this._elasticChunks=t,this.total=0,this.needTotal=!this.elasticChunks,this.cachedRows=[];}getRows(t){let e=0,s=this._chunkSize;t&&("page"in t?(e=t.pageSize*(t.page-1),s=t.pageSize):(e=t.offset,s=t.limit));let i=e+s;if(!this.needTotal&&!this.elasticChunks){if(e>=this.total)return Promise.resolve([]);i>this.total&&(i=this.total);}if(this.isInMemory&&i>this.cachedRows.length&&(i=this.cachedRows.length),i<=this.cachedRows.length)return Promise.resolve(this.cachedRows.slice(e,i));if(!this.loader)throw `Loader is not defined. Can't get the rows from ${e} to ${i}`;const n=this.needTotal;this.needTotal&&(this.needTotal=!1);let r=this.cachedRows.length,o=i-r;o<this._chunkSize&&(o=this._chunkSize);return this.loader.loadChunk({offset:r,limit:o,needTotal:n}).then((t=>{if(n&&(this.total=t.total),Array.prototype.push.apply(this.cachedRows,t.table.getCachedRows()),i>this.cachedRows.length&&(i=this.cachedRows.length),this.elasticChunks){t.table.getCachedCount()<o&&(this.total=this.cachedRows.length);}return this.fireUpdated(),this.cachedRows.slice(e,i)}))}getRow(t){return this.getRows({offset:t,limit:1}).then((t=>t.length>0?t[0]:null))}getTotal(){return this.total}setTotal(t){this.total=t,this.needTotal=!1;}getCachedCount(){return this.cachedRows.length}clear(){this.columns.clear(),this.cachedRows=[],this.total=0,this.needTotal=!this._elasticChunks,this.fireUpdated();}createRow(t){const e=this._columns.getDateColumnIndexes(),s=new Array(this._columns.count),i=t instanceof b$2?e=>t.getValue(e):e=>t[e];return t&&this.columns.getItems().forEach((t=>{const n=i(t.id),r=this.columns.getIndex(t.id);s[r]=e.indexOf(r)>=0?this.mapDate(n,t.type):n;})),new b$2(this._columns,s)}mapDate(e,s){if(e){let i=new Date(e);return isNaN(i.getTime())&&s==t$2.Time&&(i=o$2.strToTime(e)),i}return null}addRow(t){let e;if(Array.isArray(t)){let s=t;const i=this._columns.getDateColumnIndexes();if(i.length>0)for(const t of i)s[t]&&(s[t]=this.mapDate(s[t],this._columns.get(t).type));e=new b$2(this._columns,s);}else e=this.createRow(t);this.cachedRows.push(e);const s=this.getCachedCount();return s>this.total&&(this.total=s),e}getCachedRows(){return this.cachedRows}totalIsKnown(){if(this.elasticChunks){return this.getCachedCount()===this.total}return !this.needTotal}fireUpdated(){this.onUpdate&&this.onUpdate(this);}};let I$2 = class I{static newGuid(){return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,(function(t){var e=16*Math.random()|0;return ("x"==t?e:3&e|8).toString(16)}))}};let A$2 = class A{constructor(t){this.silentMode=0,this.events=new Array,this.source=t;}subscribe(t,e){let s=this.getEventRecByType(t);const i={id:I$2.newGuid(),callback:e};return s?s.eventCallbacks.push(i):(s={type:t,eventCallbacks:new Array(i)},this.events.push(s)),i.id}unsubscribe(t,e){let s=this.getEventRecByType(t);if(s){let t=-1;for(t=0;t<s.eventCallbacks.length&&s.eventCallbacks[t].id!==e;t++);t>=0&&s.eventCallbacks.splice(t,1);}}fire(t,e,s=0,i=!1){if(this.silentMode&&!i)return;let n=this.getEventRecByType(t);if(n){const i={type:t,source:this.source,data:e};let r=()=>{for(let t of n.eventCallbacks)t.callback(i);};s>0?setTimeout(r,s):r();}}enterSilentMode(){this.silentMode++;}exitSilentMode(){this.silentMode&&this.silentMode--;}isSilent(){return this.silentMode>0}getEventRecByType(t){for(let e of this.events)if(e.type==t)return e;return null}};function v$2(t,e){return t.repeat(e)}function F$2(t){return t.split("").reverse().join("")}function S$2(t,e){return t&&t.lastIndexOf(e)==t.length-e.length}function M$2(t,e){let s=t;return null!=s&&s.length>0?("/"!=s.charAt(s.length-1)&&(s+="/"),s+=e):s=e,s}!function(t){t.renderLiquidTemplate=function(t,e){let s=t;if(e)for(let t in e){const i=new RegExp("{{"+t+"}}","g");s=s.replace(i,e[t]);}return s};}(l$2||(l$2={})),a$2.resetLocales(),"function"!=typeof Object.values&&(Object.values=function(t){return Object.keys(t).map((e=>t[e]))}),"function"!=typeof Math.trunc&&(Math.trunc=function(t){return isNaN(t)?NaN:t>0?Math.floor(t):Math.ceil(t)});
+    /*!
+     * EasyData.JS Core v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
 
-	var easydata_core_es = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		AggregationSettings: T$2,
-		get ColumnAlignment () { return h$2; },
-		DataColumn: x$2,
-		DataColumnList: E$2,
-		DataRow: b$2,
-		get DataType () { return t$2; },
-		EasyDataTable: C$2,
-		EasyGuid: I$2,
-		EditorTag: s$2,
-		get EntityAttrKind () { return e$2; },
-		EventEmitter: A$2,
-		HttpClient: m$2,
-		get HttpMethod () { return r$2; },
-		HttpRequest: d$2,
-		HttpResponseError: f$2,
-		MetaData: w$2,
-		MetaEntity: p$2,
-		MetaEntityAttr: y$2,
-		SpecialDatesResolver: n$2,
-		TimeValue: i$2,
-		ValueEditor: D$2,
-		combinePath: M$2,
-		get i18n () { return a$2; },
-		get liquid () { return l$2; },
-		registerSpecialDatesResolver: c$2,
-		repeatString: v$2,
-		reverseString: F$2,
-		strEndsWith: S$2,
-		get utils () { return o$2; }
-	});
+    /** Represents the common types of the data. */
+    var DataType$3;
+    (function (DataType) {
+        /** Unknown type value*/
+        DataType[DataType["Unknown"] = 0] = "Unknown";
+        /** String value*/
+        DataType[DataType["String"] = 1] = "String";
+        /** 8-bit integer value */
+        DataType[DataType["Byte"] = 2] = "Byte";
+        /** 16-bit integer value */
+        DataType[DataType["Word"] = 3] = "Word";
+        /** 32-bit integer value */
+        DataType[DataType["Int32"] = 4] = "Int32";
+        /** 64-bit integer value */
+        DataType[DataType["Int64"] = 5] = "Int64";
+        /** Boolean value */
+        DataType[DataType["Bool"] = 6] = "Bool";
+        /** Floating-point numeric value */
+        DataType[DataType["Float"] = 7] = "Float";
+        /** Money value */
+        DataType[DataType["Currency"] = 8] = "Currency";
+        /** Binary-coded decimal value */
+        DataType[DataType["BCD"] = 9] = "BCD";
+        /** Date value */
+        DataType[DataType["Date"] = 10] = "Date";
+        /** Time value */
+        DataType[DataType["Time"] = 11] = "Time";
+        /** Date and time value */
+        DataType[DataType["DateTime"] = 12] = "DateTime";
+        /** Autoincrement 32-bit integer value */
+        DataType[DataType["Autoinc"] = 13] = "Autoinc";
+        /** MEMO value (text with unlimited length) */
+        DataType[DataType["Memo"] = 14] = "Memo";
+        /** BLOB value (any data with unlimited length) */
+        DataType[DataType["Blob"] = 15] = "Blob";
+        /** Fixed character value */
+        DataType[DataType["FixedChar"] = 16] = "FixedChar";
+        /** The unique identifier */
+        DataType[DataType["Guid"] = 17] = "Guid";
+        /*-------- Spatial data types ----------*/
+        /** Any geometry data */
+        DataType[DataType["Geometry"] = 18] = "Geometry";
+        /** Any data that represents some geography objects</summary> */
+        DataType[DataType["Geography"] = 19] = "Geography";
+    })(DataType$3 || (DataType$3 = {}));
 
-	/*!
-	 * EasyData.JS UI v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	/*!
-	 * EasyData.JS Core v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	var t$1,e$1,i$1,s$1,n$1,a$1,o$1,r$1;!function(t){t[t.Unknown=0]="Unknown",t[t.String=1]="String",t[t.Byte=2]="Byte",t[t.Word=3]="Word",t[t.Int32=4]="Int32",t[t.Int64=5]="Int64",t[t.Bool=6]="Bool",t[t.Float=7]="Float",t[t.Currency=8]="Currency",t[t.BCD=9]="BCD",t[t.Date=10]="Date",t[t.Time=11]="Time",t[t.DateTime=12]="DateTime",t[t.Autoinc=13]="Autoinc",t[t.Memo=14]="Memo",t[t.Blob=15]="Blob",t[t.FixedChar=16]="FixedChar",t[t.Guid=17]="Guid",t[t.Geometry=18]="Geometry",t[t.Geography=19]="Geography";}(t$1||(t$1={})),function(t){t[t.Data=0]="Data",t[t.Virtual=1]="Virtual",t[t.Lookup=2]="Lookup";}(e$1||(e$1={})),function(t){t.Trace="TRACE",t.Options="OPTIONS",t.Get="GET",t.Put="PUT",t.Post="POST",t.Delete="DELETE";}(i$1||(i$1={})),function(e){e.getAllDataTypes=function(){return Object.values(t$1).filter((t=>"number"==typeof t))},e.getDateDataTypes=function(){return [t$1.Time,t$1.Date,t$1.DateTime]},e.getStringDataTypes=function(){return [t$1.String,t$1.Memo,t$1.FixedChar]};const i=[t$1.Byte,t$1.Word,t$1.Int32,t$1.Int64,t$1.Float,t$1.Currency,t$1.Autoinc];e.getNumericDataTypes=function(){return i};const s=[t$1.Byte,t$1.Word,t$1.Int32,t$1.Int64,t$1.Autoinc];function n(t,e,i){e||(e={});for(let s of i)if(s)for(let i in s)if(s.hasOwnProperty(i)){let o=s[i];null!==o&&"object"==typeof o?t.has(o)?e[i]=t.get(o):Array.isArray(o)?(e[i]=a(o),t.set(o,e[i])):(void 0!==e[i]&&null!=e[i]||(e[i]=Object.create(Object.getPrototypeOf(o))),t.set(o,e[i]),n(t,e[i],[o])):e[i]=o;}return e}function a(t){let e=[];for(let i of t)e.push(i);return e}e.assign=function(t,...e){for(let i=0;i<e.length;i++){let s=e[i];if(s)for(let e in s)s.hasOwnProperty(e)&&(t[e]=s[e]);}return t},e.assignDeep=function(t,...e){return n(new WeakMap,t,e)},e.getIfDefined=function(t,e){return void 0!==t?t:e},e.IsDefinedAndNotNull=function(t){return null!=t},e.copyArrayTo=function(t,e){const i=t.length,s=e.length;for(let n=0;n<i&&n<s;n++)e[n]=t[n];},e.createArrayFrom=a,e.findItemById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return t[s];return null},e.findItemIndexById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return s;return -1},e.indexOfArrayItem=function(t,e){if(t.indexOf)return t.indexOf(e);{let i=t.length;for(let s=0;s<i;s++)if(e==t[s])return s;return -1}},e.moveArrayItem=function(t,e,i){if(e>=t.length)throw "Index out of bounds: "+e;i>=t.length&&(i=t.length-1);let s=t.splice(e,1)[0];t.splice(i,0,s);},e.removeArrayItem=function(t,e){let i=t.indexOf(e);if(-1!=i)return t.splice(i,1)[0]},e.insertArrayItem=function(t,e,i){t.splice(e,0,i);},e.fillArray=function(t,e,i=0,s){let n=t.length>>>0;var a=i>>0,o=a<0?Math.max(n+a,0):Math.min(a,n),r=void 0===s?n:s>>0;let l=r<0?Math.max(n+r,0):Math.min(r,n);for(;o<l;)t[o]=e,o++;return t},e.shiftToFitWindow=function(t,e){let i=document.getElementsByTagName("body")[0],s=window.innerWidth||document.documentElement.clientWidth||i.clientWidth;var n=t+e;let a=0;return n>s&&(a=s-n-10,t+a<0&&(a=10-t)),a},e.isObject=function(t){return null!==t&&("function"==typeof t||"object"==typeof t)},e.isNumericType=function(t){return i.indexOf(t)>=0},e.isIntType=function(t){return s.indexOf(t)>=0},e.isNumeric=function(t){return !isNaN(parseFloat(t))&&isFinite(t)},e.areCompatibleDataTypes=function(e,i){return void 0===e||void 0===i||e==t$1.Unknown||i==t$1.Unknown||e==i||e==t$1.Date&&i==t$1.DateTime||e==t$1.DateTime&&i==t$1.Date},e.isPropSet=function(t,e){return t[e]||t[e.toLowerCase()]||t[e.toUpperCase()]};const o="0123456789abcdefghijklmnopqrstuvwxyz";function r(t,e){const i=t.length;if(i>e){let s=i/e,n="";n+=t[0];let a,o=s;for(let e=1;e<i;e++)a=t[e],e+1>o&&(n+=a,o+=s);return n}return t}function l(t,e){return Math.floor(Math.random()*(e-t))+t}function d(t){const e=parseInt(t);if(isNaN(e))throw `"${t}" is not a valid number`;return e}e.generateId=function(t){t||(t="easy");let e=t.length>4?function(t,e){let i=t.split("-"),s=1,n=4;i.length<4&&(s=4/i.length,n=i.length);let a="";for(let t=0;t<n;t++)a+=r(i[t],s);return a}(t):t;e&&e.length>0&&(e+="-");var i=o[l(0,36)]+o[l(0,36)]+o[l(0,36)],s=l(0,1e4);return e+i+function(t,e=36){var i="",s=t;do{i=o[s%e]+i,s=Math.floor(s/=e);}while(s>0);return i}(621355968e9+1e4*(new Date).getTime()-0x8d60e562e627800-s)},e.strToDateTime=function(t,e){if(!t||0==t.length)return new Date;const i=t.replace(/[^a-zA-Z0-9_]/g,"-"),s=e.replace(/[^a-zA-Z0-9_]/g,"-").split("-"),n=i.split("-"),a=s.indexOf("MM"),o=s.indexOf("dd"),r=s.indexOf("yyyy"),l=s.indexOf("HH"),h=s.indexOf("mm"),c=s.indexOf("ss"),u=new Date;try{const t=r>-1&&r<n.length?d(n[r]):u.getFullYear(),e=a>-1&&a<n.length?d(n[a])-1:u.getMonth()-1;if(e>11)throw "";const i=o>-1&&o<n.length?d(n[o]):u.getDate();if(i>function(t,e){return new Date(e,t+1,0).getDate()}(e,t))throw "";const s=l>-1&&l<n.length?d(n[l]):0;if(s>23)throw "";const g=h>-1&&h<n.length?d(n[h]):0;if(g>59)throw "";const p=c>-1&&c<n.length?d(n[c]):0;if(p>59)throw "";return new Date(t,e,i,s,g,p)}catch(e){throw `${t} is not a valid date.`}},e.strToTime=function(t){const e=t.split(":");try{const t=e.length>0?d(e[0]):0;if(t>23)throw "";const i=e.length>1?d(e[1]):0;if(i>59)throw "";const s=e.length>1?d(e[1]):0;if(s>59)throw "";return new Date(0,0,0,t,i,s)}catch(e){throw `${t} is not a valid time.`}};}(s$1||(s$1={})),function(e){let i,n={shortDateFormat:"MM/dd/yyyy",longDateFormat:"dd MMM, yyyy",editDateFormat:"MM/dd/yyyy",shortTimeFormat:"HH:mm",editTimeFormat:"HH:mm",longTimeFormat:"HH:mm:ss",shortMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],longMonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],shortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],longWeekDayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],decimalSeparator:".",currency:"USD"},a={localeId:"en-US",englishName:"English",displayName:"English",texts:{ButtonOK:"OK",ButtonCancel:"Cancel",Yes:"Yes",No:"No",True:"True",False:"False"},settings:n},o={"en-US":a};const r=[];function l(t){for(const e of r)e(t);}function d(){return i.localeId}function h(t){const e=o[t];e?s$1.assignDeep(i,e):(i.englishName=t,i.displayName=t,i.texts=s$1.assignDeep({},a.texts)),i.localeId=t;}function c(){return i.settings}function u(t){i.settings||(i.settings=s$1.assignDeep({},n)),i.settings=s$1.assignDeep(i.settings,t);}function g(t,e){l(e);let n=i;t&&(e.localeId||(e.localeId=t),n=o[t],n||(n=s$1.assignDeep({},a),o[t]=n)),s$1.assignDeep(n,e);}e.addMapper=function(t){r.push(t);},e.getLocales=function(){let t=[];for(let e in o)t.push({locale:e,englishName:o[e].englishName,displayName:o[e].displayName});return t.sort(((t,e)=>t.englishName>e.englishName?1:t.englishName===e.englishName?0:-1))},e.getCurrentLocale=d,e.setLocale=function(t){console.warn("This method is deprecated. Use setCurrentLocale instead"),h(t);},e.setCurrentLocale=h,e.getText=function(...t){let e=i.texts,s="";if(t&&t.length){const i=t.length;for(let n=0;n<i&&(s=e[t[n]],"object"==typeof s);n++)e=s;}return s},e.getLocaleSettings=c,e.getOneLocaleSetting=function(t){return i.settings[t]},e.getShortMonthName=function(t){const e=c();if(t>0&&t<13)return e.shortMonthNames[t-1];throw "Wrong month number: "+t},e.getLongMonthName=function(t){const e=c();if(t>0&&t<13)return e.longMonthNames[t-1];throw "Wrong month number: "+t},e.getShortWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.shortWeekDayNames.length>=t?e.shortWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.getLongWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.longWeekDayNames.length>=t?e.longWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.updateLocaleSettings=u,e.updateLocaleTexts=function(t){"object"==typeof t?(l({localeId:i.localeId,texts:t}),s$1.assignDeep(i.texts,t)):console.error("Wrong parameter type in updateLocaleTexts function call.The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead");},e.updateDefaultTexts=function(t){for(let e in o){let i=o[e];i.texts=s$1.assignDeep({},t,i.texts);}i.texts=s$1.assignDeep({},t,i.texts);},e.updateLocaleInfo=g,e.addLocale=function(t,e){g(t,e);},e.resetLocales=function(){i||(i=s$1.assignDeep({},a),function(t){const e=new Date(2020,5,7,19,34,56,88),s=e.toLocaleDateString(t,{year:"numeric",month:"numeric",day:"numeric"}),n=e.toLocaleTimeString(t,{hour:"numeric",minute:"numeric",second:"numeric"});let a=s.replace("07","dd").replace("7","d").replace("06","MM").replace("6","M").replace("2020","yyyy").replace("20","yy"),o=n.replace("19","HH").replace("07","hh").replace("7","h").replace("34","mm").replace("56","ss").replace("PM","tt");i.settings||(i.settings={}),u({shortDateFormat:a,shortTimeFormat:o});}("object"==typeof navigator?navigator.language:void 0));};const p=/\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;function m(t,i){const s=t.getFullYear().toString(),n=t.getMonth()+1,a=t.getDate(),o=t.getHours(),r=t.getMinutes(),l=t.getSeconds(),d=o%12||12,h=o>11,c={yyyy:s,yy:s.substring(s.length-2),MMMM:e.getLongMonthName(n),MMM:e.getShortMonthName(n),MM:n<10?"0"+n:n.toString(),M:n.toString(),dd:a<10?"0"+a:a.toString(),d:a.toString(),HH:o<10?"0"+o:o.toString(),H:o.toString(),hh:d<10?"0"+d:d.toString(),h:d.toString(),tt:h?"PM":"AM",mm:r<10?"0"+r:r.toString(),ss:l<10?"0"+l:l.toString()};return i.replace(p,((t,e)=>e||c[t]))}function f(e){const i=c();let s;switch(e){case t$1.Date:s=i.shortDateFormat;break;case t$1.Time:s=i.shortTimeFormat;break;default:s=i.shortDateFormat+" "+i.shortTimeFormat;}return s}function D(e){const i=c();let s;switch(e){case t$1.Date:s=i.longDateFormat;break;case t$1.Time:s=i.longTimeFormat;break;default:s=i.longDateFormat+" "+i.longTimeFormat;}return s}e.dateTimeToStr=m,e.dateTimeToStrEx=function(e,i,s){return s?"d"==s?s=f(t$1.Date):"D"==s?s=D(t$1.Date):"f"==s?s=f(t$1.DateTime):"F"==s&&(s=D(t$1.DateTime)):s=f(i),m(e,s)},e.numberToStr=function(t,i,s){if(i&&i.length>0){const s=i.charAt(0).toUpperCase();if("S"===s)return function(t,i){if(!y[i]){const t=i.split("|").filter((t=>t.length>0)).map((t=>t.split("=")));if(y[i]={},t.length>0)if(t[0].length>1)for(const e of t)y[i][Number.parseInt(e[1])]=e[0];else t.forEach(((t,e)=>{y[i][e]=t[0];}));}const s=y[i];if(void 0!==s[t]){const i=s[t];return e.getText(i)||i}return t.toString()}(t,i.slice(1));if(["D","F","C"].indexOf(s)>=0){const e=d();return t.toLocaleString(e,function(t){const e=c(),i=t[0].toUpperCase(),s=t.length>1?Number.parseInt(t.slice(1)):"D"==i?1:2;switch(i){case"D":return {style:"decimal",useGrouping:!1,minimumIntegerDigits:s};case"C":return {style:"currency",currency:e.currency,minimumFractionDigits:s};default:return {style:"decimal",minimumFractionDigits:s,maximumFractionDigits:s}}}(i))}return function(t,e){let i=t.toString(),s="",n=i.length-1;for(let t=e.length-1;t>=0;t--){const a=e.charAt(t);"#"===a||"0"===a?n>=0?(s+=i.charAt(n),n--):"0"===a&&(s+=0):s+=a;}return s.split("").reverse().join("")}(Math.trunc(t),i)}const n=c();return s=s||n.decimalSeparator,t.toString().replace(".",s)},e.booleanToStr=function(t,i){if(i&&i.length>0&&"S"===i.charAt(0).toUpperCase()){const s=i.slice(1).split("|");if(s.length>1){const i=s[t?1:0];return e.getText(i)||i}}return `${t}`};const y={};}(n$1||(n$1={})),function(t){t[t.None=0]="None",t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(a$1||(a$1={}));let l$1 = class l{constructor(t,e){this.columns=t,this.values=e;}toArray(){return Array.from(this.values)}size(){return this.values.length}getValue(t){let e;if("string"==typeof t){if(e=this.columns.getIndex(t),void 0===e)throw new RangeError(`No column with id '${t}'`)}else e=t;if(e>=this.values.length)throw new RangeError("Out of range: "+e);return this.values[e]}setValue(t,e){let i;if("string"==typeof t){if(i=this.columns.getIndex(t),void 0===i)throw new RangeError(`No column with id '${t}'`)}else i=t;if(i>=this.values.length)throw new RangeError("Out of range: "+i);this.values[i]=e;}};let d$1 = class d{static newGuid(){return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,(function(t){var e=16*Math.random()|0;return ("x"==t?e:3&e|8).toString(16)}))}};let h$1 = class h{constructor(t){this.silentMode=0,this.events=new Array,this.source=t;}subscribe(t,e){let i=this.getEventRecByType(t);const s={id:d$1.newGuid(),callback:e};return i?i.eventCallbacks.push(s):(i={type:t,eventCallbacks:new Array(s)},this.events.push(i)),s.id}unsubscribe(t,e){let i=this.getEventRecByType(t);if(i){let t=-1;for(t=0;t<i.eventCallbacks.length&&i.eventCallbacks[t].id!==e;t++);t>=0&&i.eventCallbacks.splice(t,1);}}fire(t,e,i=0,s=!1){if(this.silentMode&&!s)return;let n=this.getEventRecByType(t);if(n){const s={type:t,source:this.source,data:e};let a=()=>{for(let t of n.eventCallbacks)t.callback(s);};i>0?setTimeout(a,i):a();}}enterSilentMode(){this.silentMode++;}exitSilentMode(){this.silentMode&&this.silentMode--;}isSilent(){return this.silentMode>0}getEventRecByType(t){for(let e of this.events)if(e.type==t)return e;return null}};function c$1(t,e){for(t.appendChild(e);t.firstChild!==e;)e.appendChild(t.firstChild);}function u$1(t,e,i){let s=document.createElement(e),n=i||{};return n.cssClass&&(s.className=n.cssClass),t.appendChild(s),s}function g$1(t,e){t.className=t.className?t.className+" "+e:e;}function p$1(t){t.style.display="none";}function m$1(t,e){e||(e=""),t.style.display=e;}function f$1(t,e,i){i||(i={}),i.display||(i.display=""),i.duration||(i.duration=200),p$1(t),m$1(e,i.display),i.complete&&i.complete();}function D$1(t){return "none"!=t.style.display&&0!=t.offsetWidth&&0!=t.offsetHeight}function y$1(t){var e;return "function"==typeof Event?e=new Event(t):(e=document.createEvent("Event")).initEvent(t,!0,!0),e}function v$1(){return {width:Math.max(document.documentElement.clientWidth||0,window.innerWidth||0),height:Math.max(document.documentElement.clientHeight||0,window.innerHeight||0)}}function w$1(){if(r$1.IsIE())return b$1();return {width:Math.max(document.documentElement.clientWidth,document.body.clientWidth||0),height:Math.max(document.documentElement.clientHeight,document.body.clientHeight||0)}}function C$1(){const t=document.body,e=document.documentElement;return {top:window.pageYOffset||e.scrollTop||t.scrollTop,left:window.pageXOffset||e.scrollLeft||t.scrollLeft}}function T$1(t){let e={x:0,y:0};if(null!==t){const i=function(t){const e={top:0,right:0,bottom:0,left:0,width:0,height:0};let i;try{i=t.getBoundingClientRect();}catch(t){i=e;}const s=document.body,n=document.documentElement,a=C$1(),o=a.top,r=a.left,l=n.clientTop||s.clientTop||0,d=n.clientLeft||s.clientLeft||0,h=i.top+o-l,c=i.left+r-d;return {top:Math.round(h),left:Math.round(c)}}(t);e={x:i.left,y:i.top};}return e}function b$1(){return {width:window.innerWidth,height:window.innerHeight}}function E$1(t,e,i){t.style.removeProperty("display");let s=window.getComputedStyle(t).display;"none"===s&&(s="block"),t.style.display=s;let n=t.offsetHeight;t.style.overflow="hidden",t.style.height="0px",t.style.paddingTop="0px",t.style.paddingBottom="0px",t.style.marginTop="0px",t.style.marginBottom="0px",t.offsetHeight,t.style.boxSizing="border-box",t.style.transitionProperty="height, margin, padding",t.style.transitionDuration=e+"ms",t.style.height=n+"px",t.style.removeProperty("padding-top"),t.style.removeProperty("padding-bottom"),t.style.removeProperty("margin-top"),t.style.removeProperty("margin-bottom"),window.setTimeout((()=>{t.style.removeProperty("height"),t.style.removeProperty("overflow"),t.style.removeProperty("transition-duration"),t.style.removeProperty("transition-property"),t.style.removeProperty("box-sizing"),i&&i();}),e);}function x$1(t,e,i){t.style.transitionProperty="height, margin, padding",t.style.transitionDuration=e+"ms",t.style.boxSizing="border-box",t.style.height=t.offsetHeight+"px",t.offsetHeight,t.style.overflow="hidden",t.style.height="0px",t.style.paddingTop="0px",t.style.paddingBottom="0px",t.style.marginTop="0px",t.style.marginBottom="0px",window.setTimeout((()=>{t.style.display="none",t.style.removeProperty("height"),t.style.removeProperty("padding-top"),t.style.removeProperty("padding-bottom"),t.style.removeProperty("margin-top"),t.style.removeProperty("margin-bottom"),t.style.removeProperty("overflow"),t.style.removeProperty("transition-duration"),t.style.removeProperty("transition-property"),t.style.removeProperty("box-sizing"),i&&i();}),e);}(o$1||(o$1={})).renderLiquidTemplate=function(t,e){let i=t;if(e)for(let t in e){const s=new RegExp("{{"+t+"}}","g");i=i.replace(s,e[t]);}return i},n$1.resetLocales(),"function"!=typeof Object.values&&(Object.values=function(t){return Object.keys(t).map((e=>t[e]))}),"function"!=typeof Math.trunc&&(Math.trunc=function(t){return isNaN(t)?NaN:t>0?Math.floor(t):Math.ceil(t)}),function(t){let e=null,i=null;function s(){if(null===i){const t=navigator.userAgent;i=t.indexOf("MSIE ")>-1||t.indexOf("Trident/")>-1;}return i}t.IsIE=s,t.IsEdge=function(){const t=window.navigator.userAgent;return !s()&&t.includes("Edge/")},t.IsFirefox=function(){if(null===e){const t=navigator.userAgent;e=t.toLowerCase().indexOf("firefox")>-1;}return e};let n,a,o=!1,r=()=>{const t=l();o=window.matchMedia("only screen and (max-width: 840px)").matches||window.matchMedia("only screen and (max-height: 420px)").matches;const e=l();e!==t&&a&&a(e);};function l(){return void 0!==n?n:o}r(),window.addEventListener("resize",(()=>r())),t.isMobileMode=l,t.setIsMobileMode=function(t){const e=l();n=t;const i=l();i!==e&&a&&a(i);},t.onMobileModeChanged=function(t){a=t;},t.getMobileCssClass=function(){return l()?"k-mobile":null};}(r$1||(r$1={}));const S$1="eqjs",M$1="eqjs-mobile";function I$1(t,e){const i={9:"[0-9]",a:"[a-z]"},s=e.split(""),n=e=>{if("focus"===e.type&&""!==t.value)return;let n=[],a=t.selectionStart;s.forEach(((e,s)=>{if(i[e]){let a=new RegExp(i[e],"i").test(t.value.charAt(s));n.push(a?t.value.charAt(s):"_");}else n.push(e);})),t.value=n.join(""),t.selectionStart=t.selectionEnd=a;};t.addEventListener("keydown",(e=>{if(8===e.keyCode||46===e.keyCode){e.preventDefault();let n=[],a=t.selectionStart;if(0==a)return;let o=a,r=!0;for(let e=s.length-1;e>=0;e--){const l=s[e];if(i[l]){let s=new RegExp(i[l],"i").test(t.value.charAt(e));s&&e!=a-1&&(r=!1),e===a-1&&o--,n.push(s&&e!=a-1?t.value.charAt(e):"_");}else e===o-1&&o--,a-1===e&&a--,n.push(l);}t.value=r?"":n.reverse().join(""),t.selectionStart=t.selectionEnd=o<0?0:o;const l=document.createEvent("Event");l.initEvent("input",!0,!0),t.dispatchEvent(l);}})),t.addEventListener("keypress",(e=>{const n=String.fromCharCode(e.charCode);if(n){e.preventDefault();let a=[],o=t.selectionStart,r=o;s.forEach(((e,s)=>{if(i[e]){const l=s!=o?t.value.charAt(s):n;let d=new RegExp(i[e],"i").test(l);a.push(d?l:"_"),d&&o===s&&r++;}else a.push(e),r===s&&r++,o===s&&o++;})),t.value=a.join(""),t.selectionStart=t.selectionEnd=r;const l=document.createEvent("Event");l.initEvent("input",!0,!0),t.dispatchEvent(l);}})),t.addEventListener("input",n),t.addEventListener("focus",n);}let R$1 = class R{constructor(t,e){this.element="string"==typeof t?document.createElement(t):t,e&&this.element.parentElement!==e&&e.appendChild(this.element);}addChild(t,e){const i=L$1(t,this.element);return e&&e(i),this}addChildElement(t){return t&&this.element.appendChild(t),this}attr(t,e){return this.element.setAttribute(t,e),this}id(t){return this.attr("id",t)}focus(){return this.element.focus(),this}title(t){return this.attr("title",t)}data(t,e=null){return null===e?(this.element.removeAttribute("data-"+t),this):this.attr("data-"+t,e)}show(){return this.removeStyle("display")}hide(t=!0){return t?this.setStyle("display","none"):this}visible(t=!0){return t?this.setStyle("visibility","visible"):this.setStyle("visibility","hidden")}isVisible(){return !!(this.element.offsetWidth||this.element.offsetHeight||this.element.getClientRects().length)}addClass(t,...e){if(t){const i=[...t.trim().split(" "),...e];for(let t=0;t<i.length;t++)this.element.classList.add(i[t]);}return this}removeClass(t,...e){if(t){const i=[...t.trim().split(" "),...e];for(let t=0;t<i.length;t++)this.element.classList.remove(i[t]);}return this}toggleClass(t,e=void 0){return t&&this.element.classList.toggle(t,e),this}on(t,e){const i=t.split(" ");for(let t=0;t<i.length;t++)this.element.addEventListener(i[t],e);return this}off(t,e){const i=t.split(" ");for(let t=0;t<i.length;t++)this.element.removeEventListener(i[t],e);return this}setStyle(t,e){return this.element.style.setProperty(t,e),this}removeStyle(t){return this.element.style.removeProperty(t),this}text(t){return this.element.innerText=t,this}html(t){return this.element.innerHTML=t,this}clear(){const t=this.element;this.element=document.createElement(this.element.tagName),t.replaceWith(this.element);}addText(t){const e=document.createTextNode(t);return this.element.appendChild(e),this}addHtml(t){return this.element.innerHTML+=t,this}toDOM(){return this.element}appendTo(t){return t&&t.appendChild(this.element),this}};let O$1 = class O extends R$1{constructor(t,e){super(t||"textarea",e);}name(t){return this.element.name=t,this}rows(t){return this.element.rows=t,this}cols(t){return this.element.cols=t,this}value(t){return this.element.value=t,this}};let P$1 = class P extends R$1{constructor(t,e){super(t||"input",e);}name(t){return this.element.name=t,this}type(t){return this.element.type=t,this}size(t){return this.element.size=t,this}value(t){return t instanceof Date?this.element.valueAsDate=t:"number"==typeof t?this.element.valueAsNumber=t:this.element.value=t,this}mask(t){return I$1(this.element,t),this}};let A$1 = class A extends R$1{constructor(t,e){super(t||"select",e);}addOption(t){const e=document.createElement("option");return "string"==typeof t?(e.value=t,e.innerHTML=t):(e.value=t.value,e.innerHTML=t.title||t.value,e.selected=t.selected||!1),this.element.appendChild(e),this}value(t){return this.element.value=t,this}};function L$1(t,e){return "div"===t||t instanceof HTMLDivElement||"span"===t||t instanceof HTMLSpanElement||"a"===t||t instanceof HTMLAnchorElement||"button"===t||t instanceof HTMLButtonElement||"img"===t||t instanceof HTMLImageElement?new R$1(t,e):"input"===t||t instanceof HTMLInputElement?new P$1(t instanceof HTMLInputElement?t:null,e):"textarea"===t||t instanceof HTMLTextAreaElement?new O$1(t instanceof HTMLTextAreaElement?t:null,e):"select"===t||t instanceof HTMLSelectElement?new A$1(t instanceof HTMLSelectElement?t:null,e):new R$1(t,e)}const k$1="undefined"!=typeof TouchEvent;var N$1;!function(t){t.None="none",t.Allow="allow",t.Forbid="forbid";}(N$1||(N$1={}));let $$1 = class ${constructor(t,e,i){this.dropEffect=N$1.Allow,this.pageX=0,this.pageY=0,this.item=t,this.dragImage=e,this.data=t.data,this.sourceEvent=i,i&&i instanceof MouseEvent&&(this.pageX=i.pageX,this.pageY=i.pageY),i&&k$1&&i instanceof TouchEvent&&i.touches[0]&&(this.pageX=i.touches[0].pageX,this.pageY=i.touches[0].pageY);}};let H$1 = class H{constructor(t){t&&t instanceof MouseEvent&&(this.x=t.pageX,this.y=t.pageY),t&&k$1&&t instanceof TouchEvent&&t.touches[0]&&(this.x=t.touches[0].pageX,this.y=t.touches[0].pageY);}};let F$1 = class F{constructor(){this.delta=5,this.draggableItem=null,this.dragImage=null,this.finishedSuccessfully=!1,this.mouseDownPosition=null,this.containerDescriptors=[],this.containerDescriptorIndex=-1,this.dropEffect=N$1.None,this.classPrefix="eqjs-drop",this.DRAG_DISABLED_ATTR="drag-disabled";}registerDraggableItem(t){const e=t.element;if(!e)throw Error("Element in draggle item is null or undefined");e.ondragstart=function(){return !1};const i=t=>{if(e.hasAttribute(this.DRAG_DISABLED_ATTR))return;t.preventDefault(),t instanceof MouseEvent&&t.stopPropagation();const i=new H$1(t);(Math.abs(i.x-this.mouseDownPosition.x)>this.delta||Math.abs(i.y-this.mouseDownPosition.y)>this.delta)&&n(t);},s=t=>{this.mouseMoveDragListener(t);},n=n=>{n.preventDefault(),n.stopPropagation(),e.removeEventListener("mousemove",i),e.removeEventListener("touchmove",i),this.finishedSuccessfully=!1,t.beforeDragStart&&t.beforeDragStart(),this.dragImage=L$1("div").setStyle("position","absolute").setStyle("z-index","65530").toDOM(),document.body.appendChild(this.dragImage),this.dragImage.appendChild(e.cloneNode(!0)),t.renderer&&t.renderer(this.dragImage),this.dropEffect=N$1.None,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect),this.draggableItem={element:e,scope:t.scope,data:t.data},this.updateDragItemPosition(n);const a=new $$1(this.draggableItem,this.dragImage,n);a.dropEffect=this.dropEffect,t.onDragStart&&t.onDragStart(a),this.dropEffect!==a.dropEffect&&(this.dropEffect=a.dropEffect,this.updateImageClass(this.dropEffect)),document.addEventListener("mousemove",s,!0),document.addEventListener("touchmove",s,!0);},a=t=>{k$1&&t instanceof TouchEvent&&t.preventDefault(),this.mouseDownPosition=new H$1(t),e.addEventListener("mousemove",i),e.addEventListener("touchmove",i),document.addEventListener("mouseup",o),document.addEventListener("touchend",o);};e.addEventListener("mousedown",a),e.addEventListener("touchstart",a);const o=t=>{this.mouseDownPosition=null,e.removeEventListener("mousemove",i),e.removeEventListener("touchmove",i),document.removeEventListener("mousemove",s,!0),document.removeEventListener("touchmove",s,!0),this.draggableItem&&r(t);},r=e=>{try{if(this.containerDescriptorIndex>=0){const t=this.containerDescriptors[this.containerDescriptorIndex],i={element:t.element,scopes:t.scopes,data:t.data},s=new $$1(this.draggableItem,this.dragImage,e);try{i.scopes.indexOf(this.draggableItem.scope)>=0&&this.dropEffect===N$1.Allow&&(this.finishedSuccessfully=!0,t.onDrop&&t.onDrop(i,s));}finally{t.onDragLeave&&t.onDragLeave(i,s);}}}finally{try{const i=new $$1(this.draggableItem,this.dragImage,e);i.data.finishedSuccessfully=this.finishedSuccessfully,t.onDragEnd&&t.onDragEnd(i);}finally{this.draggableItem=null,this.dragImage&&this.dragImage.parentElement&&this.dragImage.parentElement.removeChild(this.dragImage),this.dragImage=null,this.finishedSuccessfully=!1,document.removeEventListener("mouseup",o),document.removeEventListener("touchend",o);}}};}registerDropContainer(t){if(!t.element)throw Error("Element in drop container is null or undefined");this.containerDescriptors.push(t);}removeDropContainer(t){const e=this.containerDescriptors.filter((e=>e===t||e.element==t));if(e)for(const t of e)s$1.removeArrayItem(this.containerDescriptors,t);}mouseMoveDragListener(t){if(t instanceof MouseEvent&&t.preventDefault(),t.stopPropagation(),this.updateDragItemPosition(t),-1==this.containerDescriptorIndex){for(let e=0;e<this.containerDescriptors.length;e++){const i=this.containerDescriptors[e];if(this.detectDragEnterEvent(i.element,t)){this.containerDescriptorIndex=e;break}}this.containerDescriptorIndex>=0&&this.dragEnterEvent(t);}else {const e=this.containerDescriptors[this.containerDescriptorIndex];this.detectDragLeaveEvent(e.element,t)&&(this.dragLeaveEvent(t),this.containerDescriptorIndex=-1);}if(this.containerDescriptorIndex>=0){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new $$1(this.draggableItem,this.dragImage,t);s.dropEffect=this.dropEffect,e.onDragOver&&e.onDragOver(i,s);}}}updateCusror(t){switch(t){case N$1.Allow:this.setCursorStyle(this.dragImage,"grabbing");break;case N$1.Forbid:this.setCursorStyle(this.dragImage,"no-drop");break;default:this.setCursorStyle(this.dragImage,"grabbing");}}updateImageClass(t){switch(this.dragImage.classList.remove(`${this.classPrefix}-allow`),this.dragImage.classList.remove(`${this.classPrefix}-forbid`),this.dragImage.classList.remove(`${this.classPrefix}-none`),t){case N$1.Allow:this.dragImage.classList.add(`${this.classPrefix}-allow`);break;case N$1.None:this.dragImage.classList.add(`${this.classPrefix}-none`);break;case N$1.Forbid:this.dragImage.classList.add(`${this.classPrefix}-forbid`);break;default:this.dragImage.classList.add(`${this.classPrefix}-none`);}}setCursorStyle(t,e){if(t){t.style.cursor=e;for(let i=0;i<t.children.length;i++)this.setCursorStyle(t.children[i],e);}}updateDragItemPosition(t){if(this.dragImage){const e=new H$1(t);this.dragImage.style.top=e.y-this.dragImage.offsetHeight/2+"px",this.dragImage.style.left=e.x-this.dragImage.offsetWidth/2+"px";}}dragEnterEvent(t){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new $$1(this.draggableItem,this.dragImage,t);s.dropEffect=N$1.Allow,e.onDragEnter&&e.onDragEnter(i,s),this.dropEffect=s.dropEffect,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect);}else this.dropEffect!==N$1.Forbid&&(this.dropEffect=N$1.None,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect));}dragLeaveEvent(t){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new $$1(this.draggableItem,this.dragImage,t);s.dropEffect=N$1.None,e.onDragLeave&&e.onDragLeave(i,s),this.dropEffect=s.dropEffect,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect);}}detectDragEnterEvent(t,e){const i=T$1(t),s=new H$1(e);return !(s.y<i.y||s.y>i.y+t.offsetHeight)&&!(s.x<i.x||s.x>i.x+t.offsetWidth)}detectDragLeaveEvent(t,e){const i=T$1(t),s=new H$1(e);return !(s.y>i.y&&s.y<i.y+t.offsetHeight&&s.x>i.x&&s.x<i.x+t.offsetWidth)}};const _$1=new F$1;var Y$1;!function(t){t[t.Always=0]="Always",t[t.Once=1]="Once",t[t.Never=2]="Never";}(Y$1||(Y$1={}));var B$1;!function(t){t[t.NONE=1]="NONE",t[t.LEFT=2]="LEFT",t[t.CENTER=3]="CENTER",t[t.RIGHT=4]="RIGHT";}(B$1||(B$1={}));let W$1 = class W{constructor(t,e,i=!1){this._label=null,this._description=null,this.align=B$1.NONE,this.isVisible=!0,this.isRowNum=!1,this.dataColumn=t,this.grid=e;const s=e.options.columnWidths||{};t?(t.style.alignment&&(this.align=function(t){switch(t){case a$1.Left:return B$1.LEFT;case a$1.Center:return B$1.CENTER;case a$1.Right:return B$1.RIGHT;default:return B$1.NONE}}(t.style.alignment)),this.width=s&&s[this.type]?s[this.type].default:250,this._description=t.description):i&&(this.isRowNum=!0,this.width=s&&s.rowNumColumn?s.rowNumColumn.default:60,this._label="");}get label(){return this._label?this._label:this.isRowNum?"":this.dataColumn.label}set label(t){this._label=this.label;}get description(){return this._description}get type(){return this.dataColumn?this.dataColumn.type:null}};let G$1 = class G{constructor(t,e){this.items=[],this.grid=e,this.sync(t);}sync(t,e=!0){this.clear();const i=new W$1(null,this.grid,!0);if(this.add(i),e||(i.isVisible=!1),t)for(let e of t.getItems()){const t=new W$1(e,this.grid);this.grid.options.onSyncGridColumn&&this.grid.options.onSyncGridColumn(t),this.add(t);}}get count(){return this.items.length}add(t){const e=this.items.length;return this.items.push(t),e}put(t,e){t>=0&&t<this.items.length&&(this.items[t]=e);}move(t,e){let i=this.items.indexOf(t);i>=0&&i!=e&&s$1.moveArrayItem(this.items,i,e);}get(t){return t>=0&&t<this.items.length?this.items[t]:null}getItems(){return this.items}removeAt(t){this.get(t),this.items.splice(t,1);}clear(){this.items=[];}};const z$1="keg",V$1=/{0:(.*?)}/g;var U$1;!function(t){t[t.STRING=1]="STRING",t[t.NUMBER=2]="NUMBER",t[t.DATETIME=3]="DATETIME",t[t.BOOL=4]="BOOL";}(U$1||(U$1={}));const j$1=(t,e,i,s)=>{const n=t?t.toString().replace(/\n/g,"↵ "):"";i.innerText=n,i.title=n,e.align==B$1.NONE&&i.classList.add(`${z$1}-cell-value-align-left`);},q$1=(t,e,i,s)=>{let a=(t||"").toString();"number"==typeof t&&(a=e.dataColumn&&e.dataColumn.displayFormat&&V$1.test(e.dataColumn.displayFormat)?e.dataColumn.displayFormat.replace(V$1,((e,i)=>n$1.numberToStr(t,i))):t.toLocaleString()),i.innerText=a,i.title=a,e.align==B$1.NONE&&i.classList.add(`${z$1}-cell-value-align-right`);},K$1=(e,i,s,a)=>{const o="[object Date]"===Object.prototype.toString.call(e);let r=(e||"").toString();if(o)if(i.dataColumn&&i.dataColumn.displayFormat&&V$1.test(i.dataColumn.displayFormat))r=i.dataColumn.displayFormat.replace(V$1,((t,s)=>n$1.dateTimeToStrEx(e,i.type,s)));else {const s=n$1.getCurrentLocale(),a={hour:"numeric",minute:"numeric",second:"numeric"};switch(i.type){case t$1.Date:r=e.toLocaleDateString(s);break;case t$1.Time:r=e.toLocaleTimeString(s,a);break;case t$1.DateTime:r=`${e.toLocaleDateString(s)} ${e.toLocaleTimeString(s,a)}`;}}s.innerText=r,s.title=r,i.align==B$1.NONE&&s.classList.add(`${z$1}-cell-value-align-right`);},Q$1=(t,e,i,s)=>{if(e.dataColumn&&e.dataColumn.displayFormat&&V$1.test(e.dataColumn.displayFormat)){const s=e.dataColumn.displayFormat.replace(V$1,((e,i)=>n$1.booleanToStr(t,i)));return j$1(s,e,i)}i.classList.add(`${z$1}-cell-value-bool`),i.classList.add(`${z$1}-${t?"cell-value-true":"cell-value-false"}`);};let J$1 = class J{constructor(t){this.renderers={},this.defaultRenderers={},this.registerRenderer("StringDefault",j$1),this.setDefaultRenderer(U$1.STRING,j$1),this.registerRenderer("NumberDefault",q$1),this.setDefaultRenderer(U$1.NUMBER,q$1),this.registerRenderer("DateTimeDefault",K$1),this.setDefaultRenderer(U$1.DATETIME,K$1),this.registerRenderer("BoolDefault",Q$1),this.setDefaultRenderer(U$1.BOOL,Q$1);}getDefaultRenderer(t){const e=this.getCellType(t);return this.defaultRenderers[U$1[e]]}getDefaultRendererByType(t){return this.defaultRenderers[U$1[t]]}setDefaultRenderer(t,e){e&&(this.defaultRenderers[U$1[t]]=e);}getRenderer(t){return this.renderers[t]}registerRenderer(t,e){this.renderers[t]=e;}getCellType(e){switch(e){case t$1.Autoinc:case t$1.Byte:case t$1.Word:case t$1.Currency:case t$1.Float:case t$1.Int32:case t$1.Int64:return U$1.NUMBER;case t$1.Date:case t$1.DateTime:case t$1.Time:return U$1.DATETIME;case t$1.Bool:return U$1.BOOL;default:return U$1.STRING}}};let X$1 = class X{constructor(t){if(this.cssPrefix="keg",this.pagination={page:1,pageSize:30,total:0},this.paginationOptions={maxButtonCount:10,useBootstrap:!1},this.defaultDataGridOptions={slot:null,dataTable:null,fixHeightOnFirstRender:!1,syncGridColumns:!0,useRowNumeration:!0,allowDragDrop:!1,aggregates:{settings:null,calculator:null},paging:{enabled:!0,pageSize:30,pageSizeItems:[20,30,50,100,200]},columnWidths:{autoResize:Y$1.Always,stringColumns:{min:100,max:500,default:250},numberColumns:{min:60,default:120},boolColumns:{min:50,default:80},dateColumns:{min:80,default:200},otherColumns:{min:100,max:500,default:250},rowNumColumn:{min:40,default:60}},showPlusButton:!1,viewportRowsCount:null,showActiveRow:!0},this.rowsOnPagePromise=null,this.containerInitialHeight=0,this.firstRender=!0,this.prevRowTotals=null,this.landingIndex=-1,this.landingSlot=L$1("div").addClass(`${this.cssPrefix}-col-landing-slot`).addChildElement(L$1("div").toDOM()).toDOM(),this._activeRowIndex=-1,t&&t.paging&&(t.paging=s$1.assign(this.defaultDataGridOptions.paging,t.paging)),this.options=this.mergeOptions(t),this.processColumnWidthsOptions(),!this.options.slot)throw Error('"slot" parameter is required to initialize EasyDataGrid');if(!this.options.dataTable)throw Error('"dataTable" parameter is required to initialize EasyDataGrid');this.dataTable=t.dataTable,this.eventEmitter=new h$1(this),this.cellRendererStore=new J$1(t),this.columns=new G$1(this.dataTable.columns,this),this.setSlot(this.options.slot),this.init(this.options);}mergeOptions(t){const e=s$1.assignDeep({},this.defaultDataGridOptions.columnWidths,t.columnWidths),i=s$1.assignDeep({},this.defaultDataGridOptions.paging,t.paging),n=s$1.assign({},this.defaultDataGridOptions,t);return n.columnWidths=e,n.paging=i,n}processColumnWidthsOptions(){const e=this.options.columnWidths;if(!e)return;s$1.getStringDataTypes().forEach((t=>{e[t]=Object.assign(Object.assign({},e.stringColumns),e[t]);})),s$1.getNumericDataTypes().forEach((t=>{e[t]=Object.assign(Object.assign({},e.numberColumns),e[t]);})),e[t$1.Bool]=Object.assign(Object.assign({},e.boolColumns),e[t$1.Bool]),s$1.getDateDataTypes().forEach((t=>{e[t]=Object.assign(Object.assign({},e.dateColumns),e[t]);}));const i=[...s$1.getStringDataTypes(),...s$1.getNumericDataTypes(),...s$1.getDateDataTypes(),t$1.Bool];s$1.getAllDataTypes().forEach((t=>{t in i||(e[t]=Object.assign(Object.assign({},e.otherColumns),e[t]));})),e[t$1.Unknown]=e.otherColumns;}setSlot(t){if("string"==typeof t){if(t.length)if("#"===t[0])this.slot=document.getElementById(t.substring(1));else {if("."!==t[0])throw Error("Unrecognized slot parameter (Must be id, class or HTMLElement): "+t);{const e=document.getElementsByClassName(t.substring(1));e.length&&(this.slot=e[0]);}}}else this.slot=t;}init(t){t.onInit&&this.addEventListener("init",t.onInit),t.onRowClick&&this.addEventListener("rowClick",t.onRowClick),t.onRowDbClick&&this.addEventListener("rowDbClick",t.onRowDbClick),t.onPlusButtonClick&&this.addEventListener("plusButtonClick",t.onPlusButtonClick),t.onColumnChanged&&this.addEventListener("columnChanged",t.onColumnChanged),t.onColumnDeleted&&this.addEventListener("columnDeleted",t.onColumnDeleted),t.onColumnMoved&&this.addEventListener("columnMoved",t.onColumnMoved),t.onPageChanged&&this.addEventListener("pageChanged",t.onPageChanged),t.onActiveRowChanged&&this.addEventListener("activeRowChanged",t.onActiveRowChanged),this.addEventListener("pageChanged",(t=>this.activeRowIndex=-1)),s$1.assignDeep(this.paginationOptions,t.pagination),this.pagination.pageSize=this.options.paging.pageSize||this.pagination.pageSize,this.options.allowDragDrop&&_$1.registerDropContainer({element:this.slot,scopes:["gridColumnMove"],onDragEnter:(t,e)=>{this.slot.classList.add(`${S$1}-drophover`),this.showLandingSlot(e.pageX,e.pageY);},onDragOver:(t,e)=>{this.showLandingSlot(e.pageX,e.pageY);},onDragLeave:(t,e)=>{e.dropEffect=N$1.Forbid,this.slot.classList.remove(`${S$1}-drophover`),this.hideLandingSlot();},onDrop:(t,e)=>{this.dataTable.columns.move(e.data.column,this.landingIndex),this.refresh(),this.fireEvent({type:"columnMoved",columnId:e.data.column.id,newIndex:this.landingIndex});}}),this.refresh(),this.fireEvent("init");}fireEvent(t){"string"==typeof t?this.eventEmitter.fire(t):this.eventEmitter.fire(t.type,t);}setData(t){this.dataTable=t,this.clear(),this.refresh();}getData(){return this.dataTable}getColumns(){return this.columns}destroy(){this.slot.innerHTML="";}refresh(){this.clearDOM(),this.render();}clearDOM(){this.slot.innerHTML="";}clear(){this.pagination.page=1,this.clearDOM();}render(){if(!this.hasData()&&!this.options.showPlusButton)return;this.containerInitialHeight=this.slot.clientHeight,this.rootDiv=document.createElement("div"),this.rootDiv.style.width="100%",this.rootDiv.classList.add(`${this.cssPrefix}-root`),this.columns.sync(this.dataTable.columns,this.options.useRowNumeration),this.renderHeader(),this.rootDiv.appendChild(this.headerDiv),this.renderBody(),this.rootDiv.appendChild(this.bodyDiv),this.renderFooter(),this.rootDiv.appendChild(this.footerDiv);let t=document.createElement("div");t.classList.add(`${this.cssPrefix}-container`),t.appendChild(this.rootDiv),this.slot.appendChild(t);const e=this.options.columnWidths.autoResize!==Y$1.Never;this.rowsOnPagePromise?this.rowsOnPagePromise.then((()=>this.updateHeight())).then((()=>{this.firstRender=!1,this.rowsOnPagePromise=null;})):setTimeout((()=>{this.updateHeight().then((()=>{this.firstRender=!1,e&&this.resizeColumns();}));}),100);}updateHeight(){return new Promise((t=>{if(this.options.viewportRowsCount){const e=this.bodyCellContainerDiv.firstElementChild;let i=(e?e.offsetHeight:36)*this.options.viewportRowsCount;return L$1(this.bodyViewportDiv).setStyle("height",`${i}px`),void setTimeout((()=>{const e=this.bodyViewportDiv.offsetHeight-this.bodyViewportDiv.clientHeight;i+=e,L$1(this.bodyViewportDiv).setStyle("height",`${i}px`),t();}),100)}this.containerInitialHeight,t();})).then((()=>{this.options.fixHeightOnFirstRender&&this.firstRender&&(this.slot.style.height=`${this.slot.offsetHeight}px`);}))}getContainerWidth(){return this.columns.getItems().filter((t=>t.isVisible)).map((t=>t.width)).reduce(((t,e)=>t+e))}renderHeader(){this.headerDiv=L$1("div").addClass(`${this.cssPrefix}-header`).toDOM(),this.headerViewportDiv=L$1("div",this.headerDiv).addClass(`${this.cssPrefix}-header-viewport`).toDOM(),this.headerCellContainerDiv=L$1("div",this.headerViewportDiv).addClass(`${this.cssPrefix}-header-cell-container`).toDOM(),this.headerRowDiv=L$1("div",this.headerCellContainerDiv).addClass(`${this.cssPrefix}-header-row`).toDOM(),this.columns.getItems().forEach(((t,e)=>{if(!t.isVisible)return;let i=this.renderColumnHeader(t,e);this.headerRowDiv.appendChild(i),t.isRowNum&&L$1(i).addChildElement(this.renderHeaderButtons());}));const t=this.getContainerWidth();L$1(this.headerCellContainerDiv).setStyle("width",`${t}px`);}hasData(){return this.dataTable.columns.count>0}renderColumnHeader(t,e){let i=L$1("div").addClass(`${this.cssPrefix}-header-cell`).data("col-idx",`${e}`).setStyle("width",`${t.width}px`);t.dataColumn&&i.data("col-id",`${t.dataColumn.id}`);let s=i.toDOM();return L$1("div",s).addClass(`${this.cssPrefix}-header-cell-resize`),t.isRowNum||L$1("div",s).addClass(`${this.cssPrefix}-header-cell-label`).text(t.label),t.description&&L$1("div",s).addClass("question-mark").title(t.description),this.options.allowDragDrop&&_$1.registerDraggableItem({element:s,scope:"gridColumnMove",data:{column:t},renderer:e=>{e.innerHTML="";const i=document.createElement("div");i.innerText=t.label,e.classList.add(`${this.cssPrefix}-sortable-helper`),e.appendChild(i);},onDragStart:t=>{t.dropEffect=N$1.Allow;}}),s}renderBody(){this.bodyDiv=L$1("div").addClass(`${this.cssPrefix}-body`).toDOM(),this.bodyViewportDiv=L$1("div",this.bodyDiv).addClass(`${this.cssPrefix}-body-viewport`).attr("tabIndex","0").toDOM(),this.bodyCellContainerDiv=L$1("div",this.bodyViewportDiv).addClass(`${this.cssPrefix}-cell-container`).toDOM();const t=this.canShowAggregates();this.dataTable&&(this.showProgress(),this.rowsOnPagePromise=this.getRowsToRender().then((e=>{this.pagination.total=this.dataTable.getTotal(),this.hideProgress(),this.bodyCellContainerDiv.innerHTML="",this.prevRowTotals=null;let i=0;if(e.length){const s=t?this.options.aggregates.settings.getGroups():[];i=e.length<this.pagination.pageSize?e.length:this.pagination.pageSize,e.forEach(((e,n)=>{if(t&&this.updateTotalsState(s,e),n<i){const t=this.renderRow(e,n);this.bodyCellContainerDiv.appendChild(t);}}));const n=this.options.aggregates&&this.options.aggregates.showGrandTotalsOnEachPage;if(t&&(this.isLastPage()||n)){const t=new l$1(this.dataTable.columns,new Array(this.dataTable.columns.count));this.updateTotalsState(s,t,!0);}}if(this.options.columnWidths.autoResize!==Y$1.Never)this.resizeColumns();else {const t=this.getContainerWidth();L$1(this.bodyCellContainerDiv).setStyle("width",`${t}px`);}return i})).catch((t=>(console.error(t),0)))),this.bodyViewportDiv.addEventListener("scroll",(t=>{L$1(this.headerViewportDiv).setStyle("margin-left",`-${this.bodyViewportDiv.scrollLeft}px`);})),this.bodyViewportDiv.addEventListener("keydown",this.onViewportKeydown.bind(this));}isLastPage(){return this.dataTable.elasticChunks?this.dataTable.totalIsKnown()&&this.pagination.page*this.pagination.pageSize>=this.pagination.total:this.pagination.page*this.pagination.pageSize>=this.pagination.total}canShowAggregates(){if(!this.options||!this.options.aggregates||!this.options.aggregates.settings)return !1;const t=this.options.aggregates.settings;return (t.hasAggregates()||t.hasRecordCount())&&(t.hasGroups()||t.hasGrandTotals())}updateTotalsState(t,e,i=!1){const s=this.options.aggregates.settings;if(this.prevRowTotals&&s.hasGroups()){let i=-1;for(let n=1;n<=t.length;n++){const a=t[n-1];for(const t of a.columns)if(!s.compareValues(this.prevRowTotals.getValue(t),e.getValue(t))){i=n;break}if(-1!==i)break}if(-1!==i)for(let e=t.length;e>=i;e--){const t=new l$1(this.dataTable.columns,this.prevRowTotals.toArray()),i=this.renderTotalsRow(e,t);this.bodyCellContainerDiv.appendChild(i);}}if(i&&s.hasGrandTotals()&&s.hasAggregates()){const t=this.renderTotalsRow(0,e);this.bodyCellContainerDiv.appendChild(t);}this.prevRowTotals=e;}applyGroupColumnTemplate(t,e,i){let s=t.replace(/{{\s*GroupValue\s*}}/g,e?`${e}`:"-");return s=s.replace(/{{\s*GroupCount\s*}}/g,i?`${i}`:"-"),s}renderTotalsRow(t,e){const i=this.options.aggregates.settings,s=t>0?i.getGroups()[t-1]:{columns:[],aggregates:i.getAggregates()},n=L$1("div").addClass(`${this.cssPrefix}-row`).addClass(`${this.cssPrefix}-row-totals`).addClass(`${this.cssPrefix}-totals-lv${t}`).data("totals-level",`${t}`).attr("tabindex","-1").toDOM();this.columns.getItems().forEach(((t,i)=>{if(!t.isVisible)return;let a="";const o=t.isRowNum?-1:this.dataTable.columns.getIndex(t.dataColumn.id);!t.isRowNum&&t.dataColumn&&s.columns.indexOf(t.dataColumn.id)>=0&&(a=e.getValue(o)),o==this.dataTable.columns.count-1&&(a=".  .  .  .  .  ."),n.appendChild(this.renderCell(t,i,a,n));}));const a=this.options.aggregates.calculator.getAggrContainer(),o=i.getAggregates().map((t=>t.colId)),r=i.buildGroupKey(s,e);return a.getAggregateData(t,r).then((a=>{for(const t of o)e.setValue(t,a[t]);n.innerHTML="",this.columns.getItems().forEach(((r,l)=>{if(!r.isVisible)return;let d="";const h=r.isRowNum?-1:this.dataTable.columns.getIndex(r.dataColumn.id);if(!r.isRowNum){let c=!1;if(r.dataColumn){const i=s.columns.indexOf(r.dataColumn.id),n=o.indexOf(r.dataColumn.id);c=t>0?i==s.columns.length-1:0==h,(i>=0||n>=0)&&(d=e.getValue(h));}let u="";if(t>0&&(u=r.dataColumn.groupFooterColumnTemplate,!u&&i.hasRecordCount()&&c&&(u="{{GroupValue}} ({{GroupCount}})")),u){d=this.renderCell(r,l,d,n).firstChild.innerHTML,d=this.applyGroupColumnTemplate(u,d,a[i.COUNT_FIELD_NAME]);}}const c=this.renderCell(r,l,d,n);n.appendChild(c);}));})).catch((t=>console.error(t))),n}onViewportKeydown(t){if(this.options.showActiveRow){const e=this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;let i;switch(t.key){case"ArrowLeft":case"ArrowRight":break;case"ArrowUp":t.preventDefault(),i=this.activeRowIndex<0||this.activeRowIndex>=e?e-1:this.activeRowIndex-1,this.activeRowIndex=i>=0?i:0;break;case"ArrowDown":t.preventDefault(),i=this.activeRowIndex<0||this.activeRowIndex>=e?0:this.activeRowIndex+1,this.activeRowIndex=i<e?i:e-1;}}}ensureRowVisibility(t){const e="number"==typeof t?this.getDataRow(t):t;if(e){let t=e.getBoundingClientRect();const i=this.bodyViewportDiv.getBoundingClientRect(),s=t.top-i.top,n=t.bottom-i.top,a=this.bodyViewportDiv.clientHeight,o=window.innerHeight||document.documentElement.clientHeight;if(s>0&&n<=a&&t.top>0&&t.bottom<o)return;s<0?this.bodyViewportDiv.scrollTop=this.bodyViewportDiv.scrollTop+s:n>a&&(this.bodyViewportDiv.scrollTop=this.bodyViewportDiv.scrollTop+n-a),t=e.getBoundingClientRect(),t.top<0?document.documentElement.scrollTop=document.documentElement.scrollTop+t.top:t.bottom>o&&(document.documentElement.scrollTop=document.documentElement.scrollTop+t.bottom-o);}}getRowsToRender(){return !1===this.options.paging.enabled?Promise.resolve(this.dataTable.getCachedRows()):this.dataTable.getRows({offset:(this.pagination.page-1)*this.pagination.pageSize,limit:this.pagination.pageSize+1}).catch((t=>(console.error(t),[])))}renderFooter(){this.footerDiv=L$1("div").addClass(`${this.cssPrefix}-footer`).toDOM(),this.rowsOnPagePromise&&this.rowsOnPagePromise.then((t=>{this.footerDiv.innerHTML="",this.footerPaginateDiv=this.renderPageNavigator(),this.footerDiv.appendChild(this.footerPaginateDiv);const e=this.renderPageInfoBlock(t);this.footerDiv.appendChild(e);}));}renderPageInfoBlock(t){const e=L$1("div").addClass(`${this.cssPrefix}-page-info`).toDOM();if(this.dataTable.getTotal()>0){const i=t?(this.pagination.page-1)*this.pagination.pageSize+1:0,s=t?i+t-1:0;let a=this.dataTable.getTotal().toString();if(this.dataTable.elasticChunks){this.dataTable.getCachedCount()!==this.dataTable.getTotal()&&(a="?");}e.innerHTML=n$1.getText("GridPageInfo").replace("{FirstPageRecordNum}",`<span>${i.toString()}</span>`).replace("{LastPageRecordNum}",`<span>${s.toString()}</span>`).replace("{Total}",`<span>${a}</span>`);}return e}showProgress(){}hideProgress(){}getLocalIndexByGlobal(t){return this.pagination?t%this.pagination.pageSize:t}getGlobalIndexByLocal(t){return this.pagination?(this.pagination.page-1)*this.pagination.pageSize+t:t}renderRow(t,e){let i=this.getGlobalIndexByLocal(e),s=L$1("div").addClass(`${this.cssPrefix}-row`).addClass(`${this.cssPrefix}-row-${e%2==1?"odd":"even"}`).data("row-idx",`${i}`).attr("tabindex","-1").on("click",(i=>{this.activeRowIndex=e,this.fireEvent({type:"rowClick",row:t,rowIndex:e,sourceEvent:i});})).on("dblclick",(i=>{this.fireEvent({type:"rowDbClick",row:t,rowIndex:e,sourceEvent:i});}));0==e&&s.addClass(`${this.cssPrefix}-row-first`);let n=s.toDOM();return this.options.showActiveRow&&e==this.activeRowIndex&&s.addClass(`${this.cssPrefix}-row-active`),this.columns.getItems().forEach(((e,s)=>{if(!e.isVisible)return;const a=e.isRowNum?-1:this.dataTable.columns.getIndex(e.dataColumn.id);let o=e.isRowNum?i+1:t.getValue(a);n.appendChild(this.renderCell(e,s,o,n));})),n}renderCell(t,e,i,s){const n=L$1("div").addClass(`${this.cssPrefix}-cell`).data("col-idx",`${e}`).attr("tabindex","-1").setStyle("width",`${t.width}px`);t.align==B$1.LEFT?n.addClass(`${this.cssPrefix}-cell-align-left`):t.align==B$1.RIGHT?n.addClass(`${this.cssPrefix}-cell-align-right`):t.align==B$1.CENTER&&n.addClass(`${this.cssPrefix}-cell-align-center`);const a=n.toDOM(),o=a.appendChild(L$1("div").addClass(`${this.cssPrefix}-cell-value`).toDOM()),r=this.getCellRenderer(t);return r&&r(i,t,o,s),a}getCellRenderer(t){let e;return e=t.isRowNum?this.cellRendererStore.getDefaultRendererByType(U$1.NUMBER):this.cellRendererStore.getDefaultRenderer(t.type),this.options&&this.options.onGetCellRenderer&&(e=this.options.onGetCellRenderer(t,e)||e),e}setPage(t){this.pagination.page=t,this.fireEvent({type:"pageChanged",page:t}),this.refresh(),this.bodyViewportDiv.focus();}renderPageNavigator(){let t=document.createElement("div");t.className=`${this.cssPrefix}-pagination-wrapper`;const e=this.dataTable.getTotal();if(this.options.paging&&this.options.paging.enabled&&e>0){const e=this.paginationOptions.useBootstrap?"":`${this.cssPrefix}-`,i=t=>{const e=t.target;if(e.hasAttribute("data-page")){const t=parseInt(e.getAttribute("data-page"));this.setPage(t);}},s=(t,s,n,a,o)=>{const r=document.createElement("li");if(r.className=`${e}page-item`,!a){o&&(r.className+=" active");const n=document.createElement("a");return n.setAttribute("href","javascript:void(0)"),n.innerHTML=s||t.toString(),n.setAttribute("data-page",`${t}`),n.className=`${e}page-link`,n.addEventListener("click",i),r.appendChild(n),r}let l=document.createElement("span");if(l.setAttribute("aria-hidden","true"),l.className=`${e}page-link`,n)r.className+=" disabled";else {if(this.paginationOptions.useBootstrap)l=document.createElement("a"),l.setAttribute("href","javascript:void(0)"),l.setAttribute("data-page",`${t}`);else {let e=document.createElement("a");e.setAttribute("href","javascript:void(0)"),e.setAttribute("data-page",`${t}`),l=e;}l.className=`${e}page-link`,l.addEventListener("click",i);}return l.innerHTML=s,r.appendChild(l),r};if(this.dataTable.elasticChunks){const i=this.pagination.page||1;let n=document.createElement("ul");n.className=`${e}pagination`;let a=s(i-1,"&laquo;",1==i,!0,!1);n.appendChild(a),a=s(i+1,"&raquo;",this.isLastPage(),!0,!1),n.appendChild(a),t.appendChild(n);}else if(this.pagination.total>this.pagination.pageSize){const i=this.pagination.page||1,n=Math.ceil(this.pagination.total/this.pagination.pageSize)||1,a=this.paginationOptions.maxButtonCount||10,o=i-1;let r=o-o%a+1,l=r+a-1;l>n&&(l=n);let d=document.createElement("ul");d.className=`${e}pagination`;let h=s(r-1,"&laquo;",1==r,!0,!1);d.appendChild(h);for(let t=r;t<=l;t++)h=s(t,t.toString(),!1,!1,t==i),d.appendChild(h);h=s(l+1,"&raquo;",l==n,!0,!1),d.appendChild(h),t.appendChild(d);}if(this.options.paging.allowPageSizeChange){const e=t=>{const e=parseInt(t.target.value);this.pagination.pageSize=e,this.pagination.page=1,this.refresh();},i=document.createElement("div");i.className=`${this.cssPrefix}-page-sizes`;const s=document.createElement("div");s.className=`kfrm-select ${this.cssPrefix}-page-sizes-select`,i.appendChild(s);const a=document.createElement("select"),o=this.options.paging.pageSizeItems||[],r=new Set(o);r.add(this.options.paging.pageSize||20),Array.from(r).forEach((t=>{const e=document.createElement("option");e.value=t.toString(),e.text=t.toString(),a.appendChild(e);})),a.value=(this.pagination.pageSize||20).toString(),s.appendChild(a),a.addEventListener("change",e);const l=document.createElement("div");l.className=`${this.cssPrefix}-page-sizes-label`,i.appendChild(l);const d=document.createElement("span");d.innerText=n$1.getText("GridItemsPerPage"),l.appendChild(d),t.appendChild(i);}}return t}addEventListener(t,e){return this.eventEmitter.subscribe(t,(t=>e(t.data)))}removeEventListener(t,e){this.eventEmitter.unsubscribe(t,e);}renderHeaderButtons(){return this.options.showPlusButton?L$1("div").addClass(`${this.cssPrefix}-header-btn-plus`).title(this.options.plusButtonTitle||"Add").addChild("a",(t=>t.attr("href","javascript:void(0)").on("click",(t=>{t.preventDefault(),this.fireEvent({type:"plusButtonClick",sourceEvent:t});})))).toDOM():L$1("span").addText("#").toDOM()}showLandingSlot(t,e){const i=this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`),s=[];for(let t=1;t<i.length;t++){const e=i[t];"none"!==e.style.display&&s.push(e);}if(0===s.length)return this.landingIndex=0,void this.headerRowDiv.appendChild(this.landingSlot);const n=T$1(this.landingSlot);if(t>=n.x&&t<=n.x+this.landingSlot.offsetWidth)return;let a=this.landingIndex;for(let e of s){const i=T$1(e),s=e.offsetWidth;t>i.x&&t<i.x+s&&(a=parseInt(e.getAttribute("data-col-idx"))-1);}a!=this.landingIndex&&(this.landingIndex=a,this.landingIndex<s.length?this.headerRowDiv.insertBefore(this.landingSlot,s[this.landingIndex]):this.headerRowDiv.appendChild(this.landingSlot));}hideLandingSlot(){this.landingIndex=-1,setTimeout((()=>{this.landingSlot.parentElement&&this.landingSlot.parentElement.removeChild(this.landingSlot);}),10);}get activeRowIndex(){return this._activeRowIndex}set activeRowIndex(t){if(t!==this._activeRowIndex){const e=this._activeRowIndex;this._activeRowIndex=t,this.updateActiveRow(),this.fireEvent({type:"activeRowChanged",oldValue:e,newValue:this.activeRowIndex,rowIndex:this.getGlobalIndexByLocal(this.activeRowIndex)});}}updateActiveRow(){if(this.options.showActiveRow){this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`).forEach((t=>{t.classList.remove(`${this.cssPrefix}-row-active`);}));const t=this.getActiveRow();t&&(t.classList.add(`${this.cssPrefix}-row-active`),this.ensureRowVisibility(this.activeRowIndex));}}getActiveRow(){return this.getDataRow(this.activeRowIndex)}getDataRow(t){const e=Array.from(this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));return t>=0&&t<e.length?e[t]:null}focus(){this.bodyViewportDiv.focus();}resizeColumns(){if(this.options.columnWidths.autoResize===Y$1.Never)return;const t=this.bodyCellContainerDiv.style.width;this.bodyCellContainerDiv.style.visibility="hidden",this.bodyCellContainerDiv.style.width="1px",this.headerRowDiv.style.width="1px";let e=0;const i=this.columns.getItems(),n=this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);let a=0;for(let t=0;t<this.columns.count;t++){const o=i[t];if(!o.isVisible)continue;const r=this.options.columnWidths.autoResize!==Y$1.Always&&o.dataColumn?o.dataColumn.calculatedWidth:0,l=this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${t}"] > .${this.cssPrefix}-cell-value`);let d=0;if(r>0)e+=r,o.width=r,l.forEach((t=>{t.parentElement.style.width=`${r}px`;})),n[a].style.width=`${r}px`;else if(0==l.length&&(n[a].style.width=null,n[a].style.whiteSpace="nowrap"),d=n[a].offsetWidth,l.length>0){l.forEach((t=>{t.parentElement.style.width=null;const e=t.parentElement.offsetWidth;e>d&&(d=e);})),d+=3;const t=o.isRowNum?this.options.columnWidths.rowNumColumn.max||500:this.options.columnWidths[o.dataColumn.type].max||2e3,i=o.isRowNum?this.options.columnWidths.rowNumColumn.min||0:this.options.columnWidths[o.dataColumn.type].min||20;d>t&&(d=t),d<i&&(d=i),s$1.isNumericType(o.type)&&(d=Math.round(1.3*d)),e+=d,o.width=d,l.forEach((t=>{t.parentElement.style.width=`${d}px`;})),n[a].style.width=`${d}px`,o.dataColumn&&(o.dataColumn.calculatedWidth=d);}else e+=d;a++;}e>0?(this.bodyCellContainerDiv.style.width=`${e}px`,this.headerCellContainerDiv.style.width=`${e}px`):(this.bodyCellContainerDiv.style.width=t,this.headerCellContainerDiv.style.width=t),this.bodyCellContainerDiv.style.visibility=null,this.headerRowDiv.removeAttribute("style");}};let Z$1 = class Z{get cssPrefix(){return "kdtp-cal"}constructor(t,e){this.slot=t,this.options=e||{},this.options.yearRange||(this.options.yearRange="c-10:c+10");}setDate(t){this.currentDate=new Date(t);}getDate(){return new Date(this.currentDate)}dateChanged(t){this.options.onDateChanged&&this.options.onDateChanged(this.currentDate,t);}};let tt$1 = class tt{get cssPrefix(){return "kdtp"}constructor(t){this.calendar=null,this.timePicker=null,this.options=t,this.render();}setDateTime(t){this.currentDateTime=new Date(t),this.calendar&&this.calendar.setDate(this.currentDateTime),this.timePicker&&this.timePicker.setTime(this.currentDateTime);}getDateTime(){return new Date(this.currentDateTime)}render(){this.options.showCalendar&&(this.calendar=this.createCalendar({yearRange:this.options.yearRange,showDateTimeInput:this.options.showDateTimeInput,timePickerIsUsed:this.options.showTimePicker,oneClickDateSelection:this.options.oneClickDateSelection,onDateChanged:(t,e)=>{this.currentDateTime=t,this.timePicker&&this.timePicker.setTime(this.currentDateTime),this.options.showTimePicker&&this.dateTimeChanged(),e&&this.apply(this.currentDateTime);}}),this.calendar&&this.calendar.render()),this.options.showTimePicker&&(this.timePicker=this.createTimePicker({onTimeChanged:t=>{this.currentDateTime.setHours(t.getHours()),this.currentDateTime.setMinutes(t.getMinutes()),this.calendar&&this.calendar.setDate(this.currentDateTime),this.dateTimeChanged();}}),this.timePicker&&this.timePicker.render()),this.setDateTime(new Date);}createCalendar(t){return null}createTimePicker(t){return null}show(t){this.options.beforeShow&&this.options.beforeShow();const e=T$1(t||document.body);this.slot.style.top=e.y+t.clientHeight+"px",this.slot.style.left=e.x+"px";}apply(t){this.options.onApply&&this.options.onApply(t),this.destroy();}cancel(){this.options.onCancel&&this.options.onCancel(),this.destroy();}destroy(){this.slot&&this.slot.parentElement&&this.slot.parentElement.removeChild(this.slot);}dateTimeChanged(){this.options.onDateTimeChanged&&this.options.onDateTimeChanged(this.currentDateTime);}};let et$1 = class et extends Z$1{constructor(t,e){super(t,e),this.daysOfWeek=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],this.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],this.calendarBody=null,this.isManualInputChanging=!1;for(let t=0;t<this.daysOfWeek.length;t++)this.daysOfWeek[t]=n$1.getShortWeekDayName(t+1);for(let t=0;t<this.months.length;t++)this.months[t]=n$1.getLongMonthName(t+1);}setDate(t){super.setDate(t),this.selectedMonth=this.currentDate.getMonth(),this.selectedYear=this.currentDate.getFullYear(),this.rerenderMonth();}render(){const t=L$1("div",this.slot).addClass(`${this.cssPrefix}-header`);this.options.showDateTimeInput?t.addChildElement(this.renderManualDateInput()):t.addChild("span",(t=>this.headerTextElem=t.toDOM())),L$1(this.slot).addChildElement(this.renderCalendarButtons()),this.calendarBody=L$1("div",this.slot).addClass(`${this.cssPrefix}-body`).toDOM();}getInputDateFormat(){const t=n$1.getLocaleSettings();return this.options.timePickerIsUsed?`${t.editDateFormat} ${t.editTimeFormat}`:t.editDateFormat}renderManualDateInput(){const t=this.getInputDateFormat(),e=L$1("input").attr("placeholder",t).addClass(`${this.cssPrefix}-header-input`);return e.mask(t.replace("yyyy","9999").replace("MM","99").replace("dd","99").replace("HH","99").replace("mm","99").replace("ss","99")).on("input",(i=>{e.removeClass("error");try{this.isManualInputChanging=!0;const e=s$1.strToDateTime(this.manualInputElem.value,t);this.currentDate=e,this.jump(this.currentDate.getFullYear(),this.currentDate.getMonth()),this.dateChanged(!1);}catch(t){e.addClass("error");}finally{this.isManualInputChanging=!1;}})).on("keydown",(t=>{13===t.keyCode&&(t.preventDefault(),t.stopPropagation(),this.manualInputElem.className.indexOf("error")<0&&!this.isManualInputChanging&&this.dateChanged(!0));})).on("focus",(()=>{setTimeout((()=>{this.manualInputElem.selectionStart=0,this.manualInputElem.selectionEnd=0;}),50);})),this.manualInputElem=e.toDOM(),this.manualInputElem}updateDisplayedDateValue(){if(this.manualInputElem){if(!this.isManualInputChanging){const t=this.getInputDateFormat();this.manualInputElem.value=n$1.dateTimeToStr(this.currentDate,t),this.manualInputElem.focus();}}else if(this.headerTextElem){const t=n$1.getCurrentLocale();this.headerTextElem.innerText=this.currentDate.toLocaleString("en"==t?void 0:t,{year:"numeric",month:"long",day:"numeric"});}}renderCalendarButtons(){return L$1("nav").addClass(`${this.cssPrefix}-nav`).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-prev`).on("click",(()=>{this.prev();})).addChild("span",(t=>t.html("&lsaquo;"))))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-selectors`).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-month`).addChild("select",(t=>{t.on("change",(()=>{this.jump(this.selectedYear,parseInt(this.selectMonthElem.value));}));for(let e=0;e<this.months.length;e++)t.addChild("option",(t=>t.attr("value",e.toString()).text(this.months[e])));this.selectMonthElem=t.toDOM();})))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-year`).addChild("select",(t=>this.selectYearElem=t.on("change",(()=>{this.jump(parseInt(this.selectYearElem.value),this.selectedMonth);})).toDOM())))))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-next`).on("click",(()=>{this.next();})).addChild("span",(t=>t.html("&rsaquo;"))))).toDOM()}prev(){this.selectedYear=0===this.selectedMonth?this.selectedYear-1:this.selectedYear,this.selectedMonth=0===this.selectedMonth?11:this.selectedMonth-1,this.rerenderMonth();}next(){this.selectedYear=11===this.selectedMonth?this.selectedYear+1:this.selectedYear,this.selectedMonth=(this.selectedMonth+1)%12,this.rerenderMonth();}rerenderSelectYear(){const t=/c-(\d*):c\+(\d*)/g.exec(this.options.yearRange);let e=0,i=1;null!==t&&(e=parseInt(t[1]),i=parseInt(t[2])),this.selectYearElem.innerHTML="";for(let t=0;t<=e+i;t++){let i=document.createElement("option"),s=this.selectedYear-e+t;i.value=s.toString(),i.innerText=s.toString(),this.selectYearElem.appendChild(i);}}jump(t,e){this.selectedYear=t,this.selectedMonth=e,this.rerenderMonth();}rerenderMonth(){this.updateDisplayedDateValue(),this.rerenderSelectYear();let t=new Date(this.selectedYear,this.selectedMonth).getDay(),e=new Date(this.selectedYear,this.selectedMonth+1,0).getDate();this.calendarBody.innerHTML="",this.selectYearElem.value=this.selectedYear.toString(),this.selectMonthElem.value=this.selectedMonth.toString(),this.daysOfWeek.forEach(((t,e)=>{L$1("div",this.calendarBody).addClass(`${this.cssPrefix}-weekday`).addClass(0==e||6==e?`${this.cssPrefix}-weekend`:"").text(t);}));for(let e=0;e<t;e++)L$1("div",this.calendarBody).addClass(`${this.cssPrefix}-day-empty`);const i=new Date;for(let s=1;s<=e;s++){const e=L$1("div",this.calendarBody).addClass(`${this.cssPrefix}-day`).attr("data-date",s.toString()).text(s.toString()).on("click",(t=>{this.currentDate.setFullYear(this.selectedYear),this.currentDate.setMonth(this.selectedMonth),this.currentDate.setDate(parseInt(t.target.getAttribute("data-date"))),this.dateChanged(this.options.oneClickDateSelection);}));s===i.getDate()&&this.selectedYear===i.getFullYear()&&this.selectedMonth===i.getMonth()&&e.addClass(`${this.cssPrefix}-day-current`),s===this.currentDate.getDate()&&this.selectedYear===this.currentDate.getFullYear()&&this.selectedMonth===this.currentDate.getMonth()&&e.addClass(`${this.cssPrefix}-day-selected`);const n=(t+s-1)%7;0!=n&&6!=n||e.addClass(`${this.cssPrefix}-weekend`),"function"==typeof this.options.onDrawDay&&this.options.onDrawDay.apply(e.toDOM(),[e.toDOM(),new Date(this.selectedYear,this.selectedMonth,s)]);}const s=(t+e)%7,n=0==s?0:7-s;for(let t=0;t<n;t++)L$1("div",this.calendarBody).addClass(`${this.cssPrefix}-day-empty`);}dateChanged(t){super.dateChanged(t),this.rerenderMonth();}};let it$1 = class it{get cssPrefix(){return "kdtp-tp"}constructor(t,e){this.slot=t,this.options=e||{};}setTime(t){this.currentTime=new Date(t);}getTime(){return new Date(this.currentTime)}timeChanged(){this.options.onTimeChanged&&this.options.onTimeChanged(this.currentTime);}};let st$1 = class st extends it$1{setTime(t){super.setTime(t),this.updateDisplayedTime(),this.hoursInput.valueAsNumber=t.getHours(),this.minutesInput.valueAsNumber=t.getMinutes();}render(){L$1("div",this.slot).addClass(`${this.cssPrefix}-time`).addChild("span",(t=>this.timeText=t.toDOM())).toDOM();const t=L$1("div",this.slot).addClass(`${this.cssPrefix}-sliders`);return t.addChild("div",(t=>t.addClass(`${this.cssPrefix}-time-row`).title("Hours").addChild("input",(t=>this.hoursInput=t.addClass(`${this.cssPrefix}-input-hours`).type("range").attr("min","0").attr("max","23").attr("step","1").on("input",(t=>{this.currentTime.setHours(this.hoursInput.valueAsNumber),this.updateDisplayedTime(),this.timeChanged();})).toDOM())))),t.addChild("div",(t=>t.addClass(`${this.cssPrefix}-time-row`).title("Minutes").addChild("input",(t=>this.minutesInput=t.addClass(`${this.cssPrefix}-input-minutes`).type("range").attr("min","0").attr("max","59").attr("step","1").on("input",(t=>{this.currentTime.setMinutes(this.minutesInput.valueAsNumber),this.updateDisplayedTime(),this.timeChanged();})).toDOM())))),this.slot}updateDisplayedTime(){const t=n$1.getCurrentLocale(),e=this.currentTime.toLocaleString("en"==t?void 0:t,{hour:"numeric",minute:"numeric"});this.timeText.innerText=e;}};let nt$1 = class nt extends tt$1{render(){const t=L$1("div",document.body).addClass(`${this.cssPrefix}`).attr("tabIndex","0").setStyle("position","absolute").setStyle("top","-1000px").setStyle("left","-1000px").on("keydown",(t=>(27===t.keyCode?this.cancel():13===t.keyCode&&this.apply(this.getDateTime()),!1)));this.options.zIndex&&t.setStyle("z-index",`${this.options.zIndex}`),this.slot=t.toDOM(),super.render(),this.renderButtons(),this.globalMouseDownHandler=t=>{let e=window.event||t;return e.srcElement||e.target,!this.slot.contains(e.target)&&(document.removeEventListener("mousedown",this.globalMouseDownHandler,!0),this.cancel()),!0};}renderButtons(){const t=L$1("div",this.slot).addClass(`${this.cssPrefix}-buttons`).addChild("button",(t=>this.nowButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-now`).text(n$1.getText("ButtonNow")).on("click",(()=>(this.setDateTime(new Date),this.dateTimeChanged(),!1))).toDOM()));!this.options.showTimePicker&&this.options.oneClickDateSelection||t.addChild("button",(t=>this.submitButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-apply`).text(n$1.getText("ButtonApply")).on("click",(()=>(this.apply(this.getDateTime()),!1))).toDOM())),t.addChild("button",(t=>this.submitButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-cancel`).text(n$1.getText("ButtonCancel")).on("click",(()=>(this.cancel(),!1))).toDOM()));}createCalendar(t){return this.calendarSlot=L$1("div",this.slot).addClass(`${this.cssPrefix}-cal`).toDOM(),new et$1(this.calendarSlot,t)}createTimePicker(t){return this.timePickerSlot=L$1("div",this.slot).addClass(`${this.cssPrefix}-tp`).toDOM(),new st$1(this.timePickerSlot,t)}show(t){if(this.options.showDateTimeInput){this.options.beforeShow&&this.options.beforeShow();const e=T$1(t||document.body),i=T$1(t?t.parentElement||t:document.body);this.slot.style.top=i.y+"px",this.slot.style.left=e.x+"px";}else super.show(t),this.slot.focus();setTimeout((()=>{document.addEventListener("mousedown",this.globalMouseDownHandler,!0);}),1);}};var at$1;!function(t){t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(at$1||(at$1={}));const ot$1="kdlg";let rt$1 = class rt{openConfirm(t,e,i){const s={title:t,closable:!1,submitable:!0,cancelable:!0,body:`<div id="${ot$1}-dialog-confirm">${e}</div>`};return i?(s.onSubmit=()=>{i(!0);},s.onCancel=()=>{i(!1);},void this.open(s)):new Promise((t=>{s.onSubmit=()=>{t(!0);},s.onCancel=()=>{t(!1);},this.open(s);}))}openPrompt(t,e,i,s){const n={title:t,submitable:!0,closable:!0,cancelable:!0,submitOnEnter:!0,body:`<div id="${ot$1}-dialog-form" class="kfrm-form">\n            <div class="kfrm-fields label-above">\n                <label for="${ot$1}-dialog-form-input" id="${ot$1}-dialog-form-content">${e}</label>\n                <input type="text" name="${ot$1}-dialog-form-input" id="${ot$1}-dialog-form-input" />\n            </div>\n        </div>`,arrangeParents:!1,beforeOpen:()=>{const t=document.getElementById(`${ot$1}-dialog-form-input`);i&&(t.value=i),t.focus();}},a=t=>{const e=document.getElementById(`${ot$1}-dialog-form-input`),i=e.value;return i&&i.replace(/\s/g,"").length>0?(t(i),!0):(e.classList.add("eqjs-invalid"),!1)};return s?(n.onSubmit=()=>a(s),n.onCancel=()=>{s("");},void this.open(n)):new Promise((t=>{n.onSubmit=()=>a(t),n.onCancel=()=>{t("");},this.open(n);}))}open(t,e){const i=new lt$1(t,e),s=t.onDestroy;return t.onDestroy=t=>{this.untrack(t),s&&s(t);},i.open(),this.track(i),i}createSet(t){return new ht$1(t,this)}untrack(t){const e=rt.openDialogs.indexOf(t);e>=0&&rt.openDialogs.splice(e,1);}track(t){rt.openDialogs.push(t);}openProgress(t){const e=new dt$1(t),i=t.onDestroy;return t.onDestroy=t=>{this.untrack(t),i&&i(t);},e.open(),this.track(e),e}getAllDialogs(){return Array.from(rt.openDialogs)}closeAllDialogs(){for(const t of Array.from(rt.openDialogs))t.close();}};rt$1.openDialogs=[];let lt$1 = class lt{constructor(t,e){this.options=t,this.submitHandler=t=>(!this.options.onSubmit||!1!==this.options.onSubmit(this,t))&&(this.destroy(),!0),this.cancelHandler=()=>{this.options.onCancel&&this.options.onCancel(this),this.destroy();},this.keydownHandler=t=>13!=t.keyCode||!this.isActiveDialog()||(t.preventDefault(),t.stopPropagation(),!this.submitHandler())||(window.removeEventListener("keydown",this.keydownHandler,!1),!1),this.dialogId=s$1.generateId("dlg"),this.data=e,this.slot=L$1("div",document.body).attr("tab-index","-1").data("dialog-id",this.dialogId).addClass(`${ot$1}-modal`,"is-active").focus().addChild("div",(t=>t.addClass("kdlg-modal-background"))).addChild("div",(i=>this.windowElement=i.addClass(`${ot$1}-modal-window`).addChild("header",(e=>{this.headerElement=e.addClass(`${ot$1}-header`).addChild("p",(e=>e.addClass(`${ot$1}-header-title`).addText(t.title))).toDOM(),!1!==t.closable&&e.addChild("button",(t=>t.addClass(`${ot$1}-modal-close`).on("click",(()=>{this.cancelHandler();})).focus()));})).addChild("div",(t=>{t.addClass(`${ot$1}-alert-container`),this.alertElement=t.toDOM();})).addChild("section",(i=>{if(this.bodyElement=i.addClass(`${ot$1}-body`).toDOM(),"string"==typeof t.body){const s=o$1.renderLiquidTemplate(t.body,e);i.addHtml(s);}else i.addChildElement(t.body);})).addChild("footer",(e=>{let i=null;i=t.footerAlignment&&t.footerAlignment==at$1.Center?"align-center":"align-right",this.footerElement=e.addClass(`${ot$1}-footer`).toDOM(),e.addClass(i),!1!==t.submitable&&(e.addChild("button",(e=>{e.id(this.dialogId+"-btn-submit").addClass("kfrm-button","is-info").addText(t.submitButtonText||n$1.getText("ButtonOK")),t.recaptchaSiteKey?(e.data("sitekey",t.recaptchaSiteKey),e.addClass("g-recaptcha"),e.on("click",(e=>{grecaptcha?grecaptcha.ready((()=>{grecaptcha.execute(t.recaptchaSiteKey,{action:"submit"}).then((t=>{this.submitHandler(t);}));})):this.submitHandler();}))):e.on("click",(t=>{this.submitHandler();})),e.focus();})),!1!==t.cancelable&&e.addChild("button",(e=>e.id(this.dialogId+"-btn-cancel").addClass("kfrm-button").addText(t.cancelButtonText||n$1.getText("ButtonCancel")).on("click",(t=>{this.cancelHandler();})))));})).toDOM())).toDOM();}getData(){return this.data}getRootElement(){return this.slot}getSubmitButtonElement(){return document.getElementById(this.dialogId+"-btn-submit")}getCancelButtonElement(){return document.getElementById(this.dialogId+"-btn-cancel")}open(){this.options.beforeOpen&&this.options.beforeOpen(this),L$1(this.slot).show(),this.options.arrangeParents&&this.arrangeParents(!0);const t=this.slot.querySelector(`.${ot$1}-modal-window`);this.options.height&&(t.style.height="string"==typeof this.options.height?this.options.height:`${this.options.height}px`),this.options.width&&(t.style.width="string"==typeof this.options.width?this.options.width:`${this.options.width}px`),this.options.submitOnEnter&&window.addEventListener("keydown",this.keydownHandler,!1),this.slot.querySelectorAll("input").forEach((t=>t.addEventListener("input",(()=>{this.clearAlert(),this.options.onInput&&this.options.onInput(this);})))),this.options.onShow&&this.options.onShow(this);}submit(){this.submitHandler();}cancel(){this.cancelHandler();}close(){this.destroy();}disableButtons(){this.slot.querySelectorAll("button").forEach((t=>t.disabled=!0));}enableButtons(){this.slot.querySelectorAll("button").forEach((t=>t.disabled=!1));}showAlert(t,e,i){let s=L$1("div").addClass(`${ot$1}-alert ${e||""}`).addChild("span",(t=>t.addClass(`${ot$1}-alert-closebtn`).text("×").on("click",(t=>{const e=t.target.parentElement;e.parentElement.removeChild(e);})))).addText(t).toDOM();!0===i&&this.clearAlert(),this.alertElement.appendChild(s);}clearAlert(){this.alertElement.innerHTML="";}destroy(){document.querySelectorAll(`[data-dialog-id="${this.dialogId}"]`).length<=0||(this.options.arrangeParents&&this.arrangeParents(!1),document.body.removeChild(this.slot),this.options.submitOnEnter&&window.removeEventListener("keydown",this.keydownHandler,!1),this.options.onDestroy&&this.options.onDestroy(this));}isActiveDialog(){const t=document.documentElement.querySelectorAll(".kdlg-modal");return t[t.length-1]===this.slot}arrangeParents(t){const e=document.documentElement.querySelectorAll(".kdlg-modal-window");for(let i=0;i<e.length-1;i++)if(t){const t=0==i?20:40*i+20;L$1(e[i]).setStyle("margin-top",`${t}px`).setStyle("margin-left",`${t}px`);}else L$1(e[i]).removeStyle("margin-top").removeStyle("margin-left");}};let dt$1 = class dt extends lt$1{constructor(t,e){let i,s;const n=L$1("div").addChild("div",(e=>i=e.text(t.content||"").toDOM())).addChild("div",(e=>{e.addClass(`${ot$1}-progress-line`).addChild("div",(e=>{s=e.addClass("fill").toDOM(),t.determinated?e.setStyle("width","0%"):e.addClass("indeterminate");}));})).toDOM();super({title:t.title,body:n,beforeOpen:t.beforeOpen,onSubmit:t.onSubmit,width:t.width,height:t.height,submitable:!1,cancelable:!1,closable:!1,onDestroy:t.onDestroy},e),this.contentElement=i,this.progressElement=s;}updateContent(t){this.contentElement.innerText=t;}updateProgress(t){t=this.in01(t),this.progressElement.style.width=100*t+"%",1===t&&setTimeout((()=>{this.submit();}),500);}in01(t){return t>1?1:t<0?0:t}};let ht$1 = class ht{constructor(t,e){this.options=t,this.dialogService=e,this.currentDialog=null,this.currentIndex=0,this.options=t,this.dialogService=e;}getCurrent(){return this.currentDialog}openNext(t){return this.open(this.currentIndex+1,t)}openPrev(t){return this.open(this.currentIndex-1,t)}open(t,e){if(t<0?this.currentIndex=0:t>=this.options.length?this.currentIndex=this.options.length-1:this.currentIndex=t,this.currentDialog)try{this.currentDialog.close();}catch(t){}const i=this.options[this.currentIndex];return this.currentDialog=this.dialogService.open(i,e),this.currentDialog}close(){this.currentDialog&&(this.currentDialog.close(),this.currentDialog=null);}};var ct$1,ut$1;n$1.updateDefaultTexts({GridPageInfo:"{FirstPageRecordNum} - {LastPageRecordNum} of {Total} records",GridItemsPerPage:"items per page",ButtonOK:"OK",ButtonCancel:"Cancel",ButtonApply:"Apply",ButtonNow:"Now",LblTotal:"Total"}),function(t){t[t.THIS_WEEK=0]="THIS_WEEK",t[t.LAST_WEEK=1]="LAST_WEEK",t[t.THIS_MONTH=2]="THIS_MONTH",t[t.FIRST_MONTH=3]="FIRST_MONTH",t[t.LAST_MONTH=4]="LAST_MONTH",t[t.THIS_YEAR=5]="THIS_YEAR",t[t.QUARTER_1=6]="QUARTER_1",t[t.QUARTER_2=7]="QUARTER_2",t[t.QUARTER_3=8]="QUARTER_3",t[t.QUARTER_4=9]="QUARTER_4";}(ct$1||(ct$1={})),function(t){t.UNDEF="-1",t.TODAY="1",t.YESTERDAY="2",t.TOMORROW="3",t.WEEK_START="4",t.WEEK_END="5",t.MONTH_START="6",t.MONTH_END="7",t.YEAR_START="8",t.YEAR_END="9";}(ut$1||(ut$1={}));let gt$1 = class gt extends lt$1{constructor(t){super({title:t.title||"Select a period",body:"",submitButtonText:t.submitButtonText||"OK",cancelButtonText:t.cancelButtonText||"Cancel",submitable:!0,closable:!0,cancelable:!0,beforeOpen:t=>{this.setupDialog();},onSubmit:e=>{"function"==typeof t.onSubmit&&t.onSubmit.apply(e,[this.result(this.from),this.result(this.to)]);}}),this.yearRange=t.yearRange,this.weekStart=t.weekStart||0,this.bodyElement.append(this.drawDialog()),this.calendar1.render(),this.calendar2.render(),this.from=this.alignDate(t.start?t.start:new Date),this.to=this.alignDate(t.finish&&this.alignDate(t.finish)>this.from?t.finish:new Date(this.from.getFullYear(),this.from.getMonth(),this.from.getDate()+1)),this.represent();}alignDate(t){return t.setHours(0),t.setMinutes(0),t.setSeconds(0),t.setMilliseconds(0),t}drawDialog(){const t=L$1("div").addClass("tsp__container").addChild("div",(t=>{t.addClass("tsp__intervals").addChild("button",(t=>t.addClass("tsp__button").addText("This Week").on("click",(()=>{this.select(ct$1.THIS_WEEK);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Last Week").on("click",(()=>{this.select(ct$1.LAST_WEEK);})))).addChild("button",(t=>t.addClass("tsp__button").addText("This Month").on("click",(()=>{this.select(ct$1.THIS_MONTH);})))).addChild("button",(t=>t.addClass("tsp__button").addText("First Month").on("click",(()=>{this.select(ct$1.FIRST_MONTH);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Last Month").on("click",(()=>{this.select(ct$1.LAST_MONTH);})))).addChild("button",(t=>t.addClass("tsp__button").addText("This Year").on("click",(()=>{this.select(ct$1.THIS_YEAR);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Quarter 1").on("click",(()=>{this.select(ct$1.QUARTER_1);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Quarter 2").on("click",(()=>{this.select(ct$1.QUARTER_2);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Quarter 3").on("click",(()=>{this.select(ct$1.QUARTER_3);})))).addChild("button",(t=>t.addClass("tsp__button").addText("Quarter 4").on("click",(()=>{this.select(ct$1.QUARTER_4);}))));})).addChild("div",(t=>{t.addClass("tsp__form").addChild("div",(t=>{t.addClass("tsp__date").addChild("div",(t=>{t.addClass("tsp__label").addChild("label",(t=>{t.addText("Start");})).addChild("select",(t=>{t.addOption({value:ut$1.UNDEF,title:"Jump To"}).addOption({value:ut$1.TODAY,title:"Today"}).addOption({value:ut$1.YESTERDAY,title:"Yesterday"}).addOption({value:ut$1.TOMORROW,title:"Tomorrow"}).addOption({value:ut$1.WEEK_START,title:"Week Start"}).addOption({value:ut$1.WEEK_END,title:"Week End"}).addOption({value:ut$1.MONTH_START,title:"Month Start"}).addOption({value:ut$1.MONTH_END,title:"Month End"}).addOption({value:ut$1.YEAR_START,title:"Year Start"}).addOption({value:ut$1.YEAR_END,title:"Year End"}),t.on("change",(t=>{this.jump(1,t.target.value,t.target);}));}));})).addChild("div",(t=>{t.addClass("tsp__calendar"),this.calendar1=new et$1(t.toDOM(),{yearRange:this.yearRange,showDateTimeInput:!0,onDateChanged:t=>{this.from=this.alignDate(t),this.calendar1.setDate(this.from),this.to<this.from&&(this.to=this.from),this.represent();},onDrawDay:(t,e)=>{this.alignDate(e)>=this.from&&this.alignDate(e)<=this.to?t.classList.add("day-in-range"):t.classList.remove("day-in-range");}});}));})).addChild("div",(t=>{t.addClass("tsp__date").addChild("div",(t=>{t.addClass("tsp__label").addChild("label",(t=>{t.addText("Finish");})).addChild("select",(t=>{t.addOption({value:ut$1.UNDEF,title:"Jump To"}).addOption({value:ut$1.TODAY,title:"Today"}).addOption({value:ut$1.YESTERDAY,title:"Yesterday"}).addOption({value:ut$1.TOMORROW,title:"Tomorrow"}).addOption({value:ut$1.WEEK_START,title:"Week Start"}).addOption({value:ut$1.WEEK_END,title:"Week End"}).addOption({value:ut$1.MONTH_START,title:"Month Start"}).addOption({value:ut$1.MONTH_END,title:"Month End"}).addOption({value:ut$1.YEAR_START,title:"Year Start"}).addOption({value:ut$1.YEAR_END,title:"Year End"}),t.on("change",(t=>{this.jump(2,t.target.value,t.target);}));}));})).addChild("div",(t=>{t.addClass("tsp__calendar"),this.calendar2=new et$1(t.toDOM(),{yearRange:this.yearRange,showDateTimeInput:!0,onDateChanged:t=>{this.alignDate(t)>=this.from?this.to=this.alignDate(t):this.calendar2.setDate(this.to),this.represent();},onDrawDay:(t,e)=>{this.alignDate(e)>=this.from&&this.alignDate(e)<=this.to?t.classList.add("day-in-range"):t.classList.remove("day-in-range");}});}));}));})).toDOM();return t}setupDialog(){}jump(t,e,i){let s,n=1===t?"from":"to";const a=new Date;switch(e){case ut$1.TODAY:s=a;break;case ut$1.YESTERDAY:s=new Date(a.getFullYear(),a.getMonth(),a.getDate()-1);break;case ut$1.TOMORROW:s=new Date(a.getFullYear(),a.getMonth(),a.getDate()+1);break;case ut$1.WEEK_START:s=new Date(a.setDate(a.getDate()-a.getDay()+this.weekStart));break;case ut$1.WEEK_END:s=new Date(a.setDate(a.getDate()-a.getDay()+6+this.weekStart));break;case ut$1.MONTH_START:s=new Date(a.getFullYear(),a.getMonth(),1);break;case ut$1.MONTH_END:s=new Date(a.getFullYear(),a.getMonth()+1,0);break;case ut$1.YEAR_START:s=new Date(a.getFullYear(),0,1);break;case ut$1.YEAR_END:s=new Date(a.getFullYear(),12,0);}s=this.alignDate(s),i.value=ut$1.UNDEF,"from"===n?(this.from=s,this.to<this.from&&(this.to=this.from)):s>=this.from&&(this[n]=s),this.represent();}represent(){this.calendar1.setDate(this.from),this.calendar2.setDate(this.to);}select(t){switch(t){case ct$1.THIS_WEEK:{const t=new Date;this.from=new Date(t.getFullYear(),t.getMonth(),t.getDate()-t.getDay()),this.to=new Date(this.from.getFullYear(),this.from.getMonth(),this.from.getDate()+6);break}case ct$1.LAST_WEEK:{const t=new Date;this.from=new Date(t.getFullYear(),t.getMonth(),t.getDate()-t.getDay()-7),this.to=new Date(this.from.getFullYear(),this.from.getMonth(),this.from.getDate()+6);break}case ct$1.THIS_MONTH:{const t=new Date;this.from=new Date(t.getFullYear(),t.getMonth(),1),this.to=new Date(t.getFullYear(),t.getMonth()+1,0);break}case ct$1.FIRST_MONTH:{const t=new Date;this.from=new Date(t.getFullYear(),0,1),this.to=new Date(t.getFullYear(),1,0);break}case ct$1.LAST_MONTH:{const t=new Date;this.from=new Date(t.getFullYear(),t.getMonth()-1,1),this.to=new Date(t.getFullYear(),t.getMonth(),0);break}case ct$1.THIS_YEAR:{const t=new Date;this.from=new Date(t.getFullYear(),0,1),this.to=new Date(t.getFullYear(),12,0);break}case ct$1.QUARTER_1:{const t=new Date;this.from=new Date(t.getFullYear(),0,1),this.to=new Date(t.getFullYear(),3,0);break}case ct$1.QUARTER_2:{const t=new Date;this.from=new Date(t.getFullYear(),3,1),this.to=new Date(t.getFullYear(),6,0);break}case ct$1.QUARTER_3:{const t=new Date;this.from=new Date(t.getFullYear(),6,1),this.to=new Date(t.getFullYear(),9,0);break}case ct$1.QUARTER_4:{const t=new Date;this.from=new Date(t.getFullYear(),9,1),this.to=new Date(t.getFullYear(),12,0);break}}this.represent();}result(t){const e=this.alignDate(new Date),i={Today:this.alignDate(new Date),Yesterday:this.alignDate(new Date(e.getFullYear(),e.getMonth(),e.getDate()-1)),Tomorrow:this.alignDate(new Date(e.getFullYear(),e.getMonth(),e.getDate()+1)),FirstDayOfMonth:this.alignDate(new Date(e.getFullYear(),e.getMonth(),1)),LastDayOfMonth:this.alignDate(new Date(e.getFullYear(),e.getMonth()+1,0)),FirstDayOfWeek:this.alignDate(new Date(e.setDate(e.getDate()-e.getDay()+this.weekStart))),FirstDayOfYear:this.alignDate(new Date(e.getFullYear(),0,1)),FirstDayOfNextWeek:this.alignDate(new Date(e.setDate(e.getDate()-e.getDay()+this.weekStart+7))),FirstDayOfNextMonth:this.alignDate(new Date(e.getFullYear(),e.getMonth()+1,1)),FirstDayOfNextYear:this.alignDate(new Date(e.getFullYear()+1,0,1))};for(let e in i)if(console.log(i[e],t),i[e].getTime()===t.getTime())return `\${{${e}}}`;return n$1.dateTimeToStr(t,n$1.getLocaleSettings().editDateFormat)}};const pt$1=t=>new gt$1(t).open(),mt$1=new rt$1;
+    var EntityAttrKind$3;
+    (function (EntityAttrKind) {
+        EntityAttrKind[EntityAttrKind["Data"] = 0] = "Data";
+        EntityAttrKind[EntityAttrKind["Virtual"] = 1] = "Virtual";
+        EntityAttrKind[EntityAttrKind["Lookup"] = 2] = "Lookup";
+    })(EntityAttrKind$3 || (EntityAttrKind$3 = {}));
 
-	var easydata_ui_es = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		get AutoResizeColumns () { return Y$1; },
-		Calendar: Z$1,
-		get CellRendererType () { return U$1; },
-		DFMT_REGEX: V$1,
-		DateTimePicker: tt$1,
-		DefaultCalendar: et$1,
-		DefaultDateTimePicker: nt$1,
-		DefaultDialog: lt$1,
-		DefaultDialogService: rt$1,
-		DefaultDialogSet: ht$1,
-		DefaultProgressDialog: dt$1,
-		DefaultTimePicker: st$1,
-		get DialogFooterAlignment () { return at$1; },
-		DomElementBuilder: R$1,
-		DomInputElementBuilder: P$1,
-		DomSelectElementBuilder: A$1,
-		DomTextAreaElementBuilder: O$1,
-		DragManager: F$1,
-		get DropEffect () { return N$1; },
-		EasyGrid: X$1,
-		EqDragEvent: $$1,
-		GridCellRendererStore: J$1,
-		GridColumn: W$1,
-		get GridColumnAlign () { return B$1; },
-		GridColumnList: G$1,
-		get JUMP_TO () { return ut$1; },
-		get PRE_SELECT () { return ct$1; },
-		TimePicker: it$1,
-		TimeSpanPicker: gt$1,
-		addCssClass: g$1,
-		addElement: u$1,
-		get browserUtils () { return r$1; },
-		createBrowserEvent: y$1,
-		dialogs: mt$1,
-		domel: L$1,
-		eqCssMobile: M$1,
-		eqCssPrefix: S$1,
-		eqDragManager: _$1,
-		getDocSize: w$1,
-		getElementAbsolutePos: T$1,
-		getScrollPos: C$1,
-		getViewportSize: v$1,
-		getWinSize: b$1,
-		hideElement: p$1,
-		isVisible: D$1,
-		mask: I$1,
-		showElement: m$1,
-		showTimeSpanPicker: pt$1,
-		slideDown: E$1,
-		slideUp: x$1,
-		toggleVisibility: f$1,
-		wrapInner: c$1
-	});
+    const EditorTag$1 = {
+        /** Unknown tag value */
+        Unknown: "Unknown",
+        /** Edit tag value */
+        Edit: "EDIT",
+        /** DateTime tag value  */
+        DateTime: "DATETIME",
+        /** List tag value */
+        List: "LIST",
+        /** CustomList tag value */
+        CustomList: "CUSTOMLIST",
+        /** File tag value */
+        File: "FILE"
+    };
 
-	/*!
-	 * EasyData.JS CRUD v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	/*!
-	 * EasyData.JS Core v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	var t,e;!function(t){t[t.Unknown=0]="Unknown",t[t.String=1]="String",t[t.Byte=2]="Byte",t[t.Word=3]="Word",t[t.Int32=4]="Int32",t[t.Int64=5]="Int64",t[t.Bool=6]="Bool",t[t.Float=7]="Float",t[t.Currency=8]="Currency",t[t.BCD=9]="BCD",t[t.Date=10]="Date",t[t.Time=11]="Time",t[t.DateTime=12]="DateTime",t[t.Autoinc=13]="Autoinc",t[t.Memo=14]="Memo",t[t.Blob=15]="Blob",t[t.FixedChar=16]="FixedChar",t[t.Guid=17]="Guid",t[t.Geometry=18]="Geometry",t[t.Geography=19]="Geography";}(t||(t={})),function(t){t[t.Data=0]="Data",t[t.Virtual=1]="Virtual",t[t.Lookup=2]="Lookup";}(e||(e={}));const i="Unknown",s="EDIT",n="DATETIME",o="LIST",a="FILE";var r,l,d,h,c;!function(t){t.Trace="TRACE",t.Options="OPTIONS",t.Get="GET",t.Put="PUT",t.Post="POST",t.Delete="DELETE";}(r||(r={}));let u=class{constructor(t,e){this.xhr=t,this.method=e.method,this.url=e.url,this.headers=e.headers,this.queryParams=e.queryParams,this.data=e.data;}setHeader(t,e){this.headers[t]=e;}setQueryParam(t,e){this.queryParams[t]=e;}getXMLHttpRequest(){return this.xhr}getResponseHeaders(){if(this.xhr.readyState==this.xhr.HEADERS_RECEIVED){const t=this.xhr.getAllResponseHeaders().trim().split(/[\r\n]+/),e={};for(const i of t){const t=i.split(": "),s=t.shift(),n=t.join(": ");e[s]=n;}return e}return {}}open(){if(this.xhr.readyState!==this.xhr.UNSENT)return;let t=this.url;this.queryParams&&Object.keys(this.queryParams).length>0&&(t+=encodeURI("?"+Object.keys(this.queryParams).map((t=>t+"="+this.queryParams[t])).join("&"))),this.xhr.open(this.method,t,!0),this.xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");for(const t in this.headers)this.xhr.setRequestHeader(t,this.headers[t]);}abort(){this.xhr.abort();}};!function(e){e.getAllDataTypes=function(){return Object.values(t).filter((t=>"number"==typeof t))},e.getDateDataTypes=function(){return [t.Time,t.Date,t.DateTime]},e.getStringDataTypes=function(){return [t.String,t.Memo,t.FixedChar]};const i=[t.Byte,t.Word,t.Int32,t.Int64,t.Float,t.Currency,t.Autoinc];e.getNumericDataTypes=function(){return i};const s=[t.Byte,t.Word,t.Int32,t.Int64,t.Autoinc];function n(t,e,i){e||(e={});for(let s of i)if(s)for(let i in s)if(s.hasOwnProperty(i)){let a=s[i];null!==a&&"object"==typeof a?t.has(a)?e[i]=t.get(a):Array.isArray(a)?(e[i]=o(a),t.set(a,e[i])):(void 0!==e[i]&&null!=e[i]||(e[i]=Object.create(Object.getPrototypeOf(a))),t.set(a,e[i]),n(t,e[i],[a])):e[i]=a;}return e}function o(t){let e=[];for(let i of t)e.push(i);return e}e.assign=function(t,...e){for(let i=0;i<e.length;i++){let s=e[i];if(s)for(let e in s)s.hasOwnProperty(e)&&(t[e]=s[e]);}return t},e.assignDeep=function(t,...e){return n(new WeakMap,t,e)},e.getIfDefined=function(t,e){return void 0!==t?t:e},e.IsDefinedAndNotNull=function(t){return null!=t},e.copyArrayTo=function(t,e){const i=t.length,s=e.length;for(let n=0;n<i&&n<s;n++)e[n]=t[n];},e.createArrayFrom=o,e.findItemById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return t[s];return null},e.findItemIndexById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return s;return -1},e.indexOfArrayItem=function(t,e){if(t.indexOf)return t.indexOf(e);{let i=t.length;for(let s=0;s<i;s++)if(e==t[s])return s;return -1}},e.moveArrayItem=function(t,e,i){if(e>=t.length)throw "Index out of bounds: "+e;i>=t.length&&(i=t.length-1);let s=t.splice(e,1)[0];t.splice(i,0,s);},e.removeArrayItem=function(t,e){let i=t.indexOf(e);if(-1!=i)return t.splice(i,1)[0]},e.insertArrayItem=function(t,e,i){t.splice(e,0,i);},e.fillArray=function(t,e,i=0,s){let n=t.length>>>0;var o=i>>0,a=o<0?Math.max(n+o,0):Math.min(o,n),r=void 0===s?n:s>>0;let l=r<0?Math.max(n+r,0):Math.min(r,n);for(;a<l;)t[a]=e,a++;return t},e.shiftToFitWindow=function(t,e){let i=document.getElementsByTagName("body")[0],s=window.innerWidth||document.documentElement.clientWidth||i.clientWidth;var n=t+e;let o=0;return n>s&&(o=s-n-10,t+o<0&&(o=10-t)),o},e.isObject=function(t){return null!==t&&("function"==typeof t||"object"==typeof t)},e.isNumericType=function(t){return i.indexOf(t)>=0},e.isIntType=function(t){return s.indexOf(t)>=0},e.isNumeric=function(t){return !isNaN(parseFloat(t))&&isFinite(t)},e.areCompatibleDataTypes=function(e,i){return void 0===e||void 0===i||e==t.Unknown||i==t.Unknown||e==i||e==t.Date&&i==t.DateTime||e==t.DateTime&&i==t.Date},e.isPropSet=function(t,e){return t[e]||t[e.toLowerCase()]||t[e.toUpperCase()]};const a="0123456789abcdefghijklmnopqrstuvwxyz";function r(t,e){const i=t.length;if(i>e){let s=i/e,n="";n+=t[0];let o,a=s;for(let e=1;e<i;e++)o=t[e],e+1>a&&(n+=o,a+=s);return n}return t}function l(t,e){return Math.floor(Math.random()*(e-t))+t}function d(t){const e=parseInt(t);if(isNaN(e))throw `"${t}" is not a valid number`;return e}e.generateId=function(t){t||(t="easy");let e=t.length>4?function(t,e){let i=t.split("-"),s=1,n=4;i.length<4&&(s=4/i.length,n=i.length);let o="";for(let t=0;t<n;t++)o+=r(i[t],s);return o}(t):t;e&&e.length>0&&(e+="-");var i=a[l(0,36)]+a[l(0,36)]+a[l(0,36)],s=l(0,1e4);return e+i+function(t,e=36){var i="",s=t;do{i=a[s%e]+i,s=Math.floor(s/=e);}while(s>0);return i}(621355968e9+1e4*(new Date).getTime()-0x8d60e562e627800-s)},e.strToDateTime=function(t,e){if(!t||0==t.length)return new Date;const i=t.replace(/[^a-zA-Z0-9_]/g,"-"),s=e.replace(/[^a-zA-Z0-9_]/g,"-").split("-"),n=i.split("-"),o=s.indexOf("MM"),a=s.indexOf("dd"),r=s.indexOf("yyyy"),l=s.indexOf("HH"),h=s.indexOf("mm"),c=s.indexOf("ss"),u=new Date;try{const t=r>-1&&r<n.length?d(n[r]):u.getFullYear(),e=o>-1&&o<n.length?d(n[o])-1:u.getMonth()-1;if(e>11)throw "";const i=a>-1&&a<n.length?d(n[a]):u.getDate();if(i>function(t,e){return new Date(e,t+1,0).getDate()}(e,t))throw "";const s=l>-1&&l<n.length?d(n[l]):0;if(s>23)throw "";const p=h>-1&&h<n.length?d(n[h]):0;if(p>59)throw "";const g=c>-1&&c<n.length?d(n[c]):0;if(g>59)throw "";return new Date(t,e,i,s,p,g)}catch(e){throw `${t} is not a valid date.`}},e.strToTime=function(t){const e=t.split(":");try{const t=e.length>0?d(e[0]):0;if(t>23)throw "";const i=e.length>1?d(e[1]):0;if(i>59)throw "";const s=e.length>1?d(e[1]):0;if(s>59)throw "";return new Date(0,0,0,t,i,s)}catch(e){throw `${t} is not a valid time.`}};}(l||(l={}));class p{constructor(t,e){this.request=t,this.promise=e;}getPromise(){return this.promise}getRequest(){return this.request}then(t,e){return this.promise.then(t,e)}catch(t){return this.promise.catch(t)}finally(t){return this.promise.finally(t)}}class g extends Error{constructor(t,e){super(e),this.status=t;}}class m{get responseBody(){return this._responseBody}constructor(){this.defaultHeaders={},this.customPayload=void 0;}get(t,e){return this.send(r.Get,t,null,e)}post(t,e,i){return this.send(r.Post,t,e,i)}put(t,e,i){return this.send(r.Put,t,e,i)}delete(t,e,i){return this.send(r.Delete,t,e,i)}send(t,e,i,s){const n=(s=s||{}).dataType||"json",o=s.contentType||"form-data"!==n?"application/json":null;i&&"form-data"!=n&&this.customPayload&&(i.data=l.assignDeep(i.data||{},this.customPayload));const a=new("onload"in new XMLHttpRequest?XMLHttpRequest:window.XDomainRequest),r={method:t,url:e,headers:Object.assign(Object.assign({},this.defaultHeaders),s.headers||{}),queryParams:s.queryParams||{},data:i};o&&(r.headers["Content-Type"]=o);const d=new u(a,r);this.beforeEachRequest&&(console.warn("HttpClient: 'beforeEachRequest' is deprecated and will be removed in future updates.\n            Use 'onRequest' instead"),this.beforeEachRequest(d)),this.onRequest&&this.onRequest(d);const h=d.data&&"string"!=typeof d.data&&"json"==n?JSON.stringify(d.data):d.data;return d.open(),new p(d,new Promise(((t,i)=>{s.responseType&&(a.responseType=s.responseType),a.onerror=t=>{i(new g(a.status,a.responseText));},a.onreadystatechange=()=>{if(4!=a.readyState)return;const s=a.getResponseHeader("Content-Type")||"",n=a.status;if(0===n)i(new g(n,"Network error or the request was aborted"));else if(n>=200&&n<400){const e="arraybuffer"===a.responseType||"blob"===a.responseType?a.response:0==s.indexOf("application/json")?JSON.parse(a.responseText):a.responseText;this._responseBody=e,this.onResponse&&this.onResponse(a),t(e);}else ("arraybuffer"===a.responseType||"blob"===a.responseType?m.decodeArrayBuffer(a.response):Promise.resolve(a.responseText)).then((t=>{const o=0==s.indexOf("application/json")?JSON.parse(t):t;this._responseBody=o;const a=o.message||(404==n?`No such endpoint: ${e}`:o);i(new g(n,a));}));},a.send(h);})))}static decodeArrayBuffer(t){var e=new FileReader;return new Promise((i=>{e.onloadend=function(){e.readyState==FileReader.DONE&&i(e.result);},e.readAsText(new Blob([t]));}))}}!function(e){let i,s={shortDateFormat:"MM/dd/yyyy",longDateFormat:"dd MMM, yyyy",editDateFormat:"MM/dd/yyyy",shortTimeFormat:"HH:mm",editTimeFormat:"HH:mm",longTimeFormat:"HH:mm:ss",shortMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],longMonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],shortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],longWeekDayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],decimalSeparator:".",currency:"USD"},n={localeId:"en-US",englishName:"English",displayName:"English",texts:{ButtonOK:"OK",ButtonCancel:"Cancel",Yes:"Yes",No:"No",True:"True",False:"False"},settings:s},o={"en-US":n};const a=[];function r(t){for(const e of a)e(t);}function d(){return i.localeId}function h(t){const e=o[t];e?l.assignDeep(i,e):(i.englishName=t,i.displayName=t,i.texts=l.assignDeep({},n.texts)),i.localeId=t;}function c(){return i.settings}function u(t){i.settings||(i.settings=l.assignDeep({},s)),i.settings=l.assignDeep(i.settings,t);}function p(t,e){r(e);let s=i;t&&(e.localeId||(e.localeId=t),s=o[t],s||(s=l.assignDeep({},n),o[t]=s)),l.assignDeep(s,e);}e.addMapper=function(t){a.push(t);},e.getLocales=function(){let t=[];for(let e in o)t.push({locale:e,englishName:o[e].englishName,displayName:o[e].displayName});return t.sort(((t,e)=>t.englishName>e.englishName?1:t.englishName===e.englishName?0:-1))},e.getCurrentLocale=d,e.setLocale=function(t){console.warn("This method is deprecated. Use setCurrentLocale instead"),h(t);},e.setCurrentLocale=h,e.getText=function(...t){let e=i.texts,s="";if(t&&t.length){const i=t.length;for(let n=0;n<i&&(s=e[t[n]],"object"==typeof s);n++)e=s;}return s},e.getLocaleSettings=c,e.getOneLocaleSetting=function(t){return i.settings[t]},e.getShortMonthName=function(t){const e=c();if(t>0&&t<13)return e.shortMonthNames[t-1];throw "Wrong month number: "+t},e.getLongMonthName=function(t){const e=c();if(t>0&&t<13)return e.longMonthNames[t-1];throw "Wrong month number: "+t},e.getShortWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.shortWeekDayNames.length>=t?e.shortWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.getLongWeekDayName=function(t){const e=c();if(t>0&&t<8)return e.longWeekDayNames.length>=t?e.longWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},e.updateLocaleSettings=u,e.updateLocaleTexts=function(t){"object"==typeof t?(r({localeId:i.localeId,texts:t}),l.assignDeep(i.texts,t)):console.error("Wrong parameter type in updateLocaleTexts function call.The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead");},e.updateDefaultTexts=function(t){for(let e in o){let i=o[e];i.texts=l.assignDeep({},t,i.texts);}i.texts=l.assignDeep({},t,i.texts);},e.updateLocaleInfo=p,e.addLocale=function(t,e){p(t,e);},e.resetLocales=function(){i||(i=l.assignDeep({},n),function(t){const e=new Date(2020,5,7,19,34,56,88),s=e.toLocaleDateString(t,{year:"numeric",month:"numeric",day:"numeric"}),n=e.toLocaleTimeString(t,{hour:"numeric",minute:"numeric",second:"numeric"});let o=s.replace("07","dd").replace("7","d").replace("06","MM").replace("6","M").replace("2020","yyyy").replace("20","yy"),a=n.replace("19","HH").replace("07","hh").replace("7","h").replace("34","mm").replace("56","ss").replace("PM","tt");i.settings||(i.settings={}),u({shortDateFormat:o,shortTimeFormat:a});}("object"==typeof navigator?navigator.language:void 0));};const g=/\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;function m(t,i){const s=t.getFullYear().toString(),n=t.getMonth()+1,o=t.getDate(),a=t.getHours(),r=t.getMinutes(),l=t.getSeconds(),d=a%12||12,h=a>11,c={yyyy:s,yy:s.substring(s.length-2),MMMM:e.getLongMonthName(n),MMM:e.getShortMonthName(n),MM:n<10?"0"+n:n.toString(),M:n.toString(),dd:o<10?"0"+o:o.toString(),d:o.toString(),HH:a<10?"0"+a:a.toString(),H:a.toString(),hh:d<10?"0"+d:d.toString(),h:d.toString(),tt:h?"PM":"AM",mm:r<10?"0"+r:r.toString(),ss:l<10?"0"+l:l.toString()};return i.replace(g,((t,e)=>e||c[t]))}function f(e){const i=c();let s;switch(e){case t.Date:s=i.shortDateFormat;break;case t.Time:s=i.shortTimeFormat;break;default:s=i.shortDateFormat+" "+i.shortTimeFormat;}return s}function y(e){const i=c();let s;switch(e){case t.Date:s=i.longDateFormat;break;case t.Time:s=i.longTimeFormat;break;default:s=i.longDateFormat+" "+i.longTimeFormat;}return s}e.dateTimeToStr=m,e.dateTimeToStrEx=function(e,i,s){return s?"d"==s?s=f(t.Date):"D"==s?s=y(t.Date):"f"==s?s=f(t.DateTime):"F"==s&&(s=y(t.DateTime)):s=f(i),m(e,s)},e.numberToStr=function(t,i,s){if(i&&i.length>0){const s=i.charAt(0).toUpperCase();if("S"===s)return function(t,i){if(!D[i]){const t=i.split("|").filter((t=>t.length>0)).map((t=>t.split("=")));if(D[i]={},t.length>0)if(t[0].length>1)for(const e of t)D[i][Number.parseInt(e[1])]=e[0];else t.forEach(((t,e)=>{D[i][e]=t[0];}));}const s=D[i];if(void 0!==s[t]){const i=s[t];return e.getText(i)||i}return t.toString()}(t,i.slice(1));if(["D","F","C"].indexOf(s)>=0){const e=d();return t.toLocaleString(e,function(t){const e=c(),i=t[0].toUpperCase(),s=t.length>1?Number.parseInt(t.slice(1)):"D"==i?1:2;switch(i){case"D":return {style:"decimal",useGrouping:!1,minimumIntegerDigits:s};case"C":return {style:"currency",currency:e.currency,minimumFractionDigits:s};default:return {style:"decimal",minimumFractionDigits:s,maximumFractionDigits:s}}}(i))}return function(t,e){let i=t.toString(),s="",n=i.length-1;for(let t=e.length-1;t>=0;t--){const o=e.charAt(t);"#"===o||"0"===o?n>=0?(s+=i.charAt(n),n--):"0"===o&&(s+=0):s+=o;}return s.split("").reverse().join("")}(Math.trunc(t),i)}const n=c();return s=s||n.decimalSeparator,t.toString().replace(".",s)},e.booleanToStr=function(t,i){if(i&&i.length>0&&"S"===i.charAt(0).toUpperCase()){const s=i.slice(1).split("|");if(s.length>1){const i=s[t?1:0];return e.getText(i)||i}}return `${t}`};const D={};}(d||(d={}));class f{constructor(t){this.isEditable=!0,this.name="",this.caption="",this.description="",this.parent=t,this.attributes=new Array,this.subEntities=new Array;}loadFromData(t,e){if(e){if(this.id=e.id,this.name=e.name,this.captionPlural=e.namePlur,this.caption=e.name,this.description=e.desc,void 0!==e.ied&&(this.isEditable=e.ied),this.subEntities=new Array,e.ents)for(let i=0;i<e.ents.length;i++){let s=t.createEntity(this);s.loadFromData(t,e.ents[i]),this.subEntities.push(s);}if(this.attributes=new Array,e.attrs)for(let i=0;i<e.attrs.length;i++){let s=t.createEntityAttr(this);s.loadFromData(t,e.attrs[i]),this.attributes.push(s);}}}scan(t,e){let i={stop:!1},s=n=>{if(e&&e(n,i),n.attributes){let e=n.attributes.length;for(let s=0;s<e&&!i.stop;s++){let e=n.attributes[s];if(t&&t(e,i),i.stop)return}}if(n.subEntities){let t=n.subEntities.length;for(let e=0;e<t&&!i.stop;e++)s(n.subEntities[e]);}};s(this);}getFirstPrimaryAttr(){return this.getPrimaryAttrs()[0]}getPrimaryAttrs(){return this.attributes.filter((t=>t.isPrimaryKey))}}class y{constructor(i){this.id="",this.caption="{Unrecognized attribute}",this.dataType=t.String,this.size=0,this.isPrimaryKey=!1,this.isForeignKey=!1,this.isNullable=!0,this.showOnView=!0,this.isEditable=!0,this.showOnCreate=!0,this.showOnEdit=!0,this.showInLookup=!1,this.lookupAttr="",this.expr="",this.entity=i,this.kind=e.Data;}loadFromData(t,e){if(e){this.id=e.id,this.description=e.desc,this.caption=e.cptn,this.dataType=e.dtype,this.isPrimaryKey=e.ipk,this.isForeignKey=e.ifk,this.size=e.size,this.lookupAttr=e.lattr,this.lookupEntity=e.lent,this.dataAttr=e.dattr,this.lookupDataAttr=e.ldattr;const i=l.getDateDataTypes().indexOf(this.dataType);this.defaultValue=e.defVal&&i?new Date(e.defVal):e.defVal,this.isNullable=l.getIfDefined(e.nul,this.isNullable),this.isEditable=l.getIfDefined(e.ied,this.isEditable),this.showOnView=l.getIfDefined(e.ivis||e.sov,this.showOnView),this.showOnCreate=l.getIfDefined(e.soc,this.showOnCreate),this.showOnEdit=l.getIfDefined(e.soe,this.showOnEdit),this.showInLookup=l.getIfDefined(e.sil,this.showInLookup),this.kind=e.kind,this.displayFormat=e.dfmt,e.udata&&(this.userData=e.udata),e.edtr&&(this.defaultEditor=t.getEditorById(e.edtr)||t.createValueEditor());}}}class D{constructor(){this.id="",this.tag=i,this.resType=t.Unknown,this.defValue="";}loadFromData(t){t&&(this.id=t.id,this.tag=t.tag,this.defValue=t.defval,this.resType=t.rtype,this.accept=t.accept,this.multiline=t.multiline,t.subType&&(this.resType=t.subType),t.name&&(this.name=t.name),t.values&&(this.values=t.values));}getValueText(t){let e="";if(!this.values)return e;if(Array.isArray(t))for(let i of this.values)t.indexOf(i.id)>=0&&(e+=i.text+",");else for(let i of this.values)i.id===t&&(e+=i.text+",");return e&&(e=e.substring(0,e.length-1)),e}}class v{constructor(){this.mainEntity=null,this.id="__none",this.name="Empty model",this.rootEntity=this.createEntity(),this.displayFormats=new Map;}getMainEntity(){return this.mainEntity}createEntity(t){return new f(t)}createEntityAttr(t){return new y(t)}createValueEditor(){return new D}loadFromJSON(t){let e=JSON.parse(t);this.loadFromData(e);}loadFromData(e){if(this.id=e.id,this.name=e.name,this.version=e.vers,this.editors=new Array,e.editors)for(let t=0;t<e.editors.length;t++){let i=this.createValueEditor();i.loadFromData(e.editors[t]),this.editors.push(i);}if(this.rootEntity.loadFromData(this,e.entroot),this.displayFormats=new Map,e.displayFormats)for(const i in e.displayFormats){const s=t[i],n=e.displayFormats[i]||new Array;this.displayFormats.set(s,n);}}getDisplayFormats(){return this.displayFormats}getDisplayFormatsForType(t){return this.displayFormats.has(t)?this.displayFormats.get(t):[]}getDefaultFormat(t){return this.displayFormats.has(t)?this.displayFormats.get(t).filter((t=>t.isdef))[0]:null}setData(t){"string"==typeof t?this.loadFromJSON(t):this.loadFromData(t);}isEmpty(){return 0===this.rootEntity.subEntities.length&&0===this.rootEntity.attributes.length}getId(){return this.id}getName(){return this.name}getRootEntity(){return this.rootEntity}getEditorById(t){for(let e of this.editors)if(e.id===t)return e;return null}getAttributeById(t){return this.getEntityAttrById(this.getRootEntity(),t)||null}checkAttrProperty(t,e){let i=this.getAttributeById(t);if(i){if(void 0===i[e])throw "No such property: "+e;return !!i[e]||!!i.lookupAttr&&(t=i.lookupAttr,i=this.getAttributeById(t),i&&i[e])}return !1}getEntityAttrById(t,e){let i,s;if(t.attributes){let s=t.attributes.length;for(i=0;i<s;i++)if(t.attributes[i].id==e)return t.attributes[i]}if(t.subEntities){let n=t.subEntities.length;for(i=0;i<n;i++)if(s=this.getEntityAttrById(t.subEntities[i],e),s)return s}return null}listByEntityWithFilter(t,e){let i,s=new Array,n=null;if(t.subEntities){let o=t.subEntities.length;for(let a=0;a<o;a++)if(n=t.subEntities[a],!e||e(n,null)){i=d.getText("Entities",n.name),i||(i=n.caption);let t=l.assign(this.createEntity(),{id:n.name,text:i,items:[],isEntity:!0});t.items=this.listByEntityWithFilter(n,e),t.items.length>0&&s.push(t);}}let o=null;if(t.attributes){let n=t.attributes.length;for(let a=0;a<n;a++)if(o=t.attributes[a],!e||e(t,o)){i=d.getText("Attributes",o.id),i||(i=o.caption);let t=l.assign(this.createEntity(),{id:o.id,text:i,dataType:o.dataType});s.push(t);}}return s}listByEntity(t,e,i){e=e||{};let s,n=[],o=[],a=null;if(t.subEntities){let o=t.subEntities.length;for(let r=0;r<o;r++)if(a=t.subEntities[r],!i||i(a,null)){s=d.getText("Entities",a.name)||a.caption;let t=l.assign(this.createEntity(),{id:a.name,text:s,items:[],isEntity:!0,description:a.description}),o=l.assign({},e);o.includeRootData=!1,t.items=this.listByEntity(a,o,i),t.items.length>0&&n.push(t);}}let r=null;if(t.attributes){let e=t.attributes.length;for(let n=0;n<e;n++)r=t.attributes[n],i&&!i(t,r)||(s=d.getText("Attributes",r.id)||r.caption,o.push(l.assign(this.createEntityAttr(t),{id:r.id,text:s,dataType:r.dataType,lookupAttr:r.lookupAttr,description:r.description})));}let h,c=(t,e)=>t.text.toLowerCase()==e.text.toLowerCase()?0:t.text.toLowerCase()>e.text.toLowerCase()?1:-1;return e.sortEntities&&(n.sort(c),o.sort(c)),h=e.attrPlacement&&0!=e.attrPlacement?o.concat(n):n.concat(o),2==e.attrPlacement&&h.sort(c),e.includeRootData?(s=d.getText("Entities",t.name),s||(s=t.caption),{id:t.name,text:s,items:h}):h}clear(){this.rootEntity=this.createEntity(),this.editors=[],this.version="";}addDefaultValueEditors(){let e;e=this.addOrUpdateValueEditor("_DTE",s,t.String),e.defValue="",this.addOrUpdateValueEditor("_DPDE",n,t.DateTime),this.addOrUpdateValueEditor("_DPTE",n,t.DateTime);}addOrUpdateValueEditor(t,e,i){let s=l.findItemById(this.editors,t);return s||(s=this.createValueEditor(),s.id=t,this.editors.push(s)),s.tag=e,s.resType=i,s}getEntitiesTree(t,e){return this.listByEntity(this.getRootEntity(),t,e)}getEntitiesTreeWithFilter(t){return this.listByEntityWithFilter(this.getRootEntity(),t)}getFullEntityPathByAttr(t,e){return e=e||" ",this.getEntityPathByAttr(this.getRootEntity(),t,e,!0)}getEntityPathByAttr(t,e,i,s){if(!t)return "";i=i||" ";let n="";if(t.caption&&!s){n=d.getText("Entities",t.caption)||t.caption;}if(t.attributes){let i=t.attributes.length;for(let s=0;s<i;s++)if(t.attributes[s].id==e)return n}if(t.subEntities){let s=t.subEntities.length;for(let o=0;o<s;o++){let s=t.subEntities[o],a=this.getEntityPathByAttr(s,e,i,!1);if(""!==a)return ""!==n&&(a=n+i+a),a}}return ""}getAttributeText(t,e){let i=d.getText("Attributes",t.id);if(i||(i=t.caption),!e)return i;let s="",n=this.getFullEntityPathByAttr(t.id," ");return n?(s=e.replace(new RegExp("{attr}","g"),i),s=s.replace(new RegExp("{entity}","g"),n)):s=i,s.trim()}runThroughEntities(t,e){this.getRootEntity().scan(t,e);}getFirstAttributeByFilter(t){let e=null;return this.runThroughEntities((function(i,s){t(i)&&(s.stop=!0,e=i);}),null),e}}!function(t){t[t.None=0]="None",t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(h||(h={}));class C{constructor(e){if(!e)throw Error("Options are required");if(!e.id)throw Error("Field Id is required");if(!e.label)throw Error("Label is required");this.id=e.id,this.type=l.getIfDefined(e.type,t.String),this.label=e.label,this.originAttrId=e.originAttrId,this.isAggr=e.isAggr||!1,this.displayFormat=e.dfmt,this.groupFooterColumnTemplate=e.gfct,this.style=e.style||{},this.description=e.description,this.calculatedWidth=0;}}class w{constructor(){this.items=[],this.mapper={},this._dateColumnIdx=[];}get count(){return this.items.length}add(e){let i;i=e instanceof C?e:new C(e);const s=this.items.length;return this.items.push(i),this.mapper[i.id]=s,[t.Date,t.DateTime,t.Time].indexOf(i.type)>=0&&this._dateColumnIdx.push(s),s}updateDateColumnIdx(){this._dateColumnIdx=this.getItems().filter((e=>[t.Date,t.DateTime,t.Time].indexOf(e.type)>=0)).map(((t,e)=>e));}put(t,e){t>=0&&t<this.count&&(this.items[t]=e,this.updateDateColumnIdx());}move(t,e){let i=this.items.indexOf(t);i>=0&&i!=e&&(l.moveArrayItem(this.items,i,e),this.updateDateColumnIdx());}get(t){return t>=0&&t<this.count?this.items[t]:null}getIndex(t){return this.mapper[t]}getItems(){return this.items}getDateColumnIndexes(){return this._dateColumnIdx}removeAt(t){const e=this.get(t);this.items.splice(t,1);const i=this._dateColumnIdx.indexOf(t);i>=0&&this._dateColumnIdx.splice(i,1),delete this.mapper[e.id];}clear(){this.items=[],this._dateColumnIdx=[],this.mapper={};}}class T{constructor(t,e){this.columns=t,this.values=e;}toArray(){return Array.from(this.values)}size(){return this.values.length}getValue(t){let e;if("string"==typeof t){if(e=this.columns.getIndex(t),void 0===e)throw new RangeError(`No column with id '${t}'`)}else e=t;if(e>=this.values.length)throw new RangeError("Out of range: "+e);return this.values[e]}setValue(t,e){let i;if("string"==typeof t){if(i=this.columns.getIndex(t),void 0===i)throw new RangeError(`No column with id '${t}'`)}else i=t;if(i>=this.values.length)throw new RangeError("Out of range: "+i);this.values[i]=e;}}let b=class{constructor(t){if(this._chunkSize=1e3,this._elasticChunks=!1,this.cachedRows=[],this.total=0,this.loader=null,this.needTotal=!0,this.isInMemory=!1,t=t||{},this._chunkSize=t.chunkSize||this._chunkSize,this._elasticChunks=t.elasticChunks||this._elasticChunks,this.loader=t.loader,void 0!==t.inMemory&&(this.isInMemory=t.inMemory),this.isInMemory&&(this.needTotal=!1),this._columns=new w,this.onUpdate=t.onUpdate,t.columns)for(const e of t.columns)this._columns.add(e);if(t.rows)for(const e of t.rows){const t=this.createRow(e);this.addRow(t);}this.needTotal=!this._elasticChunks;}get columns(){return this._columns}get chunkSize(){return this._chunkSize}set chunkSize(t){this._chunkSize=t,this.total=0,this.needTotal=!this.elasticChunks,this.cachedRows=[];}get elasticChunks(){return this._elasticChunks}set elasticChunks(t){this._elasticChunks=t,this.total=0,this.needTotal=!this.elasticChunks,this.cachedRows=[];}getRows(t){let e=0,i=this._chunkSize;t&&("page"in t?(e=t.pageSize*(t.page-1),i=t.pageSize):(e=t.offset,i=t.limit));let s=e+i;if(!this.needTotal&&!this.elasticChunks){if(e>=this.total)return Promise.resolve([]);s>this.total&&(s=this.total);}if(this.isInMemory&&s>this.cachedRows.length&&(s=this.cachedRows.length),s<=this.cachedRows.length)return Promise.resolve(this.cachedRows.slice(e,s));if(!this.loader)throw `Loader is not defined. Can't get the rows from ${e} to ${s}`;const n=this.needTotal;this.needTotal&&(this.needTotal=!1);let o=this.cachedRows.length,a=s-o;return a<this._chunkSize&&(a=this._chunkSize),this.loader.loadChunk({offset:o,limit:a,needTotal:n}).then((t=>(n&&(this.total=t.total),Array.prototype.push.apply(this.cachedRows,t.table.getCachedRows()),s>this.cachedRows.length&&(s=this.cachedRows.length),this.elasticChunks&&t.table.getCachedCount()<a&&(this.total=this.cachedRows.length),this.fireUpdated(),this.cachedRows.slice(e,s))))}getRow(t){return this.getRows({offset:t,limit:1}).then((t=>t.length>0?t[0]:null))}getTotal(){return this.total}setTotal(t){this.total=t,this.needTotal=!1;}getCachedCount(){return this.cachedRows.length}clear(){this.columns.clear(),this.cachedRows=[],this.total=0,this.needTotal=!this._elasticChunks,this.fireUpdated();}createRow(t){const e=this._columns.getDateColumnIndexes(),i=new Array(this._columns.count),s=t instanceof T?e=>t.getValue(e):e=>t[e];return t&&this.columns.getItems().forEach((t=>{const n=s(t.id),o=this.columns.getIndex(t.id);i[o]=e.indexOf(o)>=0?this.mapDate(n,t.type):n;})),new T(this._columns,i)}mapDate(e,i){if(e){let s=new Date(e);return isNaN(s.getTime())&&i==t.Time&&(s=l.strToTime(e)),s}return null}addRow(t){let e;if(Array.isArray(t)){let i=t;const s=this._columns.getDateColumnIndexes();if(s.length>0)for(const t of s)i[t]&&(i[t]=this.mapDate(i[t],this._columns.get(t).type));e=new T(this._columns,i);}else e=this.createRow(t);this.cachedRows.push(e);const i=this.getCachedCount();return i>this.total&&(this.total=i),e}getCachedRows(){return this.cachedRows}totalIsKnown(){return this.elasticChunks?this.getCachedCount()===this.total:!this.needTotal}fireUpdated(){this.onUpdate&&this.onUpdate(this);}};function x(t,e){let i=t;return null!=i&&i.length>0?("/"!=i.charAt(i.length-1)&&(i+="/"),i+=e):i=e,i}(c||(c={})).renderLiquidTemplate=function(t,e){let i=t;if(e)for(let t in e){const s=new RegExp("{{"+t+"}}","g");i=i.replace(s,e[t]);}return i},d.resetLocales(),"function"!=typeof Object.values&&(Object.values=function(t){return Object.keys(t).map((e=>t[e]))}),"function"!=typeof Math.trunc&&(Math.trunc=function(t){return isNaN(t)?NaN:t>0?Math.floor(t):Math.ceil(t)});class E{constructor(t,e,i,s=!1){this.loader=t,this.sourceTable=e,this.sourceId=i,this.isLookup=s,this.filterValue="",this.justServerSide=!1;}getValue(){return this.filterValue}apply(t){return this.filterValue=t,this.filterValue?this.applyCore():this.clear()}clear(){return this.filterValue="",Promise.resolve(this.sourceTable)}applyCore(){if(this.sourceTable.getTotal()!=this.sourceTable.getCachedCount()||this.justServerSide){const t=[{class:"__substring",value:this.filterValue}];return this.loader.loadChunk({offset:0,limit:this.sourceTable.chunkSize,needTotal:!0,filters:t,sourceId:this.sourceId,lookup:this.isLookup}).then((e=>{const i=new b({chunkSize:this.sourceTable.chunkSize,loader:{loadChunk:e=>this.loader.loadChunk(Object.assign(Object.assign({},e),{filters:t,sourceId:this.sourceId,lookup:this.isLookup}))}});for(const t of this.sourceTable.columns.getItems())i.columns.add(t);i.setTotal(e.total);for(const t of e.table.getCachedRows())i.addRow(t);return i}))}return this.applyInMemoryFilter()}applyInMemoryFilter(){return new Promise(((t,e)=>{const i=new b({chunkSize:this.sourceTable.chunkSize,inMemory:!0});for(const t of this.sourceTable.columns.getItems())i.columns.add(t);const s=this.filterValue.split("||").map((t=>t.trim().toLowerCase())),n=this.sourceTable.columns.getItems().filter((t=>l.isNumericType(t.type)||l.getStringDataTypes().indexOf(t.type)>=0)),o=t=>{for(const e of n){const i=t.getValue(e.id);if(i){const t=i.toString().toLowerCase();for(const e of s)if(t.indexOf(e)>=0)return !0}}return !1};for(const t of this.sourceTable.getCachedRows())o(t)&&i.addRow(t);i.setTotal(i.getCachedCount()),t(i);}))}}
-	/*!
-	 * EasyData.JS UI v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */
-	/*!
-	 * EasyData.JS Core v1.4.20
-	 * Copyright 2023 Korzh.com
-	 * Licensed under MIT
-	 */var I,S,M,R,k,A,P,O;!function(t){t[t.Unknown=0]="Unknown",t[t.String=1]="String",t[t.Byte=2]="Byte",t[t.Word=3]="Word",t[t.Int32=4]="Int32",t[t.Int64=5]="Int64",t[t.Bool=6]="Bool",t[t.Float=7]="Float",t[t.Currency=8]="Currency",t[t.BCD=9]="BCD",t[t.Date=10]="Date",t[t.Time=11]="Time",t[t.DateTime=12]="DateTime",t[t.Autoinc=13]="Autoinc",t[t.Memo=14]="Memo",t[t.Blob=15]="Blob",t[t.FixedChar=16]="FixedChar",t[t.Guid=17]="Guid",t[t.Geometry=18]="Geometry",t[t.Geography=19]="Geography";}(I||(I={})),function(t){t[t.Data=0]="Data",t[t.Virtual=1]="Virtual",t[t.Lookup=2]="Lookup";}(S||(S={})),function(t){t.Trace="TRACE",t.Options="OPTIONS",t.Get="GET",t.Put="PUT",t.Post="POST",t.Delete="DELETE";}(M||(M={})),function(t){t.getAllDataTypes=function(){return Object.values(I).filter((t=>"number"==typeof t))},t.getDateDataTypes=function(){return [I.Time,I.Date,I.DateTime]},t.getStringDataTypes=function(){return [I.String,I.Memo,I.FixedChar]};const e=[I.Byte,I.Word,I.Int32,I.Int64,I.Float,I.Currency,I.Autoinc];t.getNumericDataTypes=function(){return e};const i=[I.Byte,I.Word,I.Int32,I.Int64,I.Autoinc];function s(t,e,i){e||(e={});for(let o of i)if(o)for(let i in o)if(o.hasOwnProperty(i)){let a=o[i];null!==a&&"object"==typeof a?t.has(a)?e[i]=t.get(a):Array.isArray(a)?(e[i]=n(a),t.set(a,e[i])):(void 0!==e[i]&&null!=e[i]||(e[i]=Object.create(Object.getPrototypeOf(a))),t.set(a,e[i]),s(t,e[i],[a])):e[i]=a;}return e}function n(t){let e=[];for(let i of t)e.push(i);return e}t.assign=function(t,...e){for(let i=0;i<e.length;i++){let s=e[i];if(s)for(let e in s)s.hasOwnProperty(e)&&(t[e]=s[e]);}return t},t.assignDeep=function(t,...e){return s(new WeakMap,t,e)},t.getIfDefined=function(t,e){return void 0!==t?t:e},t.IsDefinedAndNotNull=function(t){return null!=t},t.copyArrayTo=function(t,e){const i=t.length,s=e.length;for(let n=0;n<i&&n<s;n++)e[n]=t[n];},t.createArrayFrom=n,t.findItemById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return t[s];return null},t.findItemIndexById=function(t,e){for(var i=t.length,s=0;s<i;s++)if(t[s].id===e)return s;return -1},t.indexOfArrayItem=function(t,e){if(t.indexOf)return t.indexOf(e);{let i=t.length;for(let s=0;s<i;s++)if(e==t[s])return s;return -1}},t.moveArrayItem=function(t,e,i){if(e>=t.length)throw "Index out of bounds: "+e;i>=t.length&&(i=t.length-1);let s=t.splice(e,1)[0];t.splice(i,0,s);},t.removeArrayItem=function(t,e){let i=t.indexOf(e);if(-1!=i)return t.splice(i,1)[0]},t.insertArrayItem=function(t,e,i){t.splice(e,0,i);},t.fillArray=function(t,e,i=0,s){let n=t.length>>>0;var o=i>>0,a=o<0?Math.max(n+o,0):Math.min(o,n),r=void 0===s?n:s>>0;let l=r<0?Math.max(n+r,0):Math.min(r,n);for(;a<l;)t[a]=e,a++;return t},t.shiftToFitWindow=function(t,e){let i=document.getElementsByTagName("body")[0],s=window.innerWidth||document.documentElement.clientWidth||i.clientWidth;var n=t+e;let o=0;return n>s&&(o=s-n-10,t+o<0&&(o=10-t)),o},t.isObject=function(t){return null!==t&&("function"==typeof t||"object"==typeof t)},t.isNumericType=function(t){return e.indexOf(t)>=0},t.isIntType=function(t){return i.indexOf(t)>=0},t.isNumeric=function(t){return !isNaN(parseFloat(t))&&isFinite(t)},t.areCompatibleDataTypes=function(t,e){return void 0===t||void 0===e||t==I.Unknown||e==I.Unknown||t==e||t==I.Date&&e==I.DateTime||t==I.DateTime&&e==I.Date},t.isPropSet=function(t,e){return t[e]||t[e.toLowerCase()]||t[e.toUpperCase()]};const o="0123456789abcdefghijklmnopqrstuvwxyz";function a(t,e){const i=t.length;if(i>e){let s=i/e,n="";n+=t[0];let o,a=s;for(let e=1;e<i;e++)o=t[e],e+1>a&&(n+=o,a+=s);return n}return t}function r(t,e){return Math.floor(Math.random()*(e-t))+t}function l(t){const e=parseInt(t);if(isNaN(e))throw `"${t}" is not a valid number`;return e}t.generateId=function(t){t||(t="easy");let e=t.length>4?function(t,e){let i=t.split("-"),s=1,n=4;i.length<4&&(s=4/i.length,n=i.length);let o="";for(let t=0;t<n;t++)o+=a(i[t],s);return o}(t):t;e&&e.length>0&&(e+="-");var i=o[r(0,36)]+o[r(0,36)]+o[r(0,36)],s=r(0,1e4);return e+i+function(t,e=36){var i="",s=t;do{i=o[s%e]+i,s=Math.floor(s/=e);}while(s>0);return i}(621355968e9+1e4*(new Date).getTime()-0x8d60e562e627800-s)},t.strToDateTime=function(t,e){if(!t||0==t.length)return new Date;const i=t.replace(/[^a-zA-Z0-9_]/g,"-"),s=e.replace(/[^a-zA-Z0-9_]/g,"-").split("-"),n=i.split("-"),o=s.indexOf("MM"),a=s.indexOf("dd"),r=s.indexOf("yyyy"),d=s.indexOf("HH"),h=s.indexOf("mm"),c=s.indexOf("ss"),u=new Date;try{const t=r>-1&&r<n.length?l(n[r]):u.getFullYear(),e=o>-1&&o<n.length?l(n[o])-1:u.getMonth()-1;if(e>11)throw "";const i=a>-1&&a<n.length?l(n[a]):u.getDate();if(i>function(t,e){return new Date(e,t+1,0).getDate()}(e,t))throw "";const s=d>-1&&d<n.length?l(n[d]):0;if(s>23)throw "";const p=h>-1&&h<n.length?l(n[h]):0;if(p>59)throw "";const g=c>-1&&c<n.length?l(n[c]):0;if(g>59)throw "";return new Date(t,e,i,s,p,g)}catch(e){throw `${t} is not a valid date.`}},t.strToTime=function(t){const e=t.split(":");try{const t=e.length>0?l(e[0]):0;if(t>23)throw "";const i=e.length>1?l(e[1]):0;if(i>59)throw "";const s=e.length>1?l(e[1]):0;if(s>59)throw "";return new Date(0,0,0,t,i,s)}catch(e){throw `${t} is not a valid time.`}};}(R||(R={})),function(t){let e,i={shortDateFormat:"MM/dd/yyyy",longDateFormat:"dd MMM, yyyy",editDateFormat:"MM/dd/yyyy",shortTimeFormat:"HH:mm",editTimeFormat:"HH:mm",longTimeFormat:"HH:mm:ss",shortMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],longMonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],shortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],longWeekDayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],decimalSeparator:".",currency:"USD"},s={localeId:"en-US",englishName:"English",displayName:"English",texts:{ButtonOK:"OK",ButtonCancel:"Cancel",Yes:"Yes",No:"No",True:"True",False:"False"},settings:i},n={"en-US":s};const o=[];function a(t){for(const e of o)e(t);}function r(){return e.localeId}function l(t){const i=n[t];i?R.assignDeep(e,i):(e.englishName=t,e.displayName=t,e.texts=R.assignDeep({},s.texts)),e.localeId=t;}function d(){return e.settings}function h(t){e.settings||(e.settings=R.assignDeep({},i)),e.settings=R.assignDeep(e.settings,t);}function c(t,i){a(i);let o=e;t&&(i.localeId||(i.localeId=t),o=n[t],o||(o=R.assignDeep({},s),n[t]=o)),R.assignDeep(o,i);}t.addMapper=function(t){o.push(t);},t.getLocales=function(){let t=[];for(let e in n)t.push({locale:e,englishName:n[e].englishName,displayName:n[e].displayName});return t.sort(((t,e)=>t.englishName>e.englishName?1:t.englishName===e.englishName?0:-1))},t.getCurrentLocale=r,t.setLocale=function(t){console.warn("This method is deprecated. Use setCurrentLocale instead"),l(t);},t.setCurrentLocale=l,t.getText=function(...t){let i=e.texts,s="";if(t&&t.length){const e=t.length;for(let n=0;n<e&&(s=i[t[n]],"object"==typeof s);n++)i=s;}return s},t.getLocaleSettings=d,t.getOneLocaleSetting=function(t){return e.settings[t]},t.getShortMonthName=function(t){const e=d();if(t>0&&t<13)return e.shortMonthNames[t-1];throw "Wrong month number: "+t},t.getLongMonthName=function(t){const e=d();if(t>0&&t<13)return e.longMonthNames[t-1];throw "Wrong month number: "+t},t.getShortWeekDayName=function(t){const e=d();if(t>0&&t<8)return e.shortWeekDayNames.length>=t?e.shortWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},t.getLongWeekDayName=function(t){const e=d();if(t>0&&t<8)return e.longWeekDayNames.length>=t?e.longWeekDayNames[t-1]:t.toString();throw "Wrong month number: "+t},t.updateLocaleSettings=h,t.updateLocaleTexts=function(t){"object"==typeof t?(a({localeId:e.localeId,texts:t}),R.assignDeep(e.texts,t)):console.error("Wrong parameter type in updateLocaleTexts function call.The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead");},t.updateDefaultTexts=function(t){for(let e in n){let i=n[e];i.texts=R.assignDeep({},t,i.texts);}e.texts=R.assignDeep({},t,e.texts);},t.updateLocaleInfo=c,t.addLocale=function(t,e){c(t,e);},t.resetLocales=function(){e||(e=R.assignDeep({},s),function(t){const i=new Date(2020,5,7,19,34,56,88),s=i.toLocaleDateString(t,{year:"numeric",month:"numeric",day:"numeric"}),n=i.toLocaleTimeString(t,{hour:"numeric",minute:"numeric",second:"numeric"});let o=s.replace("07","dd").replace("7","d").replace("06","MM").replace("6","M").replace("2020","yyyy").replace("20","yy"),a=n.replace("19","HH").replace("07","hh").replace("7","h").replace("34","mm").replace("56","ss").replace("PM","tt");e.settings||(e.settings={}),h({shortDateFormat:o,shortTimeFormat:a});}("object"==typeof navigator?navigator.language:void 0));};const u=/\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;function p(e,i){const s=e.getFullYear().toString(),n=e.getMonth()+1,o=e.getDate(),a=e.getHours(),r=e.getMinutes(),l=e.getSeconds(),d=a%12||12,h=a>11,c={yyyy:s,yy:s.substring(s.length-2),MMMM:t.getLongMonthName(n),MMM:t.getShortMonthName(n),MM:n<10?"0"+n:n.toString(),M:n.toString(),dd:o<10?"0"+o:o.toString(),d:o.toString(),HH:a<10?"0"+a:a.toString(),H:a.toString(),hh:d<10?"0"+d:d.toString(),h:d.toString(),tt:h?"PM":"AM",mm:r<10?"0"+r:r.toString(),ss:l<10?"0"+l:l.toString()};return i.replace(u,((t,e)=>e||c[t]))}function g(t){const e=d();let i;switch(t){case I.Date:i=e.shortDateFormat;break;case I.Time:i=e.shortTimeFormat;break;default:i=e.shortDateFormat+" "+e.shortTimeFormat;}return i}function m(t){const e=d();let i;switch(t){case I.Date:i=e.longDateFormat;break;case I.Time:i=e.longTimeFormat;break;default:i=e.longDateFormat+" "+e.longTimeFormat;}return i}t.dateTimeToStr=p,t.dateTimeToStrEx=function(t,e,i){return i?"d"==i?i=g(I.Date):"D"==i?i=m(I.Date):"f"==i?i=g(I.DateTime):"F"==i&&(i=m(I.DateTime)):i=g(e),p(t,i)},t.numberToStr=function(e,i,s){if(i&&i.length>0){const s=i.charAt(0).toUpperCase();if("S"===s)return function(e,i){if(!f[i]){const t=i.split("|").filter((t=>t.length>0)).map((t=>t.split("=")));if(f[i]={},t.length>0)if(t[0].length>1)for(const e of t)f[i][Number.parseInt(e[1])]=e[0];else t.forEach(((t,e)=>{f[i][e]=t[0];}));}const s=f[i];if(void 0!==s[e]){const i=s[e];return t.getText(i)||i}return e.toString()}(e,i.slice(1));if(["D","F","C"].indexOf(s)>=0){const t=r();return e.toLocaleString(t,function(t){const e=d(),i=t[0].toUpperCase(),s=t.length>1?Number.parseInt(t.slice(1)):"D"==i?1:2;switch(i){case"D":return {style:"decimal",useGrouping:!1,minimumIntegerDigits:s};case"C":return {style:"currency",currency:e.currency,minimumFractionDigits:s};default:return {style:"decimal",minimumFractionDigits:s,maximumFractionDigits:s}}}(i))}return function(t,e){let i=t.toString(),s="",n=i.length-1;for(let t=e.length-1;t>=0;t--){const o=e.charAt(t);"#"===o||"0"===o?n>=0?(s+=i.charAt(n),n--):"0"===o&&(s+=0):s+=o;}return s.split("").reverse().join("")}(Math.trunc(e),i)}const n=d();return s=s||n.decimalSeparator,e.toString().replace(".",s)},t.booleanToStr=function(e,i){if(i&&i.length>0&&"S"===i.charAt(0).toUpperCase()){const s=i.slice(1).split("|");if(s.length>1){const i=s[e?1:0];return t.getText(i)||i}}return `${e}`};const f={};}(k||(k={})),function(t){t[t.None=0]="None",t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(A||(A={}));class N{constructor(t,e){this.columns=t,this.values=e;}toArray(){return Array.from(this.values)}size(){return this.values.length}getValue(t){let e;if("string"==typeof t){if(e=this.columns.getIndex(t),void 0===e)throw new RangeError(`No column with id '${t}'`)}else e=t;if(e>=this.values.length)throw new RangeError("Out of range: "+e);return this.values[e]}setValue(t,e){let i;if("string"==typeof t){if(i=this.columns.getIndex(t),void 0===i)throw new RangeError(`No column with id '${t}'`)}else i=t;if(i>=this.values.length)throw new RangeError("Out of range: "+i);this.values[i]=e;}}class L{static newGuid(){return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,(function(t){var e=16*Math.random()|0;return ("x"==t?e:3&e|8).toString(16)}))}}class F{constructor(t){this.silentMode=0,this.events=new Array,this.source=t;}subscribe(t,e){let i=this.getEventRecByType(t);const s={id:L.newGuid(),callback:e};return i?i.eventCallbacks.push(s):(i={type:t,eventCallbacks:new Array(s)},this.events.push(i)),s.id}unsubscribe(t,e){let i=this.getEventRecByType(t);if(i){let t=-1;for(t=0;t<i.eventCallbacks.length&&i.eventCallbacks[t].id!==e;t++);t>=0&&i.eventCallbacks.splice(t,1);}}fire(t,e,i=0,s=!1){if(this.silentMode&&!s)return;let n=this.getEventRecByType(t);if(n){const s={type:t,source:this.source,data:e};let o=()=>{for(let t of n.eventCallbacks)t.callback(s);};i>0?setTimeout(o,i):o();}}enterSilentMode(){this.silentMode++;}exitSilentMode(){this.silentMode&&this.silentMode--;}isSilent(){return this.silentMode>0}getEventRecByType(t){for(let e of this.events)if(e.type==t)return e;return null}}function $(t){let e={x:0,y:0};if(null!==t){const i=function(t){const e={top:0,right:0,bottom:0,left:0,width:0,height:0};let i;try{i=t.getBoundingClientRect();}catch(t){i=e;}const s=document.body,n=document.documentElement,o=function(){const t=document.body,e=document.documentElement;return {top:window.pageYOffset||e.scrollTop||t.scrollTop,left:window.pageXOffset||e.scrollLeft||t.scrollLeft}}(),a=o.top,r=o.left,l=n.clientTop||s.clientTop||0,d=n.clientLeft||s.clientLeft||0,h=i.top+a-l,c=i.left+r-d;return {top:Math.round(h),left:Math.round(c)}}(t);e={x:i.left,y:i.top};}return e}(P||(P={})).renderLiquidTemplate=function(t,e){let i=t;if(e)for(let t in e){const s=new RegExp("{{"+t+"}}","g");i=i.replace(s,e[t]);}return i},k.resetLocales(),"function"!=typeof Object.values&&(Object.values=function(t){return Object.keys(t).map((e=>t[e]))}),"function"!=typeof Math.trunc&&(Math.trunc=function(t){return isNaN(t)?NaN:t>0?Math.floor(t):Math.ceil(t)}),function(t){let e=null,i=null;function s(){if(null===i){const t=navigator.userAgent;i=t.indexOf("MSIE ")>-1||t.indexOf("Trident/")>-1;}return i}t.IsIE=s,t.IsEdge=function(){const t=window.navigator.userAgent;return !s()&&t.includes("Edge/")},t.IsFirefox=function(){if(null===e){const t=navigator.userAgent;e=t.toLowerCase().indexOf("firefox")>-1;}return e};let n,o,a=!1,r=()=>{const t=l();a=window.matchMedia("only screen and (max-width: 840px)").matches||window.matchMedia("only screen and (max-height: 420px)").matches;const e=l();e!==t&&o&&o(e);};function l(){return void 0!==n?n:a}r(),window.addEventListener("resize",(()=>r())),t.isMobileMode=l,t.setIsMobileMode=function(t){const e=l();n=t;const i=l();i!==e&&o&&o(i);},t.onMobileModeChanged=function(t){o=t;},t.getMobileCssClass=function(){return l()?"k-mobile":null};}(O||(O={}));const B="eqjs";class H{constructor(t,e){this.element="string"==typeof t?document.createElement(t):t,e&&this.element.parentElement!==e&&e.appendChild(this.element);}addChild(t,e){const i=z(t,this.element);return e&&e(i),this}addChildElement(t){return t&&this.element.appendChild(t),this}attr(t,e){return this.element.setAttribute(t,e),this}id(t){return this.attr("id",t)}focus(){return this.element.focus(),this}title(t){return this.attr("title",t)}data(t,e=null){return null===e?(this.element.removeAttribute("data-"+t),this):this.attr("data-"+t,e)}show(){return this.removeStyle("display")}hide(t=!0){return t?this.setStyle("display","none"):this}visible(t=!0){return t?this.setStyle("visibility","visible"):this.setStyle("visibility","hidden")}isVisible(){return !!(this.element.offsetWidth||this.element.offsetHeight||this.element.getClientRects().length)}addClass(t,...e){if(t){const i=[...t.trim().split(" "),...e];for(let t=0;t<i.length;t++)this.element.classList.add(i[t]);}return this}removeClass(t,...e){if(t){const i=[...t.trim().split(" "),...e];for(let t=0;t<i.length;t++)this.element.classList.remove(i[t]);}return this}toggleClass(t,e=void 0){return t&&this.element.classList.toggle(t,e),this}on(t,e){const i=t.split(" ");for(let t=0;t<i.length;t++)this.element.addEventListener(i[t],e);return this}off(t,e){const i=t.split(" ");for(let t=0;t<i.length;t++)this.element.removeEventListener(i[t],e);return this}setStyle(t,e){return this.element.style.setProperty(t,e),this}removeStyle(t){return this.element.style.removeProperty(t),this}text(t){return this.element.innerText=t,this}html(t){return this.element.innerHTML=t,this}clear(){const t=this.element;this.element=document.createElement(this.element.tagName),t.replaceWith(this.element);}addText(t){const e=document.createTextNode(t);return this.element.appendChild(e),this}addHtml(t){return this.element.innerHTML+=t,this}toDOM(){return this.element}appendTo(t){return t&&t.appendChild(this.element),this}}class V extends H{constructor(t,e){super(t||"textarea",e);}name(t){return this.element.name=t,this}rows(t){return this.element.rows=t,this}cols(t){return this.element.cols=t,this}value(t){return this.element.value=t,this}}class _ extends H{constructor(t,e){super(t||"input",e);}name(t){return this.element.name=t,this}type(t){return this.element.type=t,this}size(t){return this.element.size=t,this}value(t){return t instanceof Date?this.element.valueAsDate=t:"number"==typeof t?this.element.valueAsNumber=t:this.element.value=t,this}mask(t){return function(t,e){const i={9:"[0-9]",a:"[a-z]"},s=e.split(""),n=e=>{if("focus"===e.type&&""!==t.value)return;let n=[],o=t.selectionStart;s.forEach(((e,s)=>{if(i[e]){let o=new RegExp(i[e],"i").test(t.value.charAt(s));n.push(o?t.value.charAt(s):"_");}else n.push(e);})),t.value=n.join(""),t.selectionStart=t.selectionEnd=o;};t.addEventListener("keydown",(e=>{if(8===e.keyCode||46===e.keyCode){e.preventDefault();let n=[],o=t.selectionStart;if(0==o)return;let a=o,r=!0;for(let e=s.length-1;e>=0;e--){const l=s[e];if(i[l]){let s=new RegExp(i[l],"i").test(t.value.charAt(e));s&&e!=o-1&&(r=!1),e===o-1&&a--,n.push(s&&e!=o-1?t.value.charAt(e):"_");}else e===a-1&&a--,o-1===e&&o--,n.push(l);}t.value=r?"":n.reverse().join(""),t.selectionStart=t.selectionEnd=a<0?0:a;const l=document.createEvent("Event");l.initEvent("input",!0,!0),t.dispatchEvent(l);}})),t.addEventListener("keypress",(e=>{const n=String.fromCharCode(e.charCode);if(n){e.preventDefault();let o=[],a=t.selectionStart,r=a;s.forEach(((e,s)=>{if(i[e]){const l=s!=a?t.value.charAt(s):n;let d=new RegExp(i[e],"i").test(l);o.push(d?l:"_"),d&&a===s&&r++;}else o.push(e),r===s&&r++,a===s&&a++;})),t.value=o.join(""),t.selectionStart=t.selectionEnd=r;const l=document.createEvent("Event");l.initEvent("input",!0,!0),t.dispatchEvent(l);}})),t.addEventListener("input",n),t.addEventListener("focus",n);}(this.element,t),this}}class W extends H{constructor(t,e){super(t||"select",e);}addOption(t){const e=document.createElement("option");return "string"==typeof t?(e.value=t,e.innerHTML=t):(e.value=t.value,e.innerHTML=t.title||t.value,e.selected=t.selected||!1),this.element.appendChild(e),this}value(t){return this.element.value=t,this}}function z(t,e){return "div"===t||t instanceof HTMLDivElement||"span"===t||t instanceof HTMLSpanElement||"a"===t||t instanceof HTMLAnchorElement||"button"===t||t instanceof HTMLButtonElement||"img"===t||t instanceof HTMLImageElement?new H(t,e):"input"===t||t instanceof HTMLInputElement?new _(t instanceof HTMLInputElement?t:null,e):"textarea"===t||t instanceof HTMLTextAreaElement?new V(t instanceof HTMLTextAreaElement?t:null,e):"select"===t||t instanceof HTMLSelectElement?new W(t instanceof HTMLSelectElement?t:null,e):new H(t,e)}const j="undefined"!=typeof TouchEvent;var G;!function(t){t.None="none",t.Allow="allow",t.Forbid="forbid";}(G||(G={}));class U{constructor(t,e,i){this.dropEffect=G.Allow,this.pageX=0,this.pageY=0,this.item=t,this.dragImage=e,this.data=t.data,this.sourceEvent=i,i&&i instanceof MouseEvent&&(this.pageX=i.pageX,this.pageY=i.pageY),i&&j&&i instanceof TouchEvent&&i.touches[0]&&(this.pageX=i.touches[0].pageX,this.pageY=i.touches[0].pageY);}}class q{constructor(t){t&&t instanceof MouseEvent&&(this.x=t.pageX,this.y=t.pageY),t&&j&&t instanceof TouchEvent&&t.touches[0]&&(this.x=t.touches[0].pageX,this.y=t.touches[0].pageY);}}const Y=new class{constructor(){this.delta=5,this.draggableItem=null,this.dragImage=null,this.finishedSuccessfully=!1,this.mouseDownPosition=null,this.containerDescriptors=[],this.containerDescriptorIndex=-1,this.dropEffect=G.None,this.classPrefix="eqjs-drop",this.DRAG_DISABLED_ATTR="drag-disabled";}registerDraggableItem(t){const e=t.element;if(!e)throw Error("Element in draggle item is null or undefined");e.ondragstart=function(){return !1};const i=t=>{if(e.hasAttribute(this.DRAG_DISABLED_ATTR))return;t.preventDefault(),t instanceof MouseEvent&&t.stopPropagation();const i=new q(t);(Math.abs(i.x-this.mouseDownPosition.x)>this.delta||Math.abs(i.y-this.mouseDownPosition.y)>this.delta)&&n(t);},s=t=>{this.mouseMoveDragListener(t);},n=n=>{n.preventDefault(),n.stopPropagation(),e.removeEventListener("mousemove",i),e.removeEventListener("touchmove",i),this.finishedSuccessfully=!1,t.beforeDragStart&&t.beforeDragStart(),this.dragImage=z("div").setStyle("position","absolute").setStyle("z-index","65530").toDOM(),document.body.appendChild(this.dragImage),this.dragImage.appendChild(e.cloneNode(!0)),t.renderer&&t.renderer(this.dragImage),this.dropEffect=G.None,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect),this.draggableItem={element:e,scope:t.scope,data:t.data},this.updateDragItemPosition(n);const o=new U(this.draggableItem,this.dragImage,n);o.dropEffect=this.dropEffect,t.onDragStart&&t.onDragStart(o),this.dropEffect!==o.dropEffect&&(this.dropEffect=o.dropEffect,this.updateImageClass(this.dropEffect)),document.addEventListener("mousemove",s,!0),document.addEventListener("touchmove",s,!0);},o=t=>{j&&t instanceof TouchEvent&&t.preventDefault(),this.mouseDownPosition=new q(t),e.addEventListener("mousemove",i),e.addEventListener("touchmove",i),document.addEventListener("mouseup",a),document.addEventListener("touchend",a);};e.addEventListener("mousedown",o),e.addEventListener("touchstart",o);const a=t=>{this.mouseDownPosition=null,e.removeEventListener("mousemove",i),e.removeEventListener("touchmove",i),document.removeEventListener("mousemove",s,!0),document.removeEventListener("touchmove",s,!0),this.draggableItem&&r(t);},r=e=>{try{if(this.containerDescriptorIndex>=0){const t=this.containerDescriptors[this.containerDescriptorIndex],i={element:t.element,scopes:t.scopes,data:t.data},s=new U(this.draggableItem,this.dragImage,e);try{i.scopes.indexOf(this.draggableItem.scope)>=0&&this.dropEffect===G.Allow&&(this.finishedSuccessfully=!0,t.onDrop&&t.onDrop(i,s));}finally{t.onDragLeave&&t.onDragLeave(i,s);}}}finally{try{const i=new U(this.draggableItem,this.dragImage,e);i.data.finishedSuccessfully=this.finishedSuccessfully,t.onDragEnd&&t.onDragEnd(i);}finally{this.draggableItem=null,this.dragImage&&this.dragImage.parentElement&&this.dragImage.parentElement.removeChild(this.dragImage),this.dragImage=null,this.finishedSuccessfully=!1,document.removeEventListener("mouseup",a),document.removeEventListener("touchend",a);}}};}registerDropContainer(t){if(!t.element)throw Error("Element in drop container is null or undefined");this.containerDescriptors.push(t);}removeDropContainer(t){const e=this.containerDescriptors.filter((e=>e===t||e.element==t));if(e)for(const t of e)R.removeArrayItem(this.containerDescriptors,t);}mouseMoveDragListener(t){if(t instanceof MouseEvent&&t.preventDefault(),t.stopPropagation(),this.updateDragItemPosition(t),-1==this.containerDescriptorIndex){for(let e=0;e<this.containerDescriptors.length;e++){const i=this.containerDescriptors[e];if(this.detectDragEnterEvent(i.element,t)){this.containerDescriptorIndex=e;break}}this.containerDescriptorIndex>=0&&this.dragEnterEvent(t);}else {const e=this.containerDescriptors[this.containerDescriptorIndex];this.detectDragLeaveEvent(e.element,t)&&(this.dragLeaveEvent(t),this.containerDescriptorIndex=-1);}if(this.containerDescriptorIndex>=0){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new U(this.draggableItem,this.dragImage,t);s.dropEffect=this.dropEffect,e.onDragOver&&e.onDragOver(i,s);}}}updateCusror(t){switch(t){case G.Allow:this.setCursorStyle(this.dragImage,"grabbing");break;case G.Forbid:this.setCursorStyle(this.dragImage,"no-drop");break;default:this.setCursorStyle(this.dragImage,"grabbing");}}updateImageClass(t){switch(this.dragImage.classList.remove(`${this.classPrefix}-allow`),this.dragImage.classList.remove(`${this.classPrefix}-forbid`),this.dragImage.classList.remove(`${this.classPrefix}-none`),t){case G.Allow:this.dragImage.classList.add(`${this.classPrefix}-allow`);break;case G.None:this.dragImage.classList.add(`${this.classPrefix}-none`);break;case G.Forbid:this.dragImage.classList.add(`${this.classPrefix}-forbid`);break;default:this.dragImage.classList.add(`${this.classPrefix}-none`);}}setCursorStyle(t,e){if(t){t.style.cursor=e;for(let i=0;i<t.children.length;i++)this.setCursorStyle(t.children[i],e);}}updateDragItemPosition(t){if(this.dragImage){const e=new q(t);this.dragImage.style.top=e.y-this.dragImage.offsetHeight/2+"px",this.dragImage.style.left=e.x-this.dragImage.offsetWidth/2+"px";}}dragEnterEvent(t){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new U(this.draggableItem,this.dragImage,t);s.dropEffect=G.Allow,e.onDragEnter&&e.onDragEnter(i,s),this.dropEffect=s.dropEffect,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect);}else this.dropEffect!==G.Forbid&&(this.dropEffect=G.None,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect));}dragLeaveEvent(t){const e=this.containerDescriptors[this.containerDescriptorIndex],i={element:e.element,scopes:e.scopes,data:e.data};if(i.scopes.indexOf(this.draggableItem.scope)>=0){const s=new U(this.draggableItem,this.dragImage,t);s.dropEffect=G.None,e.onDragLeave&&e.onDragLeave(i,s),this.dropEffect=s.dropEffect,this.updateCusror(this.dropEffect),this.updateImageClass(this.dropEffect);}}detectDragEnterEvent(t,e){const i=$(t),s=new q(e);return !(s.y<i.y||s.y>i.y+t.offsetHeight||s.x<i.x||s.x>i.x+t.offsetWidth)}detectDragLeaveEvent(t,e){const i=$(t),s=new q(e);return !(s.y>i.y&&s.y<i.y+t.offsetHeight&&s.x>i.x&&s.x<i.x+t.offsetWidth)}};var K,J;!function(t){t[t.Always=0]="Always",t[t.Once=1]="Once",t[t.Never=2]="Never";}(K||(K={})),function(t){t[t.NONE=1]="NONE",t[t.LEFT=2]="LEFT",t[t.CENTER=3]="CENTER",t[t.RIGHT=4]="RIGHT";}(J||(J={}));class X{constructor(t,e,i=!1){this._label=null,this._description=null,this.align=J.NONE,this.isVisible=!0,this.isRowNum=!1,this.dataColumn=t,this.grid=e;const s=e.options.columnWidths||{};t?(t.style.alignment&&(this.align=function(t){switch(t){case A.Left:return J.LEFT;case A.Center:return J.CENTER;case A.Right:return J.RIGHT;default:return J.NONE}}(t.style.alignment)),this.width=s&&s[this.type]?s[this.type].default:250,this._description=t.description):i&&(this.isRowNum=!0,this.width=s&&s.rowNumColumn?s.rowNumColumn.default:60,this._label="");}get label(){return this._label?this._label:this.isRowNum?"":this.dataColumn.label}set label(t){this._label=this.label;}get description(){return this._description}get type(){return this.dataColumn?this.dataColumn.type:null}}class Q{constructor(t,e){this.items=[],this.grid=e,this.sync(t);}sync(t,e=!0){this.clear();const i=new X(null,this.grid,!0);if(this.add(i),e||(i.isVisible=!1),t)for(let e of t.getItems()){const t=new X(e,this.grid);this.grid.options.onSyncGridColumn&&this.grid.options.onSyncGridColumn(t),this.add(t);}}get count(){return this.items.length}add(t){const e=this.items.length;return this.items.push(t),e}put(t,e){t>=0&&t<this.items.length&&(this.items[t]=e);}move(t,e){let i=this.items.indexOf(t);i>=0&&i!=e&&R.moveArrayItem(this.items,i,e);}get(t){return t>=0&&t<this.items.length?this.items[t]:null}getItems(){return this.items}removeAt(t){this.get(t),this.items.splice(t,1);}clear(){this.items=[];}}const Z="keg",tt=/{0:(.*?)}/g;var et;!function(t){t[t.STRING=1]="STRING",t[t.NUMBER=2]="NUMBER",t[t.DATETIME=3]="DATETIME",t[t.BOOL=4]="BOOL";}(et||(et={}));const it=(t,e,i,s)=>{const n=t?t.toString().replace(/\n/g,"↵ "):"";i.innerText=n,i.title=n,e.align==J.NONE&&i.classList.add(`${Z}-cell-value-align-left`);},st=(t,e,i,s)=>{let n=(t||"").toString();"number"==typeof t&&(n=e.dataColumn&&e.dataColumn.displayFormat&&tt.test(e.dataColumn.displayFormat)?e.dataColumn.displayFormat.replace(tt,((e,i)=>k.numberToStr(t,i))):t.toLocaleString()),i.innerText=n,i.title=n,e.align==J.NONE&&i.classList.add(`${Z}-cell-value-align-right`);},nt=(t,e,i,s)=>{const n="[object Date]"===Object.prototype.toString.call(t);let o=(t||"").toString();if(n)if(e.dataColumn&&e.dataColumn.displayFormat&&tt.test(e.dataColumn.displayFormat))o=e.dataColumn.displayFormat.replace(tt,((i,s)=>k.dateTimeToStrEx(t,e.type,s)));else {const i=k.getCurrentLocale(),s={hour:"numeric",minute:"numeric",second:"numeric"};switch(e.type){case I.Date:o=t.toLocaleDateString(i);break;case I.Time:o=t.toLocaleTimeString(i,s);break;case I.DateTime:o=`${t.toLocaleDateString(i)} ${t.toLocaleTimeString(i,s)}`;}}i.innerText=o,i.title=o,e.align==J.NONE&&i.classList.add(`${Z}-cell-value-align-right`);},ot=(t,e,i,s)=>{if(e.dataColumn&&e.dataColumn.displayFormat&&tt.test(e.dataColumn.displayFormat)){const s=e.dataColumn.displayFormat.replace(tt,((e,i)=>k.booleanToStr(t,i)));return it(s,e,i)}i.classList.add(`${Z}-cell-value-bool`),i.classList.add(`${Z}-${t?"cell-value-true":"cell-value-false"}`);};class at{constructor(t){this.renderers={},this.defaultRenderers={},this.registerRenderer("StringDefault",it),this.setDefaultRenderer(et.STRING,it),this.registerRenderer("NumberDefault",st),this.setDefaultRenderer(et.NUMBER,st),this.registerRenderer("DateTimeDefault",nt),this.setDefaultRenderer(et.DATETIME,nt),this.registerRenderer("BoolDefault",ot),this.setDefaultRenderer(et.BOOL,ot);}getDefaultRenderer(t){const e=this.getCellType(t);return this.defaultRenderers[et[e]]}getDefaultRendererByType(t){return this.defaultRenderers[et[t]]}setDefaultRenderer(t,e){e&&(this.defaultRenderers[et[t]]=e);}getRenderer(t){return this.renderers[t]}registerRenderer(t,e){this.renderers[t]=e;}getCellType(t){switch(t){case I.Autoinc:case I.Byte:case I.Word:case I.Currency:case I.Float:case I.Int32:case I.Int64:return et.NUMBER;case I.Date:case I.DateTime:case I.Time:return et.DATETIME;case I.Bool:return et.BOOL;default:return et.STRING}}}class rt{constructor(t){if(this.cssPrefix="keg",this.pagination={page:1,pageSize:30,total:0},this.paginationOptions={maxButtonCount:10,useBootstrap:!1},this.defaultDataGridOptions={slot:null,dataTable:null,fixHeightOnFirstRender:!1,syncGridColumns:!0,useRowNumeration:!0,allowDragDrop:!1,aggregates:{settings:null,calculator:null},paging:{enabled:!0,pageSize:30,pageSizeItems:[20,30,50,100,200]},columnWidths:{autoResize:K.Always,stringColumns:{min:100,max:500,default:250},numberColumns:{min:60,default:120},boolColumns:{min:50,default:80},dateColumns:{min:80,default:200},otherColumns:{min:100,max:500,default:250},rowNumColumn:{min:40,default:60}},showPlusButton:!1,viewportRowsCount:null,showActiveRow:!0},this.rowsOnPagePromise=null,this.containerInitialHeight=0,this.firstRender=!0,this.prevRowTotals=null,this.landingIndex=-1,this.landingSlot=z("div").addClass(`${this.cssPrefix}-col-landing-slot`).addChildElement(z("div").toDOM()).toDOM(),this._activeRowIndex=-1,t&&t.paging&&(t.paging=R.assign(this.defaultDataGridOptions.paging,t.paging)),this.options=this.mergeOptions(t),this.processColumnWidthsOptions(),!this.options.slot)throw Error('"slot" parameter is required to initialize EasyDataGrid');if(!this.options.dataTable)throw Error('"dataTable" parameter is required to initialize EasyDataGrid');this.dataTable=t.dataTable,this.eventEmitter=new F(this),this.cellRendererStore=new at(t),this.columns=new Q(this.dataTable.columns,this),this.setSlot(this.options.slot),this.init(this.options);}mergeOptions(t){const e=R.assignDeep({},this.defaultDataGridOptions.columnWidths,t.columnWidths),i=R.assignDeep({},this.defaultDataGridOptions.paging,t.paging),s=R.assign({},this.defaultDataGridOptions,t);return s.columnWidths=e,s.paging=i,s}processColumnWidthsOptions(){const t=this.options.columnWidths;if(!t)return;R.getStringDataTypes().forEach((e=>{t[e]=Object.assign(Object.assign({},t.stringColumns),t[e]);})),R.getNumericDataTypes().forEach((e=>{t[e]=Object.assign(Object.assign({},t.numberColumns),t[e]);})),t[I.Bool]=Object.assign(Object.assign({},t.boolColumns),t[I.Bool]),R.getDateDataTypes().forEach((e=>{t[e]=Object.assign(Object.assign({},t.dateColumns),t[e]);}));const e=[...R.getStringDataTypes(),...R.getNumericDataTypes(),...R.getDateDataTypes(),I.Bool];R.getAllDataTypes().forEach((i=>{i in e||(t[i]=Object.assign(Object.assign({},t.otherColumns),t[i]));})),t[I.Unknown]=t.otherColumns;}setSlot(t){if("string"==typeof t){if(t.length)if("#"===t[0])this.slot=document.getElementById(t.substring(1));else {if("."!==t[0])throw Error("Unrecognized slot parameter (Must be id, class or HTMLElement): "+t);{const e=document.getElementsByClassName(t.substring(1));e.length&&(this.slot=e[0]);}}}else this.slot=t;}init(t){t.onInit&&this.addEventListener("init",t.onInit),t.onRowClick&&this.addEventListener("rowClick",t.onRowClick),t.onRowDbClick&&this.addEventListener("rowDbClick",t.onRowDbClick),t.onPlusButtonClick&&this.addEventListener("plusButtonClick",t.onPlusButtonClick),t.onColumnChanged&&this.addEventListener("columnChanged",t.onColumnChanged),t.onColumnDeleted&&this.addEventListener("columnDeleted",t.onColumnDeleted),t.onColumnMoved&&this.addEventListener("columnMoved",t.onColumnMoved),t.onPageChanged&&this.addEventListener("pageChanged",t.onPageChanged),t.onActiveRowChanged&&this.addEventListener("activeRowChanged",t.onActiveRowChanged),this.addEventListener("pageChanged",(t=>this.activeRowIndex=-1)),R.assignDeep(this.paginationOptions,t.pagination),this.pagination.pageSize=this.options.paging.pageSize||this.pagination.pageSize,this.options.allowDragDrop&&Y.registerDropContainer({element:this.slot,scopes:["gridColumnMove"],onDragEnter:(t,e)=>{this.slot.classList.add(`${B}-drophover`),this.showLandingSlot(e.pageX,e.pageY);},onDragOver:(t,e)=>{this.showLandingSlot(e.pageX,e.pageY);},onDragLeave:(t,e)=>{e.dropEffect=G.Forbid,this.slot.classList.remove(`${B}-drophover`),this.hideLandingSlot();},onDrop:(t,e)=>{this.dataTable.columns.move(e.data.column,this.landingIndex),this.refresh(),this.fireEvent({type:"columnMoved",columnId:e.data.column.id,newIndex:this.landingIndex});}}),this.refresh(),this.fireEvent("init");}fireEvent(t){"string"==typeof t?this.eventEmitter.fire(t):this.eventEmitter.fire(t.type,t);}setData(t){this.dataTable=t,this.clear(),this.refresh();}getData(){return this.dataTable}getColumns(){return this.columns}destroy(){this.slot.innerHTML="";}refresh(){this.clearDOM(),this.render();}clearDOM(){this.slot.innerHTML="";}clear(){this.pagination.page=1,this.clearDOM();}render(){if(!this.hasData()&&!this.options.showPlusButton)return;this.containerInitialHeight=this.slot.clientHeight,this.rootDiv=document.createElement("div"),this.rootDiv.style.width="100%",this.rootDiv.classList.add(`${this.cssPrefix}-root`),this.columns.sync(this.dataTable.columns,this.options.useRowNumeration),this.renderHeader(),this.rootDiv.appendChild(this.headerDiv),this.renderBody(),this.rootDiv.appendChild(this.bodyDiv),this.renderFooter(),this.rootDiv.appendChild(this.footerDiv);let t=document.createElement("div");t.classList.add(`${this.cssPrefix}-container`),t.appendChild(this.rootDiv),this.slot.appendChild(t);const e=this.options.columnWidths.autoResize!==K.Never;this.rowsOnPagePromise?this.rowsOnPagePromise.then((()=>this.updateHeight())).then((()=>{this.firstRender=!1,this.rowsOnPagePromise=null;})):setTimeout((()=>{this.updateHeight().then((()=>{this.firstRender=!1,e&&this.resizeColumns();}));}),100);}updateHeight(){return new Promise((t=>{if(this.options.viewportRowsCount){const e=this.bodyCellContainerDiv.firstElementChild;let i=(e?e.offsetHeight:36)*this.options.viewportRowsCount;return z(this.bodyViewportDiv).setStyle("height",`${i}px`),void setTimeout((()=>{const e=this.bodyViewportDiv.offsetHeight-this.bodyViewportDiv.clientHeight;i+=e,z(this.bodyViewportDiv).setStyle("height",`${i}px`),t();}),100)}this.containerInitialHeight,t();})).then((()=>{this.options.fixHeightOnFirstRender&&this.firstRender&&(this.slot.style.height=`${this.slot.offsetHeight}px`);}))}getContainerWidth(){return this.columns.getItems().filter((t=>t.isVisible)).map((t=>t.width)).reduce(((t,e)=>t+e))}renderHeader(){this.headerDiv=z("div").addClass(`${this.cssPrefix}-header`).toDOM(),this.headerViewportDiv=z("div",this.headerDiv).addClass(`${this.cssPrefix}-header-viewport`).toDOM(),this.headerCellContainerDiv=z("div",this.headerViewportDiv).addClass(`${this.cssPrefix}-header-cell-container`).toDOM(),this.headerRowDiv=z("div",this.headerCellContainerDiv).addClass(`${this.cssPrefix}-header-row`).toDOM(),this.columns.getItems().forEach(((t,e)=>{if(!t.isVisible)return;let i=this.renderColumnHeader(t,e);this.headerRowDiv.appendChild(i),t.isRowNum&&z(i).addChildElement(this.renderHeaderButtons());}));const t=this.getContainerWidth();z(this.headerCellContainerDiv).setStyle("width",`${t}px`);}hasData(){return this.dataTable.columns.count>0}renderColumnHeader(t,e){let i=z("div").addClass(`${this.cssPrefix}-header-cell`).data("col-idx",`${e}`).setStyle("width",`${t.width}px`);t.dataColumn&&i.data("col-id",`${t.dataColumn.id}`);let s=i.toDOM();return z("div",s).addClass(`${this.cssPrefix}-header-cell-resize`),t.isRowNum||z("div",s).addClass(`${this.cssPrefix}-header-cell-label`).text(t.label),t.description&&z("div",s).addClass("question-mark").title(t.description),this.options.allowDragDrop&&Y.registerDraggableItem({element:s,scope:"gridColumnMove",data:{column:t},renderer:e=>{e.innerHTML="";const i=document.createElement("div");i.innerText=t.label,e.classList.add(`${this.cssPrefix}-sortable-helper`),e.appendChild(i);},onDragStart:t=>{t.dropEffect=G.Allow;}}),s}renderBody(){this.bodyDiv=z("div").addClass(`${this.cssPrefix}-body`).toDOM(),this.bodyViewportDiv=z("div",this.bodyDiv).addClass(`${this.cssPrefix}-body-viewport`).attr("tabIndex","0").toDOM(),this.bodyCellContainerDiv=z("div",this.bodyViewportDiv).addClass(`${this.cssPrefix}-cell-container`).toDOM();const t=this.canShowAggregates();this.dataTable&&(this.showProgress(),this.rowsOnPagePromise=this.getRowsToRender().then((e=>{this.pagination.total=this.dataTable.getTotal(),this.hideProgress(),this.bodyCellContainerDiv.innerHTML="",this.prevRowTotals=null;let i=0;if(e.length){const s=t?this.options.aggregates.settings.getGroups():[];i=e.length<this.pagination.pageSize?e.length:this.pagination.pageSize,e.forEach(((e,n)=>{if(t&&this.updateTotalsState(s,e),n<i){const t=this.renderRow(e,n);this.bodyCellContainerDiv.appendChild(t);}}));const n=this.options.aggregates&&this.options.aggregates.showGrandTotalsOnEachPage;if(t&&(this.isLastPage()||n)){const t=new N(this.dataTable.columns,new Array(this.dataTable.columns.count));this.updateTotalsState(s,t,!0);}}if(this.options.columnWidths.autoResize!==K.Never)this.resizeColumns();else {const t=this.getContainerWidth();z(this.bodyCellContainerDiv).setStyle("width",`${t}px`);}return i})).catch((t=>(console.error(t),0)))),this.bodyViewportDiv.addEventListener("scroll",(t=>{z(this.headerViewportDiv).setStyle("margin-left",`-${this.bodyViewportDiv.scrollLeft}px`);})),this.bodyViewportDiv.addEventListener("keydown",this.onViewportKeydown.bind(this));}isLastPage(){return this.dataTable.elasticChunks?this.dataTable.totalIsKnown()&&this.pagination.page*this.pagination.pageSize>=this.pagination.total:this.pagination.page*this.pagination.pageSize>=this.pagination.total}canShowAggregates(){if(!this.options||!this.options.aggregates||!this.options.aggregates.settings)return !1;const t=this.options.aggregates.settings;return (t.hasAggregates()||t.hasRecordCount())&&(t.hasGroups()||t.hasGrandTotals())}updateTotalsState(t,e,i=!1){const s=this.options.aggregates.settings;if(this.prevRowTotals&&s.hasGroups()){let i=-1;for(let n=1;n<=t.length;n++){const o=t[n-1];for(const t of o.columns)if(!s.compareValues(this.prevRowTotals.getValue(t),e.getValue(t))){i=n;break}if(-1!==i)break}if(-1!==i)for(let e=t.length;e>=i;e--){const t=new N(this.dataTable.columns,this.prevRowTotals.toArray()),i=this.renderTotalsRow(e,t);this.bodyCellContainerDiv.appendChild(i);}}if(i&&s.hasGrandTotals()&&s.hasAggregates()){const t=this.renderTotalsRow(0,e);this.bodyCellContainerDiv.appendChild(t);}this.prevRowTotals=e;}applyGroupColumnTemplate(t,e,i){let s=t.replace(/{{\s*GroupValue\s*}}/g,e?`${e}`:"-");return s=s.replace(/{{\s*GroupCount\s*}}/g,i?`${i}`:"-"),s}renderTotalsRow(t,e){const i=this.options.aggregates.settings,s=t>0?i.getGroups()[t-1]:{columns:[],aggregates:i.getAggregates()},n=z("div").addClass(`${this.cssPrefix}-row`).addClass(`${this.cssPrefix}-row-totals`).addClass(`${this.cssPrefix}-totals-lv${t}`).data("totals-level",`${t}`).attr("tabindex","-1").toDOM();this.columns.getItems().forEach(((t,i)=>{if(!t.isVisible)return;let o="";const a=t.isRowNum?-1:this.dataTable.columns.getIndex(t.dataColumn.id);!t.isRowNum&&t.dataColumn&&s.columns.indexOf(t.dataColumn.id)>=0&&(o=e.getValue(a)),a==this.dataTable.columns.count-1&&(o=".  .  .  .  .  ."),n.appendChild(this.renderCell(t,i,o,n));}));const o=this.options.aggregates.calculator.getAggrContainer(),a=i.getAggregates().map((t=>t.colId)),r=i.buildGroupKey(s,e);return o.getAggregateData(t,r).then((o=>{for(const t of a)e.setValue(t,o[t]);n.innerHTML="",this.columns.getItems().forEach(((r,l)=>{if(!r.isVisible)return;let d="";const h=r.isRowNum?-1:this.dataTable.columns.getIndex(r.dataColumn.id);if(!r.isRowNum){let c=!1;if(r.dataColumn){const i=s.columns.indexOf(r.dataColumn.id),n=a.indexOf(r.dataColumn.id);c=t>0?i==s.columns.length-1:0==h,(i>=0||n>=0)&&(d=e.getValue(h));}let u="";t>0&&(u=r.dataColumn.groupFooterColumnTemplate,!u&&i.hasRecordCount()&&c&&(u="{{GroupValue}} ({{GroupCount}})")),u&&(d=this.renderCell(r,l,d,n).firstChild.innerHTML,d=this.applyGroupColumnTemplate(u,d,o[i.COUNT_FIELD_NAME]));}const c=this.renderCell(r,l,d,n);n.appendChild(c);}));})).catch((t=>console.error(t))),n}onViewportKeydown(t){if(this.options.showActiveRow){const e=this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;let i;switch(t.key){case"ArrowLeft":case"ArrowRight":break;case"ArrowUp":t.preventDefault(),i=this.activeRowIndex<0||this.activeRowIndex>=e?e-1:this.activeRowIndex-1,this.activeRowIndex=i>=0?i:0;break;case"ArrowDown":t.preventDefault(),i=this.activeRowIndex<0||this.activeRowIndex>=e?0:this.activeRowIndex+1,this.activeRowIndex=i<e?i:e-1;}}}ensureRowVisibility(t){const e="number"==typeof t?this.getDataRow(t):t;if(e){let t=e.getBoundingClientRect();const i=this.bodyViewportDiv.getBoundingClientRect(),s=t.top-i.top,n=t.bottom-i.top,o=this.bodyViewportDiv.clientHeight,a=window.innerHeight||document.documentElement.clientHeight;if(s>0&&n<=o&&t.top>0&&t.bottom<a)return;s<0?this.bodyViewportDiv.scrollTop=this.bodyViewportDiv.scrollTop+s:n>o&&(this.bodyViewportDiv.scrollTop=this.bodyViewportDiv.scrollTop+n-o),t=e.getBoundingClientRect(),t.top<0?document.documentElement.scrollTop=document.documentElement.scrollTop+t.top:t.bottom>a&&(document.documentElement.scrollTop=document.documentElement.scrollTop+t.bottom-a);}}getRowsToRender(){return !1===this.options.paging.enabled?Promise.resolve(this.dataTable.getCachedRows()):this.dataTable.getRows({offset:(this.pagination.page-1)*this.pagination.pageSize,limit:this.pagination.pageSize+1}).catch((t=>(console.error(t),[])))}renderFooter(){this.footerDiv=z("div").addClass(`${this.cssPrefix}-footer`).toDOM(),this.rowsOnPagePromise&&this.rowsOnPagePromise.then((t=>{this.footerDiv.innerHTML="",this.footerPaginateDiv=this.renderPageNavigator(),this.footerDiv.appendChild(this.footerPaginateDiv);const e=this.renderPageInfoBlock(t);this.footerDiv.appendChild(e);}));}renderPageInfoBlock(t){const e=z("div").addClass(`${this.cssPrefix}-page-info`).toDOM();if(this.dataTable.getTotal()>0){const i=t?(this.pagination.page-1)*this.pagination.pageSize+1:0,s=t?i+t-1:0;let n=this.dataTable.getTotal().toString();this.dataTable.elasticChunks&&this.dataTable.getCachedCount()!==this.dataTable.getTotal()&&(n="?"),e.innerHTML=k.getText("GridPageInfo").replace("{FirstPageRecordNum}",`<span>${i.toString()}</span>`).replace("{LastPageRecordNum}",`<span>${s.toString()}</span>`).replace("{Total}",`<span>${n}</span>`);}return e}showProgress(){}hideProgress(){}getLocalIndexByGlobal(t){return this.pagination?t%this.pagination.pageSize:t}getGlobalIndexByLocal(t){return this.pagination?(this.pagination.page-1)*this.pagination.pageSize+t:t}renderRow(t,e){let i=this.getGlobalIndexByLocal(e),s=z("div").addClass(`${this.cssPrefix}-row`).addClass(`${this.cssPrefix}-row-${e%2==1?"odd":"even"}`).data("row-idx",`${i}`).attr("tabindex","-1").on("click",(i=>{this.activeRowIndex=e,this.fireEvent({type:"rowClick",row:t,rowIndex:e,sourceEvent:i});})).on("dblclick",(i=>{this.fireEvent({type:"rowDbClick",row:t,rowIndex:e,sourceEvent:i});}));0==e&&s.addClass(`${this.cssPrefix}-row-first`);let n=s.toDOM();return this.options.showActiveRow&&e==this.activeRowIndex&&s.addClass(`${this.cssPrefix}-row-active`),this.columns.getItems().forEach(((e,s)=>{if(!e.isVisible)return;const o=e.isRowNum?-1:this.dataTable.columns.getIndex(e.dataColumn.id);let a=e.isRowNum?i+1:t.getValue(o);n.appendChild(this.renderCell(e,s,a,n));})),n}renderCell(t,e,i,s){const n=z("div").addClass(`${this.cssPrefix}-cell`).data("col-idx",`${e}`).attr("tabindex","-1").setStyle("width",`${t.width}px`);t.align==J.LEFT?n.addClass(`${this.cssPrefix}-cell-align-left`):t.align==J.RIGHT?n.addClass(`${this.cssPrefix}-cell-align-right`):t.align==J.CENTER&&n.addClass(`${this.cssPrefix}-cell-align-center`);const o=n.toDOM(),a=o.appendChild(z("div").addClass(`${this.cssPrefix}-cell-value`).toDOM()),r=this.getCellRenderer(t);return r&&r(i,t,a,s),o}getCellRenderer(t){let e;return e=t.isRowNum?this.cellRendererStore.getDefaultRendererByType(et.NUMBER):this.cellRendererStore.getDefaultRenderer(t.type),this.options&&this.options.onGetCellRenderer&&(e=this.options.onGetCellRenderer(t,e)||e),e}setPage(t){this.pagination.page=t,this.fireEvent({type:"pageChanged",page:t}),this.refresh(),this.bodyViewportDiv.focus();}renderPageNavigator(){let t=document.createElement("div");t.className=`${this.cssPrefix}-pagination-wrapper`;const e=this.dataTable.getTotal();if(this.options.paging&&this.options.paging.enabled&&e>0){const e=this.paginationOptions.useBootstrap?"":`${this.cssPrefix}-`,i=t=>{const e=t.target;if(e.hasAttribute("data-page")){const t=parseInt(e.getAttribute("data-page"));this.setPage(t);}},s=(t,s,n,o,a)=>{const r=document.createElement("li");if(r.className=`${e}page-item`,!o){a&&(r.className+=" active");const n=document.createElement("a");return n.setAttribute("href","javascript:void(0)"),n.innerHTML=s||t.toString(),n.setAttribute("data-page",`${t}`),n.className=`${e}page-link`,n.addEventListener("click",i),r.appendChild(n),r}let l=document.createElement("span");if(l.setAttribute("aria-hidden","true"),l.className=`${e}page-link`,n)r.className+=" disabled";else {if(this.paginationOptions.useBootstrap)l=document.createElement("a"),l.setAttribute("href","javascript:void(0)"),l.setAttribute("data-page",`${t}`);else {let e=document.createElement("a");e.setAttribute("href","javascript:void(0)"),e.setAttribute("data-page",`${t}`),l=e;}l.className=`${e}page-link`,l.addEventListener("click",i);}return l.innerHTML=s,r.appendChild(l),r};if(this.dataTable.elasticChunks){const i=this.pagination.page||1;let n=document.createElement("ul");n.className=`${e}pagination`;let o=s(i-1,"&laquo;",1==i,!0,!1);n.appendChild(o),o=s(i+1,"&raquo;",this.isLastPage(),!0,!1),n.appendChild(o),t.appendChild(n);}else if(this.pagination.total>this.pagination.pageSize){const i=this.pagination.page||1,n=Math.ceil(this.pagination.total/this.pagination.pageSize)||1,o=this.paginationOptions.maxButtonCount||10,a=i-1;let r=a-a%o+1,l=r+o-1;l>n&&(l=n);let d=document.createElement("ul");d.className=`${e}pagination`;let h=s(r-1,"&laquo;",1==r,!0,!1);d.appendChild(h);for(let t=r;t<=l;t++)h=s(t,t.toString(),!1,!1,t==i),d.appendChild(h);h=s(l+1,"&raquo;",l==n,!0,!1),d.appendChild(h),t.appendChild(d);}if(this.options.paging.allowPageSizeChange){const e=t=>{const e=parseInt(t.target.value);this.pagination.pageSize=e,this.pagination.page=1,this.refresh();},i=document.createElement("div");i.className=`${this.cssPrefix}-page-sizes`;const s=document.createElement("div");s.className=`kfrm-select ${this.cssPrefix}-page-sizes-select`,i.appendChild(s);const n=document.createElement("select"),o=this.options.paging.pageSizeItems||[],a=new Set(o);a.add(this.options.paging.pageSize||20),Array.from(a).forEach((t=>{const e=document.createElement("option");e.value=t.toString(),e.text=t.toString(),n.appendChild(e);})),n.value=(this.pagination.pageSize||20).toString(),s.appendChild(n),n.addEventListener("change",e);const r=document.createElement("div");r.className=`${this.cssPrefix}-page-sizes-label`,i.appendChild(r);const l=document.createElement("span");l.innerText=k.getText("GridItemsPerPage"),r.appendChild(l),t.appendChild(i);}}return t}addEventListener(t,e){return this.eventEmitter.subscribe(t,(t=>e(t.data)))}removeEventListener(t,e){this.eventEmitter.unsubscribe(t,e);}renderHeaderButtons(){return this.options.showPlusButton?z("div").addClass(`${this.cssPrefix}-header-btn-plus`).title(this.options.plusButtonTitle||"Add").addChild("a",(t=>t.attr("href","javascript:void(0)").on("click",(t=>{t.preventDefault(),this.fireEvent({type:"plusButtonClick",sourceEvent:t});})))).toDOM():z("span").addText("#").toDOM()}showLandingSlot(t,e){const i=this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`),s=[];for(let t=1;t<i.length;t++){const e=i[t];"none"!==e.style.display&&s.push(e);}if(0===s.length)return this.landingIndex=0,void this.headerRowDiv.appendChild(this.landingSlot);const n=$(this.landingSlot);if(t>=n.x&&t<=n.x+this.landingSlot.offsetWidth)return;let o=this.landingIndex;for(let e of s){const i=$(e),s=e.offsetWidth;t>i.x&&t<i.x+s&&(o=parseInt(e.getAttribute("data-col-idx"))-1);}o!=this.landingIndex&&(this.landingIndex=o,this.landingIndex<s.length?this.headerRowDiv.insertBefore(this.landingSlot,s[this.landingIndex]):this.headerRowDiv.appendChild(this.landingSlot));}hideLandingSlot(){this.landingIndex=-1,setTimeout((()=>{this.landingSlot.parentElement&&this.landingSlot.parentElement.removeChild(this.landingSlot);}),10);}get activeRowIndex(){return this._activeRowIndex}set activeRowIndex(t){if(t!==this._activeRowIndex){const e=this._activeRowIndex;this._activeRowIndex=t,this.updateActiveRow(),this.fireEvent({type:"activeRowChanged",oldValue:e,newValue:this.activeRowIndex,rowIndex:this.getGlobalIndexByLocal(this.activeRowIndex)});}}updateActiveRow(){if(this.options.showActiveRow){this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`).forEach((t=>{t.classList.remove(`${this.cssPrefix}-row-active`);}));const t=this.getActiveRow();t&&(t.classList.add(`${this.cssPrefix}-row-active`),this.ensureRowVisibility(this.activeRowIndex));}}getActiveRow(){return this.getDataRow(this.activeRowIndex)}getDataRow(t){const e=Array.from(this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));return t>=0&&t<e.length?e[t]:null}focus(){this.bodyViewportDiv.focus();}resizeColumns(){if(this.options.columnWidths.autoResize===K.Never)return;const t=this.bodyCellContainerDiv.style.width;this.bodyCellContainerDiv.style.visibility="hidden",this.bodyCellContainerDiv.style.width="1px",this.headerRowDiv.style.width="1px";let e=0;const i=this.columns.getItems(),s=this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);let n=0;for(let t=0;t<this.columns.count;t++){const o=i[t];if(!o.isVisible)continue;const a=this.options.columnWidths.autoResize!==K.Always&&o.dataColumn?o.dataColumn.calculatedWidth:0,r=this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${t}"] > .${this.cssPrefix}-cell-value`);let l=0;if(a>0)e+=a,o.width=a,r.forEach((t=>{t.parentElement.style.width=`${a}px`;})),s[n].style.width=`${a}px`;else if(0==r.length&&(s[n].style.width=null,s[n].style.whiteSpace="nowrap"),l=s[n].offsetWidth,r.length>0){r.forEach((t=>{t.parentElement.style.width=null;const e=t.parentElement.offsetWidth;e>l&&(l=e);})),l+=3;const t=o.isRowNum?this.options.columnWidths.rowNumColumn.max||500:this.options.columnWidths[o.dataColumn.type].max||2e3,i=o.isRowNum?this.options.columnWidths.rowNumColumn.min||0:this.options.columnWidths[o.dataColumn.type].min||20;l>t&&(l=t),l<i&&(l=i),R.isNumericType(o.type)&&(l=Math.round(1.3*l)),e+=l,o.width=l,r.forEach((t=>{t.parentElement.style.width=`${l}px`;})),s[n].style.width=`${l}px`,o.dataColumn&&(o.dataColumn.calculatedWidth=l);}else e+=l;n++;}e>0?(this.bodyCellContainerDiv.style.width=`${e}px`,this.headerCellContainerDiv.style.width=`${e}px`):(this.bodyCellContainerDiv.style.width=t,this.headerCellContainerDiv.style.width=t),this.bodyCellContainerDiv.style.visibility=null,this.headerRowDiv.removeAttribute("style");}}class lt{get cssPrefix(){return "kdtp-cal"}constructor(t,e){this.slot=t,this.options=e||{},this.options.yearRange||(this.options.yearRange="c-10:c+10");}setDate(t){this.currentDate=new Date(t);}getDate(){return new Date(this.currentDate)}dateChanged(t){this.options.onDateChanged&&this.options.onDateChanged(this.currentDate,t);}}class dt{get cssPrefix(){return "kdtp"}constructor(t){this.calendar=null,this.timePicker=null,this.options=t,this.render();}setDateTime(t){this.currentDateTime=new Date(t),this.calendar&&this.calendar.setDate(this.currentDateTime),this.timePicker&&this.timePicker.setTime(this.currentDateTime);}getDateTime(){return new Date(this.currentDateTime)}render(){this.options.showCalendar&&(this.calendar=this.createCalendar({yearRange:this.options.yearRange,showDateTimeInput:this.options.showDateTimeInput,timePickerIsUsed:this.options.showTimePicker,oneClickDateSelection:this.options.oneClickDateSelection,onDateChanged:(t,e)=>{this.currentDateTime=t,this.timePicker&&this.timePicker.setTime(this.currentDateTime),this.options.showTimePicker&&this.dateTimeChanged(),e&&this.apply(this.currentDateTime);}}),this.calendar&&this.calendar.render()),this.options.showTimePicker&&(this.timePicker=this.createTimePicker({onTimeChanged:t=>{this.currentDateTime.setHours(t.getHours()),this.currentDateTime.setMinutes(t.getMinutes()),this.calendar&&this.calendar.setDate(this.currentDateTime),this.dateTimeChanged();}}),this.timePicker&&this.timePicker.render()),this.setDateTime(new Date);}createCalendar(t){return null}createTimePicker(t){return null}show(t){this.options.beforeShow&&this.options.beforeShow();const e=$(t||document.body);this.slot.style.top=e.y+t.clientHeight+"px",this.slot.style.left=e.x+"px";}apply(t){this.options.onApply&&this.options.onApply(t),this.destroy();}cancel(){this.options.onCancel&&this.options.onCancel(),this.destroy();}destroy(){this.slot&&this.slot.parentElement&&this.slot.parentElement.removeChild(this.slot);}dateTimeChanged(){this.options.onDateTimeChanged&&this.options.onDateTimeChanged(this.currentDateTime);}}class ht extends lt{constructor(t,e){super(t,e),this.daysOfWeek=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],this.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],this.calendarBody=null,this.isManualInputChanging=!1;for(let t=0;t<this.daysOfWeek.length;t++)this.daysOfWeek[t]=k.getShortWeekDayName(t+1);for(let t=0;t<this.months.length;t++)this.months[t]=k.getLongMonthName(t+1);}setDate(t){super.setDate(t),this.selectedMonth=this.currentDate.getMonth(),this.selectedYear=this.currentDate.getFullYear(),this.rerenderMonth();}render(){const t=z("div",this.slot).addClass(`${this.cssPrefix}-header`);this.options.showDateTimeInput?t.addChildElement(this.renderManualDateInput()):t.addChild("span",(t=>this.headerTextElem=t.toDOM())),z(this.slot).addChildElement(this.renderCalendarButtons()),this.calendarBody=z("div",this.slot).addClass(`${this.cssPrefix}-body`).toDOM();}getInputDateFormat(){const t=k.getLocaleSettings();return this.options.timePickerIsUsed?`${t.editDateFormat} ${t.editTimeFormat}`:t.editDateFormat}renderManualDateInput(){const t=this.getInputDateFormat(),e=z("input").attr("placeholder",t).addClass(`${this.cssPrefix}-header-input`);return e.mask(t.replace("yyyy","9999").replace("MM","99").replace("dd","99").replace("HH","99").replace("mm","99").replace("ss","99")).on("input",(i=>{e.removeClass("error");try{this.isManualInputChanging=!0;const e=R.strToDateTime(this.manualInputElem.value,t);this.currentDate=e,this.jump(this.currentDate.getFullYear(),this.currentDate.getMonth()),this.dateChanged(!1);}catch(t){e.addClass("error");}finally{this.isManualInputChanging=!1;}})).on("keydown",(t=>{13===t.keyCode&&(t.preventDefault(),t.stopPropagation(),this.manualInputElem.className.indexOf("error")<0&&!this.isManualInputChanging&&this.dateChanged(!0));})).on("focus",(()=>{setTimeout((()=>{this.manualInputElem.selectionStart=0,this.manualInputElem.selectionEnd=0;}),50);})),this.manualInputElem=e.toDOM(),this.manualInputElem}updateDisplayedDateValue(){if(this.manualInputElem){if(!this.isManualInputChanging){const t=this.getInputDateFormat();this.manualInputElem.value=k.dateTimeToStr(this.currentDate,t),this.manualInputElem.focus();}}else if(this.headerTextElem){const t=k.getCurrentLocale();this.headerTextElem.innerText=this.currentDate.toLocaleString("en"==t?void 0:t,{year:"numeric",month:"long",day:"numeric"});}}renderCalendarButtons(){return z("nav").addClass(`${this.cssPrefix}-nav`).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-prev`).on("click",(()=>{this.prev();})).addChild("span",(t=>t.html("&lsaquo;"))))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-selectors`).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-month`).addChild("select",(t=>{t.on("change",(()=>{this.jump(this.selectedYear,parseInt(this.selectMonthElem.value));}));for(let e=0;e<this.months.length;e++)t.addChild("option",(t=>t.attr("value",e.toString()).text(this.months[e])));this.selectMonthElem=t.toDOM();})))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-year`).addChild("select",(t=>this.selectYearElem=t.on("change",(()=>{this.jump(parseInt(this.selectYearElem.value),this.selectedMonth);})).toDOM())))))).addChild("div",(t=>t.addClass(`${this.cssPrefix}-nav-next`).on("click",(()=>{this.next();})).addChild("span",(t=>t.html("&rsaquo;"))))).toDOM()}prev(){this.selectedYear=0===this.selectedMonth?this.selectedYear-1:this.selectedYear,this.selectedMonth=0===this.selectedMonth?11:this.selectedMonth-1,this.rerenderMonth();}next(){this.selectedYear=11===this.selectedMonth?this.selectedYear+1:this.selectedYear,this.selectedMonth=(this.selectedMonth+1)%12,this.rerenderMonth();}rerenderSelectYear(){const t=/c-(\d*):c\+(\d*)/g.exec(this.options.yearRange);let e=0,i=1;null!==t&&(e=parseInt(t[1]),i=parseInt(t[2])),this.selectYearElem.innerHTML="";for(let t=0;t<=e+i;t++){let i=document.createElement("option"),s=this.selectedYear-e+t;i.value=s.toString(),i.innerText=s.toString(),this.selectYearElem.appendChild(i);}}jump(t,e){this.selectedYear=t,this.selectedMonth=e,this.rerenderMonth();}rerenderMonth(){this.updateDisplayedDateValue(),this.rerenderSelectYear();let t=new Date(this.selectedYear,this.selectedMonth).getDay(),e=new Date(this.selectedYear,this.selectedMonth+1,0).getDate();this.calendarBody.innerHTML="",this.selectYearElem.value=this.selectedYear.toString(),this.selectMonthElem.value=this.selectedMonth.toString(),this.daysOfWeek.forEach(((t,e)=>{z("div",this.calendarBody).addClass(`${this.cssPrefix}-weekday`).addClass(0==e||6==e?`${this.cssPrefix}-weekend`:"").text(t);}));for(let e=0;e<t;e++)z("div",this.calendarBody).addClass(`${this.cssPrefix}-day-empty`);const i=new Date;for(let s=1;s<=e;s++){const e=z("div",this.calendarBody).addClass(`${this.cssPrefix}-day`).attr("data-date",s.toString()).text(s.toString()).on("click",(t=>{this.currentDate.setFullYear(this.selectedYear),this.currentDate.setMonth(this.selectedMonth),this.currentDate.setDate(parseInt(t.target.getAttribute("data-date"))),this.dateChanged(this.options.oneClickDateSelection);}));s===i.getDate()&&this.selectedYear===i.getFullYear()&&this.selectedMonth===i.getMonth()&&e.addClass(`${this.cssPrefix}-day-current`),s===this.currentDate.getDate()&&this.selectedYear===this.currentDate.getFullYear()&&this.selectedMonth===this.currentDate.getMonth()&&e.addClass(`${this.cssPrefix}-day-selected`);const n=(t+s-1)%7;0!=n&&6!=n||e.addClass(`${this.cssPrefix}-weekend`),"function"==typeof this.options.onDrawDay&&this.options.onDrawDay.apply(e.toDOM(),[e.toDOM(),new Date(this.selectedYear,this.selectedMonth,s)]);}const s=(t+e)%7,n=0==s?0:7-s;for(let t=0;t<n;t++)z("div",this.calendarBody).addClass(`${this.cssPrefix}-day-empty`);}dateChanged(t){super.dateChanged(t),this.rerenderMonth();}}class ct{get cssPrefix(){return "kdtp-tp"}constructor(t,e){this.slot=t,this.options=e||{};}setTime(t){this.currentTime=new Date(t);}getTime(){return new Date(this.currentTime)}timeChanged(){this.options.onTimeChanged&&this.options.onTimeChanged(this.currentTime);}}class ut extends ct{setTime(t){super.setTime(t),this.updateDisplayedTime(),this.hoursInput.valueAsNumber=t.getHours(),this.minutesInput.valueAsNumber=t.getMinutes();}render(){z("div",this.slot).addClass(`${this.cssPrefix}-time`).addChild("span",(t=>this.timeText=t.toDOM())).toDOM();const t=z("div",this.slot).addClass(`${this.cssPrefix}-sliders`);return t.addChild("div",(t=>t.addClass(`${this.cssPrefix}-time-row`).title("Hours").addChild("input",(t=>this.hoursInput=t.addClass(`${this.cssPrefix}-input-hours`).type("range").attr("min","0").attr("max","23").attr("step","1").on("input",(t=>{this.currentTime.setHours(this.hoursInput.valueAsNumber),this.updateDisplayedTime(),this.timeChanged();})).toDOM())))),t.addChild("div",(t=>t.addClass(`${this.cssPrefix}-time-row`).title("Minutes").addChild("input",(t=>this.minutesInput=t.addClass(`${this.cssPrefix}-input-minutes`).type("range").attr("min","0").attr("max","59").attr("step","1").on("input",(t=>{this.currentTime.setMinutes(this.minutesInput.valueAsNumber),this.updateDisplayedTime(),this.timeChanged();})).toDOM())))),this.slot}updateDisplayedTime(){const t=k.getCurrentLocale(),e=this.currentTime.toLocaleString("en"==t?void 0:t,{hour:"numeric",minute:"numeric"});this.timeText.innerText=e;}}class pt extends dt{render(){const t=z("div",document.body).addClass(`${this.cssPrefix}`).attr("tabIndex","0").setStyle("position","absolute").setStyle("top","-1000px").setStyle("left","-1000px").on("keydown",(t=>(27===t.keyCode?this.cancel():13===t.keyCode&&this.apply(this.getDateTime()),!1)));this.options.zIndex&&t.setStyle("z-index",`${this.options.zIndex}`),this.slot=t.toDOM(),super.render(),this.renderButtons(),this.globalMouseDownHandler=t=>{let e=window.event||t;return e.srcElement||e.target,!this.slot.contains(e.target)&&(document.removeEventListener("mousedown",this.globalMouseDownHandler,!0),this.cancel()),!0};}renderButtons(){const t=z("div",this.slot).addClass(`${this.cssPrefix}-buttons`).addChild("button",(t=>this.nowButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-now`).text(k.getText("ButtonNow")).on("click",(()=>(this.setDateTime(new Date),this.dateTimeChanged(),!1))).toDOM()));!this.options.showTimePicker&&this.options.oneClickDateSelection||t.addChild("button",(t=>this.submitButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-apply`).text(k.getText("ButtonApply")).on("click",(()=>(this.apply(this.getDateTime()),!1))).toDOM())),t.addChild("button",(t=>this.submitButton=t.addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-cancel`).text(k.getText("ButtonCancel")).on("click",(()=>(this.cancel(),!1))).toDOM()));}createCalendar(t){return this.calendarSlot=z("div",this.slot).addClass(`${this.cssPrefix}-cal`).toDOM(),new ht(this.calendarSlot,t)}createTimePicker(t){return this.timePickerSlot=z("div",this.slot).addClass(`${this.cssPrefix}-tp`).toDOM(),new ut(this.timePickerSlot,t)}show(t){if(this.options.showDateTimeInput){this.options.beforeShow&&this.options.beforeShow();const e=$(t||document.body),i=$(t?t.parentElement||t:document.body);this.slot.style.top=i.y+"px",this.slot.style.left=e.x+"px";}else super.show(t),this.slot.focus();setTimeout((()=>{document.addEventListener("mousedown",this.globalMouseDownHandler,!0);}),1);}}var gt;!function(t){t[t.Left=1]="Left",t[t.Center=2]="Center",t[t.Right=3]="Right";}(gt||(gt={}));const mt="kdlg";class ft{openConfirm(t,e,i){const s={title:t,closable:!1,submitable:!0,cancelable:!0,body:`<div id="${mt}-dialog-confirm">${e}</div>`};return i?(s.onSubmit=()=>{i(!0);},s.onCancel=()=>{i(!1);},void this.open(s)):new Promise((t=>{s.onSubmit=()=>{t(!0);},s.onCancel=()=>{t(!1);},this.open(s);}))}openPrompt(t,e,i,s){const n={title:t,submitable:!0,closable:!0,cancelable:!0,submitOnEnter:!0,body:`<div id="${mt}-dialog-form" class="kfrm-form">\n            <div class="kfrm-fields label-above">\n                <label for="${mt}-dialog-form-input" id="${mt}-dialog-form-content">${e}</label>\n                <input type="text" name="${mt}-dialog-form-input" id="${mt}-dialog-form-input" />\n            </div>\n        </div>`,arrangeParents:!1,beforeOpen:()=>{const t=document.getElementById(`${mt}-dialog-form-input`);i&&(t.value=i),t.focus();}},o=t=>{const e=document.getElementById(`${mt}-dialog-form-input`),i=e.value;return i&&i.replace(/\s/g,"").length>0?(t(i),!0):(e.classList.add("eqjs-invalid"),!1)};return s?(n.onSubmit=()=>o(s),n.onCancel=()=>{s("");},void this.open(n)):new Promise((t=>{n.onSubmit=()=>o(t),n.onCancel=()=>{t("");},this.open(n);}))}open(t,e){const i=new yt(t,e),s=t.onDestroy;return t.onDestroy=t=>{this.untrack(t),s&&s(t);},i.open(),this.track(i),i}createSet(t){return new vt(t,this)}untrack(t){const e=ft.openDialogs.indexOf(t);e>=0&&ft.openDialogs.splice(e,1);}track(t){ft.openDialogs.push(t);}openProgress(t){const e=new Dt(t),i=t.onDestroy;return t.onDestroy=t=>{this.untrack(t),i&&i(t);},e.open(),this.track(e),e}getAllDialogs(){return Array.from(ft.openDialogs)}closeAllDialogs(){for(const t of Array.from(ft.openDialogs))t.close();}}ft.openDialogs=[];class yt{constructor(t,e){this.options=t,this.submitHandler=t=>!(this.options.onSubmit&&!1===this.options.onSubmit(this,t)||(this.destroy(),0)),this.cancelHandler=()=>{this.options.onCancel&&this.options.onCancel(this),this.destroy();},this.keydownHandler=t=>13!=t.keyCode||!this.isActiveDialog()||(t.preventDefault(),t.stopPropagation(),!this.submitHandler())||(window.removeEventListener("keydown",this.keydownHandler,!1),!1),this.dialogId=R.generateId("dlg"),this.data=e,this.slot=z("div",document.body).attr("tab-index","-1").data("dialog-id",this.dialogId).addClass(`${mt}-modal`,"is-active").focus().addChild("div",(t=>t.addClass("kdlg-modal-background"))).addChild("div",(i=>this.windowElement=i.addClass(`${mt}-modal-window`).addChild("header",(e=>{this.headerElement=e.addClass(`${mt}-header`).addChild("p",(e=>e.addClass(`${mt}-header-title`).addText(t.title))).toDOM(),!1!==t.closable&&e.addChild("button",(t=>t.addClass(`${mt}-modal-close`).on("click",(()=>{this.cancelHandler();})).focus()));})).addChild("div",(t=>{t.addClass(`${mt}-alert-container`),this.alertElement=t.toDOM();})).addChild("section",(i=>{if(this.bodyElement=i.addClass(`${mt}-body`).toDOM(),"string"==typeof t.body){const s=P.renderLiquidTemplate(t.body,e);i.addHtml(s);}else i.addChildElement(t.body);})).addChild("footer",(e=>{let i=null;i=t.footerAlignment&&t.footerAlignment==gt.Center?"align-center":"align-right",this.footerElement=e.addClass(`${mt}-footer`).toDOM(),e.addClass(i),!1!==t.submitable&&(e.addChild("button",(e=>{e.id(this.dialogId+"-btn-submit").addClass("kfrm-button","is-info").addText(t.submitButtonText||k.getText("ButtonOK")),t.recaptchaSiteKey?(e.data("sitekey",t.recaptchaSiteKey),e.addClass("g-recaptcha"),e.on("click",(e=>{grecaptcha?grecaptcha.ready((()=>{grecaptcha.execute(t.recaptchaSiteKey,{action:"submit"}).then((t=>{this.submitHandler(t);}));})):this.submitHandler();}))):e.on("click",(t=>{this.submitHandler();})),e.focus();})),!1!==t.cancelable&&e.addChild("button",(e=>e.id(this.dialogId+"-btn-cancel").addClass("kfrm-button").addText(t.cancelButtonText||k.getText("ButtonCancel")).on("click",(t=>{this.cancelHandler();})))));})).toDOM())).toDOM();}getData(){return this.data}getRootElement(){return this.slot}getSubmitButtonElement(){return document.getElementById(this.dialogId+"-btn-submit")}getCancelButtonElement(){return document.getElementById(this.dialogId+"-btn-cancel")}open(){this.options.beforeOpen&&this.options.beforeOpen(this),z(this.slot).show(),this.options.arrangeParents&&this.arrangeParents(!0);const t=this.slot.querySelector(`.${mt}-modal-window`);this.options.height&&(t.style.height="string"==typeof this.options.height?this.options.height:`${this.options.height}px`),this.options.width&&(t.style.width="string"==typeof this.options.width?this.options.width:`${this.options.width}px`),this.options.submitOnEnter&&window.addEventListener("keydown",this.keydownHandler,!1),this.slot.querySelectorAll("input").forEach((t=>t.addEventListener("input",(()=>{this.clearAlert(),this.options.onInput&&this.options.onInput(this);})))),this.options.onShow&&this.options.onShow(this);}submit(){this.submitHandler();}cancel(){this.cancelHandler();}close(){this.destroy();}disableButtons(){this.slot.querySelectorAll("button").forEach((t=>t.disabled=!0));}enableButtons(){this.slot.querySelectorAll("button").forEach((t=>t.disabled=!1));}showAlert(t,e,i){let s=z("div").addClass(`${mt}-alert ${e||""}`).addChild("span",(t=>t.addClass(`${mt}-alert-closebtn`).text("×").on("click",(t=>{const e=t.target.parentElement;e.parentElement.removeChild(e);})))).addText(t).toDOM();!0===i&&this.clearAlert(),this.alertElement.appendChild(s);}clearAlert(){this.alertElement.innerHTML="";}destroy(){document.querySelectorAll(`[data-dialog-id="${this.dialogId}"]`).length<=0||(this.options.arrangeParents&&this.arrangeParents(!1),document.body.removeChild(this.slot),this.options.submitOnEnter&&window.removeEventListener("keydown",this.keydownHandler,!1),this.options.onDestroy&&this.options.onDestroy(this));}isActiveDialog(){const t=document.documentElement.querySelectorAll(".kdlg-modal");return t[t.length-1]===this.slot}arrangeParents(t){const e=document.documentElement.querySelectorAll(".kdlg-modal-window");for(let i=0;i<e.length-1;i++)if(t){const t=0==i?20:40*i+20;z(e[i]).setStyle("margin-top",`${t}px`).setStyle("margin-left",`${t}px`);}else z(e[i]).removeStyle("margin-top").removeStyle("margin-left");}}class Dt extends yt{constructor(t,e){let i,s;const n=z("div").addChild("div",(e=>i=e.text(t.content||"").toDOM())).addChild("div",(e=>{e.addClass(`${mt}-progress-line`).addChild("div",(e=>{s=e.addClass("fill").toDOM(),t.determinated?e.setStyle("width","0%"):e.addClass("indeterminate");}));})).toDOM();super({title:t.title,body:n,beforeOpen:t.beforeOpen,onSubmit:t.onSubmit,width:t.width,height:t.height,submitable:!1,cancelable:!1,closable:!1,onDestroy:t.onDestroy},e),this.contentElement=i,this.progressElement=s;}updateContent(t){this.contentElement.innerText=t;}updateProgress(t){t=this.in01(t),this.progressElement.style.width=100*t+"%",1===t&&setTimeout((()=>{this.submit();}),500);}in01(t){return t>1?1:t<0?0:t}}class vt{constructor(t,e){this.options=t,this.dialogService=e,this.currentDialog=null,this.currentIndex=0,this.options=t,this.dialogService=e;}getCurrent(){return this.currentDialog}openNext(t){return this.open(this.currentIndex+1,t)}openPrev(t){return this.open(this.currentIndex-1,t)}open(t,e){if(t<0?this.currentIndex=0:t>=this.options.length?this.currentIndex=this.options.length-1:this.currentIndex=t,this.currentDialog)try{this.currentDialog.close();}catch(t){}const i=this.options[this.currentIndex];return this.currentDialog=this.dialogService.open(i,e),this.currentDialog}close(){this.currentDialog&&(this.currentDialog.close(),this.currentDialog=null);}}var Ct,wt;k.updateDefaultTexts({GridPageInfo:"{FirstPageRecordNum} - {LastPageRecordNum} of {Total} records",GridItemsPerPage:"items per page",ButtonOK:"OK",ButtonCancel:"Cancel",ButtonApply:"Apply",ButtonNow:"Now",LblTotal:"Total"}),function(t){t[t.THIS_WEEK=0]="THIS_WEEK",t[t.LAST_WEEK=1]="LAST_WEEK",t[t.THIS_MONTH=2]="THIS_MONTH",t[t.FIRST_MONTH=3]="FIRST_MONTH",t[t.LAST_MONTH=4]="LAST_MONTH",t[t.THIS_YEAR=5]="THIS_YEAR",t[t.QUARTER_1=6]="QUARTER_1",t[t.QUARTER_2=7]="QUARTER_2",t[t.QUARTER_3=8]="QUARTER_3",t[t.QUARTER_4=9]="QUARTER_4";}(Ct||(Ct={})),function(t){t.UNDEF="-1",t.TODAY="1",t.YESTERDAY="2",t.TOMORROW="3",t.WEEK_START="4",t.WEEK_END="5",t.MONTH_START="6",t.MONTH_END="7",t.YEAR_START="8",t.YEAR_END="9";}(wt||(wt={}));const Tt="yyyy-MM-dd",bt="HH:mm",xt=e=>{const i=d.getLocaleSettings();return e==t.Date?i.editDateFormat:e==t.Time?i.editTimeFormat:`${i.editDateFormat} ${i.editTimeFormat}`},Et=t=>{const e=window.history.state;history.pushState(e,document.title,t),window.dispatchEvent(new Event("ed_set_location"));};class It{}class St extends It{constructor(){super(),this.name="DateTime";}validate(t,e){if(!l.IsDefinedAndNotNull(e)||""==e)return {successed:!0};if(l.getDateDataTypes().indexOf(t.dataType)>=0)try{const i=xt(t.dataType);l.strToDateTime(e,i);}catch(t){return {successed:!1,messages:[d.getText("DateTimeError")]}}return {successed:!0}}}class Mt{constructor(t){this.context=t,this.validators=[new St];}getHtml(){return this.html}setHtmlInt(t){this.html=t,this.errorsDiv=this.html.querySelector(".errors-block");}validate(){this.clearErrors();const t=Array.from(this.html.querySelectorAll("input, select"));let e=!0;for(const i of t){const t=this.context.getMetaData().getAttributeById(i.name);if("checkbox"===i.type)continue;const s=this.validateValue(t,i.value);if(!s.successed){e&&z(this.errorsDiv).addChild("ul"),e=!1;for(const e of s.messages)this.errorsDiv.firstElementChild.innerHTML+=`<li>${t.caption}: ${e}</li>`;}this.markInputValid(i,s.successed);}return e}getData(){return new Promise(((t,e)=>{const i=[],s=Array.from(this.html.querySelectorAll("input, select, textarea"));let n={};for(const t of s){const e=t.name.substring(t.name.lastIndexOf(".")+1),s=this.context.getMetaData().getAttributeById(t.name);"checkbox"===t.type?n[e]=t.checked:"file"===t.type?i.push(this.fileToBase64(t.files[0]).then((t=>n[e]=t))):n[e]=this.mapValue(s.dataType,t.value);}Promise.all(i).then((()=>t(n))).catch((t=>e(t)));}))}fileToBase64(t){return new Promise(((e,i)=>{const s=new FileReader;s.readAsDataURL(t),s.onload=()=>{const t=s.result.toString();e(t.substring(t.indexOf(",")+1));},s.onerror=t=>i(t);}))}useValidator(...t){this.useValidators(t);}useValidators(t){this.validators=this.validators.concat(t);}mapValue(e,i){if(l.getDateDataTypes().indexOf(e)>=0){if(e!==t.Time&&i&&i.length){const n=xt(e),o=(s=e)==t.Date?Tt:s==t.Time?bt:`${Tt}T${bt}`,a=l.strToDateTime(i,n);return d.dateTimeToStr(a,o)}return i&&i.length?i:null}var s;return l.isIntType(e)?parseInt(i):l.isNumericType(e)?parseFloat(i):i}clearErrors(){this.errorsDiv.innerHTML="",this.html.querySelectorAll("input, select").forEach((t=>{t.classList.remove("is-valid"),t.classList.remove("is-invalid");}));}markInputValid(t,e){t.classList.add(e?"is-valid":"is-invalid");}validateValue(t,e){const i={successed:!0,messages:[]};for(const s of this.validators){const n=s.validate(t,e);n.successed||(i.successed=!1,i.messages=i.messages.concat(n.messages));}return i}}class Rt{constructor(t,e,i,s){this.slot=t,this.grid=e,this.filter=i,this.options={focus:!1,instantMode:!1,instantTimeout:1e3},this.options=l.assignDeep(this.options,s||{});const n=this.grid.cellRendererStore.getDefaultRendererByType(et.STRING);this.grid.cellRendererStore.setDefaultRenderer(et.STRING,((t,e,i,s)=>this.highlightCellRenderer(n,t,e,i,s)));const o=this.grid.cellRendererStore.getDefaultRendererByType(et.NUMBER);this.grid.cellRendererStore.setDefaultRenderer(et.NUMBER,((t,e,i,s)=>this.highlightCellRenderer(o,t,e,i,s))),this.render();}render(){const t=O.IsIE()?"kfrm-fields-ie is-horizontal":"kfrm-fields is-horizontal",e=O.IsIE()||O.IsEdge();z(this.slot).addClass(t).addChild("div",(t=>{t.addClass("control").addChild("input",(t=>{this.filterInput=t.toDOM(),t.attr("placeholder",d.getText("SearchInputPlaceholder")).type("text"),t.on("keydown",this.inputKeydownHandler.bind(this)),this.options.instantMode&&t.on("keyup",this.inputKeyupHandler.bind(this));})),e||t.addClass("has-icons-right").addChild("span",(t=>{t.addClass("icon").addClass("is-right").addClass("is-clickable").html("&#x1F5D9;").on("click",this.clearButtonClickHander.bind(this));}));})),this.options.instantMode||z(this.slot).addChild("button",(t=>t.addClass("kfrm-button").addText(d.getText("SearchBtn")).on("click",this.searchButtonClickHandler.bind(this)))),this.options.focus&&this.filterInput.focus();}inputKeydownHandler(t){13==t.keyCode&&this.applyFilter(!0);}inputKeyupHandler(){this.applyFilterTimeout&&clearTimeout(this.applyFilterTimeout),this.applyFilterTimeout=setTimeout((()=>{this.applyFilter(!0);}),this.options.instantTimeout);}clearButtonClickHander(){this.filterInput.value="",this.filterInput.focus(),this.applyFilter(!0);}searchButtonClickHandler(){this.applyFilter(!0);}applyFilter(t){this.applyFilterTimeout&&clearTimeout(this.applyFilterTimeout);const e=this.filter.getValue();return (!t||e!=this.filterInput.value)&&(this.filter.apply(this.filterInput.value).then((t=>{this.grid.setData(t);})),!0)}highlightCellRenderer(t,e,i,s,n){if((l.isNumericType(i.type)||l.getStringDataTypes().indexOf(i.type)>=0)&&e){e=i.dataColumn&&i.dataColumn.displayFormat&&tt.test(i.dataColumn.displayFormat)?i.dataColumn.displayFormat.replace(tt,((t,i)=>d.numberToStr(e,i))):e.toLocaleString();const t=this.highlightText(e.toString());if(t instanceof HTMLElement)return s.title=e,void s.appendChild(t)}t(e,i,s,n);}highlightText(t){const e=t.toLowerCase(),i=this.filter.getValue().toString();if(i&&i.length>0&&t&&t.length>0){const s=[],n=i.split("||").map((t=>t.trim().toLowerCase()));for(let i=0;i<n.length;i++){let o=0;const a=n[i];if(a.length){if(a===e){const e=document.createElement("span");return e.style.backgroundColor="yellow",e.innerText=t,e}for(;o<t.length-1;){const t=e.indexOf(a,o);t>=0?(s.push({index:t,length:n[i].length}),o=t+a.length):o++;}}}if(s.length>0){s.sort(((t,e)=>t.index>e.index?1:t.index==e.index2?0:-1));for(let t=0;t<s.length-1;){const e=s[t+1].index-(s[t].index+s[t].length);if(e<0){const i=s[t+1].length+e;i>0&&(s[t].length+=i),s.splice(t+1,1);}else t++;}const e=document.createElement("div");for(let i=0;i<s.length;i++){if(0===i){const n=document.createTextNode(t.substring(0,s[i].index));e.appendChild(n);}const n=document.createElement("span");n.style.backgroundColor="yellow",n.innerText=t.substring(s[i].index,s[i].index+s[i].length),e.appendChild(n);const o=i<s.length-1?document.createTextNode(t.substring(s[i].index+s[i].length,s[i+1].index)):document.createTextNode(t.substring(s[i].index+s[i].length));e.appendChild(o);}return e}}return t}}const kt=O.IsIE();class At{constructor(t,e){this.context=t,this.params=e,this.params=e||{},this.reset();}reset(){this.form=new Mt(this.context);}setupLookupField(t,e,i,s){const n=this.context.getMetaData().getRootEntity().subEntities.filter((t=>t.id==e.lookupEntity))[0],o=this.context.getMetaData().getAttributeById(e.dataAttr);if(!o)return;i=i||!o.isEditable,s=this.params.values?this.params.values.getValue(o.id):void 0;const a=kt?"kfrm-fields-ie is-horizontal":"kfrm-fields is-horizontal";let r;z(t).addChild("div",(t=>{t.addClass(a).addChild("input",(t=>{r=t.toDOM(),t.attr("readonly",""),t.name(o.id),t.type(this.resolveInputType(o.dataType)),t.value(l.IsDefinedAndNotNull(s)?s.toString():"");})),i||t.addChild("button",(t=>t.addClass("kfrm-button").attr("title",d.getText("NavigationBtnTitle")).addText("...").on("click",(i=>{const s=new b({loader:{loadChunk:t=>this.context.getDataLoader().loadChunk(Object.assign(Object.assign({},t),{id:n.id}))}});this.context.getDataLoader().loadChunk({offset:0,limit:1e3,needTotal:!0,sourceId:n.id}).then((i=>{for(const t of i.table.columns.getItems()){const e=n.attributes.filter((e=>e.id==t.id&&(e.isPrimaryKey||e.showInLookup)));e.length&&s.columns.add(t);}s.setTotal(i.total);for(const t of i.table.getCachedRows())s.addRow(t);const o=new ft;let a,l=null,h=null;const c=z("div").addClass("kfrm-form").addChild("div",(t=>t.addClass("kfrm-field").addChild("label",(t=>t.addText(d.getText("LookupSelectedItem")).toDOM())).addChild("div",(t=>h=t.addText("None").toDOM())))).addChild("div",(t=>a=t.toDOM())).addChild("div",(t=>t.addClass("kfrm-control").addChild("div",(t=>l=t.toDOM())))).toDOM();let u=r.value;const p=t=>{h.innerHTML=s.columns.getItems().map((e=>`<b>${e.label}:</b> ${((t,e)=>t instanceof T?t.getValue(e):t[e.substring(e.lastIndexOf(".")+1)])(t,e.id)}`)).join(", ");};if(u){const t=n.getFirstPrimaryAttr(),e=t.id.substring(t.id.lastIndexOf(".")+1);this.context.fetchRecord({[e]:u},n.id).then((t=>{t.entity&&p(t.entity);})).catch((t=>{console.error(t);}));}const g=new rt({slot:l,dataTable:s,fixHeightOnFirstRender:!0,paging:{pageSize:10},onActiveRowChanged:t=>{g.getData().getRow(t.rowIndex).then((t=>{u=t.getValue(e.lookupDataAttr),p(t);}));}});o.open({title:d.getText("LookupDlgCaption").replace("{entity}",n.caption),body:c,arrangeParents:!0,beforeOpen:()=>{const t=this.context.createFilter(n.id,g.getData(),!0);new Rt(a,g,t,{instantMode:!0,focus:!0});},onSubmit:()=>(r.value=u,!0),onDestroy:()=>{g.destroy(),t.toDOM().focus();}});}));}))));}));}setupDateTimeField(e,i,s,n,o){const a=kt?"kfrm-fields-ie is-horizontal":"kfrm-fields is-horizontal",r=xt(i.dataType);let h;const c=r.replace("yyyy","9999").replace("MM","99").replace("dd","99").replace("HH","99").replace("mm","99").replace("ss","99");z(e).addChild("div",(e=>{e.addClass(a).addChild("input",(t=>{h=t.toDOM(),t.name(i.id),t.type(o?"hidden":this.resolveInputType(i.dataType)),n?t.attr("readonly",""):(t.mask(c),t.on("keypress",(t=>this.applySumbit(t))).on("input",(e=>{t.removeClass("is-invalid");try{l.strToDateTime(h.value,r);}catch(e){t.addClass("is-invalid");}})).on("blur",(t=>{h.value===c.replace(/[9]/g,"_")&&(h.value="");}))),t.value(l.IsDefinedAndNotNull(s)?d.dateTimeToStr(s,r):"");})),n||e.addChild("button",(e=>e.addClass("kfrm-button").attr("title",d.getText(i.dataType!==t.Time?"CalendarBtnTitle":"TimerBtnTitle")).addChild("i",(e=>e.addClass(i.dataType!==t.Time?"ed-calendar-icon":"ed-timer-icon"))).on("click",(e=>{let s;try{s=h.value.length?i.dataType!==t.Time?l.strToDateTime(h.value,r):l.strToTime(h.value):new Date((new Date).setSeconds(0));}catch(t){s=new Date((new Date).setSeconds(0));}const n={zIndex:9999999999,showCalendar:i.dataType!==t.Time,showTimePicker:i.dataType!==t.Date,onApply:t=>{t.setSeconds(0),t.setMilliseconds(0),h.value=d.dateTimeToStr(t,r);}},o=new pt(n);o.setDateTime(s),o.show(e.target);})).toDOM()));}));}setupListField(t,e,i,s,n){z(t).addChild("div",(t=>t.addClass("kfrm-select full-width").addChild("select",(t=>{if(n&&t.attr("readonly",""),t.attr("name",e.id),t.on("keypress",(t=>this.applySumbit(t))),s)for(let e=0;e<s.length;e++){const i=s[e];t.addOption({value:i.id,title:i.text,selected:0===e});}t.value(i);}))));}setupFileField(t,e,i,s){z(t).addChild("input",(t=>{i&&t.attr("readonly",""),t.name(e.id).type(this.resolveInputType(e.dataType)),t.attr("accept",s);}));}setupTextField(e,i,s,n,o){z(e).addChild("input",(e=>{n&&e.attr("readonly",""),e.type(o?"hidden":this.resolveInputType(i.dataType)),e.name(i.id).type(this.resolveInputType(i.dataType)),i.dataType==t.Bool?s&&e.attr("checked",""):e.on("keypress",(t=>this.applySumbit(t))).value(l.IsDefinedAndNotNull(s)?s.toString():"");}));}setupTextArea(t,e,i,s){z(t).addChild("textarea",(t=>{s&&t.attr("readonly",""),t.attr("name",e.id),t.setStyle("height","120px"),t.value(l.IsDefinedAndNotNull(i)?i.toString():"");}));}addFormField(t,i){const s=this.params.values&&i.kind!==e.Lookup?this.params.values.getValue(i.id):this.params.isEditForm?void 0:i.defaultValue,r=this.resolveEditor(i),l=this.params.isEditForm&&(i.isPrimaryKey||!i.isEditable),d=!i.isNullable;kt&&(t=z("div",t).addClass("kfrm-field-ie").toDOM()),z(t).addChild("label",(t=>{t.attr("for",i.id),t.addHtml(`${i.caption} ${d?'<sup style="color: red">*</sup>':""}: `),i.description&&t.addChild("div",(t=>t.attr("title",i.description).addClass("question-mark").setStyle("vertical-align","middle").setStyle("display","inline-block")));}));const h=i.isPrimaryKey;if(i.kind!==e.Lookup)switch(r.tag){case n:this.setupDateTimeField(t,i,s,l,h);break;case o:this.setupListField(t,i,s,r.values,l);break;case a:this.setupFileField(t,i,l,r.accept);break;default:r.multiline?this.setupTextArea(t,i,s,l):this.setupTextField(t,i,s,l,h);}else this.setupLookupField(t,i,l,s);}resolveInputType(e){return e===t.Bool?"checkbox":e===t.Blob?"file":"text"}resolveEditor(t){let e=t.defaultEditor||new D;return e.tag==i&&(l.getDateDataTypes().indexOf(t.dataType)>=0?e.tag=n:e.tag=s),e}applySumbit(t){return 13===t.keyCode&&(this.sumbitCallback&&this.sumbitCallback(),!1)}onSubmit(t){return this.sumbitCallback=t,this}build(){let t;const e=z("div").addClass("kfrm-form").addChild("div",(t=>t.addClass("errors-block").toDOM())).addChild("div",(e=>{e.addClass(""+(kt?"kfrm-fields-ie col-ie-1-4 label-align-right":"kfrm-fields col-a-1 label-align-right")),t=e;})).toDOM();this.form.setHtmlInt(e);for(const e of this.context.getActiveEntity().attributes)(this.params.isEditForm||e.showOnCreate)&&(e.isPrimaryKey||!this.params.isEditForm||e.showOnEdit)&&this.addFormField(t.toDOM(),e);return this.form}}class Pt{constructor(t){this.slot=t,this.hide(),this.slot.classList.add("ed-progress-bar");}show(){this.slot.style.removeProperty("display");}hide(){this.slot.style.display="none";}}class Ot{constructor(t){this.context=t;}loadChunk(t){const e=this.context.resolveEndpoint("FetchDataset",{sourceId:t.sourceId||this.context.getActiveEntity().id});delete t.sourceId,this.context.startProcess();return this.context.getHttpClient().post(e,t).then((e=>{const i=new b({chunkSize:1e3}),s=e.resultSet;for(const t of s.cols)i.columns.add(t);for(const t of s.rows)i.addRow(t);let n=0;return e.meta&&e.meta.totalRecords&&(n=e.meta.totalRecords),{table:i,total:n,hasNext:!t.needTotal||t.offset+t.limit<n}})).finally((()=>{this.context.endProcess();}))}}class Nt{constructor(t){this.endpoints=new Map,this.endpointVarsRegex=/\{.*?\}/g,this.options=t||{},this.http=new m,this.model=new v,this.model.id=t.metaDataId||"__default",this.dataLoader=new Ot(this);const e=Object.assign({loader:this.dataLoader},t.dataTable);this.data=new b(e),this.setDefaultEndpoints(this.options.endpoint||"/api/easydata");}getActiveEntity(){return this.activeEntity}setActiveSource(t){this.activeEntity=this.model.getRootEntity().subEntities.filter((e=>e.id==t))[0];}getMetaData(){return this.model}getData(){return this.data}getDataLoader(){return this.dataLoader}createFilter(t,e,i){return new E(this.dataLoader,e||this.getData(),t||this.activeEntity.id,i)}loadMetaData(){const t=this.resolveEndpoint("GetMetaData");return this.startProcess(),this.http.get(t).then((t=>(t.model&&this.model.loadFromData(t.model),this.model))).catch((t=>(console.error(`Error: ${t.message}. Source: ${t.sourceError}`),null))).finally((()=>{this.endProcess();}))}getHttpClient(){return this.http}fetchDataset(){return this.data.clear(),this.dataLoader.loadChunk({offset:0,limit:this.data.chunkSize,needTotal:!0}).then((t=>{for(const e of t.table.columns.getItems())this.data.columns.add(e);this.data.setTotal(t.total);for(const e of t.table.getCachedRows())this.data.addRow(e);return this.data}))}fetchRecord(t,e){const i=this.resolveEndpoint("FetchRecord",{sourceId:e||this.activeEntity.id});return this.startProcess(),this.http.get(i,{queryParams:t}).finally((()=>this.endProcess()))}createRecord(t,e){const i=this.resolveEndpoint("CreateRecord",{sourceId:e||this.activeEntity.id});return this.startProcess(),this.http.post(i,t,{dataType:"json"}).finally((()=>this.endProcess()))}updateRecord(t,e){const i=this.resolveEndpoint("UpdateRecord",{sourceId:e||this.activeEntity.id});return this.startProcess(),this.http.post(i,t,{dataType:"json"}).finally((()=>this.endProcess()))}deleteRecord(t,e){const i=this.resolveEndpoint("DeleteRecord",{sourceId:e||this.activeEntity.id});return this.startProcess(),this.http.post(i,t,{dataType:"json"}).finally((()=>this.endProcess()))}setEndpoint(t,e){this.endpoints.set(t,e);}setEnpointIfNotExist(t,e){this.endpoints.has(t)||this.endpoints.set(t,e);}resolveEndpoint(t,e){e=e||{};let i=this.endpoints.get(t);if(!i)throw t+" endpoint is not defined";let s=i.match(this.endpointVarsRegex);if(s)for(let t of s){let s=t.substring(1,t.length-1),n=e[s];if(!n)if("modelId"==s)n=this.model.getId();else {if("sourceId"!=s)throw `Parameter [${s}] is not defined`;n=this.activeEntity.id;}i=i.replace(t,n);}return i}startProcess(){this.options.onProcessStart&&this.options.onProcessStart();}endProcess(){this.options.onProcessEnd&&this.options.onProcessEnd();}setDefaultEndpoints(t){this.setEnpointIfNotExist("GetMetaData",x(t,"models/{modelId}")),this.setEnpointIfNotExist("FetchDataset",x(t,"models/{modelId}/sources/{sourceId}/fetch")),this.setEnpointIfNotExist("FetchRecord",x(t,"models/{modelId}/sources/{sourceId}/fetch")),this.setEnpointIfNotExist("CreateRecord",x(t,"models/{modelId}/sources/{sourceId}/create")),this.setEnpointIfNotExist("UpdateRecord",x(t,"models/{modelId}/sources/{sourceId}/update")),this.setEnpointIfNotExist("DeleteRecord",x(t,"models/{modelId}/sources/{sourceId}/delete"));}}class Lt extends It{constructor(){super(),this.name="Type";}validate(t,e){if(!l.IsDefinedAndNotNull(e)||""==e)return {successed:!0};if(l.isNumericType(t.dataType)){if(!l.isNumeric(e))return {successed:!1,messages:[d.getText("NumberError")]};if(l.isIntType(t.dataType)&&!Number.isInteger(Number.parseFloat(e)))return {successed:!1,messages:[d.getText("IntNumberError")]}}return {successed:!0}}}class Ft extends It{constructor(){super(),this.name="Required";}validate(t,e){return t.isNullable||l.IsDefinedAndNotNull(e)&&""!==e?{successed:!0}:{successed:!1,messages:[d.getText("RequiredError")]}}}class $t{constructor(t,e,i,s){this.slot=t,this.context=e,this.basePath=i,this.options={showFilterBox:!0,showBackToEntities:!0},this.defaultValidators=[new Ft,new Lt],this.options=l.assignDeep(this.options,s||{}),this.dlg=new ft;const n=this.context.getActiveEntity();if(!n)throw "Can't find active entity for "+window.location.pathname;this.slot.innerHTML+=`<h1>${n.captionPlural||n.caption}</h1>`,this.options.showBackToEntities&&z(this.slot).addChild("a",(t=>t.attr("href","javascript:void(0)").text(`← ${d.getText("BackToEntities")}`).on("click",(t=>{t.preventDefault(),Et(this.basePath);})))),this.renderGrid();}syncGridColumnHandler(t){if(t.dataColumn){const e=this.context.getMetaData().getAttributeById(t.dataColumn.id);e&&(t.isVisible=e.showOnView);}}renderGrid(){this.context.fetchDataset().then((t=>{const e=document.createElement("div");if(this.slot.appendChild(e),e.id="Grid",this.grid=new rt(l.assignDeep({slot:e,dataTable:t,paging:{pageSize:15,allowPageSizeChange:!0,pageSizeItems:[15,30,50,100,200]},showPlusButton:this.context.getActiveEntity().isEditable,plusButtonTitle:d.getText("AddRecordBtnTitle"),showActiveRow:!1,onPlusButtonClick:this.addClickHandler.bind(this),onGetCellRenderer:this.manageCellRenderer.bind(this),onRowDbClick:this.rowDbClickHandler.bind(this),onSyncGridColumn:this.syncGridColumnHandler.bind(this)},this.options.grid||{})),this.options.showFilterBox){let t;const i=z("div").addClass("kfrm-form").setStyle("margin","10px 0px").addChild("div",(e=>t=e.toDOM())).toDOM();this.slot.insertBefore(i,e);const s=this.context.createFilter();this.filterWidget=new Rt(t,this.grid,s);}}));}manageCellRenderer(t,e){if(t.isRowNum)return t.width=110,(t,e,i,s)=>{const n=z("div",i).addClass("keg-cell-value");this.context.getActiveEntity().isEditable&&n.addChild("a",(t=>t.attr("href","javascript:void(0)").text(d.getText("EditBtn")).on("click",(t=>this.editClickHandler(t,parseInt(s.getAttribute("data-row-idx"))))))).addChild("span",(t=>t.text(" | "))).addChild("a",(t=>t.attr("href","javascript:void(0)").text(d.getText("DeleteBtn")).on("click",(t=>this.deleteClickHandler(t,parseInt(s.getAttribute("data-row-idx")))))));}}addClickHandler(){const t=this.context.getActiveEntity(),e=new At(this.context).onSubmit((()=>i.submit())).build();e.useValidators(this.defaultValidators);const i=this.dlg.open({title:d.getText("AddDlgCaption").replace("{entity}",t.caption),body:e.getHtml(),onSubmit:()=>{if(!e.validate())return !1;e.getData().then((t=>this.context.createRecord(t))).then((()=>this.refreshData())).catch((t=>{this.processError(t);}));}});}editClickHandler(t,e){this.grid.getData().getRow(e).then((t=>{t&&this.showEditForm(t);}));}showEditForm(t){const e=this.context.getActiveEntity(),i=new At(this.context,{isEditForm:!0,values:t}).onSubmit((()=>s.submit())).build();i.useValidators(this.defaultValidators);const s=this.dlg.open({title:d.getText("EditDlgCaption").replace("{entity}",e.caption),body:i.getHtml(),onSubmit:()=>{if(!i.validate())return !1;i.getData().then((t=>this.context.updateRecord(t))).then((()=>this.refreshData())).catch((t=>{this.processError(t);}));}});}rowDbClickHandler(t){this.context.getActiveEntity().isEditable&&this.showEditForm(t.row);}deleteClickHandler(t,e){this.grid.getData().getRow(e).then((t=>{if(t){const e=this.context.getActiveEntity(),i=e.getPrimaryAttrs(),s=i.map((e=>t.getValue(e.id))),n=i.reduce(((t,e,i)=>(t[e.id.substring(e.id.lastIndexOf(".")+1)]=s[i],t)),{});this.dlg.openConfirm(d.getText("DeleteDlgCaption").replace("{entity}",e.caption),d.getText("DeleteDlgMessage").replace("{recordId}",Object.keys(n).map((t=>`${t}:${n[t]}`)).join(";"))).then((t=>{t&&this.context.deleteRecord(n).then((()=>this.refreshData())).catch((t=>{this.processError(t);}));}));}}));}processError(t){this.dlg.open({title:"Ooops, something went wrong",body:t.message,closable:!0,cancelable:!1});}refreshData(){return this.context.fetchDataset().then((()=>{let t=!1;this.filterWidget&&(t=this.filterWidget.applyFilter(!1)),t||this.grid.refresh();}))}}class Bt{constructor(t,e,i){this.slot=t,this.context=e,this.basePath=i,this.metaData=this.context.getMetaData(),this.slot.innerHTML+=`<h1>${d.getText("RootViewTitle")}</h1>`,this.renderEntitySelector();}renderEntitySelector(){const t=this.metaData.getRootEntity().subEntities;this.slot&&z(this.slot).addChild("div",(e=>e.addClass("ed-root").addChild("div",(t=>t.addClass("ed-menu-description").addText(d.getText(this.metaData.isEmpty()?"ModelIsEmpty":"EntityMenuDesc")))).addChild("ul",(e=>{e.addClass("ed-entity-menu"),t.forEach((t=>{e.addChild("li",(e=>{e.addClass("ed-entity-item").on("click",(()=>{Et(`${this.basePath}/${decodeURIComponent(t.id)}`);})).addChild("div",(e=>{e.addClass("ed-entity-item-caption").addText(t.captionPlural||t.caption);})),t.description&&e.addChild("div",(e=>{e.addClass("ed-entity-item-descr").addText(`${t.description}`);}));}));}));}))));}}class Ht{constructor(t){this.options={container:"#EasyDataContainer",basePath:"easydata"},this.onSetLocation=()=>{this.setActiveView();},this.attach=()=>{window.addEventListener("ed_set_location",this.onSetLocation),window.addEventListener("popstate",this.onSetLocation);},this.options=l.assign(this.options,t||{}),this.options.rootEntity?(this.options.showBackToEntities=!1,this.basePath="/"):this.basePath=this.normalizeBasePath(this.options.basePath),this.setContainer(this.options.container);const e=document.createElement("div"),i=new Pt(e),s=this.container.parentElement;s.insertBefore(e,s.firstElementChild),this.context=new Nt({endpoint:this.options.endpoint,dataTable:this.options.dataTable,onProcessStart:()=>i.show(),onProcessEnd:()=>i.hide()});}normalizeBasePath(t){t=this.trimSlashes(t);const e=decodeURIComponent(window.location.pathname),i=e.toLocaleLowerCase().indexOf(t);return i>=0?e.substring(0,i+t.length):"/"}trimSlashes(t){return t.replace(/^\/|\/$/g,"")}setContainer(t){if(!t)throw "Container is undefined";if("string"==typeof t){if(t.length){if("."===t[0]){const e=document.getElementsByClassName(t.substring(1));e.length&&(this.container=e[0]);}else "#"===t[0]&&(t=t.substring(1)),this.container=document.getElementById(t);if(!this.container)throw Error("Unrecognized `container` parameter: "+t+"\nIt must be an element ID, a class name (starting with .) or an HTMLElement object itself.")}}else this.container=t;}getActiveSourceId(){if(this.options.rootEntity)return this.options.rootEntity;const t=decodeURIComponent(window.location.pathname),e=this.basePath.length+1;return e<t.length?t.substring(e):null}run(){return this.attach(),this.context.loadMetaData().then((()=>{this.setActiveView();})).catch((t=>console.error(t)))}setActiveView(){this.clear();const t=this.getActiveSourceId();t?(this.context.setActiveSource(t),window.EDView=new $t(this.container,this.context,this.basePath,this.options)):window.EDView=new Bt(this.container,this.context,this.basePath);}clear(){this.container.innerHTML="",this.context.getData().clear();}detach(){window.removeEventListener("ed_set_location",this.onSetLocation),window.removeEventListener("popstate",this.onSetLocation);}}d.updateDefaultTexts({RequiredError:"Value is required.",NumberError:"Value should be a number",IntNumberError:"Value should be an integer number",DateTimeError:"Invalid date or time value",LookupSelectedItem:"Selected item: ",LookupDlgCaption:"Select {entity}",None:"None",NavigationBtnTitle:"Navigation values",CalendarBtnTitle:"Open calendar",TimerBtnTitle:"Open timer",AddBtnTitle:"Add",AddRecordBtnTitle:"Add record",EditBtn:"Edit",DeleteBtn:"Delete",SelectLink:"[ select ]",AddDlgCaption:"Create {entity}",EditDlgCaption:"Edit {entity}",DeleteDlgCaption:"Delete {entity}",DeleteDlgMessage:"Are you sure you want to remove this record: {{recordId}}?",EntityMenuDesc:"Click on an entity to view/edit its content",BackToEntities:"Back to entities",SearchBtn:"Search",SearchInputPlaceholder:"Search...",RootViewTitle:"Entities",ModelIsEmpty:"No entity was found."});
+    /**
+     * Represents a date/time value that can return either a date itself or a special date name
+     */
+    class TimeValue {
+        constructor(dt) {
+            if (dt instanceof Date) {
+                this.date = dt;
+            }
+            else {
+                this._name = dt;
+            }
+        }
+        asTime(settings) {
+            if (this.date) {
+                return this.date;
+            }
+            else {
+                specialDatesResolver.getDateByName(this._name);
+            }
+        }
+        get name() {
+            return this.name;
+        }
+    }
+    class SpecialDatesResolver {
+        getDateByName(name, settings) {
+            if (this[name]) {
+                return this[name](settings);
+            }
+            else {
+                return undefined;
+            }
+        }
+        Today(settings) {
+            return new Date();
+        }
+        Yesterday(settings) {
+            let d = new Date();
+            d.setDate(d.getDate() - 1);
+            return d;
+        }
+        Tomorrow(settings) {
+            let d = new Date();
+            d.setDate(d.getDate() + 1);
+            return d;
+        }
+        FirstDayOfMonth(settings) {
+            let d = new Date();
+            d.setDate(1);
+            return d;
+        }
+        LastDayOfMonth(settings) {
+            let d = new Date();
+            d.setMonth(d.getMonth() + 1, 0);
+            return d;
+        }
+        FirstDayOfNextMonth(settings) {
+            let d = new Date();
+            d.setMonth(d.getMonth() + 1, 1);
+            return d;
+        }
+        FirstDayOfPrevMonth(settings) {
+            let d = new Date();
+            d.setMonth(d.getMonth() - 1, 1);
+            return d;
+        }
+        FirstDayOfYear(settings) {
+            const d = new Date();
+            d.setMonth(0, 1);
+            return d;
+        }
+        FirstDayOfPrevYear(settings) {
+            let d = new Date();
+            d.setFullYear(d.getFullYear() - 1, 0, 1);
+            return d;
+        }
+        FirstDayOfNextYear(settings) {
+            let d = new Date();
+            d.setFullYear(d.getFullYear() + 1, 0, 1);
+            return d;
+        }
+        FirstDayOfWeek(settings) {
+            const d = new Date();
+            let day = d.getDay();
+            day = (day == 0) ? 6 : day - 1; //We start week from Monday, but js - from Sunday
+            d.setDate(d.getDate() - day);
+            return d;
+        }
+        FirstDayOfPrevWeek(settings) {
+            let d = new Date();
+            let day = d.getDay();
+            day = (day == 0) ? 1 : 8 - day; //We start week from Monday, but js - from Sunday
+            d.setDate(d.getDate() - day);
+            return d;
+        }
+        FirstDayOfNextWeek(settings) {
+            let d = new Date();
+            var day = d.getDay();
+            day = (day == 0) ? 1 : 8 - day; //We start week from Monday, but js - from Sunday
+            d.setDate(d.getDate() + day);
+            return d;
+        }
+    }
+    var specialDatesResolver = new SpecialDatesResolver();
+    function registerSpecialDatesResolver(resolver) {
+        specialDatesResolver = resolver;
+    }
 
-	var easydata_crud_es = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		DataContext: Nt,
-		EasyDataServerLoader: Ot,
-		EasyDataViewDispatcher: Ht,
-		EntityDataView: $t,
-		EntityEditForm: Mt,
-		EntityEditFormBuilder: At,
-		ProgressBar: Pt,
-		RequiredValidator: Ft,
-		RootDataView: Bt,
-		TextDataFilter: E,
-		TextFilterWidget: Rt,
-		TypeValidator: Lt,
-		Validator: It
-	});
+    var HttpMethod$3;
+    (function (HttpMethod) {
+        HttpMethod["Trace"] = "TRACE";
+        HttpMethod["Options"] = "OPTIONS";
+        HttpMethod["Get"] = "GET";
+        HttpMethod["Put"] = "PUT";
+        HttpMethod["Post"] = "POST";
+        HttpMethod["Delete"] = "DELETE";
+    })(HttpMethod$3 || (HttpMethod$3 = {}));
 
-	exports.core = easydata_core_es;
-	exports.crud = easydata_crud_es;
-	exports.ui = easydata_ui_es;
+    let HttpRequest$1 = class HttpRequest {
+        constructor(xhr, descriptor) {
+            this.xhr = xhr;
+            this.method = descriptor.method;
+            this.url = descriptor.url;
+            this.headers = descriptor.headers;
+            this.queryParams = descriptor.queryParams;
+            this.data = descriptor.data;
+        }
+        setHeader(name, value) {
+            this.headers[name] = value;
+        }
+        setQueryParam(name, value) {
+            this.queryParams[name] = value;
+        }
+        getXMLHttpRequest() {
+            return this.xhr;
+        }
+        getResponseHeaders() {
+            if (this.xhr.readyState == this.xhr.HEADERS_RECEIVED) {
+                const headers = this.xhr.getAllResponseHeaders();
+                const arr = headers.trim().split(/[\r\n]+/);
+                // Create a map of header names to values
+                const headerMap = {};
+                for (const line of arr) {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    headerMap[header] = value;
+                }
+                return headerMap;
+            }
+            return {};
+        }
+        open() {
+            if (this.xhr.readyState !== this.xhr.UNSENT)
+                return;
+            let url = this.url;
+            if (this.queryParams && Object.keys(this.queryParams).length > 0) {
+                url += encodeURI('?' + Object.keys(this.queryParams)
+                    .map(param => param + '=' + this.queryParams[param])
+                    .join('&'));
+            }
+            this.xhr.open(this.method, url, true);
+            this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            for (const header in this.headers) {
+                this.xhr.setRequestHeader(header, this.headers[header]);
+            }
+        }
+        abort() {
+            this.xhr.abort();
+        }
+    };
 
-	return exports;
+    var utils$3;
+    (function (utils) {
+        function getAllDataTypes() {
+            return Object.values(DataType$3).filter(item => typeof item === "number");
+        }
+        utils.getAllDataTypes = getAllDataTypes;
+        function getDateDataTypes() {
+            return [DataType$3.Time, DataType$3.Date, DataType$3.DateTime];
+        }
+        utils.getDateDataTypes = getDateDataTypes;
+        function getStringDataTypes() {
+            return [DataType$3.String, DataType$3.Memo, DataType$3.FixedChar];
+        }
+        utils.getStringDataTypes = getStringDataTypes;
+        const _numericTypes = [DataType$3.Byte, DataType$3.Word, DataType$3.Int32,
+            DataType$3.Int64, DataType$3.Float, DataType$3.Currency, DataType$3.Autoinc];
+        function getNumericDataTypes() {
+            return _numericTypes;
+        }
+        utils.getNumericDataTypes = getNumericDataTypes;
+        const _intTypes = [DataType$3.Byte, DataType$3.Word, DataType$3.Int32, DataType$3.Int64, DataType$3.Autoinc];
+        //-------------- object functions -------------------
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function copies only the first level properties.
+         * For a deep copy please use `assignDeep`
+         * @param target - the target object
+         * @param args  - an array of the source objects
+         */
+        function assign(target, ...args) {
+            for (let i = 0; i < args.length; i++) {
+                let source = args[i];
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        utils.assign = assign;
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function make a deep copy -
+         * so `assignDeep` will be called recursively for all object properties
+         * on the first level.
+         * @param target - the target object
+         * @param sources  - an array of the source objects
+         */
+        function assignDeep(target, ...sources) {
+            return assignDeepCore(new WeakMap(), target, sources);
+        }
+        utils.assignDeep = assignDeep;
+        function assignDeepCore(hashSet, target, sources) {
+            if (!target) {
+                target = {};
+            }
+            for (let source of sources) {
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            let sourceVal = source[key];
+                            if (sourceVal !== null && typeof sourceVal === 'object') {
+                                if (hashSet.has(sourceVal)) {
+                                    target[key] = hashSet.get(sourceVal);
+                                }
+                                else {
+                                    if (Array.isArray(sourceVal)) {
+                                        target[key] = createArrayFrom(sourceVal);
+                                        hashSet.set(sourceVal, target[key]);
+                                    }
+                                    else {
+                                        if (typeof target[key] == 'undefined' || target[key] == null) {
+                                            target[key] = Object.create(Object.getPrototypeOf(sourceVal));
+                                        }
+                                        hashSet.set(sourceVal, target[key]);
+                                        assignDeepCore(hashSet, target[key], [sourceVal]);
+                                    }
+                                }
+                            }
+                            else {
+                                target[key] = sourceVal;
+                            }
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        function getIfDefined(value, defaultValue) {
+            return (typeof value !== 'undefined') ? value : defaultValue;
+        }
+        utils.getIfDefined = getIfDefined;
+        function IsDefinedAndNotNull(value) {
+            return typeof value !== 'undefined' && value !== null;
+        }
+        utils.IsDefinedAndNotNull = IsDefinedAndNotNull;
+        function copyArrayTo(collection1, collection2) {
+            const len1 = collection1.length;
+            const len2 = collection2.length;
+            for (let i = 0; i < len1 && i < len2; i++) {
+                collection2[i] = collection1[i];
+            }
+        }
+        utils.copyArrayTo = copyArrayTo;
+        function createArrayFrom(collection) {
+            let result = [];
+            for (let item of collection) {
+                result.push(item);
+            }
+            return result;
+        }
+        utils.createArrayFrom = createArrayFrom;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the found object or null.
+         * @param array
+         * @param id
+         */
+        function findItemById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return array[idx];
+            }
+            return null;
+        }
+        utils.findItemById = findItemById;
+        function findItemIndexById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return idx;
+            }
+            return -1;
+        }
+        utils.findItemIndexById = findItemIndexById;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the index of the found element, or -1 if nothing was found.
+         * @param array
+         * @param id
+         */
+        function indexOfArrayItem(arr, item) {
+            if (arr.indexOf) {
+                return arr.indexOf(item);
+            }
+            else {
+                let len = arr.length;
+                for (let i = 0; i < len; i++) {
+                    if (item == arr[i]) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        }
+        utils.indexOfArrayItem = indexOfArrayItem;
+        /**
+         * Moves an item in some array to a new position
+         * @param array
+         * @param index1
+         * @param index2
+         */
+        function moveArrayItem(array, index1, index2) {
+            if (index1 >= array.length) {
+                throw 'Index out of bounds: ' + index1;
+            }
+            if (index2 >= array.length) {
+                index2 = array.length - 1;
+            }
+            let item = array.splice(index1, 1)[0];
+            array.splice(index2, 0, item);
+        }
+        utils.moveArrayItem = moveArrayItem;
+        /**
+         * Searches for a particular item in the array are removes that item if found.
+         * @param arr
+         * @param value
+         */
+        function removeArrayItem(arr, value) {
+            let index = arr.indexOf(value);
+            if (index != -1) {
+                return arr.splice(index, 1)[0];
+            }
+        }
+        utils.removeArrayItem = removeArrayItem;
+        function insertArrayItem(arr, index, value) {
+            arr.splice(index, 0, value);
+        }
+        utils.insertArrayItem = insertArrayItem;
+        function fillArray(arr, value, start = 0, end) {
+            let len = arr.length >>> 0;
+            var relativeStart = start >> 0;
+            var k = relativeStart < 0 ?
+                Math.max(len + relativeStart, 0) :
+                Math.min(relativeStart, len);
+            var relativeEnd = end === undefined ?
+                len : end >> 0;
+            let final = relativeEnd < 0 ?
+                Math.max(len + relativeEnd, 0) :
+                Math.min(relativeEnd, len);
+            while (k < final) {
+                arr[k] = value;
+                k++;
+            }
+            return arr;
+        }
+        utils.fillArray = fillArray;
+        //------------ DOM utils ------------
+        /**
+         * Calculates the shift on which we need to move our element horizontally
+         * to find current window
+         * @param absLeft
+         * @param width
+         */
+        function shiftToFitWindow(absLeft, width) {
+            let body = document.getElementsByTagName('body')[0];
+            let winWidth = window.innerWidth || document.documentElement.clientWidth || body.clientWidth;
+            var absRight = absLeft + width;
+            let shift = 0;
+            if (absRight > winWidth) {
+                shift = winWidth - absRight - 10;
+                if (absLeft + shift < 0) {
+                    shift = 10 - absLeft;
+                }
+            }
+            return shift;
+        }
+        utils.shiftToFitWindow = shiftToFitWindow;
+        /**
+         * Returns `true` if the value passed in the parameter is an object
+         * @param val
+         */
+        function isObject(val) {
+            if (val === null) {
+                return false;
+            }
+            return ((typeof val === 'function') || (typeof val === 'object'));
+        }
+        utils.isObject = isObject;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isNumericType(dtype) {
+            const index = _numericTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isNumericType = isNumericType;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isIntType(dtype) {
+            const index = _intTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isIntType = isIntType;
+        /**
+         * Returns `true` if the value passed in the parameter is an a numeric value
+         * @param val
+         */
+        function isNumeric(val) {
+            return !isNaN(parseFloat(val)) && isFinite(val);
+        }
+        utils.isNumeric = isNumeric;
+        /**
+         * Returns `true` if two data types  passed in parameters
+         * are compatible - so it's safe to copy the values between
+         * two expressions with these two types
+         * @param type1
+         * @param type2
+         */
+        function areCompatibleDataTypes(type1, type2) {
+            return typeof type1 == "undefined" || typeof type2 == "undefined" || type1 == DataType$3.Unknown || type2 == DataType$3.Unknown
+                || (type1 == type2) || (type1 == DataType$3.Date && type2 == DataType$3.DateTime)
+                || (type1 == DataType$3.DateTime && type2 == DataType$3.Date);
+        }
+        utils.areCompatibleDataTypes = areCompatibleDataTypes;
+        /**
+         * Returns `true` if the property with named `propName`
+         * in the object `obj` has some value
+         * @param obj
+         * @param propName
+         */
+        function isPropSet(obj, propName) {
+            return obj[propName] || obj[propName.toLowerCase()] || obj[propName.toUpperCase()];
+        }
+        utils.isPropSet = isPropSet;
+        //-------------- ID generator -----------
+        const prefixIdLen = 4;
+        const symbols = "0123456789abcdefghijklmnopqrstuvwxyz";
+        const magicTicks = 636712160627685350;
+        /**
+         * Generates an unique ID
+         */
+        function generateId(prefix) {
+            if (!prefix) {
+                prefix = 'easy';
+            }
+            let prfx = (prefix.length > prefixIdLen) ? squeezeMoniker(prefix, prefixIdLen) : prefix;
+            if (prfx && prfx.length > 0) {
+                prfx += "-";
+            }
+            //adding 3 random symbols
+            var randCharPart = symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)];
+            var randInt = getRandomInt(0, 10000);
+            //generating main ID part 
+            //it's a 36-base representation of some random number based on current value of ticks
+            let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+            return prfx + randCharPart + ticksNum36;
+        }
+        utils.generateId = generateId;
+        function intToNumBase(value, targetBase = 36) {
+            var buffer = '';
+            var rest = value;
+            do {
+                buffer = symbols[rest % targetBase] + buffer;
+                rest = Math.floor(rest /= targetBase);
+            } while (rest > 0);
+            return buffer;
+        }
+        function squeezeMoniker(str, maxlen) {
+            let parts = str.split('-');
+            let pml = 1;
+            let ptt = maxlen;
+            if (parts.length < maxlen) {
+                pml = maxlen / parts.length;
+                ptt = parts.length;
+            }
+            let result = "";
+            for (let i = 0; i < ptt; i++) {
+                result += squeeze(parts[i], pml);
+            }
+            return result;
+        }
+        function squeeze(str, maxlen) {
+            const len = str.length;
+            if (len > maxlen) {
+                let step = len / maxlen;
+                let result = "";
+                result += str[0];
+                let nextIndex = step;
+                let ch;
+                for (let i = 1; i < len; i++) {
+                    ch = str[i];
+                    if (i + 1 > nextIndex) {
+                        result += ch;
+                        nextIndex += step;
+                    }
+                }
+                return result;
+            }
+            else {
+                return str;
+            }
+        }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        function getNowTicks() {
+            return (621355968e9 + (new Date()).getTime() * 1e4);
+        }
+        function safeParseInt(str) {
+            const res = parseInt(str);
+            if (isNaN(res))
+                throw `"${str}" is not a valid number`;
+            return res;
+        }
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        // ------------- date/time functions -------------------
+        // TO DO: improve to process all datetime cases
+        function strToDateTime(value, format) {
+            if (!value || value.length == 0)
+                return new Date();
+            const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+            const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+            const formatItems = normalizedFormat.split('-');
+            const dateItems = normalizedValue.split('-');
+            const monthIndex = formatItems.indexOf("MM");
+            const dayIndex = formatItems.indexOf("dd");
+            const yearIndex = formatItems.indexOf("yyyy");
+            const hourIndex = formatItems.indexOf("HH");
+            const minutesIndex = formatItems.indexOf("mm");
+            const secondsIndex = formatItems.indexOf("ss");
+            const today = new Date();
+            try {
+                const year = yearIndex > -1 && yearIndex < dateItems.length
+                    ? safeParseInt(dateItems[yearIndex])
+                    : today.getFullYear();
+                const month = monthIndex > -1 && monthIndex < dateItems.length
+                    ? safeParseInt(dateItems[monthIndex]) - 1
+                    : today.getMonth() - 1;
+                if (month > 11)
+                    throw '';
+                const day = dayIndex > -1 && dayIndex < dateItems.length
+                    ? safeParseInt(dateItems[dayIndex])
+                    : today.getDate();
+                if (day > getDaysInMonth(month, year))
+                    throw '';
+                const hour = hourIndex > -1 && hourIndex < dateItems.length
+                    ? safeParseInt(dateItems[hourIndex])
+                    : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = minutesIndex > -1 && minutesIndex < dateItems.length
+                    ? safeParseInt(dateItems[minutesIndex])
+                    : 0;
+                if (minute > 59)
+                    throw '';
+                const second = secondsIndex > -1 && secondsIndex < dateItems.length
+                    ? safeParseInt(dateItems[secondsIndex])
+                    : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(year, month, day, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${value} is not a valid date.`;
+            }
+        }
+        utils.strToDateTime = strToDateTime;
+        function strToTime(str) {
+            const timeItems = str.split(':');
+            try {
+                const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (minute > 59)
+                    throw '';
+                const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(0, 0, 0, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${str} is not a valid time.`;
+            }
+        }
+        utils.strToTime = strToTime;
+    })(utils$3 || (utils$3 = {}));
+
+    let HttpActionResult$1 = class HttpActionResult {
+        constructor(request, promise) {
+            this.request = request;
+            this.promise = promise;
+        }
+        getPromise() {
+            return this.promise;
+        }
+        getRequest() {
+            return this.request;
+        }
+        then(onfulfilled, onrejected) {
+            return this.promise.then(onfulfilled, onrejected);
+        }
+        catch(onrejected) {
+            return this.promise.catch(onrejected);
+        }
+        finally(onfinally) {
+            return this.promise.finally(onfinally);
+        }
+    };
+
+    let HttpResponseError$1 = class HttpResponseError extends Error {
+        constructor(status, message) {
+            super(message);
+            this.status = status;
+        }
+    };
+    let HttpClient$1 = class HttpClient {
+        /** Gets the response body for the latest request  */
+        get responseBody() {
+            return this._responseBody;
+        }
+        constructor() {
+            this.defaultHeaders = {};
+            this.customPayload = undefined;
+        }
+        get(url, options) {
+            return this.send(HttpMethod$3.Get, url, null, options);
+        }
+        post(url, data, options) {
+            return this.send(HttpMethod$3.Post, url, data, options);
+        }
+        put(url, data, options) {
+            return this.send(HttpMethod$3.Put, url, data, options);
+        }
+        delete(url, data, options) {
+            return this.send(HttpMethod$3.Delete, url, data, options);
+        }
+        send(method, url, data, options) {
+            options = options || {};
+            const dataType = options.dataType || 'json';
+            const contentType = options.contentType || (dataType !== 'form-data')
+                ? 'application/json'
+                : null;
+            if (data && dataType != 'form-data' && this.customPayload) {
+                data.data = utils$3.assignDeep(data.data || {}, this.customPayload);
+            }
+            const XHR = ('onload' in new XMLHttpRequest())
+                ? XMLHttpRequest
+                : window["XDomainRequest"]; //IE support
+            const xhr = new XHR();
+            const desc = {
+                method: method,
+                url: url,
+                headers: Object.assign(Object.assign({}, this.defaultHeaders), options.headers || {}),
+                queryParams: options.queryParams || {},
+                data: data
+            };
+            if (contentType)
+                desc.headers['Content-Type'] = contentType;
+            const request = new HttpRequest$1(xhr, desc);
+            if (this.beforeEachRequest) {
+                console.warn(`HttpClient: 'beforeEachRequest' is deprecated and will be removed in future updates.
+            Use 'onRequest' instead`);
+                this.beforeEachRequest(request);
+            }
+            if (this.onRequest) {
+                this.onRequest(request);
+            }
+            const dataToSend = (request.data && typeof request.data !== 'string'
+                && dataType == 'json')
+                ? JSON.stringify(request.data)
+                : request.data;
+            request.open();
+            return new HttpActionResult$1(request, new Promise((resolve, reject) => {
+                if (options.responseType)
+                    xhr.responseType = options.responseType;
+                xhr.onerror = (error) => {
+                    reject(new HttpResponseError$1(xhr.status, xhr.responseText));
+                };
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState != 4)
+                        return; //we process only the state change to DONE(4)
+                    const responseContentType = xhr.getResponseHeader('Content-Type') || '';
+                    const status = xhr.status;
+                    if (status === 0) {
+                        reject(new HttpResponseError$1(status, "Network error or the request was aborted"));
+                    }
+                    else if (status >= 200 && status < 400) {
+                        //Success
+                        const responseObj = (xhr.responseType === 'arraybuffer' || xhr.responseType === 'blob')
+                            ? xhr.response
+                            : (responseContentType.indexOf('application/json') == 0
+                                ? JSON.parse(xhr.responseText)
+                                : xhr.responseText);
+                        this._responseBody = responseObj;
+                        if (this.onResponse) {
+                            this.onResponse(xhr);
+                        }
+                        resolve(responseObj);
+                    }
+                    else {
+                        //Error
+                        const rtPromise = (xhr.responseType === 'arraybuffer' || xhr.responseType === 'blob')
+                            ? HttpClient.decodeArrayBuffer(xhr.response)
+                            : Promise.resolve(xhr.responseText);
+                        rtPromise.then(responseText => {
+                            const responseObj = (responseContentType.indexOf('application/json') == 0)
+                                ? JSON.parse(responseText)
+                                : responseText;
+                            this._responseBody = responseObj;
+                            const message = responseObj.message ||
+                                (status == 404
+                                    ? `No such endpoint: ${url}`
+                                    : responseObj);
+                            reject(new HttpResponseError$1(status, message));
+                        });
+                    }
+                };
+                xhr.send(dataToSend);
+            }));
+        }
+        static decodeArrayBuffer(uintArray) {
+            var reader = new FileReader();
+            return new Promise((resolve) => {
+                reader.onloadend = function () {
+                    if (reader.readyState == FileReader.DONE) {
+                        resolve(reader.result);
+                    }
+                };
+                reader.readAsText(new Blob([uintArray]));
+            });
+        }
+    };
+
+    /**
+     * Contains internatialization functionality.
+     */
+    var i18n$3;
+    (function (i18n) {
+        let englishUSLocaleSettings = {
+            shortDateFormat: 'MM/dd/yyyy',
+            longDateFormat: 'dd MMM, yyyy',
+            editDateFormat: 'MM/dd/yyyy',
+            shortTimeFormat: 'HH:mm',
+            editTimeFormat: 'HH:mm',
+            longTimeFormat: 'HH:mm:ss',
+            shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            longMonthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'],
+            shortWeekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            longWeekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            decimalSeparator: '.',
+            currency: 'USD'
+        };
+        let defaultLocale = {
+            localeId: 'en-US',
+            englishName: 'English',
+            displayName: 'English',
+            texts: {
+                ButtonOK: 'OK',
+                ButtonCancel: 'Cancel',
+                Yes: 'Yes',
+                No: 'No',
+                True: 'True',
+                False: 'False'
+            },
+            settings: englishUSLocaleSettings
+        };
+        let allLocales = {
+            'en-US': defaultLocale
+        };
+        let currentLocale;
+        const mappers = [];
+        function mapInfo(info) {
+            for (const mapper of mappers) {
+                mapper(info);
+            }
+        }
+        function addMapper(mapper) {
+            mappers.push(mapper);
+        }
+        i18n.addMapper = addMapper;
+        /**
+         * Gets added locales with their names.
+         * @returns  The locales.
+         */
+        function getLocales() {
+            let result = [];
+            for (let locale in allLocales) {
+                result.push({
+                    locale: locale,
+                    englishName: allLocales[locale].englishName,
+                    displayName: allLocales[locale].displayName
+                });
+            }
+            return result.sort((a, b) => {
+                if (a.englishName > b.englishName) {
+                    return 1;
+                }
+                else if (a.englishName === b.englishName) {
+                    return 0;
+                }
+                return -1;
+            });
+        }
+        i18n.getLocales = getLocales;
+        /**
+         * Gets the current locale ID.
+         * @returns The locale.
+         */
+        function getCurrentLocale() {
+            return currentLocale.localeId;
+        }
+        i18n.getCurrentLocale = getCurrentLocale;
+        /**
+        * Sets the curent locale.
+        * @deprecated Use setCurrentLocale instead
+        * @param l The locale.
+        */
+        function setLocale(l) {
+            console.warn('This method is deprecated. Use setCurrentLocale instead');
+            setCurrentLocale(l);
+        }
+        i18n.setLocale = setLocale;
+        /**
+         * Sets the curent locale.
+         * @param localeId The locale.
+         */
+        function setCurrentLocale(localeId) {
+            const newLocale = allLocales[localeId];
+            if (newLocale) {
+                utils$3.assignDeep(currentLocale, newLocale);
+            }
+            else {
+                currentLocale.englishName = localeId;
+                currentLocale.displayName = localeId;
+                currentLocale.texts = utils$3.assignDeep({}, defaultLocale.texts);
+            }
+            currentLocale.localeId = localeId;
+        }
+        i18n.setCurrentLocale = setCurrentLocale;
+        /**
+         * Returns localized text by the key defined in parameter.
+         * Here we get the text of the resource string assigned to CmdClickToAddCondition key:
+         *
+         ```
+           const text = i18n.getText('CmdClickToAddCondition')
+         ```
+         * @param args The keys of the resource string.
+         * @returns Text of the resource defined by key or null if the key is not found
+         *
+         */
+        function getText(...args) {
+            let textsObj = currentLocale.texts;
+            let resText = '';
+            if (args && args.length) {
+                const argLength = args.length;
+                for (let i = 0; i < argLength; i++) {
+                    resText = textsObj[args[i]];
+                    if (typeof resText === 'object') {
+                        textsObj = resText;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return resText;
+        }
+        i18n.getText = getText;
+        function getLocaleSettings() {
+            return currentLocale.settings;
+        }
+        i18n.getLocaleSettings = getLocaleSettings;
+        function getOneLocaleSetting(key) {
+            return currentLocale.settings[key];
+        }
+        i18n.getOneLocaleSetting = getOneLocaleSetting;
+        function getShortMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.shortMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getShortMonthName = getShortMonthName;
+        function getLongMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.longMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getLongMonthName = getLongMonthName;
+        function getShortWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.shortWeekDayNames.length >= dayNum
+                    ? settings.shortWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getShortWeekDayName = getShortWeekDayName;
+        function getLongWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.longWeekDayNames.length >= dayNum
+                    ? settings.longWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getLongWeekDayName = getLongWeekDayName;
+        /**
+         * Updates the locale settings (date/time formats, separators, etc) for the specified locale.
+         * @param settingsToUpdate a LocaleSettings object
+         */
+        function updateLocaleSettings(settingsToUpdate) {
+            if (!currentLocale.settings) {
+                currentLocale.settings = utils$3.assignDeep({}, englishUSLocaleSettings);
+            }
+            currentLocale.settings = utils$3.assignDeep(currentLocale.settings, settingsToUpdate);
+        }
+        i18n.updateLocaleSettings = updateLocaleSettings;
+        /**
+         * Updates the texts for the current locale
+         * @param texts A plain JS object that contains textual resources
+         */
+        function updateLocaleTexts(texts) {
+            if (typeof texts !== 'object') {
+                console.error('Wrong parameter type in updateLocaleTexts function call.' +
+                    'The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead');
+                return;
+            }
+            mapInfo({ localeId: currentLocale.localeId, texts: texts });
+            utils$3.assignDeep(currentLocale.texts, texts);
+        }
+        i18n.updateLocaleTexts = updateLocaleTexts;
+        function updateDefaultTexts(texts) {
+            for (let localeId in allLocales) {
+                let locale = allLocales[localeId];
+                locale.texts = utils$3.assignDeep({}, texts, locale.texts);
+            }
+            currentLocale.texts = utils$3.assignDeep({}, texts, currentLocale.texts);
+        }
+        i18n.updateDefaultTexts = updateDefaultTexts;
+        /**
+         * Updates the information for the specified locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be added
+         * @param localeInfo  a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function updateLocaleInfo(localeId, localeData) {
+            mapInfo(localeData);
+            let localeInfoToUpdate = currentLocale;
+            if (localeId) {
+                if (!localeData.localeId) {
+                    localeData.localeId = localeId;
+                }
+                localeInfoToUpdate = allLocales[localeId];
+                if (!localeInfoToUpdate) {
+                    localeInfoToUpdate = utils$3.assignDeep({}, defaultLocale);
+                    allLocales[localeId] = localeInfoToUpdate;
+                }
+            }
+            utils$3.assignDeep(localeInfoToUpdate, localeData);
+        }
+        i18n.updateLocaleInfo = updateLocaleInfo;
+        /**
+         * Adds the locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be created
+         * @param localeInfo - a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function addLocale(localeId, localeInfo) {
+            updateLocaleInfo(localeId, localeInfo);
+        }
+        i18n.addLocale = addLocale;
+        /**
+         * Overwrites some locale settings (date/time formats) with the formats used in browser's current language
+         */
+        function determineSettingsByLocale(localeId) {
+            const now = new Date(2020, 5, 7, 19, 34, 56, 88);
+            const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const dateStr = now.toLocaleDateString(localeId, dateOptions);
+            const timeStr = now.toLocaleTimeString(localeId, timeOptions);
+            let dateFormat = dateStr
+                .replace('07', 'dd')
+                .replace('7', 'd')
+                .replace('06', 'MM')
+                .replace('6', 'M')
+                .replace('2020', 'yyyy')
+                .replace('20', 'yy');
+            let timeFormat = timeStr
+                .replace('19', 'HH')
+                .replace('07', 'hh')
+                .replace('7', 'h')
+                .replace('34', 'mm')
+                .replace('56', 'ss')
+                .replace('PM', 'tt');
+            if (!currentLocale.settings) {
+                currentLocale.settings = {};
+            }
+            const localeSettings = {
+                shortDateFormat: dateFormat,
+                shortTimeFormat: timeFormat
+            };
+            updateLocaleSettings(localeSettings);
+        }
+        function loadBrowserLocaleSettings() {
+            const lang = typeof navigator === 'object' ? navigator.language : undefined;
+            determineSettingsByLocale(lang);
+        }
+        function resetLocales() {
+            if (!currentLocale) {
+                currentLocale = utils$3.assignDeep({}, defaultLocale);
+                loadBrowserLocaleSettings();
+            }
+        }
+        i18n.resetLocales = resetLocales;
+        const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
+        /**
+         * Returns string representation of the date/time value according to the custom format (second parameter)
+         * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+         * @param date
+         * @param format
+         */
+        function dateTimeToStr(date, format) {
+            const year = date.getFullYear();
+            const yearStr = year.toString();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
+            const isPm = hour > 11;
+            const matches = {
+                yyyy: yearStr,
+                yy: yearStr.substring(yearStr.length - 2),
+                MMMM: i18n.getLongMonthName(month),
+                MMM: i18n.getShortMonthName(month),
+                MM: (month < 10) ? '0' + month : month.toString(),
+                M: month.toString(),
+                dd: (day < 10) ? '0' + day : day.toString(),
+                d: day.toString(),
+                HH: (hour < 10) ? '0' + hour : hour.toString(),
+                H: hour.toString(),
+                hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
+                h: hour12.toString(),
+                tt: isPm ? 'PM' : 'AM',
+                mm: (minute < 10) ? '0' + minute : minute.toString(),
+                ss: (second < 10) ? '0' + second : second.toString()
+            };
+            return format.replace(DT_FORMAT_RGEX, (match, $1) => {
+                return $1 || matches[match];
+            });
+        }
+        i18n.dateTimeToStr = dateTimeToStr;
+        function dateTimeToStrEx(dateTime, dataType, format) {
+            if (format) {
+                if (format == 'd') {
+                    format = buildShortDateTimeFormat(DataType$3.Date);
+                }
+                else if (format == 'D') {
+                    format = buildLongDateTimeFormat(DataType$3.Date);
+                }
+                else if (format == 'f') {
+                    format = buildShortDateTimeFormat(DataType$3.DateTime);
+                }
+                else if (format == 'F') {
+                    format = buildLongDateTimeFormat(DataType$3.DateTime);
+                }
+            }
+            else {
+                format = buildShortDateTimeFormat(dataType);
+            }
+            return dateTimeToStr(dateTime, format);
+        }
+        i18n.dateTimeToStrEx = dateTimeToStrEx;
+        function buildShortDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$3.Date:
+                    format = localeSettings.shortDateFormat;
+                    break;
+                case DataType$3.Time:
+                    format = localeSettings.shortTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        function buildLongDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$3.Date:
+                    format = localeSettings.longDateFormat;
+                    break;
+                case DataType$3.Time:
+                    format = localeSettings.longTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        /**
+        * Converts a numeric value to the string taking into the account the decimal separator
+        * @param value - the number to convert
+        * @param format - the format of the number representation (D - decimal, F - float, C - currency)
+        * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
+        */
+        function numberToStr(number, format, decimalSeparator) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    return formatWithSequence(number, format.slice(1));
+                }
+                else if (['D', 'F', 'C'].indexOf(type) >= 0) {
+                    const locale = getCurrentLocale();
+                    return number.toLocaleString(locale, getNumberFormatOptions(format));
+                }
+                else {
+                    return convertWithMask(Math.trunc(number), format);
+                }
+            }
+            const localeSettings = getLocaleSettings();
+            decimalSeparator = decimalSeparator || localeSettings.decimalSeparator;
+            return number.toString().replace('.', decimalSeparator);
+        }
+        i18n.numberToStr = numberToStr;
+        function booleanToStr(bool, format) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    const values = format.slice(1).split('|');
+                    if (values.length > 1) {
+                        const value = values[(bool) ? 1 : 0];
+                        return i18n.getText(value) || value;
+                    }
+                }
+            }
+            return `${bool}`;
+        }
+        i18n.booleanToStr = booleanToStr;
+        const cachedSequenceFormats = {};
+        function formatWithSequence(number, format) {
+            if (!cachedSequenceFormats[format]) {
+                // parse and save in cache format values 
+                const values = format.split('|')
+                    .filter(v => v.length > 0)
+                    .map(v => v.split('='));
+                cachedSequenceFormats[format] = {};
+                if (values.length > 0) {
+                    if (values[0].length > 1) {
+                        for (const value of values) {
+                            cachedSequenceFormats[format][Number.parseInt(value[1])] = value[0];
+                        }
+                    }
+                    else {
+                        values.forEach((value, index) => {
+                            cachedSequenceFormats[format][index] = value[0];
+                        });
+                    }
+                }
+            }
+            const values = cachedSequenceFormats[format];
+            if (values[number] !== undefined) {
+                const value = values[number];
+                return i18n.getText(value) || value;
+            }
+            return number.toString();
+        }
+        function convertWithMask(number, mask) {
+            let value = number.toString();
+            let result = '';
+            let index = value.length - 1;
+            for (let i = mask.length - 1; i >= 0; i--) {
+                const ch = mask.charAt(i);
+                if (ch === '#' || ch === '0') {
+                    if (index >= 0) {
+                        result += value.charAt(index);
+                        index--;
+                    }
+                    else {
+                        if (ch === '0') {
+                            result += 0;
+                        }
+                    }
+                }
+                else {
+                    result += ch;
+                }
+            }
+            return result.split('').reverse().join('');
+        }
+        function getNumberFormatOptions(format) {
+            const localeSettings = getLocaleSettings();
+            const type = format[0].toUpperCase();
+            const digits = (format.length > 1)
+                ? Number.parseInt(format.slice(1))
+                : type == 'D' ? 1 : 2;
+            switch (type) {
+                case 'D':
+                    return {
+                        style: 'decimal',
+                        useGrouping: false,
+                        minimumIntegerDigits: digits
+                    };
+                case 'C':
+                    return {
+                        style: 'currency',
+                        currency: localeSettings.currency,
+                        minimumFractionDigits: digits
+                    };
+                default:
+                    return {
+                        style: 'decimal',
+                        minimumFractionDigits: digits,
+                        maximumFractionDigits: digits
+                    };
+            }
+        }
+    })(i18n$3 || (i18n$3 = {}));
+
+    /**
+     * Represents one entity.
+     */
+    let MetaEntity$1 = class MetaEntity {
+        /** The default constructor. */
+        constructor(parent) {
+            /** Returns false if this entity is read-only */
+            this.isEditable = true;
+            this.name = "";
+            this.caption = "";
+            this.description = "";
+            this.parent = parent;
+            this.attributes = new Array();
+            this.subEntities = new Array();
+        }
+        /**
+        * Loads entity from its JSON representation object.
+        * @param model The Data Model.
+        * @param dto The JSON representation object.
+        */
+        loadFromData(model, dto) {
+            if (dto) {
+                this.id = dto.id;
+                this.name = dto.name;
+                this.captionPlural = dto.namePlur;
+                this.caption = dto.name;
+                this.description = dto.desc;
+                if (typeof (dto.ied) !== 'undefined')
+                    this.isEditable = dto.ied;
+                this.subEntities = new Array();
+                if (dto.ents) {
+                    for (let i = 0; i < dto.ents.length; i++) {
+                        let newEntity = model.createEntity(this);
+                        newEntity.loadFromData(model, dto.ents[i]);
+                        this.subEntities.push(newEntity);
+                    }
+                }
+                this.attributes = new Array();
+                if (dto.attrs) {
+                    for (let i = 0; i < dto.attrs.length; i++) {
+                        let newAttr = model.createEntityAttr(this);
+                        newAttr.loadFromData(model, dto.attrs[i]);
+                        this.attributes.push(newAttr);
+                    }
+                }
+            }
+        }
+        scan(processAttribute, processEntity) {
+            let opts = { stop: false };
+            let internalProcessEntity = (entity) => {
+                if (processEntity)
+                    processEntity(entity, opts);
+                if (entity.attributes) {
+                    let attrCount = entity.attributes.length;
+                    for (let i = 0; (i < attrCount) && !opts.stop; i++) {
+                        let attr = entity.attributes[i];
+                        if (processAttribute) {
+                            processAttribute(attr, opts);
+                        }
+                        if (opts.stop)
+                            return;
+                    }
+                }
+                if (entity.subEntities) {
+                    let subEntityCount = entity.subEntities.length;
+                    for (let i = 0; (i < subEntityCount) && !opts.stop; i++) {
+                        internalProcessEntity(entity.subEntities[i]);
+                    }
+                }
+            };
+            internalProcessEntity(this);
+        }
+        getFirstPrimaryAttr() {
+            return this.getPrimaryAttrs()[0];
+        }
+        getPrimaryAttrs() {
+            return this.attributes.filter(attr => attr.isPrimaryKey);
+        }
+    };
+    let MetaEntityAttr$1 = class MetaEntityAttr {
+        /** The default constructor. */
+        constructor(entity) {
+            this.id = "";
+            this.caption = "{Unrecognized attribute}";
+            this.dataType = DataType$3.String;
+            this.size = 0;
+            this.isPrimaryKey = false;
+            this.isForeignKey = false;
+            this.isNullable = true;
+            this.showOnView = true;
+            this.isEditable = true;
+            this.showOnCreate = true;
+            this.showOnEdit = true;
+            this.showInLookup = false;
+            this.lookupAttr = "";
+            this.expr = "";
+            this.entity = entity;
+            this.kind = EntityAttrKind$3.Data;
+        }
+        /**
+         * Loads entity attribute from JSON representation object.
+         * @param model The Data Model.
+         * @param dto The JSON representation object.
+         */
+        loadFromData(model, dto) {
+            if (dto) {
+                this.id = dto.id;
+                this.description = dto.desc;
+                this.caption = dto.cptn;
+                this.dataType = dto.dtype;
+                this.isPrimaryKey = dto.ipk;
+                this.isForeignKey = dto.ifk;
+                this.size = dto.size;
+                this.lookupAttr = dto.lattr;
+                this.lookupEntity = dto.lent;
+                this.dataAttr = dto.dattr;
+                this.lookupDataAttr = dto.ldattr;
+                const isDataType = utils$3.getDateDataTypes().indexOf(this.dataType);
+                this.defaultValue = dto.defVal && isDataType ? new Date(dto.defVal) : dto.defVal;
+                this.isNullable = utils$3.getIfDefined(dto.nul, this.isNullable);
+                this.isEditable = utils$3.getIfDefined(dto.ied, this.isEditable);
+                this.showOnView = utils$3.getIfDefined(dto.ivis || dto.sov, this.showOnView);
+                this.showOnCreate = utils$3.getIfDefined(dto.soc, this.showOnCreate);
+                this.showOnEdit = utils$3.getIfDefined(dto.soe, this.showOnEdit);
+                this.showInLookup = utils$3.getIfDefined(dto.sil, this.showInLookup);
+                this.kind = dto.kind;
+                this.displayFormat = dto.dfmt;
+                if (dto.udata)
+                    this.userData = dto.udata;
+                if (dto.edtr) {
+                    this.defaultEditor = model.getEditorById(dto.edtr) || model.createValueEditor();
+                }
+            }
+        }
+    };
+
+    /**
+     * Represents a value editor.
+     */
+    let ValueEditor$1 = class ValueEditor {
+        /** The default constructor. */
+        constructor() {
+            this.id = "";
+            this.tag = EditorTag$1.Unknown;
+            this.resType = DataType$3.Unknown;
+            this.defValue = "";
+        }
+        /**
+         * Loads value editor from its JSON representation object.
+         * @param data The JSON representation object.
+         */
+        loadFromData(data) {
+            if (data) {
+                this.id = data.id;
+                this.tag = data.tag;
+                this.defValue = data.defval;
+                this.resType = data.rtype;
+                this.accept = data.accept;
+                this.multiline = data.multiline;
+                if (data.subType) {
+                    this.resType = data.subType;
+                }
+                if (data.name) {
+                    this.name = data.name;
+                }
+                if (data.values) {
+                    this.values = data.values;
+                }
+            }
+        }
+        getValueText(value) {
+            let result = "";
+            if (!this.values)
+                return result;
+            if (Array.isArray(value)) {
+                for (let item of this.values) {
+                    if (value.indexOf(item.id) >= 0) {
+                        result += item.text + ',';
+                    }
+                }
+            }
+            else {
+                for (let item of this.values) {
+                    if (item.id === value) {
+                        result += item.text + ',';
+                    }
+                }
+            }
+            if (result) {
+                result = result.substring(0, result.length - 1);
+            }
+            return result;
+        }
+    };
+
+    /**
+     * Represents a data model
+     */
+    let MetaData$1 = class MetaData {
+        /** The default constructor. */
+        constructor() {
+            this.mainEntity = null;
+            this.id = '__none';
+            this.name = 'Empty model';
+            this.rootEntity = this.createEntity();
+            this.displayFormats = new Map();
+        }
+        /**
+         * Gets the main entity of model
+         * @return The main entity.
+         */
+        getMainEntity() {
+            return this.mainEntity;
+        }
+        createEntity(parent) {
+            return new MetaEntity$1(parent);
+        }
+        createEntityAttr(parent) {
+            return new MetaEntityAttr$1(parent);
+        }
+        createValueEditor() {
+            return new ValueEditor$1();
+        }
+        /**
+         * Loads data model from JSON.
+         * @param stringJson The JSON string.
+         */
+        loadFromJSON(stringJson) {
+            let model = JSON.parse(stringJson);
+            this.loadFromData(model);
+        }
+        /**
+         * Loads data model from its JSON representation object.
+         * @param data The JSON representation object.
+         */
+        loadFromData(data) {
+            this.id = data.id;
+            this.name = data.name;
+            this.version = data.vers;
+            //Editors
+            this.editors = new Array();
+            if (data.editors) {
+                for (let i = 0; i < data.editors.length; i++) {
+                    let newEditor = this.createValueEditor();
+                    newEditor.loadFromData(data.editors[i]);
+                    this.editors.push(newEditor);
+                }
+            }
+            //rootEntity
+            this.rootEntity.loadFromData(this, data.entroot);
+            //DataFormats
+            this.displayFormats = new Map();
+            if (data.displayFormats) {
+                for (const dtypeStr in data.displayFormats) {
+                    const dtype = DataType$3[dtypeStr];
+                    const formats = data.displayFormats[dtypeStr] || new Array();
+                    this.displayFormats.set(dtype, formats);
+                }
+            }
+        }
+        /**
+         * Gets the display formats.
+         * @returns The display formats.
+         */
+        getDisplayFormats() {
+            return this.displayFormats;
+        }
+        /**
+         * Gets the display formats for type
+         * @param type The type
+         * @returns An array of display formats
+         */
+        getDisplayFormatsForType(type) {
+            if (this.displayFormats.has(type)) {
+                return this.displayFormats.get(type);
+            }
+            return [];
+        }
+        /**
+         * Gets the default display format for the provided type
+         * @param type The type
+         * @returns The default type format or null
+         */
+        getDefaultFormat(type) {
+            if (this.displayFormats.has(type)) {
+                return this.displayFormats.get(type).filter(f => f.isdef)[0];
+            }
+            return null;
+        }
+        /**
+         * Sets data to data model.
+         * @param model Its JSON representation object or JSON string.
+         */
+        setData(model) {
+            if (typeof model === 'string') {
+                this.loadFromJSON(model);
+            }
+            else {
+                this.loadFromData(model);
+            }
+        }
+        /**
+         * Checks wether the data model is empty.
+         * @returns `true` if the data model is empty, otherwise `false`.
+         */
+        isEmpty() {
+            return this.rootEntity.subEntities.length === 0 && this.rootEntity.attributes.length === 0;
+        }
+        /**
+         * Gets ID of the data model.
+         * @returns The ID.
+         */
+        getId() {
+            return this.id;
+        }
+        /**
+         * Gets name of the data model.
+         * @returns The name.
+         */
+        getName() {
+            return this.name;
+        }
+        /**
+         * Gets root entity of the data model.
+         * @returns The root entity.
+         */
+        getRootEntity() {
+            return this.rootEntity;
+        }
+        /**
+         * Finds editor by its ID.
+         * @param editorId The editor ID.
+         * @returns The value editor or `null`.
+         */
+        getEditorById(editorId) {
+            for (let editor of this.editors) {
+                if (editor.id === editorId) {
+                    return editor;
+                }
+            }
+            return null;
+        }
+        /**
+         * Gets entity attribute by its ID.
+         * This function runs through all attributes inside specified model (it's root entity and all its sub-entities).
+         * @param attrId The attribute ID.
+         * @returns The attribute or `null`.
+         */
+        getAttributeById(attrId) {
+            let attr = this.getEntityAttrById(this.getRootEntity(), attrId);
+            if (!attr) {
+                return null;
+            }
+            return attr;
+        }
+        /**
+         * Checks wether attribute contains such property.
+         * @param attrId The attribute ID.
+         * @param propName The property name.
+         * @returns `true` if the attribute contains the property, otherwise `false`.
+         */
+        checkAttrProperty(attrId, propName) {
+            let attribute = this.getAttributeById(attrId);
+            if (attribute) {
+                if (typeof attribute[propName] === 'undefined') {
+                    throw 'No such property: ' + propName;
+                }
+                if (attribute[propName]) {
+                    return true;
+                }
+                else if (attribute.lookupAttr) {
+                    attrId = attribute.lookupAttr;
+                    attribute = this.getAttributeById(attrId);
+                    return attribute && attribute[propName];
+                }
+                else {
+                    return false;
+                }
+            }
+            else
+                return false;
+        }
+        /**
+         * Gets entity attribute by its ID.
+         * This function runs through all attributes inside specified entity and all its sub-entities.
+         * @param entity
+         * @param attrId
+         * @returns The attribute or `null`.
+         */
+        getEntityAttrById(entity, attrId) {
+            let idx;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (idx = 0; idx < attrCount; idx++) {
+                    if (entity.attributes[idx].id == attrId) {
+                        return entity.attributes[idx];
+                    }
+                }
+            }
+            let res;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (idx = 0; idx < subEntityCount; idx++) {
+                    res = this.getEntityAttrById(entity.subEntities[idx], attrId);
+                    if (res)
+                        return res;
+                }
+            }
+            return null;
+        }
+        listByEntityWithFilter(entity, filterFunc) {
+            let result = new Array();
+            let caption;
+            let ent = null;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let entIdx = 0; entIdx < subEntityCount; entIdx++) {
+                    ent = entity.subEntities[entIdx];
+                    if (!filterFunc || filterFunc(ent, null)) {
+                        caption = i18n$3.getText('Entities', ent.name);
+                        if (!caption) {
+                            caption = ent.caption;
+                        }
+                        let newEnt = utils$3.assign(this.createEntity(), { id: ent.name, text: caption, items: [], isEntity: true });
+                        newEnt.items = this.listByEntityWithFilter(ent, filterFunc);
+                        if (newEnt.items.length > 0)
+                            result.push(newEnt);
+                    }
+                }
+            }
+            let attr = null;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let attrIdx = 0; attrIdx < attrCount; attrIdx++) {
+                    attr = entity.attributes[attrIdx];
+                    if (!filterFunc || filterFunc(entity, attr)) {
+                        caption = i18n$3.getText('Attributes', attr.id);
+                        if (!caption)
+                            caption = attr.caption;
+                        let newEnt = utils$3.assign(this.createEntity(), { id: attr.id, text: caption, dataType: attr.dataType });
+                        result.push(newEnt);
+                    }
+                }
+            }
+            return result;
+        }
+        listByEntity(entity, opts, filterFunc) {
+            opts = opts || {};
+            let resultEntities = [];
+            let resultAttributes = [];
+            let caption;
+            let ent = null;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let entIdx = 0; entIdx < subEntityCount; entIdx++) {
+                    ent = entity.subEntities[entIdx];
+                    if (!filterFunc || filterFunc(ent, null)) {
+                        caption = i18n$3.getText('Entities', ent.name) || ent.caption;
+                        let newEnt = utils$3.assign(this.createEntity(), {
+                            id: ent.name,
+                            text: caption,
+                            items: [],
+                            isEntity: true,
+                            description: ent.description
+                        });
+                        let newOpts = utils$3.assign({}, opts);
+                        newOpts.includeRootData = false;
+                        newEnt.items = this.listByEntity(ent, newOpts, filterFunc);
+                        if (newEnt.items.length > 0) {
+                            resultEntities.push(newEnt);
+                        }
+                    }
+                }
+            }
+            let attr = null;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let attrIdx = 0; attrIdx < attrCount; attrIdx++) {
+                    attr = entity.attributes[attrIdx];
+                    if (!filterFunc || filterFunc(entity, attr)) {
+                        caption = i18n$3.getText('Attributes', attr.id) || attr.caption;
+                        resultAttributes.push(utils$3.assign(this.createEntityAttr(entity), {
+                            id: attr.id, text: caption,
+                            dataType: attr.dataType, lookupAttr: attr.lookupAttr,
+                            description: attr.description
+                        }));
+                    }
+                }
+            }
+            let sortCheck = (a, b) => {
+                if (a.text.toLowerCase() == b.text.toLowerCase()) {
+                    return 0;
+                }
+                if (a.text.toLowerCase() > b.text.toLowerCase()) {
+                    return 1;
+                }
+                return -1;
+            };
+            if (opts.sortEntities) {
+                resultEntities.sort(sortCheck);
+                resultAttributes.sort(sortCheck);
+            }
+            let result;
+            if (!opts.attrPlacement || opts.attrPlacement == 0) {
+                result = resultEntities.concat(resultAttributes);
+            }
+            else {
+                result = resultAttributes.concat(resultEntities);
+            }
+            if (opts.attrPlacement == 2) {
+                result.sort(sortCheck);
+            }
+            if (opts.includeRootData) {
+                caption = i18n$3.getText('Entities', entity.name);
+                if (!caption)
+                    caption = entity.caption;
+                return { id: entity.name, text: caption, items: result };
+            }
+            else {
+                return result;
+            }
+        }
+        /**
+         * Clears data model.
+         */
+        clear() {
+            this.rootEntity = this.createEntity();
+            this.editors = [];
+            this.version = '';
+        }
+        /**
+         * Add default value editors.
+         */
+        addDefaultValueEditors() {
+            let ve;
+            ve = this.addOrUpdateValueEditor('_DTE', EditorTag$1.Edit, DataType$3.String);
+            ve.defValue = '';
+            this.addOrUpdateValueEditor('_DPDE', EditorTag$1.DateTime, DataType$3.DateTime);
+            this.addOrUpdateValueEditor('_DPTE', EditorTag$1.DateTime, DataType$3.DateTime);
+        }
+        /**
+        * Add or update a value editor.
+        * @param id The id.
+        * @param tag The tag.
+        * @param resType The result type.
+        * @returns The value editor.
+        */
+        addOrUpdateValueEditor(id, tag, resType) {
+            let ve = utils$3.findItemById(this.editors, id);
+            if (!ve) {
+                ve = this.createValueEditor();
+                ve.id = id;
+                this.editors.push(ve);
+            }
+            ve.tag = tag;
+            ve.resType = resType;
+            return ve;
+        }
+        /**
+         * Gets entities tree.
+         * @param opts The options.
+         * @param filterFunc The filter function.
+         * Takes two parameters, Entity and EntityAttr (second parameter will be null for entities), and returns boolean (true if the corresponding entity or attribute).
+         * @returns The tree of the entities and their attributes according to options and the filter function
+         */
+        getEntitiesTree(opts, filterFunc) {
+            return this.listByEntity(this.getRootEntity(), opts, filterFunc);
+        }
+        /**
+         * Gets entities tree due to filter.
+         * @param filterFunc The filter function.
+         * Takes two parameters, Entity and EntityAttr (second parameter will be null for entities), and returns boolean (true if the corresponding entity or attribute).
+         * @returns The tree of the entities and their attributes according to the filter function
+         */
+        getEntitiesTreeWithFilter(filterFunc) {
+            return this.listByEntityWithFilter(this.getRootEntity(), filterFunc);
+        }
+        /**
+         * Finds full entity path by attribute
+         * @param attrId The attribute id.
+         * @param sep The separator.
+         * @returns The path.
+         */
+        getFullEntityPathByAttr(attrId, sep) {
+            sep = sep || ' ';
+            return this.getEntityPathByAttr(this.getRootEntity(), attrId, sep, true);
+        }
+        /**
+        * Finds entity path by attribute
+        * @param entity The entity.
+        * @param attrId The attribute id.
+        * @param sep The separator.
+        * @param root The root option.
+        * @returns The path.
+        */
+        getEntityPathByAttr(entity, attrId, sep, root) {
+            if (!entity)
+                return '';
+            sep = sep || ' ';
+            let entityCaption = '';
+            if (entity.caption && !root) {
+                let entityText = i18n$3.getText('Entities', entity.caption);
+                entityCaption = entityText ? entityText : entity.caption;
+            }
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let i = 0; i < attrCount; i++) {
+                    if (entity.attributes[i].id == attrId) {
+                        return entityCaption;
+                    }
+                }
+            }
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let i = 0; i < subEntityCount; i++) {
+                    let ent = entity.subEntities[i];
+                    let res = this.getEntityPathByAttr(ent, attrId, sep, false);
+                    if (res !== '') {
+                        if (entityCaption !== '')
+                            res = entityCaption + sep + res;
+                        return res;
+                    }
+                }
+            }
+            return '';
+        }
+        /**
+         * Gets the attribute text.
+         * @param attr The attribute.
+         * @param format The format.
+         * @returns Formatted text.
+         */
+        getAttributeText(attr, format) {
+            let attrText = i18n$3.getText('Attributes', attr.id);
+            if (!attrText) {
+                attrText = attr.caption;
+            }
+            if (!format) {
+                return attrText;
+            }
+            let result = '';
+            let entityPath = this.getFullEntityPathByAttr(attr.id, ' ');
+            if (entityPath) {
+                result = format.replace(new RegExp('{attr}', 'g'), attrText);
+                result = result.replace(new RegExp('{entity}', 'g'), entityPath);
+            }
+            else {
+                result = attrText;
+            }
+            return result.trim();
+        }
+        /**
+         * Scans model's entity tree and calls the callback functions for each attribute and entity.
+         * @param processAttribute The callback function which is called for each attribute in model's entity tree.
+         * The processed attribute is passed in the first function parameter.
+         * @param processEntity The callback function which is called for each entity in tree.
+         * The processed entity is passed in the first function parameter.
+         */
+        runThroughEntities(processAttribute, processEntity) {
+            this.getRootEntity().scan(processAttribute, processEntity);
+        }
+        /**
+         * Finds first attribute by filter.
+         * @param filterFunc The filter function. Takes EntityAttr object in parameter and returns boolean
+         */
+        getFirstAttributeByFilter(filterFunc) {
+            let res = null;
+            this.runThroughEntities(function (attr, opts) {
+                if (filterFunc(attr)) {
+                    opts.stop = true;
+                    res = attr;
+                }
+            }, null);
+            return res;
+        }
+    };
+
+    /**
+     * Defines aggregations settings for the current context.
+     * Group, aggregate columns, grand totals, etc.
+     */
+    class AggregationSettings {
+        constructor(colStore) {
+            this.colStore = colStore;
+            this.aggregates = [];
+            this.groups = [];
+            this.useGrandTotals = false;
+            this.useRecordCount = false;
+            this._caseSensitiveGroups = false;
+            this.COUNT_FIELD_NAME = 'GRPRECCNT';
+        }
+        get caseSensitiveGroups() {
+            return this._caseSensitiveGroups;
+        }
+        set caseSensitiveGroups(value) {
+            this._caseSensitiveGroups = value;
+            this.updateCompareProc();
+        }
+        updateCompareProc() {
+            this.compareValues = this._caseSensitiveGroups
+                ? this.strictCompare
+                : this.caseInsensitiveCompare;
+        }
+        addGroup(settings) {
+            const cols = settings.columns || this.colStore.getColumnIds(settings.from, settings.to);
+            if (!this.colStore.validateColumns(cols))
+                throw "Invalid columns: " + cols;
+            if (this.hasColumnsInUse(cols))
+                throw "Can't add same columns to different groups/aggregates";
+            this.groups.push(Object.assign({ columns: cols }, settings));
+            return this;
+        }
+        addAggregateColumn(colIndexOrId, funcId) {
+            const colId = typeof colIndexOrId == 'string'
+                ? colIndexOrId
+                : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
+            if (this.hasColumnsInUse([colId]) || !this.colStore.validateAggregate(colId, funcId))
+                throw 'Invalid aggregation function for the column: ' + colId;
+            this.aggregates.push({ colId, funcId });
+            return this;
+        }
+        addGrandTotals() {
+            this.useGrandTotals = true;
+            return this;
+        }
+        addCounts() {
+            this.useRecordCount = true;
+            return this;
+        }
+        getGroups() {
+            let cols = [];
+            const mappedGrops = this.groups.map(grp => {
+                cols = cols.concat(grp.columns);
+                return Object.assign(Object.assign({}, grp), { columns: Array.from(cols), aggregates: Array.from(this.aggregates) });
+            });
+            return mappedGrops;
+        }
+        getInternalGroups() {
+            return this.groups;
+        }
+        lastGroup() {
+            const groups = this.getGroups();
+            return groups[groups.length - 1];
+        }
+        getAggregates() {
+            return this.aggregates;
+        }
+        hasAggregates() {
+            return this.aggregates.length > 0;
+        }
+        hasGroups() {
+            return this.groups.length > 0;
+        }
+        hasGrandTotals() {
+            return this.useGrandTotals;
+        }
+        hasRecordCount() {
+            return this.useRecordCount;
+        }
+        isEmpty() {
+            return !(this.hasAggregates() || this.hasGroups() ||
+                this.hasAggregates() || this.hasRecordCount());
+        }
+        drop() {
+            console.warn('"drop()" method is obsolete. Use "clear()" instead');
+            this.clear();
+        }
+        clear() {
+            this.groups = [];
+            this.aggregates = [];
+            this.useGrandTotals = false;
+            this.useRecordCount = false;
+            this.caseSensitiveGroups = false;
+            return this;
+        }
+        /**
+         * Checks if all columns from the list passed in the parameter are "unused".
+         * Here "unused column" means a column that is included neither in any group nor in the aggregates list.
+         * @param cols - the array of column IDs
+         * @returns true if all columns in the list are not used anywhere, othervise - fals
+         */
+        hasColumnsInUse(cols) {
+            for (const group of this.groups) {
+                const interCols = group.columns
+                    .filter(c => cols.indexOf(c) >= 0);
+                if (interCols.length > 0)
+                    return true;
+            }
+            for (const aggr of this.aggregates) {
+                if (cols.indexOf(aggr.colId) >= 0)
+                    return true;
+            }
+            return false;
+        }
+        needAggrCalculation() {
+            return (this.hasAggregates() || this.hasRecordCount())
+                && (this.hasGrandTotals() || this.hasGroups());
+        }
+        saveToData() {
+            return {
+                groups: Array.from(this.groups),
+                ugt: this.useGrandTotals,
+                urc: this.useRecordCount,
+                csg: this.caseSensitiveGroups,
+                aggregates: Array.from(this.aggregates)
+            };
+        }
+        loadFromData(data) {
+            if (data) {
+                if (typeof data.ugt !== 'undefined')
+                    this.useGrandTotals = data.ugt;
+                if (typeof data.urc !== 'undefined')
+                    this.useRecordCount = data.urc;
+                if (typeof data.csg !== 'undefined')
+                    this.caseSensitiveGroups = data.csg;
+                if (data.groups) {
+                    this.groups = Array.from(data.groups);
+                }
+                if (data.aggregates) {
+                    this.aggregates = Array.from(data.aggregates);
+                }
+            }
+        }
+        buildGroupKey(group, row) {
+            const caseInsensitive = !this.caseSensitiveGroups;
+            let result = {};
+            if (group) {
+                for (const colId of group.columns) {
+                    let keyVal = row.getValue(colId);
+                    if (caseInsensitive && typeof (keyVal) === 'string') {
+                        keyVal = keyVal.toLowerCase();
+                    }
+                    result[colId] = keyVal;
+                }
+            }
+            return result;
+        }
+        //returns true if value1 == value2
+        strictCompare(value1, value2) {
+            if (value1 instanceof Date) {
+                return value1.getTime() === value2.getTime();
+            }
+            else
+                return value1 === value2;
+        }
+        //makes a case insensative comparision of two values and return true if there are equal
+        caseInsensitiveCompare(value1, value2) {
+            if (value1 instanceof Date) {
+                return value1.getTime() === value2.getTime();
+            }
+            else {
+                const val1 = (typeof value1 === 'string') ? value1.toLowerCase() : value1;
+                const val2 = (typeof value2 === 'string') ? value2.toLowerCase() : value2;
+                return val1 === val2;
+            }
+        }
+    }
+
+    var ColumnAlignment$3;
+    (function (ColumnAlignment) {
+        ColumnAlignment[ColumnAlignment["None"] = 0] = "None";
+        ColumnAlignment[ColumnAlignment["Left"] = 1] = "Left";
+        ColumnAlignment[ColumnAlignment["Center"] = 2] = "Center";
+        ColumnAlignment[ColumnAlignment["Right"] = 3] = "Right";
+    })(ColumnAlignment$3 || (ColumnAlignment$3 = {}));
+    let DataColumn$1 = class DataColumn {
+        constructor(desc) {
+            if (!desc)
+                throw Error("Options are required");
+            if (!desc.id)
+                throw Error("Field Id is required");
+            if (!desc.label)
+                throw Error("Label is required");
+            this.id = desc.id;
+            this.type = utils$3.getIfDefined(desc.type, DataType$3.String);
+            this.label = desc.label;
+            this.originAttrId = desc.originAttrId;
+            this.isAggr = desc.isAggr || false;
+            this.displayFormat = desc.dfmt;
+            this.groupFooterColumnTemplate = desc.gfct;
+            this.style = desc.style || {};
+            this.description = desc.description;
+            this.calculatedWidth = 0;
+        }
+    };
+    let DataColumnList$1 = class DataColumnList {
+        constructor() {
+            this.items = [];
+            this.mapper = {};
+            this._dateColumnIdx = [];
+        }
+        get count() {
+            return this.items.length;
+        }
+        add(colOrDesc) {
+            let col;
+            if (colOrDesc instanceof DataColumn$1) {
+                col = colOrDesc;
+            }
+            else {
+                col = new DataColumn$1(colOrDesc);
+            }
+            const index = this.items.length;
+            this.items.push(col);
+            this.mapper[col.id] = index;
+            if ([DataType$3.Date, DataType$3.DateTime, DataType$3.Time].indexOf(col.type) >= 0) {
+                this._dateColumnIdx.push(index);
+            }
+            return index;
+        }
+        updateDateColumnIdx() {
+            this._dateColumnIdx = this.getItems()
+                .filter(col => [DataType$3.Date, DataType$3.DateTime, DataType$3.Time].indexOf(col.type) >= 0)
+                .map((col, index) => index);
+        }
+        put(index, col) {
+            if (index >= 0 && index < this.count) {
+                this.items[index] = col;
+                this.updateDateColumnIdx();
+            }
+        }
+        move(col, newIndex) {
+            let oldIndex = this.items.indexOf(col);
+            if (oldIndex >= 0 && oldIndex != newIndex) {
+                utils$3.moveArrayItem(this.items, oldIndex, newIndex);
+                this.updateDateColumnIdx();
+            }
+        }
+        get(index) {
+            if (index >= 0 && index < this.count) {
+                return this.items[index];
+            }
+            else {
+                return null;
+            }
+        }
+        getIndex(id) {
+            return this.mapper[id];
+        }
+        getItems() {
+            return this.items;
+        }
+        getDateColumnIndexes() {
+            return this._dateColumnIdx;
+        }
+        removeAt(index) {
+            const col = this.get(index);
+            this.items.splice(index, 1);
+            const removeDate = this._dateColumnIdx.indexOf(index);
+            if (removeDate >= 0) {
+                this._dateColumnIdx.splice(removeDate, 1);
+            }
+            delete this.mapper[col.id];
+        }
+        clear() {
+            this.items = [];
+            this._dateColumnIdx = [];
+            this.mapper = {};
+        }
+    };
+
+    let DataRow$3 = class DataRow {
+        constructor(columns, values) {
+            this.columns = columns;
+            this.values = values;
+        }
+        toArray() {
+            return Array.from(this.values);
+        }
+        size() {
+            return this.values.length;
+        }
+        getValue(colIdOrIndex) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            return this.values[index];
+        }
+        setValue(colIdOrIndex, value) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            this.values[index] = value;
+        }
+    };
+
+    let EasyDataTable$1 = class EasyDataTable {
+        constructor(options) {
+            this._chunkSize = 1000;
+            this._elasticChunks = false;
+            this.cachedRows = [];
+            this.total = 0;
+            this.loader = null;
+            this.needTotal = true;
+            this.isInMemory = false;
+            options = options || {};
+            this._chunkSize = options.chunkSize || this._chunkSize;
+            this._elasticChunks = options.elasticChunks || this._elasticChunks;
+            this.loader = options.loader;
+            if (typeof options.inMemory !== 'undefined') {
+                this.isInMemory = options.inMemory;
+            }
+            if (this.isInMemory) {
+                this.needTotal = false;
+            }
+            this._columns = new DataColumnList$1();
+            this.onUpdate = options.onUpdate;
+            if (options.columns) {
+                for (const colDesc of options.columns) {
+                    this._columns.add(colDesc);
+                }
+            }
+            if (options.rows) {
+                for (const rowData of options.rows) {
+                    const row = this.createRow(rowData);
+                    this.addRow(row);
+                }
+            }
+            this.needTotal = !this._elasticChunks;
+        }
+        get columns() {
+            return this._columns;
+        }
+        get chunkSize() {
+            return this._chunkSize;
+        }
+        set chunkSize(value) {
+            this._chunkSize = value;
+            this.total = 0;
+            this.needTotal = !this.elasticChunks;
+            this.cachedRows = [];
+        }
+        get elasticChunks() {
+            return this._elasticChunks;
+        }
+        set elasticChunks(value) {
+            this._elasticChunks = value;
+            this.total = 0;
+            this.needTotal = !this.elasticChunks;
+            this.cachedRows = [];
+        }
+        getRows(params) {
+            let fromIndex = 0, count = this._chunkSize;
+            if (params) {
+                if ('page' in params) {
+                    fromIndex = params.pageSize * (params.page - 1);
+                    count = params.pageSize;
+                }
+                else {
+                    fromIndex = params.offset;
+                    count = params.limit;
+                }
+            }
+            let endIndex = fromIndex + count; //the first index of the next page
+            //if we don't calculate total on this request
+            if (!this.needTotal && !this.elasticChunks) {
+                if (fromIndex >= this.total) {
+                    return Promise.resolve([]);
+                }
+                if (endIndex > this.total) {
+                    endIndex = this.total;
+                }
+            }
+            if (this.isInMemory && endIndex > this.cachedRows.length) {
+                endIndex = this.cachedRows.length;
+            }
+            let allChunksCached = endIndex <= this.cachedRows.length;
+            if (allChunksCached) {
+                return Promise.resolve(this.cachedRows.slice(fromIndex, endIndex));
+            }
+            //if loader is not defined
+            if (!this.loader) {
+                throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
+            }
+            // we need total only for the first request
+            const needTotal = this.needTotal;
+            if (this.needTotal) {
+                this.needTotal = false;
+            }
+            let offset = this.cachedRows.length;
+            let limit = endIndex - offset;
+            if (limit < this._chunkSize) {
+                limit = this._chunkSize;
+            }
+            const resultPromise = this.loader.loadChunk({
+                offset: offset,
+                limit: limit,
+                needTotal: needTotal
+            })
+                .then(result => {
+                if (needTotal) {
+                    this.total = result.total;
+                }
+                Array.prototype.push.apply(this.cachedRows, result.table.getCachedRows());
+                if (endIndex > this.cachedRows.length) {
+                    endIndex = this.cachedRows.length;
+                }
+                if (this.elasticChunks) {
+                    const count = result.table.getCachedCount();
+                    if (count < limit) {
+                        this.total = this.cachedRows.length;
+                    }
+                }
+                this.fireUpdated();
+                return this.cachedRows.slice(fromIndex, endIndex);
+            });
+            return resultPromise;
+        }
+        getRow(index) {
+            return this.getRows({ offset: index, limit: 1 })
+                .then(rows => rows.length > 0 ? rows[0] : null);
+        }
+        getTotal() {
+            return this.total;
+        }
+        setTotal(total) {
+            this.total = total;
+            this.needTotal = false;
+        }
+        getCachedCount() {
+            return this.cachedRows.length;
+        }
+        clear() {
+            this.columns.clear();
+            this.cachedRows = [];
+            this.total = 0;
+            this.needTotal = !this._elasticChunks;
+            this.fireUpdated();
+        }
+        createRow(dataOrRow) {
+            const dateIdx = this._columns.getDateColumnIndexes();
+            const values = new Array(this._columns.count);
+            const getValue = dataOrRow instanceof DataRow$3
+                ? (colId) => dataOrRow.getValue(colId)
+                : (colId) => dataOrRow[colId];
+            if (dataOrRow) {
+                this.columns.getItems().forEach((column) => {
+                    const value = getValue(column.id);
+                    const index = this.columns.getIndex(column.id);
+                    values[index] = (dateIdx.indexOf(index) >= 0)
+                        ? this.mapDate(value, column.type)
+                        : value;
+                });
+            }
+            return new DataRow$3(this._columns, values);
+        }
+        mapDate(value, dtype) {
+            if (value) {
+                let result = new Date(value);
+                if (isNaN(result.getTime())
+                    && dtype == DataType$3.Time) {
+                    result = utils$3.strToTime(value);
+                }
+                return result;
+            }
+            return null;
+        }
+        addRow(rowOrValues) {
+            let newRow;
+            if (Array.isArray(rowOrValues)) {
+                let values = rowOrValues;
+                const dateIdx = this._columns.getDateColumnIndexes();
+                if (dateIdx.length > 0) {
+                    for (const idx of dateIdx) {
+                        if (values[idx]) {
+                            values[idx] = this.mapDate(values[idx], this._columns.get(idx).type);
+                        }
+                    }
+                }
+                newRow = new DataRow$3(this._columns, values);
+            }
+            else {
+                newRow = this.createRow(rowOrValues);
+            }
+            this.cachedRows.push(newRow);
+            const cachedTotal = this.getCachedCount();
+            if (cachedTotal > this.total) {
+                this.total = cachedTotal;
+            }
+            return newRow;
+        }
+        getCachedRows() {
+            return this.cachedRows;
+        }
+        totalIsKnown() {
+            if (this.elasticChunks) {
+                const count = this.getCachedCount();
+                return count === this.total;
+            }
+            return !this.needTotal;
+        }
+        fireUpdated() {
+            if (this.onUpdate) {
+                this.onUpdate(this);
+            }
+        }
+    };
+
+    /**
+     * EasyData representation of GUID.
+     */
+    let EasyGuid$2 = class EasyGuid {
+        /**
+         * Generates new GUID.
+         * @returns The string representation of GUID.
+         */
+        static newGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+    };
+
+    /**
+     * The representation of event emitter.
+     */
+    let EventEmitter$2 = class EventEmitter {
+        /**
+         * The default constructor.
+         * @param source The source.
+         */
+        constructor(source) {
+            this.silentMode = 0;
+            this.events = new Array();
+            this.source = source;
+        }
+        /**
+         * Subscries to the event.
+         * @param eventType The event type.
+         * @param callback The callback.
+         * @returns The subscribtion ID.
+         */
+        subscribe(eventType, callback) {
+            let event = this.getEventRecByType(eventType);
+            const eventCallback = {
+                id: EasyGuid$2.newGuid(),
+                callback: callback
+            };
+            if (event) {
+                event.eventCallbacks.push(eventCallback);
+            }
+            else {
+                event = {
+                    type: eventType,
+                    eventCallbacks: new Array(eventCallback)
+                };
+                this.events.push(event);
+            }
+            return eventCallback.id;
+        }
+        /**
+         * Unsubsribes from the event.
+         * @param eventType The event type.
+         * @param callbackId The subscribtion ID.
+         */
+        unsubscribe(eventType, callbackId) {
+            let event = this.getEventRecByType(eventType);
+            if (event) {
+                let index = -1;
+                for (index = 0; index < event.eventCallbacks.length; index++) {
+                    if (event.eventCallbacks[index].id === callbackId) {
+                        break;
+                    }
+                }
+                if (index >= 0) {
+                    event.eventCallbacks.splice(index, 1);
+                }
+            }
+        }
+        /**
+         * Fires the event.
+         * @param eventType The event type.
+         * @param data The event data.
+         * @param postpone  The postpone.
+         * @param force To fire force. If value is `true`, ignores silent mode.
+         */
+        fire(eventType, data, postpone = 0, force = false) {
+            if (this.silentMode && !force) {
+                return;
+            }
+            let eventRec = this.getEventRecByType(eventType);
+            if (eventRec) {
+                const eqevent = {
+                    type: eventType,
+                    source: this.source,
+                    data: data
+                };
+                let emitAllFunc = () => {
+                    for (let callback of eventRec.eventCallbacks) {
+                        callback.callback(eqevent);
+                    }
+                };
+                if (postpone > 0) {
+                    setTimeout(emitAllFunc, postpone);
+                }
+                else {
+                    emitAllFunc();
+                }
+            }
+        }
+        /**
+         * Enters to silent mode.
+         */
+        enterSilentMode() {
+            this.silentMode++;
+        }
+        /**
+         * Exits from silent mode.
+         */
+        exitSilentMode() {
+            if (this.silentMode) {
+                this.silentMode--;
+            }
+        }
+        /**
+         * Checks if emitter is in silent mode.
+         * @return `true`, if silent mode is enable.
+         */
+        isSilent() {
+            return this.silentMode > 0;
+        }
+        getEventRecByType(eventType) {
+            for (let event of this.events) {
+                if (event.type == eventType) {
+                    return event;
+                }
+            }
+            return null;
+        }
+    };
+
+    function repeatString(str, times) {
+        return str.repeat(times);
+    }
+    function reverseString(str) {
+        return str.split("").reverse().join("");
+    }
+    function strEndsWith(str, symbol) {
+        return str && str.lastIndexOf(symbol) == (str.length - symbol.length);
+    }
+    /**
+     * Adds two paths and returns the result
+     * Correctly processes leading and trailing slashes
+     * @param path1
+     * @param path2
+     */
+    function combinePath$1(path1, path2) {
+        let result = path1;
+        if (result != null && result.length > 0) {
+            if (result.charAt(result.length - 1) != '/')
+                result += "/";
+            result += path2;
+        }
+        else {
+            result = path2;
+        }
+        return result;
+    }
+
+    var liquid$3;
+    (function (liquid) {
+        function renderLiquidTemplate(template, vars) {
+            let result = template;
+            if (vars) {
+                for (let v in vars) {
+                    const liquidVarRegexp = new RegExp('\{\{' + v + '\}\}', 'g');
+                    result = result.replace(liquidVarRegexp, vars[v]);
+                }
+            }
+            return result;
+        }
+        liquid.renderLiquidTemplate = renderLiquidTemplate;
+    })(liquid$3 || (liquid$3 = {}));
+
+    i18n$3.resetLocales();
+
+    //types
+    if (typeof Object.values !== 'function') {
+        Object.values = function (obj) {
+            return Object.keys(obj).map(key => obj[key]);
+        };
+    }
+    if (typeof Math.trunc !== 'function') {
+        Math.trunc = function (x) {
+            if (isNaN(x)) {
+                return NaN;
+            }
+            if (x > 0) {
+                return Math.floor(x);
+            }
+            return Math.ceil(x);
+        };
+    }
+
+    var easydata_core_es = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        AggregationSettings: AggregationSettings,
+        get ColumnAlignment () { return ColumnAlignment$3; },
+        DataColumn: DataColumn$1,
+        DataColumnList: DataColumnList$1,
+        DataRow: DataRow$3,
+        get DataType () { return DataType$3; },
+        EasyDataTable: EasyDataTable$1,
+        EasyGuid: EasyGuid$2,
+        EditorTag: EditorTag$1,
+        get EntityAttrKind () { return EntityAttrKind$3; },
+        EventEmitter: EventEmitter$2,
+        HttpClient: HttpClient$1,
+        get HttpMethod () { return HttpMethod$3; },
+        HttpRequest: HttpRequest$1,
+        HttpResponseError: HttpResponseError$1,
+        MetaData: MetaData$1,
+        MetaEntity: MetaEntity$1,
+        MetaEntityAttr: MetaEntityAttr$1,
+        SpecialDatesResolver: SpecialDatesResolver,
+        TimeValue: TimeValue,
+        ValueEditor: ValueEditor$1,
+        combinePath: combinePath$1,
+        get i18n () { return i18n$3; },
+        get liquid () { return liquid$3; },
+        registerSpecialDatesResolver: registerSpecialDatesResolver,
+        repeatString: repeatString,
+        reverseString: reverseString,
+        strEndsWith: strEndsWith,
+        get utils () { return utils$3; }
+    });
+
+    /*!
+     * EasyData.JS UI v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /*!
+     * EasyData.JS Core v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /** Represents the common types of the data. */
+    var DataType$2;
+    (function (DataType) {
+        /** Unknown type value*/
+        DataType[DataType["Unknown"] = 0] = "Unknown";
+        /** String value*/
+        DataType[DataType["String"] = 1] = "String";
+        /** 8-bit integer value */
+        DataType[DataType["Byte"] = 2] = "Byte";
+        /** 16-bit integer value */
+        DataType[DataType["Word"] = 3] = "Word";
+        /** 32-bit integer value */
+        DataType[DataType["Int32"] = 4] = "Int32";
+        /** 64-bit integer value */
+        DataType[DataType["Int64"] = 5] = "Int64";
+        /** Boolean value */
+        DataType[DataType["Bool"] = 6] = "Bool";
+        /** Floating-point numeric value */
+        DataType[DataType["Float"] = 7] = "Float";
+        /** Money value */
+        DataType[DataType["Currency"] = 8] = "Currency";
+        /** Binary-coded decimal value */
+        DataType[DataType["BCD"] = 9] = "BCD";
+        /** Date value */
+        DataType[DataType["Date"] = 10] = "Date";
+        /** Time value */
+        DataType[DataType["Time"] = 11] = "Time";
+        /** Date and time value */
+        DataType[DataType["DateTime"] = 12] = "DateTime";
+        /** Autoincrement 32-bit integer value */
+        DataType[DataType["Autoinc"] = 13] = "Autoinc";
+        /** MEMO value (text with unlimited length) */
+        DataType[DataType["Memo"] = 14] = "Memo";
+        /** BLOB value (any data with unlimited length) */
+        DataType[DataType["Blob"] = 15] = "Blob";
+        /** Fixed character value */
+        DataType[DataType["FixedChar"] = 16] = "FixedChar";
+        /** The unique identifier */
+        DataType[DataType["Guid"] = 17] = "Guid";
+        /*-------- Spatial data types ----------*/
+        /** Any geometry data */
+        DataType[DataType["Geometry"] = 18] = "Geometry";
+        /** Any data that represents some geography objects</summary> */
+        DataType[DataType["Geography"] = 19] = "Geography";
+    })(DataType$2 || (DataType$2 = {}));
+
+    var EntityAttrKind$2;
+    (function (EntityAttrKind) {
+        EntityAttrKind[EntityAttrKind["Data"] = 0] = "Data";
+        EntityAttrKind[EntityAttrKind["Virtual"] = 1] = "Virtual";
+        EntityAttrKind[EntityAttrKind["Lookup"] = 2] = "Lookup";
+    })(EntityAttrKind$2 || (EntityAttrKind$2 = {}));
+
+    var HttpMethod$2;
+    (function (HttpMethod) {
+        HttpMethod["Trace"] = "TRACE";
+        HttpMethod["Options"] = "OPTIONS";
+        HttpMethod["Get"] = "GET";
+        HttpMethod["Put"] = "PUT";
+        HttpMethod["Post"] = "POST";
+        HttpMethod["Delete"] = "DELETE";
+    })(HttpMethod$2 || (HttpMethod$2 = {}));
+
+    var utils$2;
+    (function (utils) {
+        function getAllDataTypes() {
+            return Object.values(DataType$2).filter(item => typeof item === "number");
+        }
+        utils.getAllDataTypes = getAllDataTypes;
+        function getDateDataTypes() {
+            return [DataType$2.Time, DataType$2.Date, DataType$2.DateTime];
+        }
+        utils.getDateDataTypes = getDateDataTypes;
+        function getStringDataTypes() {
+            return [DataType$2.String, DataType$2.Memo, DataType$2.FixedChar];
+        }
+        utils.getStringDataTypes = getStringDataTypes;
+        const _numericTypes = [DataType$2.Byte, DataType$2.Word, DataType$2.Int32,
+            DataType$2.Int64, DataType$2.Float, DataType$2.Currency, DataType$2.Autoinc];
+        function getNumericDataTypes() {
+            return _numericTypes;
+        }
+        utils.getNumericDataTypes = getNumericDataTypes;
+        const _intTypes = [DataType$2.Byte, DataType$2.Word, DataType$2.Int32, DataType$2.Int64, DataType$2.Autoinc];
+        //-------------- object functions -------------------
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function copies only the first level properties.
+         * For a deep copy please use `assignDeep`
+         * @param target - the target object
+         * @param args  - an array of the source objects
+         */
+        function assign(target, ...args) {
+            for (let i = 0; i < args.length; i++) {
+                let source = args[i];
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        utils.assign = assign;
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function make a deep copy -
+         * so `assignDeep` will be called recursively for all object properties
+         * on the first level.
+         * @param target - the target object
+         * @param sources  - an array of the source objects
+         */
+        function assignDeep(target, ...sources) {
+            return assignDeepCore(new WeakMap(), target, sources);
+        }
+        utils.assignDeep = assignDeep;
+        function assignDeepCore(hashSet, target, sources) {
+            if (!target) {
+                target = {};
+            }
+            for (let source of sources) {
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            let sourceVal = source[key];
+                            if (sourceVal !== null && typeof sourceVal === 'object') {
+                                if (hashSet.has(sourceVal)) {
+                                    target[key] = hashSet.get(sourceVal);
+                                }
+                                else {
+                                    if (Array.isArray(sourceVal)) {
+                                        target[key] = createArrayFrom(sourceVal);
+                                        hashSet.set(sourceVal, target[key]);
+                                    }
+                                    else {
+                                        if (typeof target[key] == 'undefined' || target[key] == null) {
+                                            target[key] = Object.create(Object.getPrototypeOf(sourceVal));
+                                        }
+                                        hashSet.set(sourceVal, target[key]);
+                                        assignDeepCore(hashSet, target[key], [sourceVal]);
+                                    }
+                                }
+                            }
+                            else {
+                                target[key] = sourceVal;
+                            }
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        function getIfDefined(value, defaultValue) {
+            return (typeof value !== 'undefined') ? value : defaultValue;
+        }
+        utils.getIfDefined = getIfDefined;
+        function IsDefinedAndNotNull(value) {
+            return typeof value !== 'undefined' && value !== null;
+        }
+        utils.IsDefinedAndNotNull = IsDefinedAndNotNull;
+        function copyArrayTo(collection1, collection2) {
+            const len1 = collection1.length;
+            const len2 = collection2.length;
+            for (let i = 0; i < len1 && i < len2; i++) {
+                collection2[i] = collection1[i];
+            }
+        }
+        utils.copyArrayTo = copyArrayTo;
+        function createArrayFrom(collection) {
+            let result = [];
+            for (let item of collection) {
+                result.push(item);
+            }
+            return result;
+        }
+        utils.createArrayFrom = createArrayFrom;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the found object or null.
+         * @param array
+         * @param id
+         */
+        function findItemById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return array[idx];
+            }
+            return null;
+        }
+        utils.findItemById = findItemById;
+        function findItemIndexById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return idx;
+            }
+            return -1;
+        }
+        utils.findItemIndexById = findItemIndexById;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the index of the found element, or -1 if nothing was found.
+         * @param array
+         * @param id
+         */
+        function indexOfArrayItem(arr, item) {
+            if (arr.indexOf) {
+                return arr.indexOf(item);
+            }
+            else {
+                let len = arr.length;
+                for (let i = 0; i < len; i++) {
+                    if (item == arr[i]) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        }
+        utils.indexOfArrayItem = indexOfArrayItem;
+        /**
+         * Moves an item in some array to a new position
+         * @param array
+         * @param index1
+         * @param index2
+         */
+        function moveArrayItem(array, index1, index2) {
+            if (index1 >= array.length) {
+                throw 'Index out of bounds: ' + index1;
+            }
+            if (index2 >= array.length) {
+                index2 = array.length - 1;
+            }
+            let item = array.splice(index1, 1)[0];
+            array.splice(index2, 0, item);
+        }
+        utils.moveArrayItem = moveArrayItem;
+        /**
+         * Searches for a particular item in the array are removes that item if found.
+         * @param arr
+         * @param value
+         */
+        function removeArrayItem(arr, value) {
+            let index = arr.indexOf(value);
+            if (index != -1) {
+                return arr.splice(index, 1)[0];
+            }
+        }
+        utils.removeArrayItem = removeArrayItem;
+        function insertArrayItem(arr, index, value) {
+            arr.splice(index, 0, value);
+        }
+        utils.insertArrayItem = insertArrayItem;
+        function fillArray(arr, value, start = 0, end) {
+            let len = arr.length >>> 0;
+            var relativeStart = start >> 0;
+            var k = relativeStart < 0 ?
+                Math.max(len + relativeStart, 0) :
+                Math.min(relativeStart, len);
+            var relativeEnd = end === undefined ?
+                len : end >> 0;
+            let final = relativeEnd < 0 ?
+                Math.max(len + relativeEnd, 0) :
+                Math.min(relativeEnd, len);
+            while (k < final) {
+                arr[k] = value;
+                k++;
+            }
+            return arr;
+        }
+        utils.fillArray = fillArray;
+        //------------ DOM utils ------------
+        /**
+         * Calculates the shift on which we need to move our element horizontally
+         * to find current window
+         * @param absLeft
+         * @param width
+         */
+        function shiftToFitWindow(absLeft, width) {
+            let body = document.getElementsByTagName('body')[0];
+            let winWidth = window.innerWidth || document.documentElement.clientWidth || body.clientWidth;
+            var absRight = absLeft + width;
+            let shift = 0;
+            if (absRight > winWidth) {
+                shift = winWidth - absRight - 10;
+                if (absLeft + shift < 0) {
+                    shift = 10 - absLeft;
+                }
+            }
+            return shift;
+        }
+        utils.shiftToFitWindow = shiftToFitWindow;
+        /**
+         * Returns `true` if the value passed in the parameter is an object
+         * @param val
+         */
+        function isObject(val) {
+            if (val === null) {
+                return false;
+            }
+            return ((typeof val === 'function') || (typeof val === 'object'));
+        }
+        utils.isObject = isObject;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isNumericType(dtype) {
+            const index = _numericTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isNumericType = isNumericType;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isIntType(dtype) {
+            const index = _intTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isIntType = isIntType;
+        /**
+         * Returns `true` if the value passed in the parameter is an a numeric value
+         * @param val
+         */
+        function isNumeric(val) {
+            return !isNaN(parseFloat(val)) && isFinite(val);
+        }
+        utils.isNumeric = isNumeric;
+        /**
+         * Returns `true` if two data types  passed in parameters
+         * are compatible - so it's safe to copy the values between
+         * two expressions with these two types
+         * @param type1
+         * @param type2
+         */
+        function areCompatibleDataTypes(type1, type2) {
+            return typeof type1 == "undefined" || typeof type2 == "undefined" || type1 == DataType$2.Unknown || type2 == DataType$2.Unknown
+                || (type1 == type2) || (type1 == DataType$2.Date && type2 == DataType$2.DateTime)
+                || (type1 == DataType$2.DateTime && type2 == DataType$2.Date);
+        }
+        utils.areCompatibleDataTypes = areCompatibleDataTypes;
+        /**
+         * Returns `true` if the property with named `propName`
+         * in the object `obj` has some value
+         * @param obj
+         * @param propName
+         */
+        function isPropSet(obj, propName) {
+            return obj[propName] || obj[propName.toLowerCase()] || obj[propName.toUpperCase()];
+        }
+        utils.isPropSet = isPropSet;
+        //-------------- ID generator -----------
+        const prefixIdLen = 4;
+        const symbols = "0123456789abcdefghijklmnopqrstuvwxyz";
+        const magicTicks = 636712160627685350;
+        /**
+         * Generates an unique ID
+         */
+        function generateId(prefix) {
+            if (!prefix) {
+                prefix = 'easy';
+            }
+            let prfx = (prefix.length > prefixIdLen) ? squeezeMoniker(prefix, prefixIdLen) : prefix;
+            if (prfx && prfx.length > 0) {
+                prfx += "-";
+            }
+            //adding 3 random symbols
+            var randCharPart = symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)];
+            var randInt = getRandomInt(0, 10000);
+            //generating main ID part 
+            //it's a 36-base representation of some random number based on current value of ticks
+            let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+            return prfx + randCharPart + ticksNum36;
+        }
+        utils.generateId = generateId;
+        function intToNumBase(value, targetBase = 36) {
+            var buffer = '';
+            var rest = value;
+            do {
+                buffer = symbols[rest % targetBase] + buffer;
+                rest = Math.floor(rest /= targetBase);
+            } while (rest > 0);
+            return buffer;
+        }
+        function squeezeMoniker(str, maxlen) {
+            let parts = str.split('-');
+            let pml = 1;
+            let ptt = maxlen;
+            if (parts.length < maxlen) {
+                pml = maxlen / parts.length;
+                ptt = parts.length;
+            }
+            let result = "";
+            for (let i = 0; i < ptt; i++) {
+                result += squeeze(parts[i], pml);
+            }
+            return result;
+        }
+        function squeeze(str, maxlen) {
+            const len = str.length;
+            if (len > maxlen) {
+                let step = len / maxlen;
+                let result = "";
+                result += str[0];
+                let nextIndex = step;
+                let ch;
+                for (let i = 1; i < len; i++) {
+                    ch = str[i];
+                    if (i + 1 > nextIndex) {
+                        result += ch;
+                        nextIndex += step;
+                    }
+                }
+                return result;
+            }
+            else {
+                return str;
+            }
+        }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        function getNowTicks() {
+            return (621355968e9 + (new Date()).getTime() * 1e4);
+        }
+        function safeParseInt(str) {
+            const res = parseInt(str);
+            if (isNaN(res))
+                throw `"${str}" is not a valid number`;
+            return res;
+        }
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        // ------------- date/time functions -------------------
+        // TO DO: improve to process all datetime cases
+        function strToDateTime(value, format) {
+            if (!value || value.length == 0)
+                return new Date();
+            const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+            const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+            const formatItems = normalizedFormat.split('-');
+            const dateItems = normalizedValue.split('-');
+            const monthIndex = formatItems.indexOf("MM");
+            const dayIndex = formatItems.indexOf("dd");
+            const yearIndex = formatItems.indexOf("yyyy");
+            const hourIndex = formatItems.indexOf("HH");
+            const minutesIndex = formatItems.indexOf("mm");
+            const secondsIndex = formatItems.indexOf("ss");
+            const today = new Date();
+            try {
+                const year = yearIndex > -1 && yearIndex < dateItems.length
+                    ? safeParseInt(dateItems[yearIndex])
+                    : today.getFullYear();
+                const month = monthIndex > -1 && monthIndex < dateItems.length
+                    ? safeParseInt(dateItems[monthIndex]) - 1
+                    : today.getMonth() - 1;
+                if (month > 11)
+                    throw '';
+                const day = dayIndex > -1 && dayIndex < dateItems.length
+                    ? safeParseInt(dateItems[dayIndex])
+                    : today.getDate();
+                if (day > getDaysInMonth(month, year))
+                    throw '';
+                const hour = hourIndex > -1 && hourIndex < dateItems.length
+                    ? safeParseInt(dateItems[hourIndex])
+                    : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = minutesIndex > -1 && minutesIndex < dateItems.length
+                    ? safeParseInt(dateItems[minutesIndex])
+                    : 0;
+                if (minute > 59)
+                    throw '';
+                const second = secondsIndex > -1 && secondsIndex < dateItems.length
+                    ? safeParseInt(dateItems[secondsIndex])
+                    : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(year, month, day, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${value} is not a valid date.`;
+            }
+        }
+        utils.strToDateTime = strToDateTime;
+        function strToTime(str) {
+            const timeItems = str.split(':');
+            try {
+                const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (minute > 59)
+                    throw '';
+                const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(0, 0, 0, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${str} is not a valid time.`;
+            }
+        }
+        utils.strToTime = strToTime;
+    })(utils$2 || (utils$2 = {}));
+
+    /**
+     * Contains internatialization functionality.
+     */
+    var i18n$2;
+    (function (i18n) {
+        let englishUSLocaleSettings = {
+            shortDateFormat: 'MM/dd/yyyy',
+            longDateFormat: 'dd MMM, yyyy',
+            editDateFormat: 'MM/dd/yyyy',
+            shortTimeFormat: 'HH:mm',
+            editTimeFormat: 'HH:mm',
+            longTimeFormat: 'HH:mm:ss',
+            shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            longMonthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'],
+            shortWeekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            longWeekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            decimalSeparator: '.',
+            currency: 'USD'
+        };
+        let defaultLocale = {
+            localeId: 'en-US',
+            englishName: 'English',
+            displayName: 'English',
+            texts: {
+                ButtonOK: 'OK',
+                ButtonCancel: 'Cancel',
+                Yes: 'Yes',
+                No: 'No',
+                True: 'True',
+                False: 'False'
+            },
+            settings: englishUSLocaleSettings
+        };
+        let allLocales = {
+            'en-US': defaultLocale
+        };
+        let currentLocale;
+        const mappers = [];
+        function mapInfo(info) {
+            for (const mapper of mappers) {
+                mapper(info);
+            }
+        }
+        function addMapper(mapper) {
+            mappers.push(mapper);
+        }
+        i18n.addMapper = addMapper;
+        /**
+         * Gets added locales with their names.
+         * @returns  The locales.
+         */
+        function getLocales() {
+            let result = [];
+            for (let locale in allLocales) {
+                result.push({
+                    locale: locale,
+                    englishName: allLocales[locale].englishName,
+                    displayName: allLocales[locale].displayName
+                });
+            }
+            return result.sort((a, b) => {
+                if (a.englishName > b.englishName) {
+                    return 1;
+                }
+                else if (a.englishName === b.englishName) {
+                    return 0;
+                }
+                return -1;
+            });
+        }
+        i18n.getLocales = getLocales;
+        /**
+         * Gets the current locale ID.
+         * @returns The locale.
+         */
+        function getCurrentLocale() {
+            return currentLocale.localeId;
+        }
+        i18n.getCurrentLocale = getCurrentLocale;
+        /**
+        * Sets the curent locale.
+        * @deprecated Use setCurrentLocale instead
+        * @param l The locale.
+        */
+        function setLocale(l) {
+            console.warn('This method is deprecated. Use setCurrentLocale instead');
+            setCurrentLocale(l);
+        }
+        i18n.setLocale = setLocale;
+        /**
+         * Sets the curent locale.
+         * @param localeId The locale.
+         */
+        function setCurrentLocale(localeId) {
+            const newLocale = allLocales[localeId];
+            if (newLocale) {
+                utils$2.assignDeep(currentLocale, newLocale);
+            }
+            else {
+                currentLocale.englishName = localeId;
+                currentLocale.displayName = localeId;
+                currentLocale.texts = utils$2.assignDeep({}, defaultLocale.texts);
+            }
+            currentLocale.localeId = localeId;
+        }
+        i18n.setCurrentLocale = setCurrentLocale;
+        /**
+         * Returns localized text by the key defined in parameter.
+         * Here we get the text of the resource string assigned to CmdClickToAddCondition key:
+         *
+         ```
+           const text = i18n.getText('CmdClickToAddCondition')
+         ```
+         * @param args The keys of the resource string.
+         * @returns Text of the resource defined by key or null if the key is not found
+         *
+         */
+        function getText(...args) {
+            let textsObj = currentLocale.texts;
+            let resText = '';
+            if (args && args.length) {
+                const argLength = args.length;
+                for (let i = 0; i < argLength; i++) {
+                    resText = textsObj[args[i]];
+                    if (typeof resText === 'object') {
+                        textsObj = resText;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return resText;
+        }
+        i18n.getText = getText;
+        function getLocaleSettings() {
+            return currentLocale.settings;
+        }
+        i18n.getLocaleSettings = getLocaleSettings;
+        function getOneLocaleSetting(key) {
+            return currentLocale.settings[key];
+        }
+        i18n.getOneLocaleSetting = getOneLocaleSetting;
+        function getShortMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.shortMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getShortMonthName = getShortMonthName;
+        function getLongMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.longMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getLongMonthName = getLongMonthName;
+        function getShortWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.shortWeekDayNames.length >= dayNum
+                    ? settings.shortWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getShortWeekDayName = getShortWeekDayName;
+        function getLongWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.longWeekDayNames.length >= dayNum
+                    ? settings.longWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getLongWeekDayName = getLongWeekDayName;
+        /**
+         * Updates the locale settings (date/time formats, separators, etc) for the specified locale.
+         * @param settingsToUpdate a LocaleSettings object
+         */
+        function updateLocaleSettings(settingsToUpdate) {
+            if (!currentLocale.settings) {
+                currentLocale.settings = utils$2.assignDeep({}, englishUSLocaleSettings);
+            }
+            currentLocale.settings = utils$2.assignDeep(currentLocale.settings, settingsToUpdate);
+        }
+        i18n.updateLocaleSettings = updateLocaleSettings;
+        /**
+         * Updates the texts for the current locale
+         * @param texts A plain JS object that contains textual resources
+         */
+        function updateLocaleTexts(texts) {
+            if (typeof texts !== 'object') {
+                console.error('Wrong parameter type in updateLocaleTexts function call.' +
+                    'The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead');
+                return;
+            }
+            mapInfo({ localeId: currentLocale.localeId, texts: texts });
+            utils$2.assignDeep(currentLocale.texts, texts);
+        }
+        i18n.updateLocaleTexts = updateLocaleTexts;
+        function updateDefaultTexts(texts) {
+            for (let localeId in allLocales) {
+                let locale = allLocales[localeId];
+                locale.texts = utils$2.assignDeep({}, texts, locale.texts);
+            }
+            currentLocale.texts = utils$2.assignDeep({}, texts, currentLocale.texts);
+        }
+        i18n.updateDefaultTexts = updateDefaultTexts;
+        /**
+         * Updates the information for the specified locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be added
+         * @param localeInfo  a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function updateLocaleInfo(localeId, localeData) {
+            mapInfo(localeData);
+            let localeInfoToUpdate = currentLocale;
+            if (localeId) {
+                if (!localeData.localeId) {
+                    localeData.localeId = localeId;
+                }
+                localeInfoToUpdate = allLocales[localeId];
+                if (!localeInfoToUpdate) {
+                    localeInfoToUpdate = utils$2.assignDeep({}, defaultLocale);
+                    allLocales[localeId] = localeInfoToUpdate;
+                }
+            }
+            utils$2.assignDeep(localeInfoToUpdate, localeData);
+        }
+        i18n.updateLocaleInfo = updateLocaleInfo;
+        /**
+         * Adds the locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be created
+         * @param localeInfo - a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function addLocale(localeId, localeInfo) {
+            updateLocaleInfo(localeId, localeInfo);
+        }
+        i18n.addLocale = addLocale;
+        /**
+         * Overwrites some locale settings (date/time formats) with the formats used in browser's current language
+         */
+        function determineSettingsByLocale(localeId) {
+            const now = new Date(2020, 5, 7, 19, 34, 56, 88);
+            const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const dateStr = now.toLocaleDateString(localeId, dateOptions);
+            const timeStr = now.toLocaleTimeString(localeId, timeOptions);
+            let dateFormat = dateStr
+                .replace('07', 'dd')
+                .replace('7', 'd')
+                .replace('06', 'MM')
+                .replace('6', 'M')
+                .replace('2020', 'yyyy')
+                .replace('20', 'yy');
+            let timeFormat = timeStr
+                .replace('19', 'HH')
+                .replace('07', 'hh')
+                .replace('7', 'h')
+                .replace('34', 'mm')
+                .replace('56', 'ss')
+                .replace('PM', 'tt');
+            if (!currentLocale.settings) {
+                currentLocale.settings = {};
+            }
+            const localeSettings = {
+                shortDateFormat: dateFormat,
+                shortTimeFormat: timeFormat
+            };
+            updateLocaleSettings(localeSettings);
+        }
+        function loadBrowserLocaleSettings() {
+            const lang = typeof navigator === 'object' ? navigator.language : undefined;
+            determineSettingsByLocale(lang);
+        }
+        function resetLocales() {
+            if (!currentLocale) {
+                currentLocale = utils$2.assignDeep({}, defaultLocale);
+                loadBrowserLocaleSettings();
+            }
+        }
+        i18n.resetLocales = resetLocales;
+        const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
+        /**
+         * Returns string representation of the date/time value according to the custom format (second parameter)
+         * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+         * @param date
+         * @param format
+         */
+        function dateTimeToStr(date, format) {
+            const year = date.getFullYear();
+            const yearStr = year.toString();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
+            const isPm = hour > 11;
+            const matches = {
+                yyyy: yearStr,
+                yy: yearStr.substring(yearStr.length - 2),
+                MMMM: i18n.getLongMonthName(month),
+                MMM: i18n.getShortMonthName(month),
+                MM: (month < 10) ? '0' + month : month.toString(),
+                M: month.toString(),
+                dd: (day < 10) ? '0' + day : day.toString(),
+                d: day.toString(),
+                HH: (hour < 10) ? '0' + hour : hour.toString(),
+                H: hour.toString(),
+                hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
+                h: hour12.toString(),
+                tt: isPm ? 'PM' : 'AM',
+                mm: (minute < 10) ? '0' + minute : minute.toString(),
+                ss: (second < 10) ? '0' + second : second.toString()
+            };
+            return format.replace(DT_FORMAT_RGEX, (match, $1) => {
+                return $1 || matches[match];
+            });
+        }
+        i18n.dateTimeToStr = dateTimeToStr;
+        function dateTimeToStrEx(dateTime, dataType, format) {
+            if (format) {
+                if (format == 'd') {
+                    format = buildShortDateTimeFormat(DataType$2.Date);
+                }
+                else if (format == 'D') {
+                    format = buildLongDateTimeFormat(DataType$2.Date);
+                }
+                else if (format == 'f') {
+                    format = buildShortDateTimeFormat(DataType$2.DateTime);
+                }
+                else if (format == 'F') {
+                    format = buildLongDateTimeFormat(DataType$2.DateTime);
+                }
+            }
+            else {
+                format = buildShortDateTimeFormat(dataType);
+            }
+            return dateTimeToStr(dateTime, format);
+        }
+        i18n.dateTimeToStrEx = dateTimeToStrEx;
+        function buildShortDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$2.Date:
+                    format = localeSettings.shortDateFormat;
+                    break;
+                case DataType$2.Time:
+                    format = localeSettings.shortTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        function buildLongDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$2.Date:
+                    format = localeSettings.longDateFormat;
+                    break;
+                case DataType$2.Time:
+                    format = localeSettings.longTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        /**
+        * Converts a numeric value to the string taking into the account the decimal separator
+        * @param value - the number to convert
+        * @param format - the format of the number representation (D - decimal, F - float, C - currency)
+        * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
+        */
+        function numberToStr(number, format, decimalSeparator) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    return formatWithSequence(number, format.slice(1));
+                }
+                else if (['D', 'F', 'C'].indexOf(type) >= 0) {
+                    const locale = getCurrentLocale();
+                    return number.toLocaleString(locale, getNumberFormatOptions(format));
+                }
+                else {
+                    return convertWithMask(Math.trunc(number), format);
+                }
+            }
+            const localeSettings = getLocaleSettings();
+            decimalSeparator = decimalSeparator || localeSettings.decimalSeparator;
+            return number.toString().replace('.', decimalSeparator);
+        }
+        i18n.numberToStr = numberToStr;
+        function booleanToStr(bool, format) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    const values = format.slice(1).split('|');
+                    if (values.length > 1) {
+                        const value = values[(bool) ? 1 : 0];
+                        return i18n.getText(value) || value;
+                    }
+                }
+            }
+            return `${bool}`;
+        }
+        i18n.booleanToStr = booleanToStr;
+        const cachedSequenceFormats = {};
+        function formatWithSequence(number, format) {
+            if (!cachedSequenceFormats[format]) {
+                // parse and save in cache format values 
+                const values = format.split('|')
+                    .filter(v => v.length > 0)
+                    .map(v => v.split('='));
+                cachedSequenceFormats[format] = {};
+                if (values.length > 0) {
+                    if (values[0].length > 1) {
+                        for (const value of values) {
+                            cachedSequenceFormats[format][Number.parseInt(value[1])] = value[0];
+                        }
+                    }
+                    else {
+                        values.forEach((value, index) => {
+                            cachedSequenceFormats[format][index] = value[0];
+                        });
+                    }
+                }
+            }
+            const values = cachedSequenceFormats[format];
+            if (values[number] !== undefined) {
+                const value = values[number];
+                return i18n.getText(value) || value;
+            }
+            return number.toString();
+        }
+        function convertWithMask(number, mask) {
+            let value = number.toString();
+            let result = '';
+            let index = value.length - 1;
+            for (let i = mask.length - 1; i >= 0; i--) {
+                const ch = mask.charAt(i);
+                if (ch === '#' || ch === '0') {
+                    if (index >= 0) {
+                        result += value.charAt(index);
+                        index--;
+                    }
+                    else {
+                        if (ch === '0') {
+                            result += 0;
+                        }
+                    }
+                }
+                else {
+                    result += ch;
+                }
+            }
+            return result.split('').reverse().join('');
+        }
+        function getNumberFormatOptions(format) {
+            const localeSettings = getLocaleSettings();
+            const type = format[0].toUpperCase();
+            const digits = (format.length > 1)
+                ? Number.parseInt(format.slice(1))
+                : type == 'D' ? 1 : 2;
+            switch (type) {
+                case 'D':
+                    return {
+                        style: 'decimal',
+                        useGrouping: false,
+                        minimumIntegerDigits: digits
+                    };
+                case 'C':
+                    return {
+                        style: 'currency',
+                        currency: localeSettings.currency,
+                        minimumFractionDigits: digits
+                    };
+                default:
+                    return {
+                        style: 'decimal',
+                        minimumFractionDigits: digits,
+                        maximumFractionDigits: digits
+                    };
+            }
+        }
+    })(i18n$2 || (i18n$2 = {}));
+
+    var ColumnAlignment$2;
+    (function (ColumnAlignment) {
+        ColumnAlignment[ColumnAlignment["None"] = 0] = "None";
+        ColumnAlignment[ColumnAlignment["Left"] = 1] = "Left";
+        ColumnAlignment[ColumnAlignment["Center"] = 2] = "Center";
+        ColumnAlignment[ColumnAlignment["Right"] = 3] = "Right";
+    })(ColumnAlignment$2 || (ColumnAlignment$2 = {}));
+
+    let DataRow$2 = class DataRow {
+        constructor(columns, values) {
+            this.columns = columns;
+            this.values = values;
+        }
+        toArray() {
+            return Array.from(this.values);
+        }
+        size() {
+            return this.values.length;
+        }
+        getValue(colIdOrIndex) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            return this.values[index];
+        }
+        setValue(colIdOrIndex, value) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            this.values[index] = value;
+        }
+    };
+
+    /**
+     * EasyData representation of GUID.
+     */
+    let EasyGuid$1 = class EasyGuid {
+        /**
+         * Generates new GUID.
+         * @returns The string representation of GUID.
+         */
+        static newGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+    };
+
+    /**
+     * The representation of event emitter.
+     */
+    let EventEmitter$1 = class EventEmitter {
+        /**
+         * The default constructor.
+         * @param source The source.
+         */
+        constructor(source) {
+            this.silentMode = 0;
+            this.events = new Array();
+            this.source = source;
+        }
+        /**
+         * Subscries to the event.
+         * @param eventType The event type.
+         * @param callback The callback.
+         * @returns The subscribtion ID.
+         */
+        subscribe(eventType, callback) {
+            let event = this.getEventRecByType(eventType);
+            const eventCallback = {
+                id: EasyGuid$1.newGuid(),
+                callback: callback
+            };
+            if (event) {
+                event.eventCallbacks.push(eventCallback);
+            }
+            else {
+                event = {
+                    type: eventType,
+                    eventCallbacks: new Array(eventCallback)
+                };
+                this.events.push(event);
+            }
+            return eventCallback.id;
+        }
+        /**
+         * Unsubsribes from the event.
+         * @param eventType The event type.
+         * @param callbackId The subscribtion ID.
+         */
+        unsubscribe(eventType, callbackId) {
+            let event = this.getEventRecByType(eventType);
+            if (event) {
+                let index = -1;
+                for (index = 0; index < event.eventCallbacks.length; index++) {
+                    if (event.eventCallbacks[index].id === callbackId) {
+                        break;
+                    }
+                }
+                if (index >= 0) {
+                    event.eventCallbacks.splice(index, 1);
+                }
+            }
+        }
+        /**
+         * Fires the event.
+         * @param eventType The event type.
+         * @param data The event data.
+         * @param postpone  The postpone.
+         * @param force To fire force. If value is `true`, ignores silent mode.
+         */
+        fire(eventType, data, postpone = 0, force = false) {
+            if (this.silentMode && !force) {
+                return;
+            }
+            let eventRec = this.getEventRecByType(eventType);
+            if (eventRec) {
+                const eqevent = {
+                    type: eventType,
+                    source: this.source,
+                    data: data
+                };
+                let emitAllFunc = () => {
+                    for (let callback of eventRec.eventCallbacks) {
+                        callback.callback(eqevent);
+                    }
+                };
+                if (postpone > 0) {
+                    setTimeout(emitAllFunc, postpone);
+                }
+                else {
+                    emitAllFunc();
+                }
+            }
+        }
+        /**
+         * Enters to silent mode.
+         */
+        enterSilentMode() {
+            this.silentMode++;
+        }
+        /**
+         * Exits from silent mode.
+         */
+        exitSilentMode() {
+            if (this.silentMode) {
+                this.silentMode--;
+            }
+        }
+        /**
+         * Checks if emitter is in silent mode.
+         * @return `true`, if silent mode is enable.
+         */
+        isSilent() {
+            return this.silentMode > 0;
+        }
+        getEventRecByType(eventType) {
+            for (let event of this.events) {
+                if (event.type == eventType) {
+                    return event;
+                }
+            }
+            return null;
+        }
+    };
+
+    var liquid$2;
+    (function (liquid) {
+        function renderLiquidTemplate(template, vars) {
+            let result = template;
+            if (vars) {
+                for (let v in vars) {
+                    const liquidVarRegexp = new RegExp('\{\{' + v + '\}\}', 'g');
+                    result = result.replace(liquidVarRegexp, vars[v]);
+                }
+            }
+            return result;
+        }
+        liquid.renderLiquidTemplate = renderLiquidTemplate;
+    })(liquid$2 || (liquid$2 = {}));
+
+    i18n$2.resetLocales();
+
+    //types
+    if (typeof Object.values !== 'function') {
+        Object.values = function (obj) {
+            return Object.keys(obj).map(key => obj[key]);
+        };
+    }
+    if (typeof Math.trunc !== 'function') {
+        Math.trunc = function (x) {
+            if (isNaN(x)) {
+                return NaN;
+            }
+            if (x > 0) {
+                return Math.floor(x);
+            }
+            return Math.ceil(x);
+        };
+    }
+
+    var browserUtils$1;
+    (function (browserUtils) {
+        let _isFirefox = null;
+        let _isIE = null;
+        function IsIE() {
+            if (_isIE === null) {
+                const ua = navigator.userAgent;
+                /* MSIE used to detect old browsers and Trident used to newer ones*/
+                _isIE = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+            }
+            return _isIE;
+        }
+        browserUtils.IsIE = IsIE;
+        function IsEdge() {
+            const ua = window.navigator.userAgent;
+            return !IsIE() && ua.includes('Edge/');
+        }
+        browserUtils.IsEdge = IsEdge;
+        function IsFirefox() {
+            if (_isFirefox === null) {
+                const ua = navigator.userAgent;
+                _isFirefox = ua.toLowerCase().indexOf('firefox') > -1;
+            }
+            return _isFirefox;
+        }
+        browserUtils.IsFirefox = IsFirefox;
+        let _detectedIsMobileMode = false;
+        let _isMobileMode = undefined;
+        let detectIsMobileMode = () => {
+            const oldValue = isMobileMode();
+            _detectedIsMobileMode = window.matchMedia('only screen and (max-width: 840px)').matches
+                || window.matchMedia('only screen and (max-height: 420px)').matches;
+            const newValue = isMobileMode();
+            if (newValue !== oldValue && mobileModeChangeHandler) {
+                mobileModeChangeHandler(newValue);
+            }
+        };
+        detectIsMobileMode();
+        window.addEventListener('resize', () => detectIsMobileMode());
+        function isMobileMode() {
+            if (_isMobileMode !== undefined) {
+                return _isMobileMode;
+            }
+            else {
+                return _detectedIsMobileMode;
+            }
+        }
+        browserUtils.isMobileMode = isMobileMode;
+        function setIsMobileMode(value) {
+            const oldValue = isMobileMode();
+            _isMobileMode = value;
+            const newValue = isMobileMode();
+            if (newValue !== oldValue && mobileModeChangeHandler) {
+                mobileModeChangeHandler(newValue);
+            }
+        }
+        browserUtils.setIsMobileMode = setIsMobileMode;
+        let mobileModeChangeHandler;
+        function onMobileModeChanged(callback) {
+            mobileModeChangeHandler = callback;
+        }
+        browserUtils.onMobileModeChanged = onMobileModeChanged;
+        function getMobileCssClass() {
+            return isMobileMode() ? 'k-mobile' : null;
+        }
+        browserUtils.getMobileCssClass = getMobileCssClass;
+    })(browserUtils$1 || (browserUtils$1 = {}));
+
+    /**
+     * Wraps all the elements inside "parent" by "wrapper" element
+     * @param parent The element to add wrapper to.
+     * @param wrapper The element that will wrap child elements.
+     */
+    function wrapInner(parent, wrapper) {
+        parent.appendChild(wrapper);
+        while (parent.firstChild !== wrapper) {
+            wrapper.appendChild(parent.firstChild);
+        }
+    }
+    /**
+     * Creates ands adds a new [[HTMLElement]] to "parent"
+     * @param parent The element to add new element to.
+     * @param tag Html tag of the new element.
+     * @param options The options. In particular, options.cssClass sets the new element class.
+     * @returns New element.
+     */
+    function addElement(parent, tag, options) {
+        let element = document.createElement(tag);
+        let opts = options || {};
+        if (opts.cssClass) {
+            element.className = opts.cssClass;
+        }
+        parent.appendChild(element);
+        return element;
+    }
+    /**
+     * Adds css class to the html element.
+     * @param element The element to add css class to.
+     * @param className The name of the css class to be added.
+     */
+    function addCssClass(element, className) {
+        element.className = (element.className)
+            ? element.className + ' ' + className
+            : className;
+    }
+    /**
+     * Hides the html element.
+     * @param element The element to be hidden.
+     */
+    function hideElement(element) {
+        element.style.display = 'none';
+    }
+    /**
+     * Shows the html element.
+     * @param element The element to be shown.
+     * @param display The value of "display" style to be set. Default value is "block".
+     */
+    function showElement(element, display) {
+        if (!display) {
+            display = '';
+        }
+        element.style.display = display;
+    }
+    /**
+     * Hides the "first" element and shows the "second".
+     * @param first The element to be hidden.
+     * @param second The element to be shown.
+     * @param options The options. The following options are applied:
+     * - display - the value of "display" style to be set. Default value is "block"
+     * - duration - the duration of fading in and out
+     * - complete - the callback to be called when toggle is complete
+     */
+    function toggleVisibility(first, second, options) {
+        if (!options) {
+            options = {};
+        }
+        if (!options.display) {
+            options.display = '';
+        }
+        if (!options.duration) {
+            options.duration = 200;
+        }
+        //TODO: later we need to make it fading in and out
+        hideElement(first);
+        showElement(second, options.display);
+        if (options.complete) {
+            options.complete();
+        }
+    }
+    /**
+     * Checks if element is visible
+     * @param element The element to check.
+     * @returns `true` if visible, otherwise - `false`.
+     */
+    function isVisible(element) {
+        return element.style.display != 'none'
+            && element.offsetWidth != 0
+            && element.offsetHeight != 0;
+    }
+    function createBrowserEvent(eventName) {
+        var event;
+        if (typeof (Event) === 'function') {
+            event = new Event(eventName);
+        }
+        else {
+            event = document.createEvent('Event');
+            event.initEvent(eventName, true, true);
+        }
+        return event;
+    }
+    function getViewportSize() {
+        const width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+        return {
+            width: width,
+            height: height
+        };
+    }
+    function getDocSize() {
+        if (browserUtils$1.IsIE())
+            return getWinSize();
+        const width = Math.max(document.documentElement.clientWidth, document.body.clientWidth || 0);
+        const height = Math.max(document.documentElement.clientHeight, document.body.clientHeight || 0);
+        return {
+            width: width,
+            height: height
+        };
+    }
+    function getScrollPos$1() {
+        const body = document.body;
+        const docElem = document.documentElement;
+        return {
+            top: window.pageYOffset || docElem.scrollTop || body.scrollTop,
+            left: window.pageXOffset || docElem.scrollLeft || body.scrollLeft
+        };
+    }
+    function getElementAbsolutePos$1(element) {
+        let res = { x: 0, y: 0 };
+        if (element !== null) {
+            const position = offset$1(element);
+            res = { x: position.left, y: position.top };
+        }
+        return res;
+    }
+    function offset$1(element) {
+        const defaultBoundingClientRect = { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+        let box;
+        try {
+            box = element.getBoundingClientRect();
+        }
+        catch (_a) {
+            box = defaultBoundingClientRect;
+        }
+        const body = document.body;
+        const docElem = document.documentElement;
+        const scollPos = getScrollPos$1();
+        const scrollTop = scollPos.top;
+        const scrollLeft = scollPos.left;
+        const clientTop = docElem.clientTop || body.clientTop || 0;
+        const clientLeft = docElem.clientLeft || body.clientLeft || 0;
+        const top = box.top + scrollTop - clientTop;
+        const left = box.left + scrollLeft - clientLeft;
+        return { top: Math.round(top), left: Math.round(left) };
+    }
+    function getWinSize() {
+        return {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+    }
+    function slideDown(target, duration, callback) {
+        target.style.removeProperty('display');
+        let display = window.getComputedStyle(target).display;
+        if (display === 'none')
+            display = 'block';
+        target.style.display = display;
+        let height = target.offsetHeight;
+        target.style.overflow = 'hidden';
+        target.style.height = 0 + 'px';
+        target.style.paddingTop = 0 + 'px';
+        target.style.paddingBottom = 0 + 'px';
+        target.style.marginTop = 0 + 'px';
+        target.style.marginBottom = 0 + 'px';
+        target.offsetHeight;
+        target.style.boxSizing = 'border-box';
+        target.style.transitionProperty = "height, margin, padding";
+        target.style.transitionDuration = duration + 'ms';
+        target.style.height = height + 'px';
+        target.style.removeProperty('padding-top');
+        target.style.removeProperty('padding-bottom');
+        target.style.removeProperty('margin-top');
+        target.style.removeProperty('margin-bottom');
+        window.setTimeout(() => {
+            target.style.removeProperty('height');
+            target.style.removeProperty('overflow');
+            target.style.removeProperty('transition-duration');
+            target.style.removeProperty('transition-property');
+            target.style.removeProperty('box-sizing');
+            if (callback) {
+                callback();
+            }
+        }, duration);
+    }
+    function slideUp(target, duration, callback) {
+        target.style.transitionProperty = 'height, margin, padding';
+        target.style.transitionDuration = duration + 'ms';
+        target.style.boxSizing = 'border-box';
+        target.style.height = target.offsetHeight + 'px';
+        target.offsetHeight;
+        target.style.overflow = 'hidden';
+        target.style.height = 0 + 'px';
+        target.style.paddingTop = 0 + 'px';
+        target.style.paddingBottom = 0 + 'px';
+        target.style.marginTop = 0 + 'px';
+        target.style.marginBottom = 0 + 'px';
+        window.setTimeout(() => {
+            target.style.display = 'none';
+            target.style.removeProperty('height');
+            target.style.removeProperty('padding-top');
+            target.style.removeProperty('padding-bottom');
+            target.style.removeProperty('margin-top');
+            target.style.removeProperty('margin-bottom');
+            target.style.removeProperty('overflow');
+            target.style.removeProperty('transition-duration');
+            target.style.removeProperty('transition-property');
+            target.style.removeProperty('box-sizing');
+            if (callback) {
+                callback();
+            }
+        }, duration);
+    }
+    const eqCssPrefix$1 = 'eqjs';
+    const eqCssMobile = 'eqjs-mobile';
+
+    function mask$1(input, maskPattern) {
+        const d = { 9: '[0-9]', a: '[a-z]' };
+        const mask = maskPattern.split('');
+        const keyDownHandler = (e) => {
+            // backspace key or delete key
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                e.preventDefault();
+                let mskd = [];
+                let startSelection = input.selectionStart;
+                if (startSelection == 0)
+                    return;
+                let selection = startSelection;
+                let onlyLodash = true;
+                for (let index = mask.length - 1; index >= 0; index--) {
+                    const el = mask[index];
+                    if (d[el]) {
+                        let t = new RegExp(d[el], 'i').test(input.value.charAt(index));
+                        if (t && index != startSelection - 1) {
+                            onlyLodash = false;
+                        }
+                        if (index === startSelection - 1)
+                            selection--;
+                        mskd.push(t && index != startSelection - 1
+                            ? input.value.charAt(index)
+                            : '_');
+                    }
+                    else {
+                        if (index === selection - 1)
+                            selection--;
+                        if (startSelection - 1 === index)
+                            startSelection--;
+                        mskd.push(el);
+                    }
+                }
+                input.value = !onlyLodash ? mskd.reverse().join('') : '';
+                input.selectionStart = input.selectionEnd = selection < 0 ? 0 : selection;
+                const event = document.createEvent('Event');
+                event.initEvent('input', true, true);
+                input.dispatchEvent(event);
+            }
+        };
+        const keyPressHandler = (e) => {
+            const char = String.fromCharCode(e.charCode);
+            if (char) {
+                e.preventDefault();
+                let mskd = [];
+                let selectionStart = input.selectionStart;
+                let selection = selectionStart;
+                mask.forEach((el, index) => {
+                    if (d[el]) {
+                        const ch = (index != selectionStart)
+                            ? input.value.charAt(index)
+                            : char;
+                        let t = new RegExp(d[el], 'i').test(ch);
+                        mskd.push(t ? ch : '_');
+                        if (t && selectionStart === index)
+                            selection++;
+                    }
+                    else {
+                        mskd.push(el);
+                        if (selection === index)
+                            selection++;
+                        if (selectionStart === index)
+                            selectionStart++;
+                    }
+                });
+                input.value = mskd.join('');
+                input.selectionStart = input.selectionEnd = selection;
+                const event = document.createEvent('Event');
+                event.initEvent('input', true, true);
+                input.dispatchEvent(event);
+            }
+        };
+        const inputHandler = (e) => {
+            if (e.type === 'focus' && input.value !== '')
+                return;
+            let mskd = [];
+            let startSelection = input.selectionStart;
+            mask.forEach((el, index) => {
+                if (d[el]) {
+                    let t = new RegExp(d[el], 'i').test(input.value.charAt(index));
+                    mskd.push(t ? input.value.charAt(index) : '_');
+                }
+                else {
+                    mskd.push(el);
+                }
+            });
+            input.value = mskd.join('');
+            input.selectionStart = input.selectionEnd = startSelection;
+        };
+        input.addEventListener('keydown', keyDownHandler);
+        input.addEventListener('keypress', keyPressHandler);
+        input.addEventListener('input', inputHandler);
+        input.addEventListener('focus', inputHandler);
+    }
+
+    let DomElementBuilder$1 = class DomElementBuilder {
+        constructor(tag, parent) {
+            if (typeof tag === "string") {
+                this.element = document.createElement(tag);
+            }
+            else {
+                this.element = tag;
+            }
+            if (parent && this.element.parentElement !== parent) {
+                parent.appendChild(this.element);
+            }
+        }
+        addChild(tag, childBuilder) {
+            const builder = domel$1(tag, this.element);
+            if (childBuilder) {
+                childBuilder(builder);
+            }
+            return this;
+        }
+        addChildElement(element) {
+            if (element) {
+                this.element.appendChild(element);
+            }
+            return this;
+        }
+        attr(attrId, attrValue) {
+            this.element.setAttribute(attrId, attrValue);
+            return this;
+        }
+        id(value) {
+            return this.attr("id", value);
+        }
+        focus() {
+            this.element.focus();
+            return this;
+        }
+        title(value) {
+            return this.attr('title', value);
+        }
+        data(dataId, dataValue = null) {
+            if (dataValue === null) {
+                this.element.removeAttribute('data-' + dataId);
+                return this;
+            }
+            else {
+                return this.attr('data-' + dataId, dataValue);
+            }
+        }
+        show() {
+            return this.removeStyle('display');
+        }
+        hide(toHide = true) {
+            return (toHide) ? this.setStyle('display', 'none') : this;
+        }
+        visible(isVisible = true) {
+            return isVisible ? this.setStyle('visibility', 'visible') : this.setStyle('visibility', 'hidden');
+        }
+        isVisible() {
+            return !!(this.element.offsetWidth || this.element.offsetHeight || this.element.getClientRects().length);
+        }
+        addClass(className, ...classNames) {
+            if (className) {
+                const fullList = [...className.trim().split(" "), ...classNames];
+                for (let i = 0; i < fullList.length; i++)
+                    this.element.classList.add(fullList[i]);
+            }
+            return this;
+        }
+        removeClass(className, ...classNames) {
+            if (className) {
+                const fullList = [...className.trim().split(" "), ...classNames];
+                for (let i = 0; i < fullList.length; i++)
+                    this.element.classList.remove(fullList[i]);
+            }
+            return this;
+        }
+        toggleClass(className, force = undefined) {
+            if (className) {
+                this.element.classList.toggle(className, force);
+            }
+            return this;
+        }
+        on(eventType, listener) {
+            const eventTypes = eventType.split(' ');
+            for (let i = 0; i < eventTypes.length; i++) {
+                this.element.addEventListener(eventTypes[i], listener);
+            }
+            return this;
+        }
+        off(eventType, listener) {
+            const eventTypes = eventType.split(' ');
+            for (let i = 0; i < eventTypes.length; i++) {
+                this.element.removeEventListener(eventTypes[i], listener);
+            }
+            return this;
+        }
+        setStyle(styleId, styleValue) {
+            this.element.style.setProperty(styleId, styleValue);
+            return this;
+        }
+        removeStyle(styleId) {
+            this.element.style.removeProperty(styleId);
+            return this;
+        }
+        text(text) {
+            this.element.innerText = text;
+            return this;
+        }
+        html(html) {
+            this.element.innerHTML = html;
+            return this;
+        }
+        clear() {
+            const oldElem = this.element;
+            this.element = document.createElement(this.element.tagName);
+            oldElem.replaceWith(this.element);
+        }
+        addText(text) {
+            const textEl = document.createTextNode(text);
+            this.element.appendChild(textEl);
+            return this;
+        }
+        addHtml(html) {
+            this.element.innerHTML += html;
+            return this;
+        }
+        toDOM() {
+            return this.element;
+        }
+        appendTo(parent) {
+            if (parent) {
+                parent.appendChild(this.element);
+            }
+            return this;
+        }
+    };
+    let DomTextAreaElementBuilder$1 = class DomTextAreaElementBuilder extends DomElementBuilder$1 {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("textarea", parent);
+            }
+        }
+        name(value) {
+            this.element.name = value;
+            return this;
+        }
+        rows(rows) {
+            this.element.rows = rows;
+            return this;
+        }
+        cols(cols) {
+            this.element.cols = cols;
+            return this;
+        }
+        value(value) {
+            this.element.value = value;
+            return this;
+        }
+    };
+    let DomInputElementBuilder$1 = class DomInputElementBuilder extends DomElementBuilder$1 {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("input", parent);
+            }
+        }
+        name(value) {
+            this.element.name = value;
+            return this;
+        }
+        type(value) {
+            this.element.type = value;
+            return this;
+        }
+        size(value) {
+            this.element.size = value;
+            return this;
+        }
+        value(value) {
+            if (value instanceof Date) {
+                this.element.valueAsDate = value;
+            }
+            else if (typeof value === "number") {
+                this.element.valueAsNumber = value;
+            }
+            else {
+                this.element.value = value;
+            }
+            return this;
+        }
+        mask(maskPattern) {
+            mask$1(this.element, maskPattern);
+            return this;
+        }
+    };
+    let DomSelectElementBuilder$1 = class DomSelectElementBuilder extends DomElementBuilder$1 {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("select", parent);
+            }
+        }
+        addOption(value) {
+            const option = document.createElement('option');
+            if (typeof value === "string") {
+                option.value = value;
+                option.innerHTML = value;
+            }
+            else {
+                option.value = value.value;
+                option.innerHTML = value.title || value.value;
+                option.selected = value.selected || false;
+            }
+            this.element.appendChild(option);
+            return this;
+        }
+        value(value) {
+            this.element.value = value;
+            return this;
+        }
+    };
+    function domel$1(tag, parent) {
+        if (tag === "div" || tag instanceof HTMLDivElement) {
+            return new DomElementBuilder$1(tag, parent);
+        }
+        if (tag === "span" || tag instanceof HTMLSpanElement) {
+            return new DomElementBuilder$1(tag, parent);
+        }
+        else if (tag === "a" || tag instanceof HTMLAnchorElement) {
+            return new DomElementBuilder$1(tag, parent);
+        }
+        else if (tag === "button" || tag instanceof HTMLButtonElement) {
+            return new DomElementBuilder$1(tag, parent);
+        }
+        else if (tag === "img" || tag instanceof HTMLImageElement) {
+            return new DomElementBuilder$1(tag, parent);
+        }
+        else if (tag === "input" || tag instanceof HTMLInputElement) {
+            return new DomInputElementBuilder$1(tag instanceof HTMLInputElement ? tag : null, parent);
+        }
+        else if (tag === "textarea" || tag instanceof HTMLTextAreaElement) {
+            return new DomTextAreaElementBuilder$1(tag instanceof HTMLTextAreaElement ? tag : null, parent);
+        }
+        else if (tag === "select" || tag instanceof HTMLSelectElement) {
+            return new DomSelectElementBuilder$1(tag instanceof HTMLSelectElement ? tag : null, parent);
+        }
+        return new DomElementBuilder$1(tag, parent);
+    }
+
+    const touchEventIsDefined$1 = typeof TouchEvent !== 'undefined';
+    var DropEffect$1;
+    (function (DropEffect) {
+        DropEffect["None"] = "none";
+        DropEffect["Allow"] = "allow";
+        DropEffect["Forbid"] = "forbid";
+    })(DropEffect$1 || (DropEffect$1 = {}));
+    let EqDragEvent$1 = class EqDragEvent {
+        constructor(item, dragImage, sourceEvent) {
+            this.dropEffect = DropEffect$1.Allow;
+            this.pageX = 0;
+            this.pageY = 0;
+            this.item = item;
+            this.dragImage = dragImage;
+            this.data = item.data;
+            this.sourceEvent = sourceEvent;
+            if (sourceEvent && sourceEvent instanceof MouseEvent) {
+                this.pageX = sourceEvent.pageX,
+                    this.pageY = sourceEvent.pageY;
+            }
+            if (sourceEvent && touchEventIsDefined$1 && sourceEvent instanceof TouchEvent
+                && sourceEvent.touches[0]) {
+                this.pageX = sourceEvent.touches[0].pageX,
+                    this.pageY = sourceEvent.touches[0].pageY;
+            }
+        }
+    };
+    let Position$1 = class Position {
+        constructor(ev) {
+            if (ev && ev instanceof MouseEvent) {
+                this.x = ev.pageX,
+                    this.y = ev.pageY;
+            }
+            if (ev && touchEventIsDefined$1 && ev instanceof TouchEvent && ev.touches[0]) {
+                this.x = ev.touches[0].pageX,
+                    this.y = ev.touches[0].pageY;
+            }
+        }
+    };
+    let DragManager$1 = class DragManager {
+        constructor() {
+            this.delta = 5;
+            this.draggableItem = null;
+            this.dragImage = null;
+            this.finishedSuccessfully = false;
+            this.mouseDownPosition = null;
+            this.containerDescriptors = [];
+            this.containerDescriptorIndex = -1;
+            this.dropEffect = DropEffect$1.None;
+            this.classPrefix = 'eqjs-drop';
+            this.DRAG_DISABLED_ATTR = 'drag-disabled';
+        }
+        registerDraggableItem(descriptor) {
+            const element = descriptor.element;
+            if (!element) {
+                throw Error("Element in draggle item is null or undefined");
+            }
+            element.ondragstart = function () {
+                return false;
+            };
+            const detectDragging = (ev) => {
+                if (element.hasAttribute(this.DRAG_DISABLED_ATTR)) {
+                    return;
+                }
+                ev.preventDefault();
+                if (ev instanceof MouseEvent) {
+                    ev.stopPropagation();
+                }
+                const cursorPosition = new Position$1(ev);
+                if (Math.abs(cursorPosition.x - this.mouseDownPosition.x) > this.delta
+                    || Math.abs(cursorPosition.y - this.mouseDownPosition.y) > this.delta) {
+                    startDragging(ev);
+                }
+            };
+            const mouseMoveEventListener = (ev) => {
+                this.mouseMoveDragListener(ev);
+            };
+            const startDragging = (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                element.removeEventListener('mousemove', detectDragging);
+                element.removeEventListener('touchmove', detectDragging);
+                this.finishedSuccessfully = false;
+                if (descriptor.beforeDragStart)
+                    descriptor.beforeDragStart();
+                this.dragImage = domel$1('div')
+                    .setStyle('position', 'absolute')
+                    .setStyle('z-index', '65530')
+                    .toDOM();
+                document.body.appendChild(this.dragImage);
+                this.dragImage.appendChild(element.cloneNode(true));
+                if (descriptor.renderer) {
+                    descriptor.renderer(this.dragImage);
+                }
+                this.dropEffect = DropEffect$1.None;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+                this.draggableItem = {
+                    element: element,
+                    scope: descriptor.scope,
+                    data: descriptor.data
+                };
+                this.updateDragItemPosition(ev);
+                const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = this.dropEffect;
+                if (descriptor.onDragStart) {
+                    descriptor.onDragStart(event);
+                }
+                if (this.dropEffect !== event.dropEffect) {
+                    this.dropEffect = event.dropEffect;
+                    this.updateImageClass(this.dropEffect);
+                }
+                document.addEventListener('mousemove', mouseMoveEventListener, true);
+                document.addEventListener('touchmove', mouseMoveEventListener, true);
+            };
+            const mouseDownListener = (ev) => {
+                if (touchEventIsDefined$1 && ev instanceof TouchEvent) {
+                    ev.preventDefault();
+                }
+                this.mouseDownPosition = new Position$1(ev);
+                element.addEventListener('mousemove', detectDragging);
+                element.addEventListener('touchmove', detectDragging);
+                document.addEventListener('mouseup', mouseUpListener);
+                document.addEventListener('touchend', mouseUpListener);
+            };
+            element.addEventListener('mousedown', mouseDownListener);
+            element.addEventListener('touchstart', mouseDownListener);
+            const mouseUpListener = (ev) => {
+                this.mouseDownPosition = null;
+                element.removeEventListener('mousemove', detectDragging);
+                element.removeEventListener('touchmove', detectDragging);
+                document.removeEventListener('mousemove', mouseMoveEventListener, true);
+                document.removeEventListener('touchmove', mouseMoveEventListener, true);
+                if (this.draggableItem) {
+                    endDraggind(ev);
+                }
+            };
+            const endDraggind = (ev) => {
+                try {
+                    if (this.containerDescriptorIndex >= 0) {
+                        const dropContDesc = this.containerDescriptors[this.containerDescriptorIndex];
+                        const container = {
+                            element: dropContDesc.element,
+                            scopes: dropContDesc.scopes,
+                            data: dropContDesc.data
+                        };
+                        const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                        try {
+                            if (container.scopes.indexOf(this.draggableItem.scope) >= 0
+                                && this.dropEffect === DropEffect$1.Allow) {
+                                this.finishedSuccessfully = true;
+                                if (dropContDesc.onDrop) {
+                                    dropContDesc.onDrop(container, event);
+                                }
+                            }
+                        }
+                        finally {
+                            if (dropContDesc.onDragLeave) {
+                                dropContDesc.onDragLeave(container, event);
+                            }
+                        }
+                    }
+                }
+                finally {
+                    try {
+                        const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                        event.data.finishedSuccessfully = this.finishedSuccessfully;
+                        if (descriptor.onDragEnd) {
+                            descriptor.onDragEnd(event);
+                        }
+                    }
+                    finally {
+                        this.draggableItem = null;
+                        if (this.dragImage && this.dragImage.parentElement) {
+                            this.dragImage.parentElement.removeChild(this.dragImage);
+                        }
+                        this.dragImage = null;
+                        this.finishedSuccessfully = false;
+                        document.removeEventListener('mouseup', mouseUpListener);
+                        document.removeEventListener('touchend', mouseUpListener);
+                    }
+                }
+            };
+        }
+        registerDropContainer(descriptor) {
+            const element = descriptor.element;
+            if (!element) {
+                throw Error("Element in drop container is null or undefined");
+            }
+            this.containerDescriptors.push(descriptor);
+        }
+        removeDropContainer(descriptorOrSlot) {
+            const descs = this.containerDescriptors
+                .filter(desc => desc === descriptorOrSlot
+                || desc.element == descriptorOrSlot);
+            if (descs) {
+                for (const desc of descs) {
+                    utils$2.removeArrayItem(this.containerDescriptors, desc);
+                }
+            }
+        }
+        mouseMoveDragListener(ev) {
+            if (ev instanceof MouseEvent) {
+                ev.preventDefault();
+            }
+            ev.stopPropagation();
+            this.updateDragItemPosition(ev);
+            if (this.containerDescriptorIndex == -1) {
+                for (let i = 0; i < this.containerDescriptors.length; i++) {
+                    const descriptor = this.containerDescriptors[i];
+                    if (this.detectDragEnterEvent(descriptor.element, ev)) {
+                        this.containerDescriptorIndex = i;
+                        break;
+                    }
+                }
+                if (this.containerDescriptorIndex >= 0) {
+                    this.dragEnterEvent(ev);
+                }
+            }
+            else {
+                const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+                if (this.detectDragLeaveEvent(descriptor.element, ev)) {
+                    this.dragLeaveEvent(ev);
+                    this.containerDescriptorIndex = -1;
+                }
+            }
+            if (this.containerDescriptorIndex >= 0) {
+                const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+                const container = {
+                    element: descriptor.element,
+                    scopes: descriptor.scopes,
+                    data: descriptor.data
+                };
+                if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                    const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                    event.dropEffect = this.dropEffect;
+                    if (descriptor.onDragOver) {
+                        descriptor.onDragOver(container, event);
+                    }
+                }
+            }
+        }
+        updateCusror(dropEffect) {
+            switch (dropEffect) {
+                case DropEffect$1.Allow:
+                    this.setCursorStyle(this.dragImage, 'grabbing');
+                    break;
+                case DropEffect$1.Forbid:
+                    this.setCursorStyle(this.dragImage, 'no-drop');
+                    break;
+                default:
+                    this.setCursorStyle(this.dragImage, 'grabbing');
+                    break;
+            }
+        }
+        updateImageClass(dropEffect) {
+            this.dragImage.classList.remove(`${this.classPrefix}-allow`);
+            this.dragImage.classList.remove(`${this.classPrefix}-forbid`);
+            this.dragImage.classList.remove(`${this.classPrefix}-none`);
+            switch (dropEffect) {
+                case DropEffect$1.Allow:
+                    this.dragImage.classList.add(`${this.classPrefix}-allow`);
+                    break;
+                case DropEffect$1.None:
+                    this.dragImage.classList.add(`${this.classPrefix}-none`);
+                    break;
+                case DropEffect$1.Forbid:
+                    this.dragImage.classList.add(`${this.classPrefix}-forbid`);
+                    break;
+                default:
+                    this.dragImage.classList.add(`${this.classPrefix}-none`);
+                    break;
+            }
+        }
+        setCursorStyle(element, cursor) {
+            if (element) {
+                element.style.cursor = cursor;
+                for (let i = 0; i < element.children.length; i++) {
+                    this.setCursorStyle(element.children[i], cursor);
+                }
+            }
+        }
+        updateDragItemPosition(ev) {
+            if (this.dragImage) {
+                const pos = new Position$1(ev);
+                this.dragImage.style.top = (pos.y - this.dragImage.offsetHeight / 2) + 'px';
+                this.dragImage.style.left = (pos.x - this.dragImage.offsetWidth / 2) + 'px';
+            }
+        }
+        dragEnterEvent(ev) {
+            const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+            const container = {
+                element: descriptor.element,
+                scopes: descriptor.scopes,
+                data: descriptor.data
+            };
+            if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = DropEffect$1.Allow;
+                if (descriptor.onDragEnter) {
+                    descriptor.onDragEnter(container, event);
+                }
+                this.dropEffect = event.dropEffect;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+            }
+            else {
+                if (this.dropEffect !== DropEffect$1.Forbid) {
+                    this.dropEffect = DropEffect$1.None;
+                    this.updateCusror(this.dropEffect);
+                    this.updateImageClass(this.dropEffect);
+                }
+            }
+        }
+        dragLeaveEvent(ev) {
+            const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+            const container = {
+                element: descriptor.element,
+                scopes: descriptor.scopes,
+                data: descriptor.data
+            };
+            if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                const event = new EqDragEvent$1(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = DropEffect$1.None;
+                if (descriptor.onDragLeave) {
+                    descriptor.onDragLeave(container, event);
+                }
+                this.dropEffect = event.dropEffect;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+            }
+        }
+        detectDragEnterEvent(container, ev) {
+            const containerPos = getElementAbsolutePos$1(container);
+            const pos = new Position$1(ev);
+            if (pos.y < containerPos.y || pos.y > containerPos.y + container.offsetHeight) {
+                return false;
+            }
+            if (pos.x < containerPos.x || pos.x > containerPos.x + container.offsetWidth) {
+                return false;
+            }
+            return true;
+        }
+        detectDragLeaveEvent(container, ev) {
+            const containerPos = getElementAbsolutePos$1(container);
+            const pos = new Position$1(ev);
+            if (pos.y > containerPos.y && pos.y < containerPos.y + container.offsetHeight
+                && pos.x > containerPos.x && pos.x < containerPos.x + container.offsetWidth) {
+                return false;
+            }
+            return true;
+        }
+    };
+    //global variable
+    const eqDragManager$1 = new DragManager$1();
+
+    var AutoResizeColumns$1;
+    (function (AutoResizeColumns) {
+        AutoResizeColumns[AutoResizeColumns["Always"] = 0] = "Always";
+        AutoResizeColumns[AutoResizeColumns["Once"] = 1] = "Once";
+        AutoResizeColumns[AutoResizeColumns["Never"] = 2] = "Never";
+    })(AutoResizeColumns$1 || (AutoResizeColumns$1 = {}));
+
+    //import { CellRendererType } from "./easy_grid_cell_renderer";
+    //import { GridCellRenderer } from './easy_grid_cell_renderer';
+    const DEFAULT_WIDTH_STRING$1 = 250;
+    const ROW_NUM_WIDTH$1 = 60;
+    var GridColumnAlign$1;
+    (function (GridColumnAlign) {
+        GridColumnAlign[GridColumnAlign["NONE"] = 1] = "NONE";
+        GridColumnAlign[GridColumnAlign["LEFT"] = 2] = "LEFT";
+        GridColumnAlign[GridColumnAlign["CENTER"] = 3] = "CENTER";
+        GridColumnAlign[GridColumnAlign["RIGHT"] = 4] = "RIGHT";
+    })(GridColumnAlign$1 || (GridColumnAlign$1 = {}));
+    function MapAlignment$1(alignment) {
+        switch (alignment) {
+            case ColumnAlignment$2.Left:
+                return GridColumnAlign$1.LEFT;
+            case ColumnAlignment$2.Center:
+                return GridColumnAlign$1.CENTER;
+            case ColumnAlignment$2.Right:
+                return GridColumnAlign$1.RIGHT;
+            default:
+                return GridColumnAlign$1.NONE;
+        }
+    }
+    let GridColumn$1 = class GridColumn {
+        constructor(column, grid, isRowNum = false) {
+            this._label = null;
+            this._description = null;
+            //public left: number;
+            this.align = GridColumnAlign$1.NONE;
+            this.isVisible = true;
+            this.isRowNum = false;
+            this.dataColumn = column;
+            this.grid = grid;
+            const widthOptions = grid.options.columnWidths || {};
+            if (column) {
+                if (column.style.alignment) {
+                    this.align = MapAlignment$1(column.style.alignment);
+                }
+                this.width = (widthOptions && widthOptions[this.type]) ? widthOptions[this.type].default : DEFAULT_WIDTH_STRING$1;
+                this._description = column.description;
+            }
+            else if (isRowNum) {
+                this.isRowNum = true;
+                this.width = (widthOptions && widthOptions.rowNumColumn) ? widthOptions.rowNumColumn.default : ROW_NUM_WIDTH$1;
+                this._label = '';
+            }
+        }
+        get label() {
+            return this._label ? this._label : this.isRowNum ? '' : this.dataColumn.label;
+        }
+        ;
+        set label(value) {
+            this._label = this.label;
+        }
+        /** Get column description. */
+        get description() {
+            return this._description;
+        }
+        get type() {
+            return this.dataColumn ? this.dataColumn.type : null;
+        }
+    };
+    let GridColumnList$1 = class GridColumnList {
+        constructor(columnList, grid) {
+            this.items = [];
+            this.grid = grid;
+            this.sync(columnList);
+        }
+        sync(columnList, hasRowNumCol = true) {
+            this.clear();
+            const rowNumCol = new GridColumn$1(null, this.grid, true);
+            this.add(rowNumCol);
+            if (!hasRowNumCol) {
+                rowNumCol.isVisible = false;
+            }
+            if (columnList) {
+                for (let column of columnList.getItems()) {
+                    const col = new GridColumn$1(column, this.grid);
+                    if (this.grid.options.onSyncGridColumn) {
+                        this.grid.options.onSyncGridColumn(col);
+                    }
+                    this.add(col);
+                }
+            }
+        }
+        get count() {
+            return this.items.length;
+        }
+        add(col) {
+            const index = this.items.length;
+            this.items.push(col);
+            return index;
+        }
+        put(index, col) {
+            if (index >= 0 && index < this.items.length) {
+                this.items[index] = col;
+            }
+        }
+        move(col, newIndex) {
+            let oldIndex = this.items.indexOf(col);
+            if (oldIndex >= 0 && oldIndex != newIndex)
+                utils$2.moveArrayItem(this.items, oldIndex, newIndex);
+        }
+        get(index) {
+            if (index >= 0 && index < this.items.length) {
+                return this.items[index];
+            }
+            else {
+                return null;
+            }
+        }
+        //    public getIndex(name: string) : number {
+        //        return this.mapper[name];
+        //    }
+        getItems() {
+            return this.items;
+        }
+        removeAt(index) {
+            this.get(index);
+            this.items.splice(index, 1);
+            //delete this.mapper[col.name];
+        }
+        clear() {
+            this.items = [];
+            //this.mapper = {};
+        }
+    };
+
+    const cssPrefix$1$1 = "keg";
+    const DFMT_REGEX$1 = /{0:(.*?)}/g;
+    var CellRendererType$1;
+    (function (CellRendererType) {
+        CellRendererType[CellRendererType["STRING"] = 1] = "STRING";
+        CellRendererType[CellRendererType["NUMBER"] = 2] = "NUMBER";
+        CellRendererType[CellRendererType["DATETIME"] = 3] = "DATETIME";
+        CellRendererType[CellRendererType["BOOL"] = 4] = "BOOL";
+    })(CellRendererType$1 || (CellRendererType$1 = {}));
+    const StringCellRendererDefault$1 = (value, column, cellValueElement, rowElement) => {
+        const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
+        cellValueElement.innerText = text;
+        cellValueElement.title = text;
+        if (column.align == GridColumnAlign$1.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1$1}-cell-value-align-left`);
+        }
+    };
+    const NumberCellRendererDefault$1 = (value, column, cellValueElement, rowElement) => {
+        let strValue = (value || '').toString();
+        if (typeof value == 'number') {
+            if (column.dataColumn && column.dataColumn.displayFormat
+                && DFMT_REGEX$1.test(column.dataColumn.displayFormat)) {
+                strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX$1, (_, $1) => {
+                    return i18n$2.numberToStr(value, $1);
+                });
+            }
+            else {
+                strValue = value.toLocaleString();
+            }
+        }
+        cellValueElement.innerText = strValue;
+        cellValueElement.title = strValue;
+        if (column.align == GridColumnAlign$1.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1$1}-cell-value-align-right`);
+        }
+    };
+    const DateTimeCellRendererDefault$1 = (value, column, cellValueElement, rowElement) => {
+        const isDate = Object.prototype.toString.call(value) === '[object Date]';
+        let strValue = (value || '').toString();
+        if (isDate) {
+            if (column.dataColumn && column.dataColumn.displayFormat
+                && DFMT_REGEX$1.test(column.dataColumn.displayFormat)) {
+                strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX$1, (_, $1) => {
+                    return i18n$2.dateTimeToStrEx(value, column.type, $1);
+                });
+            }
+            else {
+                const locale = i18n$2.getCurrentLocale();
+                const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                switch (column.type) {
+                    case DataType$2.Date:
+                        strValue = value.toLocaleDateString(locale);
+                        break;
+                    case DataType$2.Time:
+                        strValue = value.toLocaleTimeString(locale, timeOptions);
+                        break;
+                    case DataType$2.DateTime:
+                        strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, timeOptions)}`;
+                        break;
+                }
+            }
+        }
+        cellValueElement.innerText = strValue;
+        cellValueElement.title = strValue;
+        if (column.align == GridColumnAlign$1.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1$1}-cell-value-align-right`);
+        }
+    };
+    const BoolCellRendererDefault$1 = (value, column, cellValueElement, rowElement) => {
+        if (column.dataColumn && column.dataColumn.displayFormat
+            && DFMT_REGEX$1.test(column.dataColumn.displayFormat)) {
+            const strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX$1, (_, $1) => {
+                return i18n$2.booleanToStr(value, $1);
+            });
+            return StringCellRendererDefault$1(strValue, column, cellValueElement);
+        }
+        else {
+            cellValueElement.classList.add(`${cssPrefix$1$1}-cell-value-bool`);
+            cellValueElement.classList.add(`${cssPrefix$1$1}-${value ? 'cell-value-true' : 'cell-value-false'}`);
+        }
+    };
+    let GridCellRendererStore$1 = class GridCellRendererStore {
+        constructor(options) {
+            this.renderers = {};
+            this.defaultRenderers = {};
+            this.registerRenderer('StringDefault', StringCellRendererDefault$1);
+            this.setDefaultRenderer(CellRendererType$1.STRING, StringCellRendererDefault$1);
+            this.registerRenderer('NumberDefault', NumberCellRendererDefault$1);
+            this.setDefaultRenderer(CellRendererType$1.NUMBER, NumberCellRendererDefault$1);
+            this.registerRenderer('DateTimeDefault', DateTimeCellRendererDefault$1);
+            this.setDefaultRenderer(CellRendererType$1.DATETIME, DateTimeCellRendererDefault$1);
+            this.registerRenderer('BoolDefault', BoolCellRendererDefault$1);
+            this.setDefaultRenderer(CellRendererType$1.BOOL, BoolCellRendererDefault$1);
+        }
+        getDefaultRenderer(columnType) {
+            const cellType = this.getCellType(columnType);
+            return this.defaultRenderers[CellRendererType$1[cellType]];
+        }
+        getDefaultRendererByType(rendererType) {
+            return this.defaultRenderers[CellRendererType$1[rendererType]];
+        }
+        setDefaultRenderer(cellType, renderer) {
+            if (renderer) {
+                this.defaultRenderers[CellRendererType$1[cellType]] = renderer;
+            }
+        }
+        getRenderer(name) {
+            return this.renderers[name];
+        }
+        registerRenderer(name, renderer) {
+            this.renderers[name] = renderer;
+        }
+        getCellType(dataType) {
+            switch (dataType) {
+                case DataType$2.Autoinc:
+                case DataType$2.Byte:
+                case DataType$2.Word:
+                case DataType$2.Currency:
+                case DataType$2.Float:
+                case DataType$2.Int32:
+                case DataType$2.Int64:
+                    return CellRendererType$1.NUMBER;
+                case DataType$2.Date:
+                case DataType$2.DateTime:
+                case DataType$2.Time:
+                    return CellRendererType$1.DATETIME;
+                case DataType$2.Bool:
+                    return CellRendererType$1.BOOL;
+                default:
+                    return CellRendererType$1.STRING;
+            }
+        }
+    };
+
+    const DEFAULT_ROW_HEIGHT$1 = 36;
+    /** Represents a grid widget with columns rows, paging, custom rendering and more */
+    let EasyGrid$1 = class EasyGrid {
+        /** Creates and initializes all internal properties of the grid object */
+        constructor(options) {
+            this.cssPrefix = "keg";
+            this.pagination = { page: 1, pageSize: 30, total: 0 };
+            this.paginationOptions = {
+                maxButtonCount: 10,
+                useBootstrap: false //true
+            };
+            this.defaultDataGridOptions = {
+                slot: null,
+                dataTable: null,
+                fixHeightOnFirstRender: false,
+                syncGridColumns: true,
+                useRowNumeration: true,
+                allowDragDrop: false,
+                aggregates: {
+                    settings: null,
+                    calculator: null
+                },
+                paging: {
+                    enabled: true,
+                    pageSize: 30,
+                    pageSizeItems: [20, 30, 50, 100, 200]
+                },
+                columnWidths: {
+                    autoResize: AutoResizeColumns$1.Always,
+                    stringColumns: {
+                        min: 100,
+                        max: 500,
+                        default: 250
+                    },
+                    numberColumns: {
+                        min: 60,
+                        default: 120
+                    },
+                    boolColumns: {
+                        min: 50,
+                        default: 80
+                    },
+                    dateColumns: {
+                        min: 80,
+                        default: 200
+                    },
+                    otherColumns: {
+                        min: 100,
+                        max: 500,
+                        default: 250
+                    },
+                    rowNumColumn: {
+                        min: 40,
+                        default: 60
+                    }
+                },
+                showPlusButton: false,
+                viewportRowsCount: null,
+                showActiveRow: true
+            };
+            this.rowsOnPagePromise = null;
+            this.containerInitialHeight = 0;
+            this.firstRender = true;
+            this.prevRowTotals = null;
+            this.landingIndex = -1;
+            this.landingSlot = domel$1('div')
+                .addClass(`${this.cssPrefix}-col-landing-slot`)
+                .addChildElement(domel$1('div')
+                .toDOM())
+                .toDOM();
+            this._activeRowIndex = -1;
+            if (options && options.paging) {
+                options.paging = utils$2.assign(this.defaultDataGridOptions.paging, options.paging);
+            }
+            this.options = this.mergeOptions(options);
+            this.processColumnWidthsOptions();
+            if (!this.options.slot)
+                throw Error('"slot" parameter is required to initialize EasyDataGrid');
+            if (!this.options.dataTable)
+                throw Error('"dataTable" parameter is required to initialize EasyDataGrid');
+            this.dataTable = options.dataTable;
+            this.eventEmitter = new EventEmitter$1(this);
+            this.cellRendererStore = new GridCellRendererStore$1(options);
+            this.columns = new GridColumnList$1(this.dataTable.columns, this);
+            this.setSlot(this.options.slot);
+            this.init(this.options);
+        }
+        mergeOptions(options) {
+            const colWidthOptions = utils$2.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
+            const pagingOptions = utils$2.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
+            const result = utils$2.assign({}, this.defaultDataGridOptions, options);
+            result.columnWidths = colWidthOptions;
+            result.paging = pagingOptions;
+            return result;
+        }
+        processColumnWidthsOptions() {
+            const widthOptions = this.options.columnWidths;
+            if (!widthOptions)
+                return;
+            //string columns
+            utils$2.getStringDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.stringColumns), widthOptions[dataType]);
+            });
+            //numeric columns
+            utils$2.getNumericDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.numberColumns), widthOptions[dataType]);
+            });
+            //bool columns
+            widthOptions[DataType$2.Bool] = Object.assign(Object.assign({}, widthOptions.boolColumns), widthOptions[DataType$2.Bool]);
+            //date columns
+            utils$2.getDateDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.dateColumns), widthOptions[dataType]);
+            });
+            //other columns
+            const knownTypes = [
+                ...utils$2.getStringDataTypes(),
+                ...utils$2.getNumericDataTypes(),
+                ...utils$2.getDateDataTypes(),
+                DataType$2.Bool
+            ];
+            utils$2.getAllDataTypes().forEach(dataType => {
+                if (!(dataType in knownTypes)) {
+                    widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.otherColumns), widthOptions[dataType]);
+                }
+            });
+            widthOptions[DataType$2.Unknown] = widthOptions.otherColumns;
+        }
+        setSlot(slot) {
+            if (typeof slot === 'string') {
+                if (slot.length) {
+                    if (slot[0] === '#') {
+                        this.slot = document.getElementById(slot.substring(1));
+                    }
+                    else if (slot[0] === '.') {
+                        const result = document.getElementsByClassName(slot.substring(1));
+                        if (result.length)
+                            this.slot = result[0];
+                    }
+                    else {
+                        throw Error('Unrecognized slot parameter ' +
+                            '(Must be id, class or HTMLElement): ' + slot);
+                    }
+                }
+            }
+            else {
+                this.slot = slot;
+            }
+        }
+        /** Initializes grid widget according to the options passed in the parameter */
+        init(options) {
+            if (options.onInit) {
+                this.addEventListener('init', options.onInit);
+            }
+            if (options.onRowClick) {
+                this.addEventListener('rowClick', options.onRowClick);
+            }
+            if (options.onRowDbClick) {
+                this.addEventListener('rowDbClick', options.onRowDbClick);
+            }
+            if (options.onPlusButtonClick) {
+                this.addEventListener('plusButtonClick', options.onPlusButtonClick);
+            }
+            if (options.onColumnChanged) {
+                this.addEventListener('columnChanged', options.onColumnChanged);
+            }
+            if (options.onColumnDeleted) {
+                this.addEventListener('columnDeleted', options.onColumnDeleted);
+            }
+            if (options.onColumnMoved) {
+                this.addEventListener('columnMoved', options.onColumnMoved);
+            }
+            if (options.onPageChanged) {
+                this.addEventListener('pageChanged', options.onPageChanged);
+            }
+            if (options.onActiveRowChanged) {
+                this.addEventListener('activeRowChanged', options.onActiveRowChanged);
+            }
+            this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
+            utils$2.assignDeep(this.paginationOptions, options.pagination);
+            this.pagination.pageSize = this.options.paging.pageSize
+                || this.pagination.pageSize;
+            if (this.options.allowDragDrop) {
+                eqDragManager$1.registerDropContainer({
+                    element: this.slot,
+                    scopes: ["gridColumnMove"],
+                    onDragEnter: (_, ev) => {
+                        this.slot.classList.add(`${eqCssPrefix$1}-drophover`);
+                        this.showLandingSlot(ev.pageX, ev.pageY);
+                    },
+                    onDragOver: (_, ev) => {
+                        this.showLandingSlot(ev.pageX, ev.pageY);
+                    },
+                    onDragLeave: (_, ev) => {
+                        ev.dropEffect = DropEffect$1.Forbid;
+                        this.slot.classList.remove(`${eqCssPrefix$1}-drophover`);
+                        this.hideLandingSlot();
+                    },
+                    onDrop: (_, ev) => {
+                        this.dataTable.columns.move(ev.data.column, this.landingIndex);
+                        this.refresh();
+                        this.fireEvent({
+                            type: 'columnMoved',
+                            columnId: ev.data.column.id,
+                            newIndex: this.landingIndex
+                        });
+                    }
+                });
+            }
+            this.refresh();
+            this.fireEvent('init');
+        }
+        /** Fires a grid event. You can pass either an event type
+         * (like 'init', 'rowClick', 'pageChanged', etc )
+         * or a ready-to-use grid event object
+         * */
+        fireEvent(event) {
+            if (typeof event === "string") {
+                this.eventEmitter.fire(event);
+            }
+            else {
+                this.eventEmitter.fire(event.type, event);
+            }
+        }
+        /** Allows to set the data (represented by a EasyDataTable object)
+         *  or to replace the existing one associated with the grid */
+        setData(data) {
+            this.dataTable = data;
+            this.clear();
+            this.refresh();
+        }
+        /** Returns the EasyDataTable object associated with the grid via `setData()` call */
+        getData() {
+            return this.dataTable;
+        }
+        /** Gets the list of grid columns */
+        getColumns() {
+            return this.columns;
+        }
+        /** This function is called when the grid is destroyed */
+        destroy() {
+            this.slot.innerHTML = "";
+        }
+        /** Clears the current DOM object and re-renders everything from the scratch */
+        refresh() {
+            this.clearDOM();
+            this.render();
+        }
+        clearDOM() {
+            this.slot.innerHTML = '';
+        }
+        /** Clears all DOM object in the grid and return it to its initial state */
+        clear() {
+            this.pagination.page = 1;
+            this.clearDOM();
+        }
+        /** Renders the grid */
+        render() {
+            if (!this.hasData() && !this.options.showPlusButton)
+                return;
+            this.containerInitialHeight = this.slot.clientHeight;
+            this.rootDiv = document.createElement('div');
+            this.rootDiv.style.width = '100%';
+            this.rootDiv.classList.add(`${this.cssPrefix}-root`);
+            this.columns.sync(this.dataTable.columns, this.options.useRowNumeration);
+            this.renderHeader();
+            this.rootDiv.appendChild(this.headerDiv);
+            this.renderBody();
+            this.rootDiv.appendChild(this.bodyDiv);
+            this.renderFooter();
+            this.rootDiv.appendChild(this.footerDiv);
+            let gridContainer = document.createElement('div');
+            gridContainer.classList.add(`${this.cssPrefix}-container`);
+            gridContainer.appendChild(this.rootDiv);
+            this.slot.appendChild(gridContainer);
+            const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns$1.Never;
+            if (this.rowsOnPagePromise) {
+                this.rowsOnPagePromise
+                    .then(() => this.updateHeight())
+                    .then(() => {
+                    this.firstRender = false;
+                    this.rowsOnPagePromise = null;
+                });
+            }
+            else {
+                setTimeout(() => {
+                    this.updateHeight()
+                        .then(() => {
+                        this.firstRender = false;
+                        if (needAutoResize) {
+                            this.resizeColumns();
+                        }
+                    });
+                }, 100);
+            }
+        }
+        updateHeight() {
+            return new Promise((resolve) => {
+                if (this.options.viewportRowsCount) {
+                    const firstRow = this.bodyCellContainerDiv.firstElementChild;
+                    const rowHeight = firstRow ? firstRow.offsetHeight : DEFAULT_ROW_HEIGHT$1;
+                    const rowCount = this.options.viewportRowsCount; // || DEFAULT_ROW_COUNT;
+                    let viewportHeight = rowHeight * rowCount;
+                    domel$1(this.bodyViewportDiv)
+                        .setStyle('height', `${viewportHeight}px`);
+                    setTimeout(() => {
+                        const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
+                        viewportHeight = viewportHeight + sbHeight;
+                        domel$1(this.bodyViewportDiv)
+                            .setStyle('height', `${viewportHeight}px`);
+                        resolve();
+                    }, 100);
+                    return;
+                }
+                else if (this.containerInitialHeight > 0) ;
+                resolve();
+            })
+                .then(() => {
+                if (this.options.fixHeightOnFirstRender && this.firstRender) {
+                    this.slot.style.height = `${this.slot.offsetHeight}px`;
+                }
+            });
+        }
+        getContainerWidth() {
+            return this.columns.getItems()
+                .filter(col => col.isVisible)
+                .map(col => col.width)
+                .reduce((sum, current) => { return sum + current; });
+        }
+        renderHeader() {
+            this.headerDiv = domel$1('div')
+                .addClass(`${this.cssPrefix}-header`)
+                .toDOM();
+            this.headerViewportDiv = domel$1('div', this.headerDiv)
+                .addClass(`${this.cssPrefix}-header-viewport`)
+                .toDOM();
+            this.headerCellContainerDiv = domel$1('div', this.headerViewportDiv)
+                .addClass(`${this.cssPrefix}-header-cell-container`)
+                .toDOM();
+            this.headerRowDiv = domel$1('div', this.headerCellContainerDiv)
+                .addClass(`${this.cssPrefix}-header-row`)
+                .toDOM();
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                let hd = this.renderColumnHeader(column, index);
+                this.headerRowDiv.appendChild(hd);
+                if (column.isRowNum) {
+                    domel$1(hd)
+                        .addChildElement(this.renderHeaderButtons());
+                }
+            });
+            const containerWidth = this.getContainerWidth();
+            domel$1(this.headerCellContainerDiv)
+                .setStyle('width', `${containerWidth}px`);
+        }
+        hasData() {
+            return this.dataTable.columns.count > 0;
+        }
+        renderColumnHeader(column, index) {
+            let colBuilder = domel$1('div')
+                .addClass(`${this.cssPrefix}-header-cell`)
+                .data('col-idx', `${index}`)
+                .setStyle('width', `${column.width}px`);
+            if (column.dataColumn) {
+                colBuilder
+                    .data('col-id', `${column.dataColumn.id}`);
+            }
+            let colDiv = colBuilder.toDOM();
+            domel$1('div', colDiv)
+                .addClass(`${this.cssPrefix}-header-cell-resize`);
+            if (!column.isRowNum) {
+                domel$1('div', colDiv)
+                    .addClass(`${this.cssPrefix}-header-cell-label`)
+                    .text(column.label);
+            }
+            if (column.description) {
+                domel$1('div', colDiv)
+                    .addClass('question-mark')
+                    .title(column.description);
+            }
+            if (this.options.allowDragDrop) {
+                eqDragManager$1.registerDraggableItem({
+                    element: colDiv,
+                    scope: "gridColumnMove",
+                    data: { column: column },
+                    renderer: (dragImage) => {
+                        dragImage.innerHTML = '';
+                        const attrLabel = document.createElement('div');
+                        attrLabel.innerText = column.label;
+                        dragImage.classList.add(`${this.cssPrefix}-sortable-helper`);
+                        dragImage.appendChild(attrLabel);
+                    },
+                    onDragStart: (ev) => {
+                        ev.dropEffect = DropEffect$1.Allow;
+                    }
+                });
+            }
+            return colDiv;
+        }
+        renderBody() {
+            this.bodyDiv = domel$1('div')
+                .addClass(`${this.cssPrefix}-body`)
+                .toDOM();
+            this.bodyViewportDiv = domel$1('div', this.bodyDiv)
+                .addClass(`${this.cssPrefix}-body-viewport`)
+                .attr('tabIndex', '0')
+                .toDOM();
+            this.bodyCellContainerDiv = domel$1('div', this.bodyViewportDiv)
+                .addClass(`${this.cssPrefix}-cell-container`)
+                .toDOM();
+            const showAggrs = this.canShowAggregates();
+            if (this.dataTable) {
+                this.showProgress();
+                this.rowsOnPagePromise = this.getRowsToRender()
+                    .then((rows) => {
+                    this.pagination.total = this.dataTable.getTotal();
+                    this.hideProgress();
+                    //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
+                    this.bodyCellContainerDiv.innerHTML = '';
+                    this.prevRowTotals = null;
+                    let rowsToRender = 0;
+                    if (rows.length) {
+                        const groups = showAggrs
+                            ? this.options.aggregates.settings.getGroups()
+                            : [];
+                        rowsToRender = (rows.length < this.pagination.pageSize)
+                            ? rows.length
+                            : this.pagination.pageSize;
+                        rows.forEach((row, index) => {
+                            if (showAggrs)
+                                this.updateTotalsState(groups, row);
+                            //we don't actually render the last row
+                            if (index < rowsToRender) {
+                                const tr = this.renderRow(row, index);
+                                this.bodyCellContainerDiv.appendChild(tr);
+                            }
+                        });
+                        const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
+                        if (showAggrs && (this.isLastPage() || showGrandTotalsOnEachPage)) {
+                            const row = new DataRow$2(this.dataTable.columns, new Array(this.dataTable.columns.count));
+                            this.updateTotalsState(groups, row, true);
+                        }
+                    }
+                    const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns$1.Never;
+                    if (needAutoResize) {
+                        this.resizeColumns();
+                    }
+                    else {
+                        const containerWidth = this.getContainerWidth();
+                        domel$1(this.bodyCellContainerDiv)
+                            .setStyle('width', `${containerWidth}px`);
+                    }
+                    return rowsToRender;
+                })
+                    .catch(error => { console.error(error); return 0; });
+            }
+            this.bodyViewportDiv.addEventListener('scroll', ev => {
+                domel$1(this.headerViewportDiv)
+                    .setStyle('margin-left', `-${this.bodyViewportDiv.scrollLeft}px`);
+            });
+            this.bodyViewportDiv.addEventListener('keydown', this.onViewportKeydown.bind(this));
+        }
+        isLastPage() {
+            if (this.dataTable.elasticChunks) {
+                return this.dataTable.totalIsKnown()
+                    && (this.pagination.page * this.pagination.pageSize) >= this.pagination.total;
+            }
+            return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
+        }
+        canShowAggregates() {
+            if (!this.options || !this.options.aggregates || !this.options.aggregates.settings)
+                return false;
+            const aggrSettings = this.options.aggregates.settings;
+            const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount())
+                && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals());
+            return result;
+        }
+        updateTotalsState(groups, newRow, isLast = false) {
+            const aggrSettings = this.options.aggregates.settings;
+            if (this.prevRowTotals && aggrSettings.hasGroups()) {
+                let changeLevel = -1;
+                for (let level = 1; level <= groups.length; level++) {
+                    const group = groups[level - 1];
+                    for (const col of group.columns) {
+                        if (!aggrSettings.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
+                            changeLevel = level;
+                            break;
+                        }
+                    }
+                    if (changeLevel !== -1)
+                        break;
+                }
+                if (changeLevel !== -1) {
+                    for (let level = groups.length; level >= changeLevel; level--) {
+                        const row = new DataRow$2(this.dataTable.columns, this.prevRowTotals.toArray());
+                        const tr = this.renderTotalsRow(level, row);
+                        this.bodyCellContainerDiv.appendChild(tr);
+                    }
+                }
+            }
+            if (isLast && aggrSettings.hasGrandTotals() && aggrSettings.hasAggregates()) {
+                const tr = this.renderTotalsRow(0, newRow);
+                this.bodyCellContainerDiv.appendChild(tr);
+            }
+            this.prevRowTotals = newRow;
+        }
+        applyGroupColumnTemplate(template, value, count) {
+            let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `${value}` : '-');
+            result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `${count}` : '-');
+            return result;
+        }
+        renderTotalsRow(level, row) {
+            const aggrSettings = this.options.aggregates.settings;
+            const group = (level > 0)
+                ? aggrSettings.getGroups()[level - 1]
+                : { columns: [], aggregates: aggrSettings.getAggregates() };
+            const rowBuilder = domel$1('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-totals`)
+                .addClass(`${this.cssPrefix}-totals-lv${level}`)
+                .data('totals-level', `${level}`)
+                .attr('tabindex', '-1');
+            const rowElement = rowBuilder.toDOM();
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                let val = '';
+                const colIndex = !column.isRowNum
+                    ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                    : -1;
+                if (!column.isRowNum && column.dataColumn) {
+                    if (group.columns.indexOf(column.dataColumn.id) >= 0) {
+                        val = row.getValue(colIndex);
+                    }
+                }
+                if (colIndex == this.dataTable.columns.count - 1) {
+                    val = '.  .  .  .  .  .';
+                }
+                rowElement.appendChild(this.renderCell(column, index, val, rowElement));
+            });
+            const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
+            const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
+            const key = aggrSettings.buildGroupKey(group, row);
+            aggrContainer.getAggregateData(level, key)
+                .then((values) => {
+                for (const aggrColId of aggrCols) {
+                    row.setValue(aggrColId, values[aggrColId]);
+                }
+                rowElement.innerHTML = '';
+                this.columns.getItems().forEach((column, index) => {
+                    if (!column.isVisible) {
+                        return;
+                    }
+                    let val = '';
+                    const colIndex = !column.isRowNum
+                        ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                        : -1;
+                    if (!column.isRowNum) {
+                        let isLastGroupColumn = false;
+                        if (column.dataColumn) {
+                            const groupColIndex = group.columns.indexOf(column.dataColumn.id);
+                            const aggrColIndex = aggrCols.indexOf(column.dataColumn.id);
+                            if (level > 0) {
+                                isLastGroupColumn = groupColIndex == group.columns.length - 1;
+                            }
+                            else {
+                                //if it's a grand total row consider first column as the last group column
+                                isLastGroupColumn = colIndex == 0;
+                            }
+                            if (groupColIndex >= 0 || aggrColIndex >= 0) {
+                                val = row.getValue(colIndex);
+                            }
+                        }
+                        let groupFooterTemplate = '';
+                        if (level > 0) {
+                            groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
+                            //set the default template for the last grouping column
+                            if (!groupFooterTemplate && aggrSettings.hasRecordCount() && isLastGroupColumn) {
+                                groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
+                            }
+                        }
+                        if (groupFooterTemplate) {
+                            const cellDiv = this.renderCell(column, index, val, rowElement);
+                            const innerCell = cellDiv.firstChild;
+                            val = innerCell.innerHTML;
+                            val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[aggrSettings.COUNT_FIELD_NAME]);
+                        }
+                    }
+                    const cellDiv = this.renderCell(column, index, val, rowElement);
+                    rowElement.appendChild(cellDiv);
+                });
+            })
+                .catch((error) => console.error(error));
+            return rowElement;
+        }
+        onViewportKeydown(ev) {
+            if (this.options.showActiveRow) {
+                const rowCount = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;
+                let newValue;
+                switch (ev.key) {
+                    case 'ArrowLeft':
+                        break;
+                    case 'ArrowRight':
+                        break;
+                    case 'ArrowUp':
+                        ev.preventDefault();
+                        newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? rowCount - 1 : this.activeRowIndex - 1;
+                        this.activeRowIndex = newValue >= 0 ? newValue : 0;
+                        break;
+                    case 'ArrowDown':
+                        ev.preventDefault();
+                        newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? 0 : this.activeRowIndex + 1;
+                        this.activeRowIndex = newValue < rowCount ? newValue : rowCount - 1;
+                        break;
+                }
+            }
+        }
+        ensureRowVisibility(rowOrIndex) {
+            const row = typeof rowOrIndex === 'number'
+                ? this.getDataRow(rowOrIndex)
+                : rowOrIndex;
+            if (row) {
+                let rowRect = row.getBoundingClientRect();
+                const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
+                const rowTop = rowRect.top - viewportRect.top;
+                const rowBottom = rowRect.bottom - viewportRect.top;
+                const viewportHeight = this.bodyViewportDiv.clientHeight;
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                if (rowTop > 0 &&
+                    rowBottom <= viewportHeight &&
+                    rowRect.top > 0 &&
+                    rowRect.bottom < windowHeight) {
+                    return;
+                }
+                if (rowTop < 0) {
+                    this.bodyViewportDiv.scrollTop = this.bodyViewportDiv.scrollTop + rowTop;
+                }
+                else if (rowBottom > viewportHeight) {
+                    this.bodyViewportDiv.scrollTop = this.bodyViewportDiv.scrollTop + rowBottom - viewportHeight;
+                }
+                rowRect = row.getBoundingClientRect();
+                if (rowRect.top < 0) {
+                    document.documentElement.scrollTop = document.documentElement.scrollTop + rowRect.top;
+                }
+                else if (rowRect.bottom > windowHeight) {
+                    document.documentElement.scrollTop = document.documentElement.scrollTop + rowRect.bottom - windowHeight;
+                }
+            }
+        }
+        /** Returns a promise with the list of the rows to render on one page.
+         * The list contains pageSize+1 row to make it possible
+         * to render the totals row (if it appears to be on the edge between pages)
+         */
+        getRowsToRender() {
+            if (this.options.paging.enabled === false) {
+                return Promise.resolve(this.dataTable.getCachedRows());
+            }
+            return this.dataTable.getRows({
+                offset: (this.pagination.page - 1) * this.pagination.pageSize,
+                limit: this.pagination.pageSize + 1
+            })
+                .catch(error => {
+                console.error(error);
+                return [];
+            });
+        }
+        renderFooter() {
+            this.footerDiv = domel$1('div')
+                .addClass(`${this.cssPrefix}-footer`)
+                .toDOM();
+            if (this.rowsOnPagePromise) {
+                this.rowsOnPagePromise.then(count => {
+                    this.footerDiv.innerHTML = '';
+                    this.footerPaginateDiv = this.renderPageNavigator();
+                    this.footerDiv.appendChild(this.footerPaginateDiv);
+                    const pageInfoBlock = this.renderPageInfoBlock(count);
+                    this.footerDiv.appendChild(pageInfoBlock);
+                });
+            }
+        }
+        renderPageInfoBlock(count) {
+            const pageInfoDiv = domel$1('div')
+                .addClass(`${this.cssPrefix}-page-info`)
+                .toDOM();
+            const rowCount = this.dataTable.getTotal();
+            if (rowCount > 0) {
+                const fistPageRecordNum = count
+                    ? (this.pagination.page - 1) * this.pagination.pageSize + 1
+                    : 0;
+                const lastPageRecordNum = count
+                    ? fistPageRecordNum + count - 1
+                    : 0;
+                let totalStr = this.dataTable.getTotal().toString();
+                if (this.dataTable.elasticChunks) {
+                    const count = this.dataTable.getCachedCount();
+                    const total = this.dataTable.getTotal();
+                    if (count !== total)
+                        totalStr = '?';
+                }
+                pageInfoDiv.innerHTML = i18n$2.getText('GridPageInfo')
+                    .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
+                    .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
+                    .replace('{Total}', `<span>${totalStr}</span>`);
+            }
+            return pageInfoDiv;
+        }
+        showProgress() {
+        }
+        hideProgress() {
+        }
+        getLocalIndexByGlobal(index) {
+            if (this.pagination) {
+                return index % this.pagination.pageSize;
+            }
+            else {
+                return index;
+            }
+        }
+        getGlobalIndexByLocal(index) {
+            if (this.pagination) {
+                return (this.pagination.page - 1) * this.pagination.pageSize + index;
+            }
+            else {
+                return index;
+            }
+        }
+        renderRow(row, index) {
+            let indexGlobal = this.getGlobalIndexByLocal(index);
+            let rowBuilder = domel$1('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-${index % 2 == 1 ? 'odd' : 'even'}`)
+                .data('row-idx', `${indexGlobal}`)
+                .attr('tabindex', '-1')
+                .on('click', (ev) => {
+                this.activeRowIndex = index;
+                this.fireEvent({
+                    type: 'rowClick',
+                    row: row,
+                    rowIndex: index,
+                    sourceEvent: ev
+                });
+            })
+                .on('dblclick', (ev) => {
+                this.fireEvent({
+                    type: 'rowDbClick',
+                    row: row,
+                    rowIndex: index,
+                    sourceEvent: ev
+                });
+            });
+            if (index == 0) {
+                rowBuilder.addClass(`${this.cssPrefix}-row-first`);
+            }
+            let rowElement = rowBuilder.toDOM();
+            if (this.options.showActiveRow && index == this.activeRowIndex) {
+                rowBuilder.addClass(`${this.cssPrefix}-row-active`);
+            }
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+                let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
+                rowElement.appendChild(this.renderCell(column, index, val, rowElement));
+            });
+            return rowElement;
+        }
+        renderCell(column, colIndex, value, rowElement) {
+            const builder = domel$1('div')
+                .addClass(`${this.cssPrefix}-cell`)
+                .data('col-idx', `${colIndex}`)
+                .attr('tabindex', '-1')
+                .setStyle('width', `${column.width}px`);
+            if (column.align == GridColumnAlign$1.LEFT) {
+                builder.addClass(`${this.cssPrefix}-cell-align-left`);
+            }
+            else if (column.align == GridColumnAlign$1.RIGHT) {
+                builder.addClass(`${this.cssPrefix}-cell-align-right`);
+            }
+            else if (column.align == GridColumnAlign$1.CENTER) {
+                builder.addClass(`${this.cssPrefix}-cell-align-center`);
+            }
+            const cellElement = builder.toDOM();
+            const valueCell = cellElement.appendChild(domel$1('div')
+                .addClass(`${this.cssPrefix}-cell-value`)
+                .toDOM());
+            const cellRenderer = this.getCellRenderer(column);
+            if (cellRenderer) {
+                cellRenderer(value, column, valueCell, rowElement);
+            }
+            return cellElement;
+        }
+        getCellRenderer(column) {
+            let cellRenderer;
+            if (column.isRowNum) {
+                cellRenderer = this.cellRendererStore.getDefaultRendererByType(CellRendererType$1.NUMBER);
+            }
+            else {
+                cellRenderer = this.cellRendererStore.getDefaultRenderer(column.type);
+            }
+            if (this.options && this.options.onGetCellRenderer) {
+                cellRenderer = this.options.onGetCellRenderer(column, cellRenderer) || cellRenderer;
+            }
+            return cellRenderer;
+        }
+        /** Sets current grid pages (if paging is used) */
+        setPage(page) {
+            this.pagination.page = page;
+            this.fireEvent({ type: "pageChanged", page: page });
+            this.refresh();
+            this.bodyViewportDiv.focus();
+        }
+        renderPageNavigator() {
+            let paginateDiv = document.createElement('div');
+            paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
+            const rowCount = this.dataTable.getTotal();
+            if (this.options.paging && this.options.paging.enabled && rowCount > 0) {
+                const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
+                const buttonClickHandler = (ev) => {
+                    const element = ev.target;
+                    if (element.hasAttribute('data-page')) {
+                        const page = parseInt(element.getAttribute('data-page'));
+                        this.setPage(page);
+                    }
+                };
+                const renderPageCell = (pageIndex, content, disabled, extreme, active) => {
+                    const li = document.createElement('li');
+                    li.className = `${prefix}page-item`;
+                    if (!extreme) {
+                        if (active) {
+                            li.className += ' active';
+                        }
+                        const a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.innerHTML = content || pageIndex.toString();
+                        a.setAttribute("data-page", `${pageIndex}`);
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                        li.appendChild(a);
+                        return li;
+                    }
+                    let a = document.createElement('span');
+                    a.setAttribute('aria-hidden', 'true');
+                    a.className = `${prefix}page-link`;
+                    if (disabled) {
+                        li.className += ' disabled';
+                    }
+                    else {
+                        if (this.paginationOptions.useBootstrap) {
+                            a = document.createElement('a');
+                            a.setAttribute('href', 'javascript:void(0)');
+                            a.setAttribute("data-page", `${pageIndex}`);
+                        }
+                        else {
+                            let newA = document.createElement('a');
+                            newA.setAttribute('href', 'javascript:void(0)');
+                            newA.setAttribute('data-page', `${pageIndex}`);
+                            a = newA;
+                        }
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                    }
+                    a.innerHTML = content;
+                    li.appendChild(a);
+                    return li;
+                };
+                if (this.dataTable.elasticChunks) {
+                    const pageIndex = this.pagination.page || 1;
+                    let ul = document.createElement('ul');
+                    ul.className = `${prefix}pagination`;
+                    let cell = renderPageCell(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
+                    ul.appendChild(cell);
+                    cell = renderPageCell(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
+                    ul.appendChild(cell);
+                    paginateDiv.appendChild(ul);
+                }
+                else {
+                    if (this.pagination.total > this.pagination.pageSize) {
+                        const pageIndex = this.pagination.page || 1;
+                        const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
+                        const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
+                        const zeroBasedIndex = pageIndex - 1;
+                        let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
+                        let lastPageIndex = firstPageIndex + maxButtonCount - 1;
+                        if (lastPageIndex > pageCount) {
+                            lastPageIndex = pageCount;
+                        }
+                        let ul = document.createElement('ul');
+                        ul.className = `${prefix}pagination`;
+                        let cell = renderPageCell(firstPageIndex - 1, '&laquo;', firstPageIndex == 1, true, false);
+                        ul.appendChild(cell);
+                        for (let i = firstPageIndex; i <= lastPageIndex; i++) {
+                            cell = renderPageCell(i, i.toString(), false, false, i == pageIndex);
+                            ul.appendChild(cell);
+                        }
+                        cell = renderPageCell(lastPageIndex + 1, '&raquo;', lastPageIndex == pageCount, true, false);
+                        ul.appendChild(cell);
+                        paginateDiv.appendChild(ul);
+                    }
+                }
+                if (this.options.paging.allowPageSizeChange) {
+                    const selectChangeHandler = (ev) => {
+                        const newValue = parseInt(ev.target.value);
+                        this.pagination.pageSize = newValue;
+                        this.pagination.page = 1;
+                        this.refresh();
+                    };
+                    const pageSizes = document.createElement('div');
+                    pageSizes.className = `${this.cssPrefix}-page-sizes`;
+                    const selectSize = document.createElement('div');
+                    selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+                    pageSizes.appendChild(selectSize);
+                    const sel = document.createElement('select');
+                    const selOptions = this.options.paging.pageSizeItems || [];
+                    const selSet = new Set(selOptions);
+                    selSet.add(this.options.paging.pageSize || 20);
+                    Array.from(selSet).forEach(el => {
+                        const option = document.createElement("option");
+                        option.value = el.toString();
+                        option.text = el.toString();
+                        sel.appendChild(option);
+                    });
+                    sel.value = (this.pagination.pageSize || 20).toString();
+                    selectSize.appendChild(sel);
+                    sel.addEventListener('change', selectChangeHandler);
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+                    pageSizes.appendChild(labelDiv);
+                    const label = document.createElement('span');
+                    label.innerText = i18n$2.getText('GridItemsPerPage');
+                    labelDiv.appendChild(label);
+                    paginateDiv.appendChild(pageSizes);
+                }
+            }
+            return paginateDiv;
+        }
+        addEventListener(eventType, handler) {
+            return this.eventEmitter.subscribe(eventType, event => handler(event.data));
+        }
+        removeEventListener(eventType, handlerId) {
+            this.eventEmitter.unsubscribe(eventType, handlerId);
+        }
+        renderHeaderButtons() {
+            if (this.options.showPlusButton) {
+                return domel$1('div')
+                    .addClass(`${this.cssPrefix}-header-btn-plus`)
+                    .title(this.options.plusButtonTitle || 'Add')
+                    .addChild('a', builder => builder
+                    .attr('href', 'javascript:void(0)')
+                    .on('click', (e) => {
+                    e.preventDefault();
+                    this.fireEvent({
+                        type: 'plusButtonClick',
+                        sourceEvent: e
+                    });
+                }))
+                    .toDOM();
+            }
+            return domel$1('span')
+                .addText('#')
+                .toDOM();
+        }
+        showLandingSlot(pageX, pageY) {
+            const colElems = this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`);
+            const cols = [];
+            for (let i = 1; i < colElems.length; i++) {
+                const rowElem = colElems[i];
+                if (rowElem.style.display === 'none')
+                    continue;
+                cols.push(rowElem);
+            }
+            if (cols.length === 0) {
+                this.landingIndex = 0;
+                this.headerRowDiv.appendChild(this.landingSlot);
+                return;
+            }
+            const landingPos = getElementAbsolutePos$1(this.landingSlot);
+            if (pageX >= landingPos.x && pageX <= landingPos.x + this.landingSlot.offsetWidth) {
+                return;
+            }
+            let newLandingIndex = this.landingIndex;
+            for (let col of cols) {
+                const colPos = getElementAbsolutePos$1(col);
+                const width = col.offsetWidth;
+                if (pageX > colPos.x && pageX < colPos.x + width) {
+                    // -1 as we don't need to count add button here
+                    newLandingIndex = parseInt(col.getAttribute('data-col-idx')) - 1;
+                }
+            }
+            if (newLandingIndex != this.landingIndex) {
+                this.landingIndex = newLandingIndex;
+                if (this.landingIndex < cols.length) {
+                    this.headerRowDiv.insertBefore(this.landingSlot, cols[this.landingIndex]);
+                }
+                else {
+                    this.headerRowDiv.appendChild(this.landingSlot);
+                }
+            }
+        }
+        hideLandingSlot() {
+            this.landingIndex = -1;
+            setTimeout(() => {
+                if (this.landingSlot.parentElement) {
+                    this.landingSlot.parentElement.removeChild(this.landingSlot);
+                }
+            }, 10);
+        }
+        get activeRowIndex() {
+            return this._activeRowIndex;
+        }
+        set activeRowIndex(value) {
+            if (value !== this._activeRowIndex) {
+                const oldValue = this._activeRowIndex;
+                this._activeRowIndex = value;
+                this.updateActiveRow();
+                this.fireEvent({
+                    type: 'activeRowChanged',
+                    oldValue,
+                    newValue: this.activeRowIndex,
+                    rowIndex: this.getGlobalIndexByLocal(this.activeRowIndex)
+                });
+            }
+        }
+        updateActiveRow() {
+            if (this.options.showActiveRow) {
+                const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`);
+                rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`); });
+                const activeRow = this.getActiveRow();
+                if (activeRow) {
+                    activeRow.classList.add(`${this.cssPrefix}-row-active`);
+                    this.ensureRowVisibility(this.activeRowIndex);
+                }
+            }
+        }
+        getActiveRow() {
+            return this.getDataRow(this.activeRowIndex);
+        }
+        getDataRow(index) {
+            const rows = Array.from(this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));
+            if (index >= 0 && index < rows.length)
+                return rows[index];
+            return null;
+        }
+        /** Makes the grid focused for keyboard events */
+        focus() {
+            this.bodyViewportDiv.focus();
+        }
+        /** Resizes columns according to the data they represent */
+        resizeColumns() {
+            if (this.options.columnWidths.autoResize === AutoResizeColumns$1.Never)
+                return;
+            const containerWidth = this.bodyCellContainerDiv.style.width;
+            this.bodyCellContainerDiv.style.visibility = 'hidden';
+            this.bodyCellContainerDiv.style.width = '1px';
+            //this.headerRowDiv.style.visibility = 'hidden';
+            this.headerRowDiv.style.width = '1px';
+            let sumWidth = 0;
+            const columns = this.columns.getItems();
+            const headerCells = this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);
+            let headerIdx = 0;
+            for (let idx = 0; idx < this.columns.count; idx++) {
+                const column = columns[idx];
+                if (!column.isVisible)
+                    continue;
+                const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns$1.Always && column.dataColumn
+                    ? column.dataColumn.calculatedWidth
+                    : 0;
+                const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
+                let maxWidth = 0;
+                if (calculatedWidth > 0) {
+                    sumWidth += calculatedWidth;
+                    column.width = calculatedWidth;
+                    cellValues.forEach(value => {
+                        value.parentElement.style.width = `${calculatedWidth}px`;
+                    });
+                    headerCells[headerIdx].style.width = `${calculatedWidth}px`;
+                }
+                else {
+                    if (cellValues.length == 0) {
+                        headerCells[headerIdx].style.width = null;
+                        headerCells[headerIdx].style.whiteSpace = 'nowrap';
+                    }
+                    maxWidth = headerCells[headerIdx].offsetWidth;
+                    if (cellValues.length > 0) {
+                        cellValues.forEach(value => {
+                            value.parentElement.style.width = null;
+                            const width = value.parentElement.offsetWidth;
+                            if (width > maxWidth) {
+                                maxWidth = width;
+                            }
+                        });
+                        maxWidth += 3;
+                        const maxOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.max || 500
+                            : this.options.columnWidths[column.dataColumn.type].max || 2000;
+                        const minOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.min || 0
+                            : this.options.columnWidths[column.dataColumn.type].min || 20;
+                        if (maxWidth > maxOption) {
+                            maxWidth = maxOption;
+                        }
+                        if (maxWidth < minOption) {
+                            maxWidth = minOption;
+                        }
+                        if (utils$2.isNumericType(column.type)) {
+                            //increase the calculated width in 1.3 times for numeric columns
+                            maxWidth = Math.round(maxWidth * 1.3);
+                        }
+                        sumWidth += maxWidth;
+                        column.width = maxWidth;
+                        cellValues.forEach(value => {
+                            value.parentElement.style.width = `${maxWidth}px`;
+                        });
+                        headerCells[headerIdx].style.width = `${maxWidth}px`;
+                        if (column.dataColumn) {
+                            column.dataColumn.calculatedWidth = maxWidth;
+                        }
+                    }
+                    else {
+                        sumWidth += maxWidth;
+                    }
+                }
+                headerIdx++;
+            }
+            if (sumWidth > 0) {
+                this.bodyCellContainerDiv.style.width = `${sumWidth}px`;
+                this.headerCellContainerDiv.style.width = `${sumWidth}px`;
+            }
+            else {
+                this.bodyCellContainerDiv.style.width = containerWidth;
+                this.headerCellContainerDiv.style.width = containerWidth;
+            }
+            this.bodyCellContainerDiv.style.visibility = null;
+            this.headerRowDiv.removeAttribute('style');
+        }
+    };
+
+    let Calendar$1 = class Calendar {
+        get cssPrefix() {
+            return 'kdtp-cal';
+        }
+        constructor(slot, options) {
+            this.slot = slot;
+            this.options = options || {};
+            if (!this.options.yearRange) {
+                this.options.yearRange = 'c-10:c+10';
+            }
+        }
+        setDate(date) {
+            this.currentDate = new Date(date);
+        }
+        getDate() {
+            return new Date(this.currentDate);
+        }
+        dateChanged(apply) {
+            if (this.options.onDateChanged) {
+                this.options.onDateChanged(this.currentDate, apply);
+            }
+        }
+    };
+
+    let DateTimePicker$1 = class DateTimePicker {
+        get cssPrefix() {
+            return 'kdtp';
+        }
+        constructor(options) {
+            this.calendar = null;
+            this.timePicker = null;
+            this.options = options;
+            this.render();
+        }
+        setDateTime(dateTime) {
+            this.currentDateTime = new Date(dateTime);
+            if (this.calendar) {
+                this.calendar.setDate(this.currentDateTime);
+            }
+            if (this.timePicker) {
+                this.timePicker.setTime(this.currentDateTime);
+            }
+        }
+        getDateTime() {
+            return new Date(this.currentDateTime);
+        }
+        render() {
+            if (this.options.showCalendar) {
+                this.calendar = this.createCalendar({
+                    yearRange: this.options.yearRange,
+                    showDateTimeInput: this.options.showDateTimeInput,
+                    timePickerIsUsed: this.options.showTimePicker,
+                    oneClickDateSelection: this.options.oneClickDateSelection,
+                    onDateChanged: (date, apply) => {
+                        this.currentDateTime = date;
+                        if (this.timePicker) {
+                            this.timePicker.setTime(this.currentDateTime);
+                        }
+                        if (this.options.showTimePicker) {
+                            this.dateTimeChanged();
+                        }
+                        if (apply) {
+                            this.apply(this.currentDateTime);
+                        }
+                    }
+                });
+                if (this.calendar)
+                    this.calendar.render();
+            }
+            if (this.options.showTimePicker) {
+                this.timePicker = this.createTimePicker({
+                    onTimeChanged: (time) => {
+                        this.currentDateTime.setHours(time.getHours());
+                        this.currentDateTime.setMinutes(time.getMinutes());
+                        if (this.calendar) {
+                            this.calendar.setDate(this.currentDateTime);
+                        }
+                        this.dateTimeChanged();
+                    }
+                });
+                if (this.timePicker)
+                    this.timePicker.render();
+            }
+            this.setDateTime(new Date());
+        }
+        createCalendar(options) {
+            return null;
+        }
+        createTimePicker(options) {
+            return null;
+        }
+        show(anchor) {
+            if (this.options.beforeShow) {
+                this.options.beforeShow();
+            }
+            const pos = getElementAbsolutePos$1(anchor || document.body);
+            this.slot.style.top = pos.y + anchor.clientHeight + 'px';
+            this.slot.style.left = pos.x + 'px';
+        }
+        apply(date) {
+            if (this.options.onApply) {
+                this.options.onApply(date);
+            }
+            this.destroy();
+        }
+        cancel() {
+            if (this.options.onCancel) {
+                this.options.onCancel();
+            }
+            this.destroy();
+        }
+        destroy() {
+            if (this.slot && this.slot.parentElement) {
+                this.slot.parentElement.removeChild(this.slot);
+            }
+        }
+        dateTimeChanged() {
+            if (this.options.onDateTimeChanged) {
+                this.options.onDateTimeChanged(this.currentDateTime);
+            }
+        }
+    };
+
+    let DefaultCalendar$1 = class DefaultCalendar extends Calendar$1 {
+        constructor(slot, options) {
+            super(slot, options);
+            this.daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            this.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            this.calendarBody = null;
+            this.isManualInputChanging = false;
+            for (let i = 0; i < this.daysOfWeek.length; i++) {
+                this.daysOfWeek[i] = i18n$2.getShortWeekDayName(i + 1);
+            }
+            for (let i = 0; i < this.months.length; i++) {
+                this.months[i] = i18n$2.getLongMonthName(i + 1);
+            }
+        }
+        setDate(date) {
+            super.setDate(date);
+            this.selectedMonth = this.currentDate.getMonth();
+            this.selectedYear = this.currentDate.getFullYear();
+            this.rerenderMonth();
+        }
+        render() {
+            const header = domel$1('div', this.slot)
+                .addClass(`${this.cssPrefix}-header`);
+            if (this.options.showDateTimeInput) {
+                header
+                    .addChildElement(this.renderManualDateInput());
+            }
+            else {
+                header
+                    .addChild('span', builder => this.headerTextElem = builder.toDOM());
+            }
+            domel$1(this.slot)
+                .addChildElement(this.renderCalendarButtons());
+            this.calendarBody = domel$1('div', this.slot)
+                .addClass(`${this.cssPrefix}-body`)
+                .toDOM();
+        }
+        getInputDateFormat() {
+            const settings = i18n$2.getLocaleSettings();
+            return (this.options.timePickerIsUsed)
+                ? `${settings.editDateFormat} ${settings.editTimeFormat}`
+                : settings.editDateFormat;
+        }
+        renderManualDateInput() {
+            const format = this.getInputDateFormat();
+            const builder = domel$1('input')
+                .attr('placeholder', format)
+                .addClass(`${this.cssPrefix}-header-input`);
+            builder
+                .mask(format.replace('yyyy', '9999')
+                .replace('MM', '99')
+                .replace('dd', '99')
+                .replace('HH', '99')
+                .replace('mm', '99')
+                .replace('ss', '99'))
+                .on('input', ev => {
+                builder.removeClass('error');
+                try {
+                    this.isManualInputChanging = true;
+                    const newDate = utils$2.strToDateTime(this.manualInputElem.value, format);
+                    this.currentDate = newDate;
+                    this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
+                    this.dateChanged(false);
+                }
+                catch (e) {
+                    builder.addClass('error');
+                }
+                finally {
+                    this.isManualInputChanging = false;
+                }
+            })
+                .on('keydown', (ev) => {
+                if (ev.keyCode === 13) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (this.manualInputElem.className.indexOf('error') < 0
+                        && !this.isManualInputChanging)
+                        this.dateChanged(true);
+                }
+            })
+                .on('focus', () => {
+                setTimeout(() => {
+                    this.manualInputElem.selectionStart = 0;
+                    this.manualInputElem.selectionEnd = 0;
+                }, 50);
+            });
+            this.manualInputElem = builder.toDOM();
+            return this.manualInputElem;
+        }
+        updateDisplayedDateValue() {
+            if (this.manualInputElem) {
+                if (!this.isManualInputChanging) {
+                    const format = this.getInputDateFormat();
+                    this.manualInputElem.value = i18n$2.dateTimeToStr(this.currentDate, format);
+                    this.manualInputElem.focus();
+                }
+            }
+            else if (this.headerTextElem) {
+                const locale = i18n$2.getCurrentLocale();
+                this.headerTextElem.innerText = this.currentDate.toLocaleString(locale == 'en' ? undefined : locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+            }
+        }
+        renderCalendarButtons() {
+            const builder = domel$1('nav')
+                .addClass(`${this.cssPrefix}-nav`)
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-prev`)
+                .on('click', () => {
+                this.prev();
+            })
+                .addChild('span', builder => builder.html('&lsaquo;')))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-selectors`)
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-month`)
+                .addChild('select', builder => {
+                builder
+                    .on('change', () => {
+                    this.jump(this.selectedYear, parseInt(this.selectMonthElem.value));
+                });
+                for (let i = 0; i < this.months.length; i++) {
+                    builder.addChild('option', builder => builder
+                        .attr('value', i.toString())
+                        .text(this.months[i]));
+                }
+                this.selectMonthElem = builder.toDOM();
+            }))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-year`)
+                .addChild('select', builder => this.selectYearElem = builder
+                .on('change', () => {
+                this.jump(parseInt(this.selectYearElem.value), this.selectedMonth);
+            })
+                .toDOM())))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-next`)
+                .on('click', () => {
+                this.next();
+            })
+                .addChild('span', builder => builder.html('&rsaquo;')));
+            return builder.toDOM();
+        }
+        prev() {
+            this.selectedYear = (this.selectedMonth === 0) ? this.selectedYear - 1 : this.selectedYear;
+            this.selectedMonth = (this.selectedMonth === 0) ? 11 : this.selectedMonth - 1;
+            this.rerenderMonth();
+        }
+        next() {
+            this.selectedYear = (this.selectedMonth === 11) ? this.selectedYear + 1 : this.selectedYear;
+            this.selectedMonth = (this.selectedMonth + 1) % 12;
+            this.rerenderMonth();
+        }
+        rerenderSelectYear() {
+            const match = /c-(\d*):c\+(\d*)/g.exec(this.options.yearRange);
+            let minusYear = 0;
+            let plusYear = 1;
+            if (match !== null) {
+                minusYear = parseInt(match[1]);
+                plusYear = parseInt(match[2]);
+            }
+            this.selectYearElem.innerHTML = '';
+            for (let i = 0; i <= minusYear + plusYear; i++) {
+                let op = document.createElement("option");
+                let year = this.selectedYear - minusYear + i;
+                op.value = year.toString();
+                op.innerText = year.toString();
+                this.selectYearElem.appendChild(op);
+            }
+        }
+        jump(year, month) {
+            this.selectedYear = year;
+            this.selectedMonth = month;
+            this.rerenderMonth();
+        }
+        rerenderMonth() {
+            //header text
+            this.updateDisplayedDateValue();
+            this.rerenderSelectYear();
+            let firstDay = (new Date(this.selectedYear, this.selectedMonth)).getDay();
+            let daysInMonth = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+            this.calendarBody.innerHTML = "";
+            this.selectYearElem.value = this.selectedYear.toString();
+            this.selectMonthElem.value = this.selectedMonth.toString();
+            this.daysOfWeek.forEach((day, idx) => {
+                domel$1('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-weekday`)
+                    .addClass(idx == 0 || idx == 6 ? `${this.cssPrefix}-weekend` : '')
+                    .text(day);
+            });
+            // Add empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                domel$1('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day-empty`);
+            }
+            // Add all month days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const builder = domel$1('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day`)
+                    .attr('data-date', day.toString())
+                    .text(day.toString())
+                    .on('click', (e) => {
+                    this.currentDate.setFullYear(this.selectedYear);
+                    this.currentDate.setMonth(this.selectedMonth);
+                    this.currentDate.setDate(parseInt(e.target.getAttribute('data-date')));
+                    this.dateChanged(this.options.oneClickDateSelection);
+                });
+                if (day === today.getDate() && this.selectedYear === today.getFullYear() && this.selectedMonth === today.getMonth()) {
+                    builder.addClass(`${this.cssPrefix}-day-current`);
+                }
+                if (day === this.currentDate.getDate() && this.selectedYear === this.currentDate.getFullYear() && this.selectedMonth === this.currentDate.getMonth()) {
+                    builder.addClass(`${this.cssPrefix}-day-selected`);
+                }
+                const dayOfWeek = (firstDay + day - 1) % 7;
+                if (dayOfWeek == 0 || dayOfWeek == 6) {
+                    builder.addClass(`${this.cssPrefix}-weekend`);
+                }
+                if (typeof this.options.onDrawDay === "function") {
+                    this.options.onDrawDay.apply(builder.toDOM(), [
+                        builder.toDOM(),
+                        new Date(this.selectedYear, this.selectedMonth, day)
+                    ]);
+                }
+            }
+            // Add empty cells after last day
+            const cellsDrawnInLastRow = (firstDay + daysInMonth) % 7;
+            const cellsToDraw = cellsDrawnInLastRow == 0 ? 0 : 7 - cellsDrawnInLastRow;
+            for (let i = 0; i < cellsToDraw; i++) {
+                domel$1('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day-empty`);
+            }
+        }
+        dateChanged(apply) {
+            super.dateChanged(apply);
+            this.rerenderMonth();
+        }
+    };
+
+    let TimePicker$1 = class TimePicker {
+        get cssPrefix() {
+            return 'kdtp-tp';
+        }
+        constructor(slot, options) {
+            this.slot = slot;
+            this.options = options || {};
+        }
+        setTime(time) {
+            this.currentTime = new Date(time);
+        }
+        getTime() {
+            return new Date(this.currentTime);
+        }
+        timeChanged() {
+            if (this.options.onTimeChanged) {
+                this.options.onTimeChanged(this.currentTime);
+            }
+        }
+    };
+
+    let DefaultTimePicker$1 = class DefaultTimePicker extends TimePicker$1 {
+        setTime(time) {
+            super.setTime(time);
+            this.updateDisplayedTime();
+            this.hoursInput.valueAsNumber = time.getHours();
+            this.minutesInput.valueAsNumber = time.getMinutes();
+        }
+        render() {
+            domel$1('div', this.slot)
+                .addClass(`${this.cssPrefix}-time`)
+                .addChild('span', builder => this.timeText = builder.toDOM())
+                .toDOM();
+            const slidersBuilder = domel$1('div', this.slot)
+                .addClass(`${this.cssPrefix}-sliders`);
+            slidersBuilder
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-time-row`)
+                .title('Hours')
+                .addChild('input', builder => this.hoursInput = builder
+                .addClass(`${this.cssPrefix}-input-hours`)
+                .type('range')
+                .attr('min', '0')
+                .attr('max', '23')
+                .attr('step', '1')
+                .on('input', (e) => {
+                this.currentTime.setHours(this.hoursInput.valueAsNumber);
+                this.updateDisplayedTime();
+                this.timeChanged();
+            })
+                .toDOM()));
+            slidersBuilder
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-time-row`)
+                .title('Minutes')
+                .addChild('input', builder => this.minutesInput = builder
+                .addClass(`${this.cssPrefix}-input-minutes`)
+                .type('range')
+                .attr('min', '0')
+                .attr('max', '59')
+                .attr('step', '1')
+                .on('input', (e) => {
+                this.currentTime.setMinutes(this.minutesInput.valueAsNumber);
+                this.updateDisplayedTime();
+                this.timeChanged();
+            })
+                .toDOM()));
+            return this.slot;
+        }
+        updateDisplayedTime() {
+            const locale = i18n$2.getCurrentLocale();
+            const timeToDraw = this.currentTime.toLocaleString(locale == 'en' ? undefined : locale, {
+                hour: "numeric",
+                minute: "numeric"
+            });
+            this.timeText.innerText = timeToDraw;
+        }
+    };
+
+    let DefaultDateTimePicker$1 = class DefaultDateTimePicker extends DateTimePicker$1 {
+        render() {
+            const sb = domel$1('div', document.body)
+                .addClass(`${this.cssPrefix}`)
+                .attr('tabIndex', '0')
+                .setStyle('position', 'absolute')
+                .setStyle('top', '-1000px')
+                .setStyle('left', '-1000px')
+                .on('keydown', (ev) => {
+                if (ev.keyCode === 27) { // ESC is pressed
+                    this.cancel();
+                }
+                else if (ev.keyCode === 13) { // Enter is pressed
+                    this.apply(this.getDateTime());
+                }
+                return false;
+            });
+            if (this.options.zIndex) {
+                sb.setStyle('z-index', `${this.options.zIndex}`);
+            }
+            this.slot = sb.toDOM();
+            super.render();
+            this.renderButtons();
+            this.globalMouseDownHandler = (e) => {
+                let event = window.event || e;
+                event.srcElement || event.target;
+                let isOutside = !this.slot.contains(event.target);
+                if (isOutside) {
+                    document.removeEventListener('mousedown', this.globalMouseDownHandler, true);
+                    this.cancel();
+                }
+                return true;
+            };
+        }
+        renderButtons() {
+            const builder = domel$1('div', this.slot)
+                .addClass(`${this.cssPrefix}-buttons`)
+                .addChild('button', b => this.nowButton = b
+                .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-now`)
+                .text(i18n$2.getText('ButtonNow'))
+                .on('click', () => {
+                this.setDateTime(new Date());
+                this.dateTimeChanged();
+                return false;
+            })
+                .toDOM());
+            if (this.options.showTimePicker || !this.options.oneClickDateSelection) {
+                builder.addChild('button', b => this.submitButton = b
+                    .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-apply`)
+                    .text(i18n$2.getText('ButtonApply'))
+                    .on('click', () => {
+                    this.apply(this.getDateTime());
+                    return false;
+                })
+                    .toDOM());
+            }
+            builder.addChild('button', b => this.submitButton = b
+                .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-cancel`)
+                .text(i18n$2.getText('ButtonCancel'))
+                .on('click', () => {
+                this.cancel();
+                return false;
+            })
+                .toDOM());
+        }
+        createCalendar(options) {
+            this.calendarSlot =
+                domel$1('div', this.slot)
+                    .addClass(`${this.cssPrefix}-cal`)
+                    .toDOM();
+            return new DefaultCalendar$1(this.calendarSlot, options);
+        }
+        createTimePicker(options) {
+            this.timePickerSlot =
+                domel$1('div', this.slot)
+                    .addClass(`${this.cssPrefix}-tp`)
+                    .toDOM();
+            return new DefaultTimePicker$1(this.timePickerSlot, options);
+        }
+        show(anchor) {
+            if (this.options.showDateTimeInput) {
+                if (this.options.beforeShow) {
+                    this.options.beforeShow();
+                }
+                const anchorPos = getElementAbsolutePos$1(anchor || document.body);
+                const parentPos = getElementAbsolutePos$1(anchor ? anchor.parentElement || anchor : document.body);
+                this.slot.style.top = parentPos.y + 'px';
+                this.slot.style.left = anchorPos.x + 'px';
+            }
+            else {
+                super.show(anchor);
+                this.slot.focus();
+            }
+            setTimeout(() => {
+                document.addEventListener('mousedown', this.globalMouseDownHandler, true);
+            }, 1);
+        }
+    };
+
+    var DialogFooterAlignment$1;
+    (function (DialogFooterAlignment) {
+        DialogFooterAlignment[DialogFooterAlignment["Left"] = 1] = "Left";
+        DialogFooterAlignment[DialogFooterAlignment["Center"] = 2] = "Center";
+        DialogFooterAlignment[DialogFooterAlignment["Right"] = 3] = "Right";
+    })(DialogFooterAlignment$1 || (DialogFooterAlignment$1 = {}));
+
+    const cssPrefix$2 = "kdlg";
+    let DefaultDialogService$1 = class DefaultDialogService {
+        openConfirm(title, content, callback) {
+            const template = `<div id="${cssPrefix$2}-dialog-confirm">${content}</div>`;
+            const options = {
+                title: title,
+                closable: false,
+                submitable: true,
+                cancelable: true,
+                body: template
+            };
+            if (callback) {
+                options.onSubmit = () => {
+                    callback(true);
+                };
+                options.onCancel = () => {
+                    callback(false);
+                };
+                this.open(options);
+                return;
+            }
+            return new Promise((resolve) => {
+                options.onSubmit = () => {
+                    resolve(true);
+                };
+                options.onCancel = () => {
+                    resolve(false);
+                };
+                this.open(options);
+            });
+        }
+        openPrompt(title, content, defVal, callback) {
+            const template = `<div id="${cssPrefix$2}-dialog-form" class="kfrm-form">
+            <div class="kfrm-fields label-above">
+                <label for="${cssPrefix$2}-dialog-form-input" id="${cssPrefix$2}-dialog-form-content">${content}</label>
+                <input type="text" name="${cssPrefix$2}-dialog-form-input" id="${cssPrefix$2}-dialog-form-input" />
+            </div>
+        </div>`;
+            const options = {
+                title: title,
+                submitable: true,
+                closable: true,
+                cancelable: true,
+                submitOnEnter: true,
+                body: template,
+                arrangeParents: false,
+                beforeOpen: () => {
+                    const input = document.getElementById(`${cssPrefix$2}-dialog-form-input`);
+                    if (defVal) {
+                        input.value = defVal;
+                    }
+                    input.focus();
+                }
+            };
+            const processInput = (callback) => {
+                const input = document.getElementById(`${cssPrefix$2}-dialog-form-input`);
+                const result = input.value;
+                if (result && result.replace(/\s/g, '').length > 0) {
+                    callback(result);
+                    return true;
+                }
+                input.classList.add('eqjs-invalid');
+                return false;
+            };
+            if (callback) {
+                options.onSubmit = () => {
+                    return processInput(callback);
+                };
+                options.onCancel = () => {
+                    callback("");
+                };
+                this.open(options);
+                return;
+            }
+            return new Promise((resolve) => {
+                options.onSubmit = () => {
+                    return processInput(resolve);
+                };
+                options.onCancel = () => {
+                    resolve("");
+                };
+                this.open(options);
+            });
+        }
+        open(options, data) {
+            const dialog = new DefaultDialog$1(options, data);
+            const onDestroy = options.onDestroy;
+            options.onDestroy = (dlg) => {
+                this.untrack(dlg);
+                onDestroy && onDestroy(dlg);
+            };
+            dialog.open();
+            this.track(dialog);
+            return dialog;
+        }
+        createSet(options) {
+            return new DefaultDialogSet$1(options, this);
+        }
+        untrack(dlg) {
+            const index = DefaultDialogService.openDialogs.indexOf(dlg);
+            if (index >= 0) {
+                DefaultDialogService.openDialogs.splice(index, 1);
+            }
+        }
+        track(dlg) {
+            DefaultDialogService.openDialogs.push(dlg);
+        }
+        openProgress(options) {
+            const dialog = new DefaultProgressDialog$1(options);
+            const onDestroy = options.onDestroy;
+            options.onDestroy = (dlg) => {
+                this.untrack(dlg);
+                onDestroy && onDestroy(dlg);
+            };
+            dialog.open();
+            this.track(dialog);
+            return dialog;
+        }
+        getAllDialogs() {
+            return Array.from(DefaultDialogService.openDialogs);
+        }
+        closeAllDialogs() {
+            for (const dialog of Array.from(DefaultDialogService.openDialogs)) {
+                dialog.close();
+            }
+        }
+    };
+    DefaultDialogService$1.openDialogs = [];
+    let DefaultDialog$1 = class DefaultDialog {
+        constructor(options, data) {
+            this.options = options;
+            this.submitHandler = (token) => {
+                if (this.options.onSubmit && this.options.onSubmit(this, token) === false) {
+                    return false;
+                }
+                this.destroy();
+                return true;
+            };
+            this.cancelHandler = () => {
+                if (this.options.onCancel) {
+                    this.options.onCancel(this);
+                }
+                this.destroy();
+            };
+            this.keydownHandler = (ev) => {
+                if (ev.keyCode == 13 && this.isActiveDialog()) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (this.submitHandler()) {
+                        window.removeEventListener('keydown', this.keydownHandler, false);
+                        return false;
+                    }
+                }
+                return true;
+            };
+            this.dialogId = utils$2.generateId('dlg');
+            this.data = data;
+            this.slot =
+                domel$1('div', document.body)
+                    .attr('tab-index', '-1')
+                    .data('dialog-id', this.dialogId)
+                    .addClass(`${cssPrefix$2}-modal`, 'is-active')
+                    .focus()
+                    .addChild('div', b => b
+                    .addClass('kdlg-modal-background'))
+                    .addChild('div', b => this.windowElement = b
+                    .addClass(`${cssPrefix$2}-modal-window`)
+                    .addChild('header', b => {
+                    this.headerElement = b
+                        .addClass(`${cssPrefix$2}-header`)
+                        .addChild('p', b => b
+                        .addClass(`${cssPrefix$2}-header-title`)
+                        .addText(options.title))
+                        .toDOM();
+                    if (options.closable !== false)
+                        b.addChild('button', b => b
+                            .addClass(`${cssPrefix$2}-modal-close`)
+                            .on('click', () => {
+                            this.cancelHandler();
+                        })
+                            .focus());
+                })
+                    .addChild('div', b => {
+                    b.addClass(`${cssPrefix$2}-alert-container`);
+                    this.alertElement = b.toDOM();
+                })
+                    .addChild('section', b => {
+                    this.bodyElement = b
+                        .addClass(`${cssPrefix$2}-body`)
+                        .toDOM();
+                    if (typeof options.body === 'string') {
+                        const html = liquid$2.renderLiquidTemplate(options.body, data);
+                        b.addHtml(html);
+                    }
+                    else {
+                        b.addChildElement(options.body);
+                    }
+                })
+                    .addChild('footer', b => {
+                    let alignClass = null;
+                    if (options.footerAlignment && options.footerAlignment == DialogFooterAlignment$1.Center) {
+                        alignClass = 'align-center';
+                    }
+                    else {
+                        alignClass = 'align-right';
+                    }
+                    this.footerElement = b
+                        .addClass(`${cssPrefix$2}-footer`)
+                        .toDOM();
+                    b.addClass(alignClass);
+                    if (options.submitable === false)
+                        return;
+                    b.addChild('button', bb => {
+                        bb.id(this.dialogId + '-btn-submit')
+                            .addClass('kfrm-button', 'is-info')
+                            .addText(options.submitButtonText || i18n$2.getText('ButtonOK'));
+                        if (options.recaptchaSiteKey) {
+                            bb.data('sitekey', options.recaptchaSiteKey);
+                            bb.addClass('g-recaptcha');
+                            bb.on('click', (e) => {
+                                if (grecaptcha) {
+                                    grecaptcha.ready(() => {
+                                        grecaptcha.execute(options.recaptchaSiteKey, { action: 'submit' })
+                                            .then((token) => {
+                                            this.submitHandler(token);
+                                        });
+                                    });
+                                }
+                                else {
+                                    this.submitHandler();
+                                }
+                            });
+                        }
+                        else {
+                            bb.on('click', (e) => {
+                                this.submitHandler();
+                            });
+                        }
+                        bb.focus();
+                    });
+                    if (options.cancelable !== false)
+                        b.addChild('button', bb => bb
+                            .id(this.dialogId + '-btn-cancel')
+                            .addClass('kfrm-button')
+                            .addText(options.cancelButtonText || i18n$2.getText('ButtonCancel'))
+                            .on('click', (e) => {
+                            this.cancelHandler();
+                        }));
+                })
+                    .toDOM())
+                    .toDOM();
+        }
+        getData() {
+            return this.data;
+        }
+        getRootElement() {
+            return this.slot;
+        }
+        getSubmitButtonElement() {
+            return document.getElementById(this.dialogId + '-btn-submit');
+        }
+        getCancelButtonElement() {
+            return document.getElementById(this.dialogId + '-btn-cancel');
+        }
+        open() {
+            if (this.options.beforeOpen) {
+                this.options.beforeOpen(this);
+            }
+            domel$1(this.slot).show();
+            if (this.options.arrangeParents) {
+                this.arrangeParents(true);
+            }
+            const windowDiv = this.slot
+                .querySelector(`.${cssPrefix$2}-modal-window`);
+            if (this.options.height) {
+                windowDiv.style.height = typeof this.options.height === 'string'
+                    ? this.options.height
+                    : `${this.options.height}px`;
+            }
+            if (this.options.width) {
+                windowDiv.style.width = typeof this.options.width === 'string'
+                    ? this.options.width
+                    : `${this.options.width}px`;
+            }
+            if (this.options.submitOnEnter) {
+                window.addEventListener('keydown', this.keydownHandler, false);
+            }
+            //clear alert on change in any input element 
+            this.slot.querySelectorAll('input')
+                .forEach(element => element.addEventListener('input', () => {
+                this.clearAlert();
+                if (this.options.onInput) {
+                    this.options.onInput(this);
+                }
+            }));
+            if (this.options.onShow) {
+                this.options.onShow(this);
+            }
+        }
+        submit() {
+            this.submitHandler();
+        }
+        cancel() {
+            this.cancelHandler();
+        }
+        close() {
+            this.destroy();
+        }
+        disableButtons() {
+            const buttons = this.slot.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+        }
+        enableButtons() {
+            const buttons = this.slot.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = false);
+        }
+        showAlert(text, reason, replace) {
+            let alert = domel$1('div')
+                .addClass(`${cssPrefix$2}-alert ${reason || ''}`)
+                .addChild('span', b => b
+                .addClass(`${cssPrefix$2}-alert-closebtn`)
+                .text('×')
+                .on('click', (ev) => {
+                const alert = ev.target.parentElement;
+                alert.parentElement.removeChild(alert);
+            }))
+                .addText(text)
+                .toDOM();
+            if (replace === true) {
+                this.clearAlert();
+            }
+            this.alertElement.appendChild(alert);
+        }
+        clearAlert() {
+            this.alertElement.innerHTML = '';
+        }
+        destroy() {
+            const elem = document.querySelectorAll(`[data-dialog-id="${this.dialogId}"]`);
+            if (elem.length <= 0)
+                return;
+            if (this.options.arrangeParents) {
+                this.arrangeParents(false);
+            }
+            document.body.removeChild(this.slot);
+            if (this.options.submitOnEnter) {
+                window.removeEventListener('keydown', this.keydownHandler, false);
+            }
+            if (this.options.onDestroy) {
+                this.options.onDestroy(this);
+            }
+        }
+        isActiveDialog() {
+            const windowDivs = document.documentElement.querySelectorAll('.kdlg-modal');
+            return windowDivs[windowDivs.length - 1] === this.slot;
+        }
+        arrangeParents(turnOn) {
+            const windowDivs = document.documentElement.querySelectorAll('.kdlg-modal-window');
+            for (let i = 0; i < windowDivs.length - 1; i++) {
+                if (turnOn) {
+                    const offset = i == 0 ? 20 : i * 40 + 20;
+                    domel$1(windowDivs[i])
+                        .setStyle('margin-top', `${offset}px`)
+                        .setStyle('margin-left', `${offset}px`);
+                }
+                else {
+                    domel$1(windowDivs[i])
+                        .removeStyle('margin-top')
+                        .removeStyle('margin-left');
+                }
+            }
+        }
+    };
+    let DefaultProgressDialog$1 = class DefaultProgressDialog extends DefaultDialog$1 {
+        constructor(options, data) {
+            let contentElement;
+            let progressElement;
+            const body = domel$1('div')
+                .addChild('div', b => contentElement = b
+                .text(options.content || '')
+                .toDOM())
+                .addChild('div', b => {
+                b
+                    .addClass(`${cssPrefix$2}-progress-line`)
+                    .addChild('div', b => {
+                    progressElement = b
+                        .addClass('fill')
+                        .toDOM();
+                    if (options.determinated) {
+                        b.setStyle('width', '0%');
+                    }
+                    else {
+                        b.addClass('indeterminate');
+                    }
+                });
+            })
+                .toDOM();
+            super({
+                title: options.title,
+                body: body,
+                beforeOpen: options.beforeOpen,
+                onSubmit: options.onSubmit,
+                width: options.width,
+                height: options.height,
+                submitable: false,
+                cancelable: false,
+                closable: false,
+                onDestroy: options.onDestroy
+            }, data);
+            this.contentElement = contentElement;
+            this.progressElement = progressElement;
+        }
+        updateContent(content) {
+            this.contentElement.innerText = content;
+        }
+        updateProgress(progress) {
+            progress = this.in01(progress);
+            this.progressElement.style.width = `${progress * 100}%`;
+            if (progress === 1) {
+                // postpone for 0.5s for smooth closing
+                setTimeout(() => {
+                    this.submit();
+                }, 500);
+            }
+        }
+        in01(num) {
+            if (num > 1)
+                return 1;
+            if (num < 0)
+                return 0;
+            return num;
+        }
+    };
+    let DefaultDialogSet$1 = class DefaultDialogSet {
+        constructor(options, dialogService) {
+            this.options = options;
+            this.dialogService = dialogService;
+            this.currentDialog = null;
+            this.currentIndex = 0;
+            this.options = options;
+            this.dialogService = dialogService;
+        }
+        getCurrent() {
+            return this.currentDialog;
+        }
+        openNext(data) {
+            return this.open(this.currentIndex + 1, data);
+        }
+        openPrev(data) {
+            return this.open(this.currentIndex - 1, data);
+        }
+        open(page, data) {
+            if (page < 0) {
+                this.currentIndex = 0;
+            }
+            else if (page >= this.options.length) {
+                this.currentIndex = this.options.length - 1;
+            }
+            else {
+                this.currentIndex = page;
+            }
+            if (this.currentDialog) {
+                try {
+                    this.currentDialog.close();
+                }
+                catch (e) { }
+            }
+            const dlgOptions = this.options[this.currentIndex];
+            this.currentDialog = this.dialogService.open(dlgOptions, data);
+            return this.currentDialog;
+        }
+        close() {
+            if (this.currentDialog) {
+                this.currentDialog.close();
+                this.currentDialog = null;
+            }
+        }
+    };
+
+    function addEasyDataUITexts$1() {
+        i18n$2.updateDefaultTexts({
+            GridPageInfo: '{FirstPageRecordNum} - {LastPageRecordNum} of {Total} records',
+            GridItemsPerPage: 'items per page',
+            ButtonOK: "OK",
+            ButtonCancel: "Cancel",
+            ButtonApply: 'Apply',
+            ButtonNow: 'Now',
+            LblTotal: 'Total'
+        });
+    }
+    addEasyDataUITexts$1();
+
+    var PRE_SELECT$1;
+    (function (PRE_SELECT) {
+        PRE_SELECT[PRE_SELECT["THIS_WEEK"] = 0] = "THIS_WEEK";
+        PRE_SELECT[PRE_SELECT["LAST_WEEK"] = 1] = "LAST_WEEK";
+        PRE_SELECT[PRE_SELECT["THIS_MONTH"] = 2] = "THIS_MONTH";
+        PRE_SELECT[PRE_SELECT["FIRST_MONTH"] = 3] = "FIRST_MONTH";
+        PRE_SELECT[PRE_SELECT["LAST_MONTH"] = 4] = "LAST_MONTH";
+        PRE_SELECT[PRE_SELECT["THIS_YEAR"] = 5] = "THIS_YEAR";
+        PRE_SELECT[PRE_SELECT["QUARTER_1"] = 6] = "QUARTER_1";
+        PRE_SELECT[PRE_SELECT["QUARTER_2"] = 7] = "QUARTER_2";
+        PRE_SELECT[PRE_SELECT["QUARTER_3"] = 8] = "QUARTER_3";
+        PRE_SELECT[PRE_SELECT["QUARTER_4"] = 9] = "QUARTER_4";
+    })(PRE_SELECT$1 || (PRE_SELECT$1 = {}));
+    var JUMP_TO$1;
+    (function (JUMP_TO) {
+        JUMP_TO["UNDEF"] = "-1";
+        JUMP_TO["TODAY"] = "1";
+        JUMP_TO["YESTERDAY"] = "2";
+        JUMP_TO["TOMORROW"] = "3";
+        JUMP_TO["WEEK_START"] = "4";
+        JUMP_TO["WEEK_END"] = "5";
+        JUMP_TO["MONTH_START"] = "6";
+        JUMP_TO["MONTH_END"] = "7";
+        JUMP_TO["YEAR_START"] = "8";
+        JUMP_TO["YEAR_END"] = "9";
+    })(JUMP_TO$1 || (JUMP_TO$1 = {}));
+    const DEFAULT_WEEK_START = 0;
+    class TimeSpanPicker extends DefaultDialog$1 {
+        constructor(options) {
+            super({
+                title: options.title || `Select a period`,
+                body: "",
+                submitButtonText: options.submitButtonText || `OK`,
+                cancelButtonText: options.cancelButtonText || `Cancel`,
+                submitable: true,
+                closable: true,
+                cancelable: true,
+                beforeOpen: (dlg) => {
+                    this.setupDialog();
+                },
+                onSubmit: (dlg) => {
+                    if (typeof options.onSubmit === "function") {
+                        options.onSubmit.apply(dlg, [this.result(this.from), this.result(this.to)]);
+                    }
+                }
+            });
+            this.yearRange = options.yearRange;
+            this.weekStart = options.weekStart || DEFAULT_WEEK_START;
+            this.bodyElement.append(this.drawDialog());
+            this.calendar1.render();
+            this.calendar2.render();
+            this.from = this.alignDate(options.start ? options.start : new Date());
+            this.to = this.alignDate(options.finish && this.alignDate(options.finish) > this.from ? options.finish : new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 1));
+            this.represent();
+        }
+        alignDate(date) {
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+            return date;
+        }
+        drawDialog() {
+            const body = domel$1('div')
+                .addClass('tsp__container')
+                .addChild('div', b => {
+                b
+                    .addClass('tsp__intervals')
+                    .addChild('button', b => b.addClass('tsp__button').addText('This Week').on('click', () => { this.select(PRE_SELECT$1.THIS_WEEK); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Last Week').on('click', () => { this.select(PRE_SELECT$1.LAST_WEEK); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('This Month').on('click', () => { this.select(PRE_SELECT$1.THIS_MONTH); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('First Month').on('click', () => { this.select(PRE_SELECT$1.FIRST_MONTH); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Last Month').on('click', () => { this.select(PRE_SELECT$1.LAST_MONTH); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('This Year').on('click', () => { this.select(PRE_SELECT$1.THIS_YEAR); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Quarter 1').on('click', () => { this.select(PRE_SELECT$1.QUARTER_1); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Quarter 2').on('click', () => { this.select(PRE_SELECT$1.QUARTER_2); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Quarter 3').on('click', () => { this.select(PRE_SELECT$1.QUARTER_3); }))
+                    .addChild('button', b => b.addClass('tsp__button').addText('Quarter 4').on('click', () => { this.select(PRE_SELECT$1.QUARTER_4); }));
+            })
+                .addChild('div', b => {
+                b
+                    .addClass('tsp__form')
+                    .addChild('div', b => {
+                    b
+                        .addClass('tsp__date')
+                        .addChild('div', b => {
+                        b
+                            .addClass('tsp__label')
+                            .addChild('label', b => {
+                            b.addText('Start');
+                        })
+                            .addChild('select', b => {
+                            b
+                                .addOption({ value: JUMP_TO$1.UNDEF, title: 'Jump To' })
+                                .addOption({ value: JUMP_TO$1.TODAY, title: 'Today' })
+                                .addOption({ value: JUMP_TO$1.YESTERDAY, title: 'Yesterday' })
+                                .addOption({ value: JUMP_TO$1.TOMORROW, title: 'Tomorrow' })
+                                .addOption({ value: JUMP_TO$1.WEEK_START, title: 'Week Start' })
+                                .addOption({ value: JUMP_TO$1.WEEK_END, title: 'Week End' })
+                                .addOption({ value: JUMP_TO$1.MONTH_START, title: 'Month Start' })
+                                .addOption({ value: JUMP_TO$1.MONTH_END, title: 'Month End' })
+                                .addOption({ value: JUMP_TO$1.YEAR_START, title: 'Year Start' })
+                                .addOption({ value: JUMP_TO$1.YEAR_END, title: 'Year End' });
+                            b.on('change', (event) => {
+                                // @ts-ignore
+                                this.jump(1, event.target.value, event.target);
+                            });
+                        });
+                    })
+                        .addChild('div', b => {
+                        b.addClass('tsp__calendar');
+                        this.calendar1 = new DefaultCalendar$1(b.toDOM(), {
+                            yearRange: this.yearRange,
+                            showDateTimeInput: true,
+                            onDateChanged: (date) => {
+                                this.from = this.alignDate(date);
+                                this.calendar1.setDate(this.from);
+                                if (this.to < this.from) {
+                                    this.to = this.from;
+                                }
+                                this.represent();
+                            },
+                            onDrawDay: (cell, date) => {
+                                if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
+                                    cell.classList.add("day-in-range");
+                                }
+                                else {
+                                    cell.classList.remove("day-in-range");
+                                }
+                            }
+                        });
+                    });
+                })
+                    .addChild('div', b => {
+                    b
+                        .addClass('tsp__date')
+                        .addChild('div', b => {
+                        b
+                            .addClass('tsp__label')
+                            .addChild('label', b => {
+                            b.addText('Finish');
+                        })
+                            .addChild('select', b => {
+                            b
+                                .addOption({ value: JUMP_TO$1.UNDEF, title: 'Jump To' })
+                                .addOption({ value: JUMP_TO$1.TODAY, title: 'Today' })
+                                .addOption({ value: JUMP_TO$1.YESTERDAY, title: 'Yesterday' })
+                                .addOption({ value: JUMP_TO$1.TOMORROW, title: 'Tomorrow' })
+                                .addOption({ value: JUMP_TO$1.WEEK_START, title: 'Week Start' })
+                                .addOption({ value: JUMP_TO$1.WEEK_END, title: 'Week End' })
+                                .addOption({ value: JUMP_TO$1.MONTH_START, title: 'Month Start' })
+                                .addOption({ value: JUMP_TO$1.MONTH_END, title: 'Month End' })
+                                .addOption({ value: JUMP_TO$1.YEAR_START, title: 'Year Start' })
+                                .addOption({ value: JUMP_TO$1.YEAR_END, title: 'Year End' });
+                            b.on('change', (event) => {
+                                // @ts-ignore
+                                this.jump(2, event.target.value, event.target);
+                            });
+                        });
+                    })
+                        .addChild('div', b => {
+                        b.addClass('tsp__calendar');
+                        this.calendar2 = new DefaultCalendar$1(b.toDOM(), {
+                            yearRange: this.yearRange,
+                            showDateTimeInput: true,
+                            onDateChanged: (date) => {
+                                if (this.alignDate(date) >= this.from) {
+                                    this.to = this.alignDate(date);
+                                }
+                                else {
+                                    this.calendar2.setDate(this.to);
+                                }
+                                this.represent();
+                            },
+                            onDrawDay: (cell, date) => {
+                                if (this.alignDate(date) >= this.from && this.alignDate(date) <= this.to) {
+                                    cell.classList.add("day-in-range");
+                                }
+                                else {
+                                    cell.classList.remove("day-in-range");
+                                }
+                            }
+                        });
+                    });
+                });
+            })
+                .toDOM();
+            return body;
+        }
+        setupDialog() {
+        }
+        jump(cal, to, select) {
+            let target = cal === 1 ? 'from' : 'to';
+            let jumpTo;
+            const curr = new Date();
+            switch (to) {
+                case JUMP_TO$1.TODAY: {
+                    jumpTo = curr;
+                    break;
+                }
+                case JUMP_TO$1.YESTERDAY: {
+                    jumpTo = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1);
+                    break;
+                }
+                case JUMP_TO$1.TOMORROW: {
+                    jumpTo = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1);
+                    break;
+                }
+                case JUMP_TO$1.WEEK_START: {
+                    jumpTo = new Date(curr.setDate(curr.getDate() - curr.getDay() + this.weekStart));
+                    break;
+                }
+                case JUMP_TO$1.WEEK_END: {
+                    jumpTo = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6 + this.weekStart));
+                    break;
+                }
+                case JUMP_TO$1.MONTH_START: {
+                    jumpTo = new Date(curr.getFullYear(), curr.getMonth(), 1);
+                    break;
+                }
+                case JUMP_TO$1.MONTH_END: {
+                    jumpTo = new Date(curr.getFullYear(), curr.getMonth() + 1, 0);
+                    break;
+                }
+                case JUMP_TO$1.YEAR_START: {
+                    jumpTo = new Date(curr.getFullYear(), 0, 1);
+                    break;
+                }
+                case JUMP_TO$1.YEAR_END: {
+                    jumpTo = new Date(curr.getFullYear(), 12, 0);
+                    break;
+                }
+            }
+            jumpTo = this.alignDate(jumpTo);
+            select.value = JUMP_TO$1.UNDEF;
+            if (target === "from") {
+                this.from = jumpTo;
+                if (this.to < this.from) {
+                    this.to = this.from;
+                }
+            }
+            else {
+                if (jumpTo >= this.from) {
+                    this[target] = jumpTo;
+                }
+            }
+            this.represent();
+        }
+        represent() {
+            this.calendar1.setDate(this.from);
+            this.calendar2.setDate(this.to);
+        }
+        select(interval) {
+            switch (interval) {
+                case PRE_SELECT$1.THIS_WEEK: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - curr.getDay());
+                    this.to = new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 6);
+                    break;
+                }
+                case PRE_SELECT$1.LAST_WEEK: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - curr.getDay() - 7);
+                    this.to = new Date(this.from.getFullYear(), this.from.getMonth(), this.from.getDate() + 6);
+                    break;
+                }
+                case PRE_SELECT$1.THIS_MONTH: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), curr.getMonth(), 1);
+                    this.to = new Date(curr.getFullYear(), curr.getMonth() + 1, 0);
+                    break;
+                }
+                case PRE_SELECT$1.FIRST_MONTH: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 0, 1);
+                    this.to = new Date(curr.getFullYear(), 1, 0);
+                    break;
+                }
+                case PRE_SELECT$1.LAST_MONTH: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), curr.getMonth() - 1, 1);
+                    this.to = new Date(curr.getFullYear(), curr.getMonth(), 0);
+                    break;
+                }
+                case PRE_SELECT$1.THIS_YEAR: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 0, 1);
+                    this.to = new Date(curr.getFullYear(), 12, 0);
+                    break;
+                }
+                case PRE_SELECT$1.QUARTER_1: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 0, 1);
+                    this.to = new Date(curr.getFullYear(), 3, 0);
+                    break;
+                }
+                case PRE_SELECT$1.QUARTER_2: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 3, 1);
+                    this.to = new Date(curr.getFullYear(), 6, 0);
+                    break;
+                }
+                case PRE_SELECT$1.QUARTER_3: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 6, 1);
+                    this.to = new Date(curr.getFullYear(), 9, 0);
+                    break;
+                }
+                case PRE_SELECT$1.QUARTER_4: {
+                    const curr = new Date();
+                    this.from = new Date(curr.getFullYear(), 9, 1);
+                    this.to = new Date(curr.getFullYear(), 12, 0);
+                    break;
+                }
+            }
+            this.represent();
+        }
+        result(date) {
+            const curr = this.alignDate(new Date());
+            const constants = {
+                "Today": this.alignDate(new Date()),
+                "Yesterday": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() - 1)),
+                "Tomorrow": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + 1)),
+                "FirstDayOfMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth(), 1)),
+                "LastDayOfMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth() + 1, 0)),
+                "FirstDayOfWeek": this.alignDate(new Date(curr.setDate(curr.getDate() - curr.getDay() + this.weekStart))),
+                "FirstDayOfYear": this.alignDate(new Date(curr.getFullYear(), 0, 1)),
+                "FirstDayOfNextWeek": this.alignDate(new Date(curr.setDate(curr.getDate() - curr.getDay() + this.weekStart + 7))),
+                "FirstDayOfNextMonth": this.alignDate(new Date(curr.getFullYear(), curr.getMonth() + 1, 1)),
+                "FirstDayOfNextYear": this.alignDate(new Date(curr.getFullYear() + 1, 0, 1)),
+            };
+            for (let k in constants) {
+                console.log(constants[k], date);
+                if (constants[k].getTime() === date.getTime()) {
+                    return `\${{${k}}}`;
+                }
+            }
+            return i18n$2.dateTimeToStr(date, i18n$2.getLocaleSettings().editDateFormat);
+        }
+    }
+    const showTimeSpanPicker = (options) => new TimeSpanPicker(options).open();
+
+    // grid
+    // export dialogs to use outside of context as global
+    const dialogs = new DefaultDialogService$1();
+
+    var easydata_ui_es = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        get AutoResizeColumns () { return AutoResizeColumns$1; },
+        Calendar: Calendar$1,
+        get CellRendererType () { return CellRendererType$1; },
+        DFMT_REGEX: DFMT_REGEX$1,
+        DateTimePicker: DateTimePicker$1,
+        DefaultCalendar: DefaultCalendar$1,
+        DefaultDateTimePicker: DefaultDateTimePicker$1,
+        DefaultDialog: DefaultDialog$1,
+        DefaultDialogService: DefaultDialogService$1,
+        DefaultDialogSet: DefaultDialogSet$1,
+        DefaultProgressDialog: DefaultProgressDialog$1,
+        DefaultTimePicker: DefaultTimePicker$1,
+        get DialogFooterAlignment () { return DialogFooterAlignment$1; },
+        DomElementBuilder: DomElementBuilder$1,
+        DomInputElementBuilder: DomInputElementBuilder$1,
+        DomSelectElementBuilder: DomSelectElementBuilder$1,
+        DomTextAreaElementBuilder: DomTextAreaElementBuilder$1,
+        DragManager: DragManager$1,
+        get DropEffect () { return DropEffect$1; },
+        EasyGrid: EasyGrid$1,
+        EqDragEvent: EqDragEvent$1,
+        GridCellRendererStore: GridCellRendererStore$1,
+        GridColumn: GridColumn$1,
+        get GridColumnAlign () { return GridColumnAlign$1; },
+        GridColumnList: GridColumnList$1,
+        get JUMP_TO () { return JUMP_TO$1; },
+        get PRE_SELECT () { return PRE_SELECT$1; },
+        TimePicker: TimePicker$1,
+        TimeSpanPicker: TimeSpanPicker,
+        addCssClass: addCssClass,
+        addElement: addElement,
+        get browserUtils () { return browserUtils$1; },
+        createBrowserEvent: createBrowserEvent,
+        dialogs: dialogs,
+        domel: domel$1,
+        eqCssMobile: eqCssMobile,
+        eqCssPrefix: eqCssPrefix$1,
+        eqDragManager: eqDragManager$1,
+        getDocSize: getDocSize,
+        getElementAbsolutePos: getElementAbsolutePos$1,
+        getScrollPos: getScrollPos$1,
+        getViewportSize: getViewportSize,
+        getWinSize: getWinSize,
+        hideElement: hideElement,
+        isVisible: isVisible,
+        mask: mask$1,
+        showElement: showElement,
+        showTimeSpanPicker: showTimeSpanPicker,
+        slideDown: slideDown,
+        slideUp: slideUp,
+        toggleVisibility: toggleVisibility,
+        wrapInner: wrapInner
+    });
+
+    /*!
+     * EasyData.JS CRUD v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /*!
+     * EasyData.JS Core v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /** Represents the common types of the data. */
+    var DataType$1;
+    (function (DataType) {
+        /** Unknown type value*/
+        DataType[DataType["Unknown"] = 0] = "Unknown";
+        /** String value*/
+        DataType[DataType["String"] = 1] = "String";
+        /** 8-bit integer value */
+        DataType[DataType["Byte"] = 2] = "Byte";
+        /** 16-bit integer value */
+        DataType[DataType["Word"] = 3] = "Word";
+        /** 32-bit integer value */
+        DataType[DataType["Int32"] = 4] = "Int32";
+        /** 64-bit integer value */
+        DataType[DataType["Int64"] = 5] = "Int64";
+        /** Boolean value */
+        DataType[DataType["Bool"] = 6] = "Bool";
+        /** Floating-point numeric value */
+        DataType[DataType["Float"] = 7] = "Float";
+        /** Money value */
+        DataType[DataType["Currency"] = 8] = "Currency";
+        /** Binary-coded decimal value */
+        DataType[DataType["BCD"] = 9] = "BCD";
+        /** Date value */
+        DataType[DataType["Date"] = 10] = "Date";
+        /** Time value */
+        DataType[DataType["Time"] = 11] = "Time";
+        /** Date and time value */
+        DataType[DataType["DateTime"] = 12] = "DateTime";
+        /** Autoincrement 32-bit integer value */
+        DataType[DataType["Autoinc"] = 13] = "Autoinc";
+        /** MEMO value (text with unlimited length) */
+        DataType[DataType["Memo"] = 14] = "Memo";
+        /** BLOB value (any data with unlimited length) */
+        DataType[DataType["Blob"] = 15] = "Blob";
+        /** Fixed character value */
+        DataType[DataType["FixedChar"] = 16] = "FixedChar";
+        /** The unique identifier */
+        DataType[DataType["Guid"] = 17] = "Guid";
+        /*-------- Spatial data types ----------*/
+        /** Any geometry data */
+        DataType[DataType["Geometry"] = 18] = "Geometry";
+        /** Any data that represents some geography objects</summary> */
+        DataType[DataType["Geography"] = 19] = "Geography";
+    })(DataType$1 || (DataType$1 = {}));
+
+    var EntityAttrKind$1;
+    (function (EntityAttrKind) {
+        EntityAttrKind[EntityAttrKind["Data"] = 0] = "Data";
+        EntityAttrKind[EntityAttrKind["Virtual"] = 1] = "Virtual";
+        EntityAttrKind[EntityAttrKind["Lookup"] = 2] = "Lookup";
+    })(EntityAttrKind$1 || (EntityAttrKind$1 = {}));
+
+    const EditorTag = {
+        /** Unknown tag value */
+        Unknown: "Unknown",
+        /** Edit tag value */
+        Edit: "EDIT",
+        /** DateTime tag value  */
+        DateTime: "DATETIME",
+        /** List tag value */
+        List: "LIST",
+        /** CustomList tag value */
+        CustomList: "CUSTOMLIST",
+        /** File tag value */
+        File: "FILE"
+    };
+
+    var HttpMethod$1;
+    (function (HttpMethod) {
+        HttpMethod["Trace"] = "TRACE";
+        HttpMethod["Options"] = "OPTIONS";
+        HttpMethod["Get"] = "GET";
+        HttpMethod["Put"] = "PUT";
+        HttpMethod["Post"] = "POST";
+        HttpMethod["Delete"] = "DELETE";
+    })(HttpMethod$1 || (HttpMethod$1 = {}));
+
+    class HttpRequest {
+        constructor(xhr, descriptor) {
+            this.xhr = xhr;
+            this.method = descriptor.method;
+            this.url = descriptor.url;
+            this.headers = descriptor.headers;
+            this.queryParams = descriptor.queryParams;
+            this.data = descriptor.data;
+        }
+        setHeader(name, value) {
+            this.headers[name] = value;
+        }
+        setQueryParam(name, value) {
+            this.queryParams[name] = value;
+        }
+        getXMLHttpRequest() {
+            return this.xhr;
+        }
+        getResponseHeaders() {
+            if (this.xhr.readyState == this.xhr.HEADERS_RECEIVED) {
+                const headers = this.xhr.getAllResponseHeaders();
+                const arr = headers.trim().split(/[\r\n]+/);
+                // Create a map of header names to values
+                const headerMap = {};
+                for (const line of arr) {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    headerMap[header] = value;
+                }
+                return headerMap;
+            }
+            return {};
+        }
+        open() {
+            if (this.xhr.readyState !== this.xhr.UNSENT)
+                return;
+            let url = this.url;
+            if (this.queryParams && Object.keys(this.queryParams).length > 0) {
+                url += encodeURI('?' + Object.keys(this.queryParams)
+                    .map(param => param + '=' + this.queryParams[param])
+                    .join('&'));
+            }
+            this.xhr.open(this.method, url, true);
+            this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            for (const header in this.headers) {
+                this.xhr.setRequestHeader(header, this.headers[header]);
+            }
+        }
+        abort() {
+            this.xhr.abort();
+        }
+    }
+
+    var utils$1;
+    (function (utils) {
+        function getAllDataTypes() {
+            return Object.values(DataType$1).filter(item => typeof item === "number");
+        }
+        utils.getAllDataTypes = getAllDataTypes;
+        function getDateDataTypes() {
+            return [DataType$1.Time, DataType$1.Date, DataType$1.DateTime];
+        }
+        utils.getDateDataTypes = getDateDataTypes;
+        function getStringDataTypes() {
+            return [DataType$1.String, DataType$1.Memo, DataType$1.FixedChar];
+        }
+        utils.getStringDataTypes = getStringDataTypes;
+        const _numericTypes = [DataType$1.Byte, DataType$1.Word, DataType$1.Int32,
+            DataType$1.Int64, DataType$1.Float, DataType$1.Currency, DataType$1.Autoinc];
+        function getNumericDataTypes() {
+            return _numericTypes;
+        }
+        utils.getNumericDataTypes = getNumericDataTypes;
+        const _intTypes = [DataType$1.Byte, DataType$1.Word, DataType$1.Int32, DataType$1.Int64, DataType$1.Autoinc];
+        //-------------- object functions -------------------
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function copies only the first level properties.
+         * For a deep copy please use `assignDeep`
+         * @param target - the target object
+         * @param args  - an array of the source objects
+         */
+        function assign(target, ...args) {
+            for (let i = 0; i < args.length; i++) {
+                let source = args[i];
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        utils.assign = assign;
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function make a deep copy -
+         * so `assignDeep` will be called recursively for all object properties
+         * on the first level.
+         * @param target - the target object
+         * @param sources  - an array of the source objects
+         */
+        function assignDeep(target, ...sources) {
+            return assignDeepCore(new WeakMap(), target, sources);
+        }
+        utils.assignDeep = assignDeep;
+        function assignDeepCore(hashSet, target, sources) {
+            if (!target) {
+                target = {};
+            }
+            for (let source of sources) {
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            let sourceVal = source[key];
+                            if (sourceVal !== null && typeof sourceVal === 'object') {
+                                if (hashSet.has(sourceVal)) {
+                                    target[key] = hashSet.get(sourceVal);
+                                }
+                                else {
+                                    if (Array.isArray(sourceVal)) {
+                                        target[key] = createArrayFrom(sourceVal);
+                                        hashSet.set(sourceVal, target[key]);
+                                    }
+                                    else {
+                                        if (typeof target[key] == 'undefined' || target[key] == null) {
+                                            target[key] = Object.create(Object.getPrototypeOf(sourceVal));
+                                        }
+                                        hashSet.set(sourceVal, target[key]);
+                                        assignDeepCore(hashSet, target[key], [sourceVal]);
+                                    }
+                                }
+                            }
+                            else {
+                                target[key] = sourceVal;
+                            }
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        function getIfDefined(value, defaultValue) {
+            return (typeof value !== 'undefined') ? value : defaultValue;
+        }
+        utils.getIfDefined = getIfDefined;
+        function IsDefinedAndNotNull(value) {
+            return typeof value !== 'undefined' && value !== null;
+        }
+        utils.IsDefinedAndNotNull = IsDefinedAndNotNull;
+        function copyArrayTo(collection1, collection2) {
+            const len1 = collection1.length;
+            const len2 = collection2.length;
+            for (let i = 0; i < len1 && i < len2; i++) {
+                collection2[i] = collection1[i];
+            }
+        }
+        utils.copyArrayTo = copyArrayTo;
+        function createArrayFrom(collection) {
+            let result = [];
+            for (let item of collection) {
+                result.push(item);
+            }
+            return result;
+        }
+        utils.createArrayFrom = createArrayFrom;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the found object or null.
+         * @param array
+         * @param id
+         */
+        function findItemById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return array[idx];
+            }
+            return null;
+        }
+        utils.findItemById = findItemById;
+        function findItemIndexById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return idx;
+            }
+            return -1;
+        }
+        utils.findItemIndexById = findItemIndexById;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the index of the found element, or -1 if nothing was found.
+         * @param array
+         * @param id
+         */
+        function indexOfArrayItem(arr, item) {
+            if (arr.indexOf) {
+                return arr.indexOf(item);
+            }
+            else {
+                let len = arr.length;
+                for (let i = 0; i < len; i++) {
+                    if (item == arr[i]) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        }
+        utils.indexOfArrayItem = indexOfArrayItem;
+        /**
+         * Moves an item in some array to a new position
+         * @param array
+         * @param index1
+         * @param index2
+         */
+        function moveArrayItem(array, index1, index2) {
+            if (index1 >= array.length) {
+                throw 'Index out of bounds: ' + index1;
+            }
+            if (index2 >= array.length) {
+                index2 = array.length - 1;
+            }
+            let item = array.splice(index1, 1)[0];
+            array.splice(index2, 0, item);
+        }
+        utils.moveArrayItem = moveArrayItem;
+        /**
+         * Searches for a particular item in the array are removes that item if found.
+         * @param arr
+         * @param value
+         */
+        function removeArrayItem(arr, value) {
+            let index = arr.indexOf(value);
+            if (index != -1) {
+                return arr.splice(index, 1)[0];
+            }
+        }
+        utils.removeArrayItem = removeArrayItem;
+        function insertArrayItem(arr, index, value) {
+            arr.splice(index, 0, value);
+        }
+        utils.insertArrayItem = insertArrayItem;
+        function fillArray(arr, value, start = 0, end) {
+            let len = arr.length >>> 0;
+            var relativeStart = start >> 0;
+            var k = relativeStart < 0 ?
+                Math.max(len + relativeStart, 0) :
+                Math.min(relativeStart, len);
+            var relativeEnd = end === undefined ?
+                len : end >> 0;
+            let final = relativeEnd < 0 ?
+                Math.max(len + relativeEnd, 0) :
+                Math.min(relativeEnd, len);
+            while (k < final) {
+                arr[k] = value;
+                k++;
+            }
+            return arr;
+        }
+        utils.fillArray = fillArray;
+        //------------ DOM utils ------------
+        /**
+         * Calculates the shift on which we need to move our element horizontally
+         * to find current window
+         * @param absLeft
+         * @param width
+         */
+        function shiftToFitWindow(absLeft, width) {
+            let body = document.getElementsByTagName('body')[0];
+            let winWidth = window.innerWidth || document.documentElement.clientWidth || body.clientWidth;
+            var absRight = absLeft + width;
+            let shift = 0;
+            if (absRight > winWidth) {
+                shift = winWidth - absRight - 10;
+                if (absLeft + shift < 0) {
+                    shift = 10 - absLeft;
+                }
+            }
+            return shift;
+        }
+        utils.shiftToFitWindow = shiftToFitWindow;
+        /**
+         * Returns `true` if the value passed in the parameter is an object
+         * @param val
+         */
+        function isObject(val) {
+            if (val === null) {
+                return false;
+            }
+            return ((typeof val === 'function') || (typeof val === 'object'));
+        }
+        utils.isObject = isObject;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isNumericType(dtype) {
+            const index = _numericTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isNumericType = isNumericType;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isIntType(dtype) {
+            const index = _intTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isIntType = isIntType;
+        /**
+         * Returns `true` if the value passed in the parameter is an a numeric value
+         * @param val
+         */
+        function isNumeric(val) {
+            return !isNaN(parseFloat(val)) && isFinite(val);
+        }
+        utils.isNumeric = isNumeric;
+        /**
+         * Returns `true` if two data types  passed in parameters
+         * are compatible - so it's safe to copy the values between
+         * two expressions with these two types
+         * @param type1
+         * @param type2
+         */
+        function areCompatibleDataTypes(type1, type2) {
+            return typeof type1 == "undefined" || typeof type2 == "undefined" || type1 == DataType$1.Unknown || type2 == DataType$1.Unknown
+                || (type1 == type2) || (type1 == DataType$1.Date && type2 == DataType$1.DateTime)
+                || (type1 == DataType$1.DateTime && type2 == DataType$1.Date);
+        }
+        utils.areCompatibleDataTypes = areCompatibleDataTypes;
+        /**
+         * Returns `true` if the property with named `propName`
+         * in the object `obj` has some value
+         * @param obj
+         * @param propName
+         */
+        function isPropSet(obj, propName) {
+            return obj[propName] || obj[propName.toLowerCase()] || obj[propName.toUpperCase()];
+        }
+        utils.isPropSet = isPropSet;
+        //-------------- ID generator -----------
+        const prefixIdLen = 4;
+        const symbols = "0123456789abcdefghijklmnopqrstuvwxyz";
+        const magicTicks = 636712160627685350;
+        /**
+         * Generates an unique ID
+         */
+        function generateId(prefix) {
+            if (!prefix) {
+                prefix = 'easy';
+            }
+            let prfx = (prefix.length > prefixIdLen) ? squeezeMoniker(prefix, prefixIdLen) : prefix;
+            if (prfx && prfx.length > 0) {
+                prfx += "-";
+            }
+            //adding 3 random symbols
+            var randCharPart = symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)];
+            var randInt = getRandomInt(0, 10000);
+            //generating main ID part 
+            //it's a 36-base representation of some random number based on current value of ticks
+            let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+            return prfx + randCharPart + ticksNum36;
+        }
+        utils.generateId = generateId;
+        function intToNumBase(value, targetBase = 36) {
+            var buffer = '';
+            var rest = value;
+            do {
+                buffer = symbols[rest % targetBase] + buffer;
+                rest = Math.floor(rest /= targetBase);
+            } while (rest > 0);
+            return buffer;
+        }
+        function squeezeMoniker(str, maxlen) {
+            let parts = str.split('-');
+            let pml = 1;
+            let ptt = maxlen;
+            if (parts.length < maxlen) {
+                pml = maxlen / parts.length;
+                ptt = parts.length;
+            }
+            let result = "";
+            for (let i = 0; i < ptt; i++) {
+                result += squeeze(parts[i], pml);
+            }
+            return result;
+        }
+        function squeeze(str, maxlen) {
+            const len = str.length;
+            if (len > maxlen) {
+                let step = len / maxlen;
+                let result = "";
+                result += str[0];
+                let nextIndex = step;
+                let ch;
+                for (let i = 1; i < len; i++) {
+                    ch = str[i];
+                    if (i + 1 > nextIndex) {
+                        result += ch;
+                        nextIndex += step;
+                    }
+                }
+                return result;
+            }
+            else {
+                return str;
+            }
+        }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        function getNowTicks() {
+            return (621355968e9 + (new Date()).getTime() * 1e4);
+        }
+        function safeParseInt(str) {
+            const res = parseInt(str);
+            if (isNaN(res))
+                throw `"${str}" is not a valid number`;
+            return res;
+        }
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        // ------------- date/time functions -------------------
+        // TO DO: improve to process all datetime cases
+        function strToDateTime(value, format) {
+            if (!value || value.length == 0)
+                return new Date();
+            const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+            const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+            const formatItems = normalizedFormat.split('-');
+            const dateItems = normalizedValue.split('-');
+            const monthIndex = formatItems.indexOf("MM");
+            const dayIndex = formatItems.indexOf("dd");
+            const yearIndex = formatItems.indexOf("yyyy");
+            const hourIndex = formatItems.indexOf("HH");
+            const minutesIndex = formatItems.indexOf("mm");
+            const secondsIndex = formatItems.indexOf("ss");
+            const today = new Date();
+            try {
+                const year = yearIndex > -1 && yearIndex < dateItems.length
+                    ? safeParseInt(dateItems[yearIndex])
+                    : today.getFullYear();
+                const month = monthIndex > -1 && monthIndex < dateItems.length
+                    ? safeParseInt(dateItems[monthIndex]) - 1
+                    : today.getMonth() - 1;
+                if (month > 11)
+                    throw '';
+                const day = dayIndex > -1 && dayIndex < dateItems.length
+                    ? safeParseInt(dateItems[dayIndex])
+                    : today.getDate();
+                if (day > getDaysInMonth(month, year))
+                    throw '';
+                const hour = hourIndex > -1 && hourIndex < dateItems.length
+                    ? safeParseInt(dateItems[hourIndex])
+                    : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = minutesIndex > -1 && minutesIndex < dateItems.length
+                    ? safeParseInt(dateItems[minutesIndex])
+                    : 0;
+                if (minute > 59)
+                    throw '';
+                const second = secondsIndex > -1 && secondsIndex < dateItems.length
+                    ? safeParseInt(dateItems[secondsIndex])
+                    : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(year, month, day, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${value} is not a valid date.`;
+            }
+        }
+        utils.strToDateTime = strToDateTime;
+        function strToTime(str) {
+            const timeItems = str.split(':');
+            try {
+                const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (minute > 59)
+                    throw '';
+                const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(0, 0, 0, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${str} is not a valid time.`;
+            }
+        }
+        utils.strToTime = strToTime;
+    })(utils$1 || (utils$1 = {}));
+
+    class HttpActionResult {
+        constructor(request, promise) {
+            this.request = request;
+            this.promise = promise;
+        }
+        getPromise() {
+            return this.promise;
+        }
+        getRequest() {
+            return this.request;
+        }
+        then(onfulfilled, onrejected) {
+            return this.promise.then(onfulfilled, onrejected);
+        }
+        catch(onrejected) {
+            return this.promise.catch(onrejected);
+        }
+        finally(onfinally) {
+            return this.promise.finally(onfinally);
+        }
+    }
+
+    class HttpResponseError extends Error {
+        constructor(status, message) {
+            super(message);
+            this.status = status;
+        }
+    }
+    class HttpClient {
+        /** Gets the response body for the latest request  */
+        get responseBody() {
+            return this._responseBody;
+        }
+        constructor() {
+            this.defaultHeaders = {};
+            this.customPayload = undefined;
+        }
+        get(url, options) {
+            return this.send(HttpMethod$1.Get, url, null, options);
+        }
+        post(url, data, options) {
+            return this.send(HttpMethod$1.Post, url, data, options);
+        }
+        put(url, data, options) {
+            return this.send(HttpMethod$1.Put, url, data, options);
+        }
+        delete(url, data, options) {
+            return this.send(HttpMethod$1.Delete, url, data, options);
+        }
+        send(method, url, data, options) {
+            options = options || {};
+            const dataType = options.dataType || 'json';
+            const contentType = options.contentType || (dataType !== 'form-data')
+                ? 'application/json'
+                : null;
+            if (data && dataType != 'form-data' && this.customPayload) {
+                data.data = utils$1.assignDeep(data.data || {}, this.customPayload);
+            }
+            const XHR = ('onload' in new XMLHttpRequest())
+                ? XMLHttpRequest
+                : window["XDomainRequest"]; //IE support
+            const xhr = new XHR();
+            const desc = {
+                method: method,
+                url: url,
+                headers: Object.assign(Object.assign({}, this.defaultHeaders), options.headers || {}),
+                queryParams: options.queryParams || {},
+                data: data
+            };
+            if (contentType)
+                desc.headers['Content-Type'] = contentType;
+            const request = new HttpRequest(xhr, desc);
+            if (this.beforeEachRequest) {
+                console.warn(`HttpClient: 'beforeEachRequest' is deprecated and will be removed in future updates.
+            Use 'onRequest' instead`);
+                this.beforeEachRequest(request);
+            }
+            if (this.onRequest) {
+                this.onRequest(request);
+            }
+            const dataToSend = (request.data && typeof request.data !== 'string'
+                && dataType == 'json')
+                ? JSON.stringify(request.data)
+                : request.data;
+            request.open();
+            return new HttpActionResult(request, new Promise((resolve, reject) => {
+                if (options.responseType)
+                    xhr.responseType = options.responseType;
+                xhr.onerror = (error) => {
+                    reject(new HttpResponseError(xhr.status, xhr.responseText));
+                };
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState != 4)
+                        return; //we process only the state change to DONE(4)
+                    const responseContentType = xhr.getResponseHeader('Content-Type') || '';
+                    const status = xhr.status;
+                    if (status === 0) {
+                        reject(new HttpResponseError(status, "Network error or the request was aborted"));
+                    }
+                    else if (status >= 200 && status < 400) {
+                        //Success
+                        const responseObj = (xhr.responseType === 'arraybuffer' || xhr.responseType === 'blob')
+                            ? xhr.response
+                            : (responseContentType.indexOf('application/json') == 0
+                                ? JSON.parse(xhr.responseText)
+                                : xhr.responseText);
+                        this._responseBody = responseObj;
+                        if (this.onResponse) {
+                            this.onResponse(xhr);
+                        }
+                        resolve(responseObj);
+                    }
+                    else {
+                        //Error
+                        const rtPromise = (xhr.responseType === 'arraybuffer' || xhr.responseType === 'blob')
+                            ? HttpClient.decodeArrayBuffer(xhr.response)
+                            : Promise.resolve(xhr.responseText);
+                        rtPromise.then(responseText => {
+                            const responseObj = (responseContentType.indexOf('application/json') == 0)
+                                ? JSON.parse(responseText)
+                                : responseText;
+                            this._responseBody = responseObj;
+                            const message = responseObj.message ||
+                                (status == 404
+                                    ? `No such endpoint: ${url}`
+                                    : responseObj);
+                            reject(new HttpResponseError(status, message));
+                        });
+                    }
+                };
+                xhr.send(dataToSend);
+            }));
+        }
+        static decodeArrayBuffer(uintArray) {
+            var reader = new FileReader();
+            return new Promise((resolve) => {
+                reader.onloadend = function () {
+                    if (reader.readyState == FileReader.DONE) {
+                        resolve(reader.result);
+                    }
+                };
+                reader.readAsText(new Blob([uintArray]));
+            });
+        }
+    }
+
+    /**
+     * Contains internatialization functionality.
+     */
+    var i18n$1;
+    (function (i18n) {
+        let englishUSLocaleSettings = {
+            shortDateFormat: 'MM/dd/yyyy',
+            longDateFormat: 'dd MMM, yyyy',
+            editDateFormat: 'MM/dd/yyyy',
+            shortTimeFormat: 'HH:mm',
+            editTimeFormat: 'HH:mm',
+            longTimeFormat: 'HH:mm:ss',
+            shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            longMonthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'],
+            shortWeekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            longWeekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            decimalSeparator: '.',
+            currency: 'USD'
+        };
+        let defaultLocale = {
+            localeId: 'en-US',
+            englishName: 'English',
+            displayName: 'English',
+            texts: {
+                ButtonOK: 'OK',
+                ButtonCancel: 'Cancel',
+                Yes: 'Yes',
+                No: 'No',
+                True: 'True',
+                False: 'False'
+            },
+            settings: englishUSLocaleSettings
+        };
+        let allLocales = {
+            'en-US': defaultLocale
+        };
+        let currentLocale;
+        const mappers = [];
+        function mapInfo(info) {
+            for (const mapper of mappers) {
+                mapper(info);
+            }
+        }
+        function addMapper(mapper) {
+            mappers.push(mapper);
+        }
+        i18n.addMapper = addMapper;
+        /**
+         * Gets added locales with their names.
+         * @returns  The locales.
+         */
+        function getLocales() {
+            let result = [];
+            for (let locale in allLocales) {
+                result.push({
+                    locale: locale,
+                    englishName: allLocales[locale].englishName,
+                    displayName: allLocales[locale].displayName
+                });
+            }
+            return result.sort((a, b) => {
+                if (a.englishName > b.englishName) {
+                    return 1;
+                }
+                else if (a.englishName === b.englishName) {
+                    return 0;
+                }
+                return -1;
+            });
+        }
+        i18n.getLocales = getLocales;
+        /**
+         * Gets the current locale ID.
+         * @returns The locale.
+         */
+        function getCurrentLocale() {
+            return currentLocale.localeId;
+        }
+        i18n.getCurrentLocale = getCurrentLocale;
+        /**
+        * Sets the curent locale.
+        * @deprecated Use setCurrentLocale instead
+        * @param l The locale.
+        */
+        function setLocale(l) {
+            console.warn('This method is deprecated. Use setCurrentLocale instead');
+            setCurrentLocale(l);
+        }
+        i18n.setLocale = setLocale;
+        /**
+         * Sets the curent locale.
+         * @param localeId The locale.
+         */
+        function setCurrentLocale(localeId) {
+            const newLocale = allLocales[localeId];
+            if (newLocale) {
+                utils$1.assignDeep(currentLocale, newLocale);
+            }
+            else {
+                currentLocale.englishName = localeId;
+                currentLocale.displayName = localeId;
+                currentLocale.texts = utils$1.assignDeep({}, defaultLocale.texts);
+            }
+            currentLocale.localeId = localeId;
+        }
+        i18n.setCurrentLocale = setCurrentLocale;
+        /**
+         * Returns localized text by the key defined in parameter.
+         * Here we get the text of the resource string assigned to CmdClickToAddCondition key:
+         *
+         ```
+           const text = i18n.getText('CmdClickToAddCondition')
+         ```
+         * @param args The keys of the resource string.
+         * @returns Text of the resource defined by key or null if the key is not found
+         *
+         */
+        function getText(...args) {
+            let textsObj = currentLocale.texts;
+            let resText = '';
+            if (args && args.length) {
+                const argLength = args.length;
+                for (let i = 0; i < argLength; i++) {
+                    resText = textsObj[args[i]];
+                    if (typeof resText === 'object') {
+                        textsObj = resText;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return resText;
+        }
+        i18n.getText = getText;
+        function getLocaleSettings() {
+            return currentLocale.settings;
+        }
+        i18n.getLocaleSettings = getLocaleSettings;
+        function getOneLocaleSetting(key) {
+            return currentLocale.settings[key];
+        }
+        i18n.getOneLocaleSetting = getOneLocaleSetting;
+        function getShortMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.shortMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getShortMonthName = getShortMonthName;
+        function getLongMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.longMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getLongMonthName = getLongMonthName;
+        function getShortWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.shortWeekDayNames.length >= dayNum
+                    ? settings.shortWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getShortWeekDayName = getShortWeekDayName;
+        function getLongWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.longWeekDayNames.length >= dayNum
+                    ? settings.longWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getLongWeekDayName = getLongWeekDayName;
+        /**
+         * Updates the locale settings (date/time formats, separators, etc) for the specified locale.
+         * @param settingsToUpdate a LocaleSettings object
+         */
+        function updateLocaleSettings(settingsToUpdate) {
+            if (!currentLocale.settings) {
+                currentLocale.settings = utils$1.assignDeep({}, englishUSLocaleSettings);
+            }
+            currentLocale.settings = utils$1.assignDeep(currentLocale.settings, settingsToUpdate);
+        }
+        i18n.updateLocaleSettings = updateLocaleSettings;
+        /**
+         * Updates the texts for the current locale
+         * @param texts A plain JS object that contains textual resources
+         */
+        function updateLocaleTexts(texts) {
+            if (typeof texts !== 'object') {
+                console.error('Wrong parameter type in updateLocaleTexts function call.' +
+                    'The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead');
+                return;
+            }
+            mapInfo({ localeId: currentLocale.localeId, texts: texts });
+            utils$1.assignDeep(currentLocale.texts, texts);
+        }
+        i18n.updateLocaleTexts = updateLocaleTexts;
+        function updateDefaultTexts(texts) {
+            for (let localeId in allLocales) {
+                let locale = allLocales[localeId];
+                locale.texts = utils$1.assignDeep({}, texts, locale.texts);
+            }
+            currentLocale.texts = utils$1.assignDeep({}, texts, currentLocale.texts);
+        }
+        i18n.updateDefaultTexts = updateDefaultTexts;
+        /**
+         * Updates the information for the specified locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be added
+         * @param localeInfo  a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function updateLocaleInfo(localeId, localeData) {
+            mapInfo(localeData);
+            let localeInfoToUpdate = currentLocale;
+            if (localeId) {
+                if (!localeData.localeId) {
+                    localeData.localeId = localeId;
+                }
+                localeInfoToUpdate = allLocales[localeId];
+                if (!localeInfoToUpdate) {
+                    localeInfoToUpdate = utils$1.assignDeep({}, defaultLocale);
+                    allLocales[localeId] = localeInfoToUpdate;
+                }
+            }
+            utils$1.assignDeep(localeInfoToUpdate, localeData);
+        }
+        i18n.updateLocaleInfo = updateLocaleInfo;
+        /**
+         * Adds the locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be created
+         * @param localeInfo - a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function addLocale(localeId, localeInfo) {
+            updateLocaleInfo(localeId, localeInfo);
+        }
+        i18n.addLocale = addLocale;
+        /**
+         * Overwrites some locale settings (date/time formats) with the formats used in browser's current language
+         */
+        function determineSettingsByLocale(localeId) {
+            const now = new Date(2020, 5, 7, 19, 34, 56, 88);
+            const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const dateStr = now.toLocaleDateString(localeId, dateOptions);
+            const timeStr = now.toLocaleTimeString(localeId, timeOptions);
+            let dateFormat = dateStr
+                .replace('07', 'dd')
+                .replace('7', 'd')
+                .replace('06', 'MM')
+                .replace('6', 'M')
+                .replace('2020', 'yyyy')
+                .replace('20', 'yy');
+            let timeFormat = timeStr
+                .replace('19', 'HH')
+                .replace('07', 'hh')
+                .replace('7', 'h')
+                .replace('34', 'mm')
+                .replace('56', 'ss')
+                .replace('PM', 'tt');
+            if (!currentLocale.settings) {
+                currentLocale.settings = {};
+            }
+            const localeSettings = {
+                shortDateFormat: dateFormat,
+                shortTimeFormat: timeFormat
+            };
+            updateLocaleSettings(localeSettings);
+        }
+        function loadBrowserLocaleSettings() {
+            const lang = typeof navigator === 'object' ? navigator.language : undefined;
+            determineSettingsByLocale(lang);
+        }
+        function resetLocales() {
+            if (!currentLocale) {
+                currentLocale = utils$1.assignDeep({}, defaultLocale);
+                loadBrowserLocaleSettings();
+            }
+        }
+        i18n.resetLocales = resetLocales;
+        const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
+        /**
+         * Returns string representation of the date/time value according to the custom format (second parameter)
+         * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+         * @param date
+         * @param format
+         */
+        function dateTimeToStr(date, format) {
+            const year = date.getFullYear();
+            const yearStr = year.toString();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
+            const isPm = hour > 11;
+            const matches = {
+                yyyy: yearStr,
+                yy: yearStr.substring(yearStr.length - 2),
+                MMMM: i18n.getLongMonthName(month),
+                MMM: i18n.getShortMonthName(month),
+                MM: (month < 10) ? '0' + month : month.toString(),
+                M: month.toString(),
+                dd: (day < 10) ? '0' + day : day.toString(),
+                d: day.toString(),
+                HH: (hour < 10) ? '0' + hour : hour.toString(),
+                H: hour.toString(),
+                hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
+                h: hour12.toString(),
+                tt: isPm ? 'PM' : 'AM',
+                mm: (minute < 10) ? '0' + minute : minute.toString(),
+                ss: (second < 10) ? '0' + second : second.toString()
+            };
+            return format.replace(DT_FORMAT_RGEX, (match, $1) => {
+                return $1 || matches[match];
+            });
+        }
+        i18n.dateTimeToStr = dateTimeToStr;
+        function dateTimeToStrEx(dateTime, dataType, format) {
+            if (format) {
+                if (format == 'd') {
+                    format = buildShortDateTimeFormat(DataType$1.Date);
+                }
+                else if (format == 'D') {
+                    format = buildLongDateTimeFormat(DataType$1.Date);
+                }
+                else if (format == 'f') {
+                    format = buildShortDateTimeFormat(DataType$1.DateTime);
+                }
+                else if (format == 'F') {
+                    format = buildLongDateTimeFormat(DataType$1.DateTime);
+                }
+            }
+            else {
+                format = buildShortDateTimeFormat(dataType);
+            }
+            return dateTimeToStr(dateTime, format);
+        }
+        i18n.dateTimeToStrEx = dateTimeToStrEx;
+        function buildShortDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$1.Date:
+                    format = localeSettings.shortDateFormat;
+                    break;
+                case DataType$1.Time:
+                    format = localeSettings.shortTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        function buildLongDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType$1.Date:
+                    format = localeSettings.longDateFormat;
+                    break;
+                case DataType$1.Time:
+                    format = localeSettings.longTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        /**
+        * Converts a numeric value to the string taking into the account the decimal separator
+        * @param value - the number to convert
+        * @param format - the format of the number representation (D - decimal, F - float, C - currency)
+        * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
+        */
+        function numberToStr(number, format, decimalSeparator) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    return formatWithSequence(number, format.slice(1));
+                }
+                else if (['D', 'F', 'C'].indexOf(type) >= 0) {
+                    const locale = getCurrentLocale();
+                    return number.toLocaleString(locale, getNumberFormatOptions(format));
+                }
+                else {
+                    return convertWithMask(Math.trunc(number), format);
+                }
+            }
+            const localeSettings = getLocaleSettings();
+            decimalSeparator = decimalSeparator || localeSettings.decimalSeparator;
+            return number.toString().replace('.', decimalSeparator);
+        }
+        i18n.numberToStr = numberToStr;
+        function booleanToStr(bool, format) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    const values = format.slice(1).split('|');
+                    if (values.length > 1) {
+                        const value = values[(bool) ? 1 : 0];
+                        return i18n.getText(value) || value;
+                    }
+                }
+            }
+            return `${bool}`;
+        }
+        i18n.booleanToStr = booleanToStr;
+        const cachedSequenceFormats = {};
+        function formatWithSequence(number, format) {
+            if (!cachedSequenceFormats[format]) {
+                // parse and save in cache format values 
+                const values = format.split('|')
+                    .filter(v => v.length > 0)
+                    .map(v => v.split('='));
+                cachedSequenceFormats[format] = {};
+                if (values.length > 0) {
+                    if (values[0].length > 1) {
+                        for (const value of values) {
+                            cachedSequenceFormats[format][Number.parseInt(value[1])] = value[0];
+                        }
+                    }
+                    else {
+                        values.forEach((value, index) => {
+                            cachedSequenceFormats[format][index] = value[0];
+                        });
+                    }
+                }
+            }
+            const values = cachedSequenceFormats[format];
+            if (values[number] !== undefined) {
+                const value = values[number];
+                return i18n.getText(value) || value;
+            }
+            return number.toString();
+        }
+        function convertWithMask(number, mask) {
+            let value = number.toString();
+            let result = '';
+            let index = value.length - 1;
+            for (let i = mask.length - 1; i >= 0; i--) {
+                const ch = mask.charAt(i);
+                if (ch === '#' || ch === '0') {
+                    if (index >= 0) {
+                        result += value.charAt(index);
+                        index--;
+                    }
+                    else {
+                        if (ch === '0') {
+                            result += 0;
+                        }
+                    }
+                }
+                else {
+                    result += ch;
+                }
+            }
+            return result.split('').reverse().join('');
+        }
+        function getNumberFormatOptions(format) {
+            const localeSettings = getLocaleSettings();
+            const type = format[0].toUpperCase();
+            const digits = (format.length > 1)
+                ? Number.parseInt(format.slice(1))
+                : type == 'D' ? 1 : 2;
+            switch (type) {
+                case 'D':
+                    return {
+                        style: 'decimal',
+                        useGrouping: false,
+                        minimumIntegerDigits: digits
+                    };
+                case 'C':
+                    return {
+                        style: 'currency',
+                        currency: localeSettings.currency,
+                        minimumFractionDigits: digits
+                    };
+                default:
+                    return {
+                        style: 'decimal',
+                        minimumFractionDigits: digits,
+                        maximumFractionDigits: digits
+                    };
+            }
+        }
+    })(i18n$1 || (i18n$1 = {}));
+
+    /**
+     * Represents one entity.
+     */
+    class MetaEntity {
+        /** The default constructor. */
+        constructor(parent) {
+            /** Returns false if this entity is read-only */
+            this.isEditable = true;
+            this.name = "";
+            this.caption = "";
+            this.description = "";
+            this.parent = parent;
+            this.attributes = new Array();
+            this.subEntities = new Array();
+        }
+        /**
+        * Loads entity from its JSON representation object.
+        * @param model The Data Model.
+        * @param dto The JSON representation object.
+        */
+        loadFromData(model, dto) {
+            if (dto) {
+                this.id = dto.id;
+                this.name = dto.name;
+                this.captionPlural = dto.namePlur;
+                this.caption = dto.name;
+                this.description = dto.desc;
+                if (typeof (dto.ied) !== 'undefined')
+                    this.isEditable = dto.ied;
+                this.subEntities = new Array();
+                if (dto.ents) {
+                    for (let i = 0; i < dto.ents.length; i++) {
+                        let newEntity = model.createEntity(this);
+                        newEntity.loadFromData(model, dto.ents[i]);
+                        this.subEntities.push(newEntity);
+                    }
+                }
+                this.attributes = new Array();
+                if (dto.attrs) {
+                    for (let i = 0; i < dto.attrs.length; i++) {
+                        let newAttr = model.createEntityAttr(this);
+                        newAttr.loadFromData(model, dto.attrs[i]);
+                        this.attributes.push(newAttr);
+                    }
+                }
+            }
+        }
+        scan(processAttribute, processEntity) {
+            let opts = { stop: false };
+            let internalProcessEntity = (entity) => {
+                if (processEntity)
+                    processEntity(entity, opts);
+                if (entity.attributes) {
+                    let attrCount = entity.attributes.length;
+                    for (let i = 0; (i < attrCount) && !opts.stop; i++) {
+                        let attr = entity.attributes[i];
+                        if (processAttribute) {
+                            processAttribute(attr, opts);
+                        }
+                        if (opts.stop)
+                            return;
+                    }
+                }
+                if (entity.subEntities) {
+                    let subEntityCount = entity.subEntities.length;
+                    for (let i = 0; (i < subEntityCount) && !opts.stop; i++) {
+                        internalProcessEntity(entity.subEntities[i]);
+                    }
+                }
+            };
+            internalProcessEntity(this);
+        }
+        getFirstPrimaryAttr() {
+            return this.getPrimaryAttrs()[0];
+        }
+        getPrimaryAttrs() {
+            return this.attributes.filter(attr => attr.isPrimaryKey);
+        }
+    }
+    class MetaEntityAttr {
+        /** The default constructor. */
+        constructor(entity) {
+            this.id = "";
+            this.caption = "{Unrecognized attribute}";
+            this.dataType = DataType$1.String;
+            this.size = 0;
+            this.isPrimaryKey = false;
+            this.isForeignKey = false;
+            this.isNullable = true;
+            this.showOnView = true;
+            this.isEditable = true;
+            this.showOnCreate = true;
+            this.showOnEdit = true;
+            this.showInLookup = false;
+            this.lookupAttr = "";
+            this.expr = "";
+            this.entity = entity;
+            this.kind = EntityAttrKind$1.Data;
+        }
+        /**
+         * Loads entity attribute from JSON representation object.
+         * @param model The Data Model.
+         * @param dto The JSON representation object.
+         */
+        loadFromData(model, dto) {
+            if (dto) {
+                this.id = dto.id;
+                this.description = dto.desc;
+                this.caption = dto.cptn;
+                this.dataType = dto.dtype;
+                this.isPrimaryKey = dto.ipk;
+                this.isForeignKey = dto.ifk;
+                this.size = dto.size;
+                this.lookupAttr = dto.lattr;
+                this.lookupEntity = dto.lent;
+                this.dataAttr = dto.dattr;
+                this.lookupDataAttr = dto.ldattr;
+                const isDataType = utils$1.getDateDataTypes().indexOf(this.dataType);
+                this.defaultValue = dto.defVal && isDataType ? new Date(dto.defVal) : dto.defVal;
+                this.isNullable = utils$1.getIfDefined(dto.nul, this.isNullable);
+                this.isEditable = utils$1.getIfDefined(dto.ied, this.isEditable);
+                this.showOnView = utils$1.getIfDefined(dto.ivis || dto.sov, this.showOnView);
+                this.showOnCreate = utils$1.getIfDefined(dto.soc, this.showOnCreate);
+                this.showOnEdit = utils$1.getIfDefined(dto.soe, this.showOnEdit);
+                this.showInLookup = utils$1.getIfDefined(dto.sil, this.showInLookup);
+                this.kind = dto.kind;
+                this.displayFormat = dto.dfmt;
+                if (dto.udata)
+                    this.userData = dto.udata;
+                if (dto.edtr) {
+                    this.defaultEditor = model.getEditorById(dto.edtr) || model.createValueEditor();
+                }
+            }
+        }
+    }
+
+    /**
+     * Represents a value editor.
+     */
+    class ValueEditor {
+        /** The default constructor. */
+        constructor() {
+            this.id = "";
+            this.tag = EditorTag.Unknown;
+            this.resType = DataType$1.Unknown;
+            this.defValue = "";
+        }
+        /**
+         * Loads value editor from its JSON representation object.
+         * @param data The JSON representation object.
+         */
+        loadFromData(data) {
+            if (data) {
+                this.id = data.id;
+                this.tag = data.tag;
+                this.defValue = data.defval;
+                this.resType = data.rtype;
+                this.accept = data.accept;
+                this.multiline = data.multiline;
+                if (data.subType) {
+                    this.resType = data.subType;
+                }
+                if (data.name) {
+                    this.name = data.name;
+                }
+                if (data.values) {
+                    this.values = data.values;
+                }
+            }
+        }
+        getValueText(value) {
+            let result = "";
+            if (!this.values)
+                return result;
+            if (Array.isArray(value)) {
+                for (let item of this.values) {
+                    if (value.indexOf(item.id) >= 0) {
+                        result += item.text + ',';
+                    }
+                }
+            }
+            else {
+                for (let item of this.values) {
+                    if (item.id === value) {
+                        result += item.text + ',';
+                    }
+                }
+            }
+            if (result) {
+                result = result.substring(0, result.length - 1);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Represents a data model
+     */
+    class MetaData {
+        /** The default constructor. */
+        constructor() {
+            this.mainEntity = null;
+            this.id = '__none';
+            this.name = 'Empty model';
+            this.rootEntity = this.createEntity();
+            this.displayFormats = new Map();
+        }
+        /**
+         * Gets the main entity of model
+         * @return The main entity.
+         */
+        getMainEntity() {
+            return this.mainEntity;
+        }
+        createEntity(parent) {
+            return new MetaEntity(parent);
+        }
+        createEntityAttr(parent) {
+            return new MetaEntityAttr(parent);
+        }
+        createValueEditor() {
+            return new ValueEditor();
+        }
+        /**
+         * Loads data model from JSON.
+         * @param stringJson The JSON string.
+         */
+        loadFromJSON(stringJson) {
+            let model = JSON.parse(stringJson);
+            this.loadFromData(model);
+        }
+        /**
+         * Loads data model from its JSON representation object.
+         * @param data The JSON representation object.
+         */
+        loadFromData(data) {
+            this.id = data.id;
+            this.name = data.name;
+            this.version = data.vers;
+            //Editors
+            this.editors = new Array();
+            if (data.editors) {
+                for (let i = 0; i < data.editors.length; i++) {
+                    let newEditor = this.createValueEditor();
+                    newEditor.loadFromData(data.editors[i]);
+                    this.editors.push(newEditor);
+                }
+            }
+            //rootEntity
+            this.rootEntity.loadFromData(this, data.entroot);
+            //DataFormats
+            this.displayFormats = new Map();
+            if (data.displayFormats) {
+                for (const dtypeStr in data.displayFormats) {
+                    const dtype = DataType$1[dtypeStr];
+                    const formats = data.displayFormats[dtypeStr] || new Array();
+                    this.displayFormats.set(dtype, formats);
+                }
+            }
+        }
+        /**
+         * Gets the display formats.
+         * @returns The display formats.
+         */
+        getDisplayFormats() {
+            return this.displayFormats;
+        }
+        /**
+         * Gets the display formats for type
+         * @param type The type
+         * @returns An array of display formats
+         */
+        getDisplayFormatsForType(type) {
+            if (this.displayFormats.has(type)) {
+                return this.displayFormats.get(type);
+            }
+            return [];
+        }
+        /**
+         * Gets the default display format for the provided type
+         * @param type The type
+         * @returns The default type format or null
+         */
+        getDefaultFormat(type) {
+            if (this.displayFormats.has(type)) {
+                return this.displayFormats.get(type).filter(f => f.isdef)[0];
+            }
+            return null;
+        }
+        /**
+         * Sets data to data model.
+         * @param model Its JSON representation object or JSON string.
+         */
+        setData(model) {
+            if (typeof model === 'string') {
+                this.loadFromJSON(model);
+            }
+            else {
+                this.loadFromData(model);
+            }
+        }
+        /**
+         * Checks wether the data model is empty.
+         * @returns `true` if the data model is empty, otherwise `false`.
+         */
+        isEmpty() {
+            return this.rootEntity.subEntities.length === 0 && this.rootEntity.attributes.length === 0;
+        }
+        /**
+         * Gets ID of the data model.
+         * @returns The ID.
+         */
+        getId() {
+            return this.id;
+        }
+        /**
+         * Gets name of the data model.
+         * @returns The name.
+         */
+        getName() {
+            return this.name;
+        }
+        /**
+         * Gets root entity of the data model.
+         * @returns The root entity.
+         */
+        getRootEntity() {
+            return this.rootEntity;
+        }
+        /**
+         * Finds editor by its ID.
+         * @param editorId The editor ID.
+         * @returns The value editor or `null`.
+         */
+        getEditorById(editorId) {
+            for (let editor of this.editors) {
+                if (editor.id === editorId) {
+                    return editor;
+                }
+            }
+            return null;
+        }
+        /**
+         * Gets entity attribute by its ID.
+         * This function runs through all attributes inside specified model (it's root entity and all its sub-entities).
+         * @param attrId The attribute ID.
+         * @returns The attribute or `null`.
+         */
+        getAttributeById(attrId) {
+            let attr = this.getEntityAttrById(this.getRootEntity(), attrId);
+            if (!attr) {
+                return null;
+            }
+            return attr;
+        }
+        /**
+         * Checks wether attribute contains such property.
+         * @param attrId The attribute ID.
+         * @param propName The property name.
+         * @returns `true` if the attribute contains the property, otherwise `false`.
+         */
+        checkAttrProperty(attrId, propName) {
+            let attribute = this.getAttributeById(attrId);
+            if (attribute) {
+                if (typeof attribute[propName] === 'undefined') {
+                    throw 'No such property: ' + propName;
+                }
+                if (attribute[propName]) {
+                    return true;
+                }
+                else if (attribute.lookupAttr) {
+                    attrId = attribute.lookupAttr;
+                    attribute = this.getAttributeById(attrId);
+                    return attribute && attribute[propName];
+                }
+                else {
+                    return false;
+                }
+            }
+            else
+                return false;
+        }
+        /**
+         * Gets entity attribute by its ID.
+         * This function runs through all attributes inside specified entity and all its sub-entities.
+         * @param entity
+         * @param attrId
+         * @returns The attribute or `null`.
+         */
+        getEntityAttrById(entity, attrId) {
+            let idx;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (idx = 0; idx < attrCount; idx++) {
+                    if (entity.attributes[idx].id == attrId) {
+                        return entity.attributes[idx];
+                    }
+                }
+            }
+            let res;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (idx = 0; idx < subEntityCount; idx++) {
+                    res = this.getEntityAttrById(entity.subEntities[idx], attrId);
+                    if (res)
+                        return res;
+                }
+            }
+            return null;
+        }
+        listByEntityWithFilter(entity, filterFunc) {
+            let result = new Array();
+            let caption;
+            let ent = null;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let entIdx = 0; entIdx < subEntityCount; entIdx++) {
+                    ent = entity.subEntities[entIdx];
+                    if (!filterFunc || filterFunc(ent, null)) {
+                        caption = i18n$1.getText('Entities', ent.name);
+                        if (!caption) {
+                            caption = ent.caption;
+                        }
+                        let newEnt = utils$1.assign(this.createEntity(), { id: ent.name, text: caption, items: [], isEntity: true });
+                        newEnt.items = this.listByEntityWithFilter(ent, filterFunc);
+                        if (newEnt.items.length > 0)
+                            result.push(newEnt);
+                    }
+                }
+            }
+            let attr = null;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let attrIdx = 0; attrIdx < attrCount; attrIdx++) {
+                    attr = entity.attributes[attrIdx];
+                    if (!filterFunc || filterFunc(entity, attr)) {
+                        caption = i18n$1.getText('Attributes', attr.id);
+                        if (!caption)
+                            caption = attr.caption;
+                        let newEnt = utils$1.assign(this.createEntity(), { id: attr.id, text: caption, dataType: attr.dataType });
+                        result.push(newEnt);
+                    }
+                }
+            }
+            return result;
+        }
+        listByEntity(entity, opts, filterFunc) {
+            opts = opts || {};
+            let resultEntities = [];
+            let resultAttributes = [];
+            let caption;
+            let ent = null;
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let entIdx = 0; entIdx < subEntityCount; entIdx++) {
+                    ent = entity.subEntities[entIdx];
+                    if (!filterFunc || filterFunc(ent, null)) {
+                        caption = i18n$1.getText('Entities', ent.name) || ent.caption;
+                        let newEnt = utils$1.assign(this.createEntity(), {
+                            id: ent.name,
+                            text: caption,
+                            items: [],
+                            isEntity: true,
+                            description: ent.description
+                        });
+                        let newOpts = utils$1.assign({}, opts);
+                        newOpts.includeRootData = false;
+                        newEnt.items = this.listByEntity(ent, newOpts, filterFunc);
+                        if (newEnt.items.length > 0) {
+                            resultEntities.push(newEnt);
+                        }
+                    }
+                }
+            }
+            let attr = null;
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let attrIdx = 0; attrIdx < attrCount; attrIdx++) {
+                    attr = entity.attributes[attrIdx];
+                    if (!filterFunc || filterFunc(entity, attr)) {
+                        caption = i18n$1.getText('Attributes', attr.id) || attr.caption;
+                        resultAttributes.push(utils$1.assign(this.createEntityAttr(entity), {
+                            id: attr.id, text: caption,
+                            dataType: attr.dataType, lookupAttr: attr.lookupAttr,
+                            description: attr.description
+                        }));
+                    }
+                }
+            }
+            let sortCheck = (a, b) => {
+                if (a.text.toLowerCase() == b.text.toLowerCase()) {
+                    return 0;
+                }
+                if (a.text.toLowerCase() > b.text.toLowerCase()) {
+                    return 1;
+                }
+                return -1;
+            };
+            if (opts.sortEntities) {
+                resultEntities.sort(sortCheck);
+                resultAttributes.sort(sortCheck);
+            }
+            let result;
+            if (!opts.attrPlacement || opts.attrPlacement == 0) {
+                result = resultEntities.concat(resultAttributes);
+            }
+            else {
+                result = resultAttributes.concat(resultEntities);
+            }
+            if (opts.attrPlacement == 2) {
+                result.sort(sortCheck);
+            }
+            if (opts.includeRootData) {
+                caption = i18n$1.getText('Entities', entity.name);
+                if (!caption)
+                    caption = entity.caption;
+                return { id: entity.name, text: caption, items: result };
+            }
+            else {
+                return result;
+            }
+        }
+        /**
+         * Clears data model.
+         */
+        clear() {
+            this.rootEntity = this.createEntity();
+            this.editors = [];
+            this.version = '';
+        }
+        /**
+         * Add default value editors.
+         */
+        addDefaultValueEditors() {
+            let ve;
+            ve = this.addOrUpdateValueEditor('_DTE', EditorTag.Edit, DataType$1.String);
+            ve.defValue = '';
+            this.addOrUpdateValueEditor('_DPDE', EditorTag.DateTime, DataType$1.DateTime);
+            this.addOrUpdateValueEditor('_DPTE', EditorTag.DateTime, DataType$1.DateTime);
+        }
+        /**
+        * Add or update a value editor.
+        * @param id The id.
+        * @param tag The tag.
+        * @param resType The result type.
+        * @returns The value editor.
+        */
+        addOrUpdateValueEditor(id, tag, resType) {
+            let ve = utils$1.findItemById(this.editors, id);
+            if (!ve) {
+                ve = this.createValueEditor();
+                ve.id = id;
+                this.editors.push(ve);
+            }
+            ve.tag = tag;
+            ve.resType = resType;
+            return ve;
+        }
+        /**
+         * Gets entities tree.
+         * @param opts The options.
+         * @param filterFunc The filter function.
+         * Takes two parameters, Entity and EntityAttr (second parameter will be null for entities), and returns boolean (true if the corresponding entity or attribute).
+         * @returns The tree of the entities and their attributes according to options and the filter function
+         */
+        getEntitiesTree(opts, filterFunc) {
+            return this.listByEntity(this.getRootEntity(), opts, filterFunc);
+        }
+        /**
+         * Gets entities tree due to filter.
+         * @param filterFunc The filter function.
+         * Takes two parameters, Entity and EntityAttr (second parameter will be null for entities), and returns boolean (true if the corresponding entity or attribute).
+         * @returns The tree of the entities and their attributes according to the filter function
+         */
+        getEntitiesTreeWithFilter(filterFunc) {
+            return this.listByEntityWithFilter(this.getRootEntity(), filterFunc);
+        }
+        /**
+         * Finds full entity path by attribute
+         * @param attrId The attribute id.
+         * @param sep The separator.
+         * @returns The path.
+         */
+        getFullEntityPathByAttr(attrId, sep) {
+            sep = sep || ' ';
+            return this.getEntityPathByAttr(this.getRootEntity(), attrId, sep, true);
+        }
+        /**
+        * Finds entity path by attribute
+        * @param entity The entity.
+        * @param attrId The attribute id.
+        * @param sep The separator.
+        * @param root The root option.
+        * @returns The path.
+        */
+        getEntityPathByAttr(entity, attrId, sep, root) {
+            if (!entity)
+                return '';
+            sep = sep || ' ';
+            let entityCaption = '';
+            if (entity.caption && !root) {
+                let entityText = i18n$1.getText('Entities', entity.caption);
+                entityCaption = entityText ? entityText : entity.caption;
+            }
+            if (entity.attributes) {
+                let attrCount = entity.attributes.length;
+                for (let i = 0; i < attrCount; i++) {
+                    if (entity.attributes[i].id == attrId) {
+                        return entityCaption;
+                    }
+                }
+            }
+            if (entity.subEntities) {
+                let subEntityCount = entity.subEntities.length;
+                for (let i = 0; i < subEntityCount; i++) {
+                    let ent = entity.subEntities[i];
+                    let res = this.getEntityPathByAttr(ent, attrId, sep, false);
+                    if (res !== '') {
+                        if (entityCaption !== '')
+                            res = entityCaption + sep + res;
+                        return res;
+                    }
+                }
+            }
+            return '';
+        }
+        /**
+         * Gets the attribute text.
+         * @param attr The attribute.
+         * @param format The format.
+         * @returns Formatted text.
+         */
+        getAttributeText(attr, format) {
+            let attrText = i18n$1.getText('Attributes', attr.id);
+            if (!attrText) {
+                attrText = attr.caption;
+            }
+            if (!format) {
+                return attrText;
+            }
+            let result = '';
+            let entityPath = this.getFullEntityPathByAttr(attr.id, ' ');
+            if (entityPath) {
+                result = format.replace(new RegExp('{attr}', 'g'), attrText);
+                result = result.replace(new RegExp('{entity}', 'g'), entityPath);
+            }
+            else {
+                result = attrText;
+            }
+            return result.trim();
+        }
+        /**
+         * Scans model's entity tree and calls the callback functions for each attribute and entity.
+         * @param processAttribute The callback function which is called for each attribute in model's entity tree.
+         * The processed attribute is passed in the first function parameter.
+         * @param processEntity The callback function which is called for each entity in tree.
+         * The processed entity is passed in the first function parameter.
+         */
+        runThroughEntities(processAttribute, processEntity) {
+            this.getRootEntity().scan(processAttribute, processEntity);
+        }
+        /**
+         * Finds first attribute by filter.
+         * @param filterFunc The filter function. Takes EntityAttr object in parameter and returns boolean
+         */
+        getFirstAttributeByFilter(filterFunc) {
+            let res = null;
+            this.runThroughEntities(function (attr, opts) {
+                if (filterFunc(attr)) {
+                    opts.stop = true;
+                    res = attr;
+                }
+            }, null);
+            return res;
+        }
+    }
+
+    var ColumnAlignment$1;
+    (function (ColumnAlignment) {
+        ColumnAlignment[ColumnAlignment["None"] = 0] = "None";
+        ColumnAlignment[ColumnAlignment["Left"] = 1] = "Left";
+        ColumnAlignment[ColumnAlignment["Center"] = 2] = "Center";
+        ColumnAlignment[ColumnAlignment["Right"] = 3] = "Right";
+    })(ColumnAlignment$1 || (ColumnAlignment$1 = {}));
+    class DataColumn {
+        constructor(desc) {
+            if (!desc)
+                throw Error("Options are required");
+            if (!desc.id)
+                throw Error("Field Id is required");
+            if (!desc.label)
+                throw Error("Label is required");
+            this.id = desc.id;
+            this.type = utils$1.getIfDefined(desc.type, DataType$1.String);
+            this.label = desc.label;
+            this.originAttrId = desc.originAttrId;
+            this.isAggr = desc.isAggr || false;
+            this.displayFormat = desc.dfmt;
+            this.groupFooterColumnTemplate = desc.gfct;
+            this.style = desc.style || {};
+            this.description = desc.description;
+            this.calculatedWidth = 0;
+        }
+    }
+    class DataColumnList {
+        constructor() {
+            this.items = [];
+            this.mapper = {};
+            this._dateColumnIdx = [];
+        }
+        get count() {
+            return this.items.length;
+        }
+        add(colOrDesc) {
+            let col;
+            if (colOrDesc instanceof DataColumn) {
+                col = colOrDesc;
+            }
+            else {
+                col = new DataColumn(colOrDesc);
+            }
+            const index = this.items.length;
+            this.items.push(col);
+            this.mapper[col.id] = index;
+            if ([DataType$1.Date, DataType$1.DateTime, DataType$1.Time].indexOf(col.type) >= 0) {
+                this._dateColumnIdx.push(index);
+            }
+            return index;
+        }
+        updateDateColumnIdx() {
+            this._dateColumnIdx = this.getItems()
+                .filter(col => [DataType$1.Date, DataType$1.DateTime, DataType$1.Time].indexOf(col.type) >= 0)
+                .map((col, index) => index);
+        }
+        put(index, col) {
+            if (index >= 0 && index < this.count) {
+                this.items[index] = col;
+                this.updateDateColumnIdx();
+            }
+        }
+        move(col, newIndex) {
+            let oldIndex = this.items.indexOf(col);
+            if (oldIndex >= 0 && oldIndex != newIndex) {
+                utils$1.moveArrayItem(this.items, oldIndex, newIndex);
+                this.updateDateColumnIdx();
+            }
+        }
+        get(index) {
+            if (index >= 0 && index < this.count) {
+                return this.items[index];
+            }
+            else {
+                return null;
+            }
+        }
+        getIndex(id) {
+            return this.mapper[id];
+        }
+        getItems() {
+            return this.items;
+        }
+        getDateColumnIndexes() {
+            return this._dateColumnIdx;
+        }
+        removeAt(index) {
+            const col = this.get(index);
+            this.items.splice(index, 1);
+            const removeDate = this._dateColumnIdx.indexOf(index);
+            if (removeDate >= 0) {
+                this._dateColumnIdx.splice(removeDate, 1);
+            }
+            delete this.mapper[col.id];
+        }
+        clear() {
+            this.items = [];
+            this._dateColumnIdx = [];
+            this.mapper = {};
+        }
+    }
+
+    let DataRow$1 = class DataRow {
+        constructor(columns, values) {
+            this.columns = columns;
+            this.values = values;
+        }
+        toArray() {
+            return Array.from(this.values);
+        }
+        size() {
+            return this.values.length;
+        }
+        getValue(colIdOrIndex) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            return this.values[index];
+        }
+        setValue(colIdOrIndex, value) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            this.values[index] = value;
+        }
+    };
+
+    class EasyDataTable {
+        constructor(options) {
+            this._chunkSize = 1000;
+            this._elasticChunks = false;
+            this.cachedRows = [];
+            this.total = 0;
+            this.loader = null;
+            this.needTotal = true;
+            this.isInMemory = false;
+            options = options || {};
+            this._chunkSize = options.chunkSize || this._chunkSize;
+            this._elasticChunks = options.elasticChunks || this._elasticChunks;
+            this.loader = options.loader;
+            if (typeof options.inMemory !== 'undefined') {
+                this.isInMemory = options.inMemory;
+            }
+            if (this.isInMemory) {
+                this.needTotal = false;
+            }
+            this._columns = new DataColumnList();
+            this.onUpdate = options.onUpdate;
+            if (options.columns) {
+                for (const colDesc of options.columns) {
+                    this._columns.add(colDesc);
+                }
+            }
+            if (options.rows) {
+                for (const rowData of options.rows) {
+                    const row = this.createRow(rowData);
+                    this.addRow(row);
+                }
+            }
+            this.needTotal = !this._elasticChunks;
+        }
+        get columns() {
+            return this._columns;
+        }
+        get chunkSize() {
+            return this._chunkSize;
+        }
+        set chunkSize(value) {
+            this._chunkSize = value;
+            this.total = 0;
+            this.needTotal = !this.elasticChunks;
+            this.cachedRows = [];
+        }
+        get elasticChunks() {
+            return this._elasticChunks;
+        }
+        set elasticChunks(value) {
+            this._elasticChunks = value;
+            this.total = 0;
+            this.needTotal = !this.elasticChunks;
+            this.cachedRows = [];
+        }
+        getRows(params) {
+            let fromIndex = 0, count = this._chunkSize;
+            if (params) {
+                if ('page' in params) {
+                    fromIndex = params.pageSize * (params.page - 1);
+                    count = params.pageSize;
+                }
+                else {
+                    fromIndex = params.offset;
+                    count = params.limit;
+                }
+            }
+            let endIndex = fromIndex + count; //the first index of the next page
+            //if we don't calculate total on this request
+            if (!this.needTotal && !this.elasticChunks) {
+                if (fromIndex >= this.total) {
+                    return Promise.resolve([]);
+                }
+                if (endIndex > this.total) {
+                    endIndex = this.total;
+                }
+            }
+            if (this.isInMemory && endIndex > this.cachedRows.length) {
+                endIndex = this.cachedRows.length;
+            }
+            let allChunksCached = endIndex <= this.cachedRows.length;
+            if (allChunksCached) {
+                return Promise.resolve(this.cachedRows.slice(fromIndex, endIndex));
+            }
+            //if loader is not defined
+            if (!this.loader) {
+                throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
+            }
+            // we need total only for the first request
+            const needTotal = this.needTotal;
+            if (this.needTotal) {
+                this.needTotal = false;
+            }
+            let offset = this.cachedRows.length;
+            let limit = endIndex - offset;
+            if (limit < this._chunkSize) {
+                limit = this._chunkSize;
+            }
+            const resultPromise = this.loader.loadChunk({
+                offset: offset,
+                limit: limit,
+                needTotal: needTotal
+            })
+                .then(result => {
+                if (needTotal) {
+                    this.total = result.total;
+                }
+                Array.prototype.push.apply(this.cachedRows, result.table.getCachedRows());
+                if (endIndex > this.cachedRows.length) {
+                    endIndex = this.cachedRows.length;
+                }
+                if (this.elasticChunks) {
+                    const count = result.table.getCachedCount();
+                    if (count < limit) {
+                        this.total = this.cachedRows.length;
+                    }
+                }
+                this.fireUpdated();
+                return this.cachedRows.slice(fromIndex, endIndex);
+            });
+            return resultPromise;
+        }
+        getRow(index) {
+            return this.getRows({ offset: index, limit: 1 })
+                .then(rows => rows.length > 0 ? rows[0] : null);
+        }
+        getTotal() {
+            return this.total;
+        }
+        setTotal(total) {
+            this.total = total;
+            this.needTotal = false;
+        }
+        getCachedCount() {
+            return this.cachedRows.length;
+        }
+        clear() {
+            this.columns.clear();
+            this.cachedRows = [];
+            this.total = 0;
+            this.needTotal = !this._elasticChunks;
+            this.fireUpdated();
+        }
+        createRow(dataOrRow) {
+            const dateIdx = this._columns.getDateColumnIndexes();
+            const values = new Array(this._columns.count);
+            const getValue = dataOrRow instanceof DataRow$1
+                ? (colId) => dataOrRow.getValue(colId)
+                : (colId) => dataOrRow[colId];
+            if (dataOrRow) {
+                this.columns.getItems().forEach((column) => {
+                    const value = getValue(column.id);
+                    const index = this.columns.getIndex(column.id);
+                    values[index] = (dateIdx.indexOf(index) >= 0)
+                        ? this.mapDate(value, column.type)
+                        : value;
+                });
+            }
+            return new DataRow$1(this._columns, values);
+        }
+        mapDate(value, dtype) {
+            if (value) {
+                let result = new Date(value);
+                if (isNaN(result.getTime())
+                    && dtype == DataType$1.Time) {
+                    result = utils$1.strToTime(value);
+                }
+                return result;
+            }
+            return null;
+        }
+        addRow(rowOrValues) {
+            let newRow;
+            if (Array.isArray(rowOrValues)) {
+                let values = rowOrValues;
+                const dateIdx = this._columns.getDateColumnIndexes();
+                if (dateIdx.length > 0) {
+                    for (const idx of dateIdx) {
+                        if (values[idx]) {
+                            values[idx] = this.mapDate(values[idx], this._columns.get(idx).type);
+                        }
+                    }
+                }
+                newRow = new DataRow$1(this._columns, values);
+            }
+            else {
+                newRow = this.createRow(rowOrValues);
+            }
+            this.cachedRows.push(newRow);
+            const cachedTotal = this.getCachedCount();
+            if (cachedTotal > this.total) {
+                this.total = cachedTotal;
+            }
+            return newRow;
+        }
+        getCachedRows() {
+            return this.cachedRows;
+        }
+        totalIsKnown() {
+            if (this.elasticChunks) {
+                const count = this.getCachedCount();
+                return count === this.total;
+            }
+            return !this.needTotal;
+        }
+        fireUpdated() {
+            if (this.onUpdate) {
+                this.onUpdate(this);
+            }
+        }
+    }
+    /**
+     * Adds two paths and returns the result
+     * Correctly processes leading and trailing slashes
+     * @param path1
+     * @param path2
+     */
+    function combinePath(path1, path2) {
+        let result = path1;
+        if (result != null && result.length > 0) {
+            if (result.charAt(result.length - 1) != '/')
+                result += "/";
+            result += path2;
+        }
+        else {
+            result = path2;
+        }
+        return result;
+    }
+
+    var liquid$1;
+    (function (liquid) {
+        function renderLiquidTemplate(template, vars) {
+            let result = template;
+            if (vars) {
+                for (let v in vars) {
+                    const liquidVarRegexp = new RegExp('\{\{' + v + '\}\}', 'g');
+                    result = result.replace(liquidVarRegexp, vars[v]);
+                }
+            }
+            return result;
+        }
+        liquid.renderLiquidTemplate = renderLiquidTemplate;
+    })(liquid$1 || (liquid$1 = {}));
+
+    i18n$1.resetLocales();
+
+    //types
+    if (typeof Object.values !== 'function') {
+        Object.values = function (obj) {
+            return Object.keys(obj).map(key => obj[key]);
+        };
+    }
+    if (typeof Math.trunc !== 'function') {
+        Math.trunc = function (x) {
+            if (isNaN(x)) {
+                return NaN;
+            }
+            if (x > 0) {
+                return Math.floor(x);
+            }
+            return Math.ceil(x);
+        };
+    }
+
+    class TextDataFilter {
+        constructor(loader, sourceTable, sourceId, isLookup = false) {
+            this.loader = loader;
+            this.sourceTable = sourceTable;
+            this.sourceId = sourceId;
+            this.isLookup = isLookup;
+            this.filterValue = '';
+            //turns off client-side search
+            //for test purposes
+            this.justServerSide = false;
+        }
+        getValue() {
+            return this.filterValue;
+        }
+        apply(value) {
+            this.filterValue = value;
+            if (this.filterValue) {
+                return this.applyCore();
+            }
+            else {
+                return this.clear();
+            }
+        }
+        clear() {
+            this.filterValue = '';
+            return Promise.resolve(this.sourceTable);
+        }
+        applyCore() {
+            if (this.sourceTable.getTotal() == this.sourceTable.getCachedCount() && !this.justServerSide) {
+                return this.applyInMemoryFilter();
+            }
+            else {
+                const filters = [
+                    { class: "__substring", value: this.filterValue }
+                ];
+                return this.loader.loadChunk({
+                    offset: 0,
+                    limit: this.sourceTable.chunkSize,
+                    needTotal: true,
+                    filters: filters,
+                    sourceId: this.sourceId,
+                    lookup: this.isLookup
+                })
+                    .then(data => {
+                    const filteredTable = new EasyDataTable({
+                        chunkSize: this.sourceTable.chunkSize,
+                        loader: {
+                            loadChunk: (params) => this.loader
+                                .loadChunk(Object.assign(Object.assign({}, params), { filters: filters, sourceId: this.sourceId, lookup: this.isLookup }))
+                        }
+                    });
+                    for (const col of this.sourceTable.columns.getItems()) {
+                        filteredTable.columns.add(col);
+                    }
+                    filteredTable.setTotal(data.total);
+                    for (const row of data.table.getCachedRows()) {
+                        filteredTable.addRow(row);
+                    }
+                    return filteredTable;
+                });
+            }
+        }
+        applyInMemoryFilter() {
+            return new Promise((resolve, reject) => {
+                const filteredTable = new EasyDataTable({
+                    chunkSize: this.sourceTable.chunkSize,
+                    inMemory: true
+                });
+                for (const col of this.sourceTable.columns.getItems()) {
+                    filteredTable.columns.add(col);
+                }
+                const words = this.filterValue.split('||').map(w => w.trim().toLowerCase());
+                const suitableColumns = this.sourceTable.columns.getItems()
+                    .filter(col => utils$1.isNumericType(col.type)
+                    || utils$1.getStringDataTypes().indexOf(col.type) >= 0);
+                const hasEnterance = (row) => {
+                    for (const col of suitableColumns) {
+                        const value = row.getValue(col.id);
+                        if (value) {
+                            const normalized = value.toString().toLowerCase();
+                            for (const word of words) {
+                                if (normalized.indexOf(word) >= 0) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                };
+                for (const row of this.sourceTable.getCachedRows()) {
+                    if (hasEnterance(row)) {
+                        filteredTable.addRow(row);
+                    }
+                }
+                filteredTable.setTotal(filteredTable.getCachedCount());
+                resolve(filteredTable);
+            });
+        }
+    }
+
+    /*!
+     * EasyData.JS UI v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /*!
+     * EasyData.JS Core v1.4.20
+     * Copyright 2023 Korzh.com
+     * Licensed under MIT
+     */
+
+    /** Represents the common types of the data. */
+    var DataType;
+    (function (DataType) {
+        /** Unknown type value*/
+        DataType[DataType["Unknown"] = 0] = "Unknown";
+        /** String value*/
+        DataType[DataType["String"] = 1] = "String";
+        /** 8-bit integer value */
+        DataType[DataType["Byte"] = 2] = "Byte";
+        /** 16-bit integer value */
+        DataType[DataType["Word"] = 3] = "Word";
+        /** 32-bit integer value */
+        DataType[DataType["Int32"] = 4] = "Int32";
+        /** 64-bit integer value */
+        DataType[DataType["Int64"] = 5] = "Int64";
+        /** Boolean value */
+        DataType[DataType["Bool"] = 6] = "Bool";
+        /** Floating-point numeric value */
+        DataType[DataType["Float"] = 7] = "Float";
+        /** Money value */
+        DataType[DataType["Currency"] = 8] = "Currency";
+        /** Binary-coded decimal value */
+        DataType[DataType["BCD"] = 9] = "BCD";
+        /** Date value */
+        DataType[DataType["Date"] = 10] = "Date";
+        /** Time value */
+        DataType[DataType["Time"] = 11] = "Time";
+        /** Date and time value */
+        DataType[DataType["DateTime"] = 12] = "DateTime";
+        /** Autoincrement 32-bit integer value */
+        DataType[DataType["Autoinc"] = 13] = "Autoinc";
+        /** MEMO value (text with unlimited length) */
+        DataType[DataType["Memo"] = 14] = "Memo";
+        /** BLOB value (any data with unlimited length) */
+        DataType[DataType["Blob"] = 15] = "Blob";
+        /** Fixed character value */
+        DataType[DataType["FixedChar"] = 16] = "FixedChar";
+        /** The unique identifier */
+        DataType[DataType["Guid"] = 17] = "Guid";
+        /*-------- Spatial data types ----------*/
+        /** Any geometry data */
+        DataType[DataType["Geometry"] = 18] = "Geometry";
+        /** Any data that represents some geography objects</summary> */
+        DataType[DataType["Geography"] = 19] = "Geography";
+    })(DataType || (DataType = {}));
+
+    var EntityAttrKind;
+    (function (EntityAttrKind) {
+        EntityAttrKind[EntityAttrKind["Data"] = 0] = "Data";
+        EntityAttrKind[EntityAttrKind["Virtual"] = 1] = "Virtual";
+        EntityAttrKind[EntityAttrKind["Lookup"] = 2] = "Lookup";
+    })(EntityAttrKind || (EntityAttrKind = {}));
+
+    var HttpMethod;
+    (function (HttpMethod) {
+        HttpMethod["Trace"] = "TRACE";
+        HttpMethod["Options"] = "OPTIONS";
+        HttpMethod["Get"] = "GET";
+        HttpMethod["Put"] = "PUT";
+        HttpMethod["Post"] = "POST";
+        HttpMethod["Delete"] = "DELETE";
+    })(HttpMethod || (HttpMethod = {}));
+
+    var utils;
+    (function (utils) {
+        function getAllDataTypes() {
+            return Object.values(DataType).filter(item => typeof item === "number");
+        }
+        utils.getAllDataTypes = getAllDataTypes;
+        function getDateDataTypes() {
+            return [DataType.Time, DataType.Date, DataType.DateTime];
+        }
+        utils.getDateDataTypes = getDateDataTypes;
+        function getStringDataTypes() {
+            return [DataType.String, DataType.Memo, DataType.FixedChar];
+        }
+        utils.getStringDataTypes = getStringDataTypes;
+        const _numericTypes = [DataType.Byte, DataType.Word, DataType.Int32,
+            DataType.Int64, DataType.Float, DataType.Currency, DataType.Autoinc];
+        function getNumericDataTypes() {
+            return _numericTypes;
+        }
+        utils.getNumericDataTypes = getNumericDataTypes;
+        const _intTypes = [DataType.Byte, DataType.Word, DataType.Int32, DataType.Int64, DataType.Autoinc];
+        //-------------- object functions -------------------
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function copies only the first level properties.
+         * For a deep copy please use `assignDeep`
+         * @param target - the target object
+         * @param args  - an array of the source objects
+         */
+        function assign(target, ...args) {
+            for (let i = 0; i < args.length; i++) {
+                let source = args[i];
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        utils.assign = assign;
+        /**
+         * Copy the content of all objests passed in `args` parameters into `target`
+         * and returns the result
+         * NB: This function make a deep copy -
+         * so `assignDeep` will be called recursively for all object properties
+         * on the first level.
+         * @param target - the target object
+         * @param sources  - an array of the source objects
+         */
+        function assignDeep(target, ...sources) {
+            return assignDeepCore(new WeakMap(), target, sources);
+        }
+        utils.assignDeep = assignDeep;
+        function assignDeepCore(hashSet, target, sources) {
+            if (!target) {
+                target = {};
+            }
+            for (let source of sources) {
+                if (source) {
+                    for (let key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            let sourceVal = source[key];
+                            if (sourceVal !== null && typeof sourceVal === 'object') {
+                                if (hashSet.has(sourceVal)) {
+                                    target[key] = hashSet.get(sourceVal);
+                                }
+                                else {
+                                    if (Array.isArray(sourceVal)) {
+                                        target[key] = createArrayFrom(sourceVal);
+                                        hashSet.set(sourceVal, target[key]);
+                                    }
+                                    else {
+                                        if (typeof target[key] == 'undefined' || target[key] == null) {
+                                            target[key] = Object.create(Object.getPrototypeOf(sourceVal));
+                                        }
+                                        hashSet.set(sourceVal, target[key]);
+                                        assignDeepCore(hashSet, target[key], [sourceVal]);
+                                    }
+                                }
+                            }
+                            else {
+                                target[key] = sourceVal;
+                            }
+                        }
+                    }
+                }
+            }
+            return target;
+        }
+        function getIfDefined(value, defaultValue) {
+            return (typeof value !== 'undefined') ? value : defaultValue;
+        }
+        utils.getIfDefined = getIfDefined;
+        function IsDefinedAndNotNull(value) {
+            return typeof value !== 'undefined' && value !== null;
+        }
+        utils.IsDefinedAndNotNull = IsDefinedAndNotNull;
+        function copyArrayTo(collection1, collection2) {
+            const len1 = collection1.length;
+            const len2 = collection2.length;
+            for (let i = 0; i < len1 && i < len2; i++) {
+                collection2[i] = collection1[i];
+            }
+        }
+        utils.copyArrayTo = copyArrayTo;
+        function createArrayFrom(collection) {
+            let result = [];
+            for (let item of collection) {
+                result.push(item);
+            }
+            return result;
+        }
+        utils.createArrayFrom = createArrayFrom;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the found object or null.
+         * @param array
+         * @param id
+         */
+        function findItemById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return array[idx];
+            }
+            return null;
+        }
+        utils.findItemById = findItemById;
+        function findItemIndexById(array, id) {
+            var arrLength = array.length;
+            for (var idx = 0; idx < arrLength; idx++) {
+                if (array[idx].id === id)
+                    return idx;
+            }
+            return -1;
+        }
+        utils.findItemIndexById = findItemIndexById;
+        /**
+         * Searches an array of the objects which implement ItemWithId by ID
+         * Returs the index of the found element, or -1 if nothing was found.
+         * @param array
+         * @param id
+         */
+        function indexOfArrayItem(arr, item) {
+            if (arr.indexOf) {
+                return arr.indexOf(item);
+            }
+            else {
+                let len = arr.length;
+                for (let i = 0; i < len; i++) {
+                    if (item == arr[i]) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        }
+        utils.indexOfArrayItem = indexOfArrayItem;
+        /**
+         * Moves an item in some array to a new position
+         * @param array
+         * @param index1
+         * @param index2
+         */
+        function moveArrayItem(array, index1, index2) {
+            if (index1 >= array.length) {
+                throw 'Index out of bounds: ' + index1;
+            }
+            if (index2 >= array.length) {
+                index2 = array.length - 1;
+            }
+            let item = array.splice(index1, 1)[0];
+            array.splice(index2, 0, item);
+        }
+        utils.moveArrayItem = moveArrayItem;
+        /**
+         * Searches for a particular item in the array are removes that item if found.
+         * @param arr
+         * @param value
+         */
+        function removeArrayItem(arr, value) {
+            let index = arr.indexOf(value);
+            if (index != -1) {
+                return arr.splice(index, 1)[0];
+            }
+        }
+        utils.removeArrayItem = removeArrayItem;
+        function insertArrayItem(arr, index, value) {
+            arr.splice(index, 0, value);
+        }
+        utils.insertArrayItem = insertArrayItem;
+        function fillArray(arr, value, start = 0, end) {
+            let len = arr.length >>> 0;
+            var relativeStart = start >> 0;
+            var k = relativeStart < 0 ?
+                Math.max(len + relativeStart, 0) :
+                Math.min(relativeStart, len);
+            var relativeEnd = end === undefined ?
+                len : end >> 0;
+            let final = relativeEnd < 0 ?
+                Math.max(len + relativeEnd, 0) :
+                Math.min(relativeEnd, len);
+            while (k < final) {
+                arr[k] = value;
+                k++;
+            }
+            return arr;
+        }
+        utils.fillArray = fillArray;
+        //------------ DOM utils ------------
+        /**
+         * Calculates the shift on which we need to move our element horizontally
+         * to find current window
+         * @param absLeft
+         * @param width
+         */
+        function shiftToFitWindow(absLeft, width) {
+            let body = document.getElementsByTagName('body')[0];
+            let winWidth = window.innerWidth || document.documentElement.clientWidth || body.clientWidth;
+            var absRight = absLeft + width;
+            let shift = 0;
+            if (absRight > winWidth) {
+                shift = winWidth - absRight - 10;
+                if (absLeft + shift < 0) {
+                    shift = 10 - absLeft;
+                }
+            }
+            return shift;
+        }
+        utils.shiftToFitWindow = shiftToFitWindow;
+        /**
+         * Returns `true` if the value passed in the parameter is an object
+         * @param val
+         */
+        function isObject(val) {
+            if (val === null) {
+                return false;
+            }
+            return ((typeof val === 'function') || (typeof val === 'object'));
+        }
+        utils.isObject = isObject;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isNumericType(dtype) {
+            const index = _numericTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isNumericType = isNumericType;
+        /**
+         * Returns `true` if the `DataType` value passed in the parameter
+         * represents some numeric type
+         * @param dtype
+         */
+        function isIntType(dtype) {
+            const index = _intTypes.indexOf(dtype);
+            return (index >= 0);
+        }
+        utils.isIntType = isIntType;
+        /**
+         * Returns `true` if the value passed in the parameter is an a numeric value
+         * @param val
+         */
+        function isNumeric(val) {
+            return !isNaN(parseFloat(val)) && isFinite(val);
+        }
+        utils.isNumeric = isNumeric;
+        /**
+         * Returns `true` if two data types  passed in parameters
+         * are compatible - so it's safe to copy the values between
+         * two expressions with these two types
+         * @param type1
+         * @param type2
+         */
+        function areCompatibleDataTypes(type1, type2) {
+            return typeof type1 == "undefined" || typeof type2 == "undefined" || type1 == DataType.Unknown || type2 == DataType.Unknown
+                || (type1 == type2) || (type1 == DataType.Date && type2 == DataType.DateTime)
+                || (type1 == DataType.DateTime && type2 == DataType.Date);
+        }
+        utils.areCompatibleDataTypes = areCompatibleDataTypes;
+        /**
+         * Returns `true` if the property with named `propName`
+         * in the object `obj` has some value
+         * @param obj
+         * @param propName
+         */
+        function isPropSet(obj, propName) {
+            return obj[propName] || obj[propName.toLowerCase()] || obj[propName.toUpperCase()];
+        }
+        utils.isPropSet = isPropSet;
+        //-------------- ID generator -----------
+        const prefixIdLen = 4;
+        const symbols = "0123456789abcdefghijklmnopqrstuvwxyz";
+        const magicTicks = 636712160627685350;
+        /**
+         * Generates an unique ID
+         */
+        function generateId(prefix) {
+            if (!prefix) {
+                prefix = 'easy';
+            }
+            let prfx = (prefix.length > prefixIdLen) ? squeezeMoniker(prefix, prefixIdLen) : prefix;
+            if (prfx && prfx.length > 0) {
+                prfx += "-";
+            }
+            //adding 3 random symbols
+            var randCharPart = symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)] +
+                symbols[getRandomInt(0, symbols.length)];
+            var randInt = getRandomInt(0, 10000);
+            //generating main ID part 
+            //it's a 36-base representation of some random number based on current value of ticks
+            let ticksNum36 = intToNumBase(getNowTicks() - magicTicks - randInt);
+            return prfx + randCharPart + ticksNum36;
+        }
+        utils.generateId = generateId;
+        function intToNumBase(value, targetBase = 36) {
+            var buffer = '';
+            var rest = value;
+            do {
+                buffer = symbols[rest % targetBase] + buffer;
+                rest = Math.floor(rest /= targetBase);
+            } while (rest > 0);
+            return buffer;
+        }
+        function squeezeMoniker(str, maxlen) {
+            let parts = str.split('-');
+            let pml = 1;
+            let ptt = maxlen;
+            if (parts.length < maxlen) {
+                pml = maxlen / parts.length;
+                ptt = parts.length;
+            }
+            let result = "";
+            for (let i = 0; i < ptt; i++) {
+                result += squeeze(parts[i], pml);
+            }
+            return result;
+        }
+        function squeeze(str, maxlen) {
+            const len = str.length;
+            if (len > maxlen) {
+                let step = len / maxlen;
+                let result = "";
+                result += str[0];
+                let nextIndex = step;
+                let ch;
+                for (let i = 1; i < len; i++) {
+                    ch = str[i];
+                    if (i + 1 > nextIndex) {
+                        result += ch;
+                        nextIndex += step;
+                    }
+                }
+                return result;
+            }
+            else {
+                return str;
+            }
+        }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        function getNowTicks() {
+            return (621355968e9 + (new Date()).getTime() * 1e4);
+        }
+        function safeParseInt(str) {
+            const res = parseInt(str);
+            if (isNaN(res))
+                throw `"${str}" is not a valid number`;
+            return res;
+        }
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        // ------------- date/time functions -------------------
+        // TO DO: improve to process all datetime cases
+        function strToDateTime(value, format) {
+            if (!value || value.length == 0)
+                return new Date();
+            const normalizedValue = value.replace(/[^a-zA-Z0-9_]/g, '-');
+            const normalizedFormat = format.replace(/[^a-zA-Z0-9_]/g, '-');
+            const formatItems = normalizedFormat.split('-');
+            const dateItems = normalizedValue.split('-');
+            const monthIndex = formatItems.indexOf("MM");
+            const dayIndex = formatItems.indexOf("dd");
+            const yearIndex = formatItems.indexOf("yyyy");
+            const hourIndex = formatItems.indexOf("HH");
+            const minutesIndex = formatItems.indexOf("mm");
+            const secondsIndex = formatItems.indexOf("ss");
+            const today = new Date();
+            try {
+                const year = yearIndex > -1 && yearIndex < dateItems.length
+                    ? safeParseInt(dateItems[yearIndex])
+                    : today.getFullYear();
+                const month = monthIndex > -1 && monthIndex < dateItems.length
+                    ? safeParseInt(dateItems[monthIndex]) - 1
+                    : today.getMonth() - 1;
+                if (month > 11)
+                    throw '';
+                const day = dayIndex > -1 && dayIndex < dateItems.length
+                    ? safeParseInt(dateItems[dayIndex])
+                    : today.getDate();
+                if (day > getDaysInMonth(month, year))
+                    throw '';
+                const hour = hourIndex > -1 && hourIndex < dateItems.length
+                    ? safeParseInt(dateItems[hourIndex])
+                    : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = minutesIndex > -1 && minutesIndex < dateItems.length
+                    ? safeParseInt(dateItems[minutesIndex])
+                    : 0;
+                if (minute > 59)
+                    throw '';
+                const second = secondsIndex > -1 && secondsIndex < dateItems.length
+                    ? safeParseInt(dateItems[secondsIndex])
+                    : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(year, month, day, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${value} is not a valid date.`;
+            }
+        }
+        utils.strToDateTime = strToDateTime;
+        function strToTime(str) {
+            const timeItems = str.split(':');
+            try {
+                const hour = timeItems.length > 0 ? safeParseInt(timeItems[0]) : 0;
+                if (hour > 23)
+                    throw '';
+                const minute = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (minute > 59)
+                    throw '';
+                const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0;
+                if (second > 59)
+                    throw '';
+                return new Date(0, 0, 0, hour, minute, second);
+            }
+            catch (_a) {
+                throw `${str} is not a valid time.`;
+            }
+        }
+        utils.strToTime = strToTime;
+    })(utils || (utils = {}));
+
+    /**
+     * Contains internatialization functionality.
+     */
+    var i18n;
+    (function (i18n) {
+        let englishUSLocaleSettings = {
+            shortDateFormat: 'MM/dd/yyyy',
+            longDateFormat: 'dd MMM, yyyy',
+            editDateFormat: 'MM/dd/yyyy',
+            shortTimeFormat: 'HH:mm',
+            editTimeFormat: 'HH:mm',
+            longTimeFormat: 'HH:mm:ss',
+            shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            longMonthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'],
+            shortWeekDayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            longWeekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            decimalSeparator: '.',
+            currency: 'USD'
+        };
+        let defaultLocale = {
+            localeId: 'en-US',
+            englishName: 'English',
+            displayName: 'English',
+            texts: {
+                ButtonOK: 'OK',
+                ButtonCancel: 'Cancel',
+                Yes: 'Yes',
+                No: 'No',
+                True: 'True',
+                False: 'False'
+            },
+            settings: englishUSLocaleSettings
+        };
+        let allLocales = {
+            'en-US': defaultLocale
+        };
+        let currentLocale;
+        const mappers = [];
+        function mapInfo(info) {
+            for (const mapper of mappers) {
+                mapper(info);
+            }
+        }
+        function addMapper(mapper) {
+            mappers.push(mapper);
+        }
+        i18n.addMapper = addMapper;
+        /**
+         * Gets added locales with their names.
+         * @returns  The locales.
+         */
+        function getLocales() {
+            let result = [];
+            for (let locale in allLocales) {
+                result.push({
+                    locale: locale,
+                    englishName: allLocales[locale].englishName,
+                    displayName: allLocales[locale].displayName
+                });
+            }
+            return result.sort((a, b) => {
+                if (a.englishName > b.englishName) {
+                    return 1;
+                }
+                else if (a.englishName === b.englishName) {
+                    return 0;
+                }
+                return -1;
+            });
+        }
+        i18n.getLocales = getLocales;
+        /**
+         * Gets the current locale ID.
+         * @returns The locale.
+         */
+        function getCurrentLocale() {
+            return currentLocale.localeId;
+        }
+        i18n.getCurrentLocale = getCurrentLocale;
+        /**
+        * Sets the curent locale.
+        * @deprecated Use setCurrentLocale instead
+        * @param l The locale.
+        */
+        function setLocale(l) {
+            console.warn('This method is deprecated. Use setCurrentLocale instead');
+            setCurrentLocale(l);
+        }
+        i18n.setLocale = setLocale;
+        /**
+         * Sets the curent locale.
+         * @param localeId The locale.
+         */
+        function setCurrentLocale(localeId) {
+            const newLocale = allLocales[localeId];
+            if (newLocale) {
+                utils.assignDeep(currentLocale, newLocale);
+            }
+            else {
+                currentLocale.englishName = localeId;
+                currentLocale.displayName = localeId;
+                currentLocale.texts = utils.assignDeep({}, defaultLocale.texts);
+            }
+            currentLocale.localeId = localeId;
+        }
+        i18n.setCurrentLocale = setCurrentLocale;
+        /**
+         * Returns localized text by the key defined in parameter.
+         * Here we get the text of the resource string assigned to CmdClickToAddCondition key:
+         *
+         ```
+           const text = i18n.getText('CmdClickToAddCondition')
+         ```
+         * @param args The keys of the resource string.
+         * @returns Text of the resource defined by key or null if the key is not found
+         *
+         */
+        function getText(...args) {
+            let textsObj = currentLocale.texts;
+            let resText = '';
+            if (args && args.length) {
+                const argLength = args.length;
+                for (let i = 0; i < argLength; i++) {
+                    resText = textsObj[args[i]];
+                    if (typeof resText === 'object') {
+                        textsObj = resText;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            return resText;
+        }
+        i18n.getText = getText;
+        function getLocaleSettings() {
+            return currentLocale.settings;
+        }
+        i18n.getLocaleSettings = getLocaleSettings;
+        function getOneLocaleSetting(key) {
+            return currentLocale.settings[key];
+        }
+        i18n.getOneLocaleSetting = getOneLocaleSetting;
+        function getShortMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.shortMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getShortMonthName = getShortMonthName;
+        function getLongMonthName(monthNum) {
+            const settings = getLocaleSettings();
+            if (monthNum > 0 && monthNum < 13) {
+                return settings.longMonthNames[monthNum - 1];
+            }
+            else {
+                throw 'Wrong month number: ' + monthNum;
+            }
+        }
+        i18n.getLongMonthName = getLongMonthName;
+        function getShortWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.shortWeekDayNames.length >= dayNum
+                    ? settings.shortWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getShortWeekDayName = getShortWeekDayName;
+        function getLongWeekDayName(dayNum) {
+            const settings = getLocaleSettings();
+            if (dayNum > 0 && dayNum < 8) {
+                return settings.longWeekDayNames.length >= dayNum
+                    ? settings.longWeekDayNames[dayNum - 1]
+                    : dayNum.toString();
+            }
+            else {
+                throw 'Wrong month number: ' + dayNum;
+            }
+        }
+        i18n.getLongWeekDayName = getLongWeekDayName;
+        /**
+         * Updates the locale settings (date/time formats, separators, etc) for the specified locale.
+         * @param settingsToUpdate a LocaleSettings object
+         */
+        function updateLocaleSettings(settingsToUpdate) {
+            if (!currentLocale.settings) {
+                currentLocale.settings = utils.assignDeep({}, englishUSLocaleSettings);
+            }
+            currentLocale.settings = utils.assignDeep(currentLocale.settings, settingsToUpdate);
+        }
+        i18n.updateLocaleSettings = updateLocaleSettings;
+        /**
+         * Updates the texts for the current locale
+         * @param texts A plain JS object that contains textual resources
+         */
+        function updateLocaleTexts(texts) {
+            if (typeof texts !== 'object') {
+                console.error('Wrong parameter type in updateLocaleTexts function call.' +
+                    'The first parameter (localeId) is not necessary. Use updateLocaleTexts(texts) instead');
+                return;
+            }
+            mapInfo({ localeId: currentLocale.localeId, texts: texts });
+            utils.assignDeep(currentLocale.texts, texts);
+        }
+        i18n.updateLocaleTexts = updateLocaleTexts;
+        function updateDefaultTexts(texts) {
+            for (let localeId in allLocales) {
+                let locale = allLocales[localeId];
+                locale.texts = utils.assignDeep({}, texts, locale.texts);
+            }
+            currentLocale.texts = utils.assignDeep({}, texts, currentLocale.texts);
+        }
+        i18n.updateDefaultTexts = updateDefaultTexts;
+        /**
+         * Updates the information for the specified locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be added
+         * @param localeInfo  a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function updateLocaleInfo(localeId, localeData) {
+            mapInfo(localeData);
+            let localeInfoToUpdate = currentLocale;
+            if (localeId) {
+                if (!localeData.localeId) {
+                    localeData.localeId = localeId;
+                }
+                localeInfoToUpdate = allLocales[localeId];
+                if (!localeInfoToUpdate) {
+                    localeInfoToUpdate = utils.assignDeep({}, defaultLocale);
+                    allLocales[localeId] = localeInfoToUpdate;
+                }
+            }
+            utils.assignDeep(localeInfoToUpdate, localeData);
+        }
+        i18n.updateLocaleInfo = updateLocaleInfo;
+        /**
+         * Adds the locale.
+         * @param localeId The locale ID (like 'en', 'de', 'uk', etc).
+         * If the locale does exist yet - it will be created
+         * @param localeInfo - a LocaleInfo object that contains the locale settings and textual resources
+         */
+        function addLocale(localeId, localeInfo) {
+            updateLocaleInfo(localeId, localeInfo);
+        }
+        i18n.addLocale = addLocale;
+        /**
+         * Overwrites some locale settings (date/time formats) with the formats used in browser's current language
+         */
+        function determineSettingsByLocale(localeId) {
+            const now = new Date(2020, 5, 7, 19, 34, 56, 88);
+            const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            const dateStr = now.toLocaleDateString(localeId, dateOptions);
+            const timeStr = now.toLocaleTimeString(localeId, timeOptions);
+            let dateFormat = dateStr
+                .replace('07', 'dd')
+                .replace('7', 'd')
+                .replace('06', 'MM')
+                .replace('6', 'M')
+                .replace('2020', 'yyyy')
+                .replace('20', 'yy');
+            let timeFormat = timeStr
+                .replace('19', 'HH')
+                .replace('07', 'hh')
+                .replace('7', 'h')
+                .replace('34', 'mm')
+                .replace('56', 'ss')
+                .replace('PM', 'tt');
+            if (!currentLocale.settings) {
+                currentLocale.settings = {};
+            }
+            const localeSettings = {
+                shortDateFormat: dateFormat,
+                shortTimeFormat: timeFormat
+            };
+            updateLocaleSettings(localeSettings);
+        }
+        function loadBrowserLocaleSettings() {
+            const lang = typeof navigator === 'object' ? navigator.language : undefined;
+            determineSettingsByLocale(lang);
+        }
+        function resetLocales() {
+            if (!currentLocale) {
+                currentLocale = utils.assignDeep({}, defaultLocale);
+                loadBrowserLocaleSettings();
+            }
+        }
+        i18n.resetLocales = resetLocales;
+        const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
+        /**
+         * Returns string representation of the date/time value according to the custom format (second parameter)
+         * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+         * @param date
+         * @param format
+         */
+        function dateTimeToStr(date, format) {
+            const year = date.getFullYear();
+            const yearStr = year.toString();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const second = date.getSeconds();
+            const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
+            const isPm = hour > 11;
+            const matches = {
+                yyyy: yearStr,
+                yy: yearStr.substring(yearStr.length - 2),
+                MMMM: i18n.getLongMonthName(month),
+                MMM: i18n.getShortMonthName(month),
+                MM: (month < 10) ? '0' + month : month.toString(),
+                M: month.toString(),
+                dd: (day < 10) ? '0' + day : day.toString(),
+                d: day.toString(),
+                HH: (hour < 10) ? '0' + hour : hour.toString(),
+                H: hour.toString(),
+                hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
+                h: hour12.toString(),
+                tt: isPm ? 'PM' : 'AM',
+                mm: (minute < 10) ? '0' + minute : minute.toString(),
+                ss: (second < 10) ? '0' + second : second.toString()
+            };
+            return format.replace(DT_FORMAT_RGEX, (match, $1) => {
+                return $1 || matches[match];
+            });
+        }
+        i18n.dateTimeToStr = dateTimeToStr;
+        function dateTimeToStrEx(dateTime, dataType, format) {
+            if (format) {
+                if (format == 'd') {
+                    format = buildShortDateTimeFormat(DataType.Date);
+                }
+                else if (format == 'D') {
+                    format = buildLongDateTimeFormat(DataType.Date);
+                }
+                else if (format == 'f') {
+                    format = buildShortDateTimeFormat(DataType.DateTime);
+                }
+                else if (format == 'F') {
+                    format = buildLongDateTimeFormat(DataType.DateTime);
+                }
+            }
+            else {
+                format = buildShortDateTimeFormat(dataType);
+            }
+            return dateTimeToStr(dateTime, format);
+        }
+        i18n.dateTimeToStrEx = dateTimeToStrEx;
+        function buildShortDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType.Date:
+                    format = localeSettings.shortDateFormat;
+                    break;
+                case DataType.Time:
+                    format = localeSettings.shortTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.shortDateFormat + ' ' + localeSettings.shortTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        function buildLongDateTimeFormat(dataType) {
+            const localeSettings = getLocaleSettings();
+            let format;
+            switch (dataType) {
+                case DataType.Date:
+                    format = localeSettings.longDateFormat;
+                    break;
+                case DataType.Time:
+                    format = localeSettings.longTimeFormat;
+                    break;
+                default:
+                    format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                    break;
+            }
+            return format;
+        }
+        /**
+        * Converts a numeric value to the string taking into the account the decimal separator
+        * @param value - the number to convert
+        * @param format - the format of the number representation (D - decimal, F - float, C - currency)
+        * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
+        */
+        function numberToStr(number, format, decimalSeparator) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    return formatWithSequence(number, format.slice(1));
+                }
+                else if (['D', 'F', 'C'].indexOf(type) >= 0) {
+                    const locale = getCurrentLocale();
+                    return number.toLocaleString(locale, getNumberFormatOptions(format));
+                }
+                else {
+                    return convertWithMask(Math.trunc(number), format);
+                }
+            }
+            const localeSettings = getLocaleSettings();
+            decimalSeparator = decimalSeparator || localeSettings.decimalSeparator;
+            return number.toString().replace('.', decimalSeparator);
+        }
+        i18n.numberToStr = numberToStr;
+        function booleanToStr(bool, format) {
+            if (format && format.length > 0) {
+                const type = format.charAt(0).toUpperCase();
+                if (type === 'S') {
+                    const values = format.slice(1).split('|');
+                    if (values.length > 1) {
+                        const value = values[(bool) ? 1 : 0];
+                        return i18n.getText(value) || value;
+                    }
+                }
+            }
+            return `${bool}`;
+        }
+        i18n.booleanToStr = booleanToStr;
+        const cachedSequenceFormats = {};
+        function formatWithSequence(number, format) {
+            if (!cachedSequenceFormats[format]) {
+                // parse and save in cache format values 
+                const values = format.split('|')
+                    .filter(v => v.length > 0)
+                    .map(v => v.split('='));
+                cachedSequenceFormats[format] = {};
+                if (values.length > 0) {
+                    if (values[0].length > 1) {
+                        for (const value of values) {
+                            cachedSequenceFormats[format][Number.parseInt(value[1])] = value[0];
+                        }
+                    }
+                    else {
+                        values.forEach((value, index) => {
+                            cachedSequenceFormats[format][index] = value[0];
+                        });
+                    }
+                }
+            }
+            const values = cachedSequenceFormats[format];
+            if (values[number] !== undefined) {
+                const value = values[number];
+                return i18n.getText(value) || value;
+            }
+            return number.toString();
+        }
+        function convertWithMask(number, mask) {
+            let value = number.toString();
+            let result = '';
+            let index = value.length - 1;
+            for (let i = mask.length - 1; i >= 0; i--) {
+                const ch = mask.charAt(i);
+                if (ch === '#' || ch === '0') {
+                    if (index >= 0) {
+                        result += value.charAt(index);
+                        index--;
+                    }
+                    else {
+                        if (ch === '0') {
+                            result += 0;
+                        }
+                    }
+                }
+                else {
+                    result += ch;
+                }
+            }
+            return result.split('').reverse().join('');
+        }
+        function getNumberFormatOptions(format) {
+            const localeSettings = getLocaleSettings();
+            const type = format[0].toUpperCase();
+            const digits = (format.length > 1)
+                ? Number.parseInt(format.slice(1))
+                : type == 'D' ? 1 : 2;
+            switch (type) {
+                case 'D':
+                    return {
+                        style: 'decimal',
+                        useGrouping: false,
+                        minimumIntegerDigits: digits
+                    };
+                case 'C':
+                    return {
+                        style: 'currency',
+                        currency: localeSettings.currency,
+                        minimumFractionDigits: digits
+                    };
+                default:
+                    return {
+                        style: 'decimal',
+                        minimumFractionDigits: digits,
+                        maximumFractionDigits: digits
+                    };
+            }
+        }
+    })(i18n || (i18n = {}));
+
+    var ColumnAlignment;
+    (function (ColumnAlignment) {
+        ColumnAlignment[ColumnAlignment["None"] = 0] = "None";
+        ColumnAlignment[ColumnAlignment["Left"] = 1] = "Left";
+        ColumnAlignment[ColumnAlignment["Center"] = 2] = "Center";
+        ColumnAlignment[ColumnAlignment["Right"] = 3] = "Right";
+    })(ColumnAlignment || (ColumnAlignment = {}));
+
+    class DataRow {
+        constructor(columns, values) {
+            this.columns = columns;
+            this.values = values;
+        }
+        toArray() {
+            return Array.from(this.values);
+        }
+        size() {
+            return this.values.length;
+        }
+        getValue(colIdOrIndex) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            return this.values[index];
+        }
+        setValue(colIdOrIndex, value) {
+            let index;
+            if (typeof colIdOrIndex === "string") {
+                index = this.columns.getIndex(colIdOrIndex);
+                if (index === undefined) {
+                    throw new RangeError(`No column with id '${colIdOrIndex}'`);
+                }
+            }
+            else {
+                index = colIdOrIndex;
+            }
+            if (index >= this.values.length)
+                throw new RangeError("Out of range: " + index);
+            this.values[index] = value;
+        }
+    }
+
+    /**
+     * EasyData representation of GUID.
+     */
+    class EasyGuid {
+        /**
+         * Generates new GUID.
+         * @returns The string representation of GUID.
+         */
+        static newGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+    }
+
+    /**
+     * The representation of event emitter.
+     */
+    class EventEmitter {
+        /**
+         * The default constructor.
+         * @param source The source.
+         */
+        constructor(source) {
+            this.silentMode = 0;
+            this.events = new Array();
+            this.source = source;
+        }
+        /**
+         * Subscries to the event.
+         * @param eventType The event type.
+         * @param callback The callback.
+         * @returns The subscribtion ID.
+         */
+        subscribe(eventType, callback) {
+            let event = this.getEventRecByType(eventType);
+            const eventCallback = {
+                id: EasyGuid.newGuid(),
+                callback: callback
+            };
+            if (event) {
+                event.eventCallbacks.push(eventCallback);
+            }
+            else {
+                event = {
+                    type: eventType,
+                    eventCallbacks: new Array(eventCallback)
+                };
+                this.events.push(event);
+            }
+            return eventCallback.id;
+        }
+        /**
+         * Unsubsribes from the event.
+         * @param eventType The event type.
+         * @param callbackId The subscribtion ID.
+         */
+        unsubscribe(eventType, callbackId) {
+            let event = this.getEventRecByType(eventType);
+            if (event) {
+                let index = -1;
+                for (index = 0; index < event.eventCallbacks.length; index++) {
+                    if (event.eventCallbacks[index].id === callbackId) {
+                        break;
+                    }
+                }
+                if (index >= 0) {
+                    event.eventCallbacks.splice(index, 1);
+                }
+            }
+        }
+        /**
+         * Fires the event.
+         * @param eventType The event type.
+         * @param data The event data.
+         * @param postpone  The postpone.
+         * @param force To fire force. If value is `true`, ignores silent mode.
+         */
+        fire(eventType, data, postpone = 0, force = false) {
+            if (this.silentMode && !force) {
+                return;
+            }
+            let eventRec = this.getEventRecByType(eventType);
+            if (eventRec) {
+                const eqevent = {
+                    type: eventType,
+                    source: this.source,
+                    data: data
+                };
+                let emitAllFunc = () => {
+                    for (let callback of eventRec.eventCallbacks) {
+                        callback.callback(eqevent);
+                    }
+                };
+                if (postpone > 0) {
+                    setTimeout(emitAllFunc, postpone);
+                }
+                else {
+                    emitAllFunc();
+                }
+            }
+        }
+        /**
+         * Enters to silent mode.
+         */
+        enterSilentMode() {
+            this.silentMode++;
+        }
+        /**
+         * Exits from silent mode.
+         */
+        exitSilentMode() {
+            if (this.silentMode) {
+                this.silentMode--;
+            }
+        }
+        /**
+         * Checks if emitter is in silent mode.
+         * @return `true`, if silent mode is enable.
+         */
+        isSilent() {
+            return this.silentMode > 0;
+        }
+        getEventRecByType(eventType) {
+            for (let event of this.events) {
+                if (event.type == eventType) {
+                    return event;
+                }
+            }
+            return null;
+        }
+    }
+
+    var liquid;
+    (function (liquid) {
+        function renderLiquidTemplate(template, vars) {
+            let result = template;
+            if (vars) {
+                for (let v in vars) {
+                    const liquidVarRegexp = new RegExp('\{\{' + v + '\}\}', 'g');
+                    result = result.replace(liquidVarRegexp, vars[v]);
+                }
+            }
+            return result;
+        }
+        liquid.renderLiquidTemplate = renderLiquidTemplate;
+    })(liquid || (liquid = {}));
+
+    i18n.resetLocales();
+
+    //types
+    if (typeof Object.values !== 'function') {
+        Object.values = function (obj) {
+            return Object.keys(obj).map(key => obj[key]);
+        };
+    }
+    if (typeof Math.trunc !== 'function') {
+        Math.trunc = function (x) {
+            if (isNaN(x)) {
+                return NaN;
+            }
+            if (x > 0) {
+                return Math.floor(x);
+            }
+            return Math.ceil(x);
+        };
+    }
+
+    var browserUtils;
+    (function (browserUtils) {
+        let _isFirefox = null;
+        let _isIE = null;
+        function IsIE() {
+            if (_isIE === null) {
+                const ua = navigator.userAgent;
+                /* MSIE used to detect old browsers and Trident used to newer ones*/
+                _isIE = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+            }
+            return _isIE;
+        }
+        browserUtils.IsIE = IsIE;
+        function IsEdge() {
+            const ua = window.navigator.userAgent;
+            return !IsIE() && ua.includes('Edge/');
+        }
+        browserUtils.IsEdge = IsEdge;
+        function IsFirefox() {
+            if (_isFirefox === null) {
+                const ua = navigator.userAgent;
+                _isFirefox = ua.toLowerCase().indexOf('firefox') > -1;
+            }
+            return _isFirefox;
+        }
+        browserUtils.IsFirefox = IsFirefox;
+        let _detectedIsMobileMode = false;
+        let _isMobileMode = undefined;
+        let detectIsMobileMode = () => {
+            const oldValue = isMobileMode();
+            _detectedIsMobileMode = window.matchMedia('only screen and (max-width: 840px)').matches
+                || window.matchMedia('only screen and (max-height: 420px)').matches;
+            const newValue = isMobileMode();
+            if (newValue !== oldValue && mobileModeChangeHandler) {
+                mobileModeChangeHandler(newValue);
+            }
+        };
+        detectIsMobileMode();
+        window.addEventListener('resize', () => detectIsMobileMode());
+        function isMobileMode() {
+            if (_isMobileMode !== undefined) {
+                return _isMobileMode;
+            }
+            else {
+                return _detectedIsMobileMode;
+            }
+        }
+        browserUtils.isMobileMode = isMobileMode;
+        function setIsMobileMode(value) {
+            const oldValue = isMobileMode();
+            _isMobileMode = value;
+            const newValue = isMobileMode();
+            if (newValue !== oldValue && mobileModeChangeHandler) {
+                mobileModeChangeHandler(newValue);
+            }
+        }
+        browserUtils.setIsMobileMode = setIsMobileMode;
+        let mobileModeChangeHandler;
+        function onMobileModeChanged(callback) {
+            mobileModeChangeHandler = callback;
+        }
+        browserUtils.onMobileModeChanged = onMobileModeChanged;
+        function getMobileCssClass() {
+            return isMobileMode() ? 'k-mobile' : null;
+        }
+        browserUtils.getMobileCssClass = getMobileCssClass;
+    })(browserUtils || (browserUtils = {}));
+    function getScrollPos() {
+        const body = document.body;
+        const docElem = document.documentElement;
+        return {
+            top: window.pageYOffset || docElem.scrollTop || body.scrollTop,
+            left: window.pageXOffset || docElem.scrollLeft || body.scrollLeft
+        };
+    }
+    function getElementAbsolutePos(element) {
+        let res = { x: 0, y: 0 };
+        if (element !== null) {
+            const position = offset(element);
+            res = { x: position.left, y: position.top };
+        }
+        return res;
+    }
+    function offset(element) {
+        const defaultBoundingClientRect = { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+        let box;
+        try {
+            box = element.getBoundingClientRect();
+        }
+        catch (_a) {
+            box = defaultBoundingClientRect;
+        }
+        const body = document.body;
+        const docElem = document.documentElement;
+        const scollPos = getScrollPos();
+        const scrollTop = scollPos.top;
+        const scrollLeft = scollPos.left;
+        const clientTop = docElem.clientTop || body.clientTop || 0;
+        const clientLeft = docElem.clientLeft || body.clientLeft || 0;
+        const top = box.top + scrollTop - clientTop;
+        const left = box.left + scrollLeft - clientLeft;
+        return { top: Math.round(top), left: Math.round(left) };
+    }
+    const eqCssPrefix = 'eqjs';
+
+    function mask(input, maskPattern) {
+        const d = { 9: '[0-9]', a: '[a-z]' };
+        const mask = maskPattern.split('');
+        const keyDownHandler = (e) => {
+            // backspace key or delete key
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                e.preventDefault();
+                let mskd = [];
+                let startSelection = input.selectionStart;
+                if (startSelection == 0)
+                    return;
+                let selection = startSelection;
+                let onlyLodash = true;
+                for (let index = mask.length - 1; index >= 0; index--) {
+                    const el = mask[index];
+                    if (d[el]) {
+                        let t = new RegExp(d[el], 'i').test(input.value.charAt(index));
+                        if (t && index != startSelection - 1) {
+                            onlyLodash = false;
+                        }
+                        if (index === startSelection - 1)
+                            selection--;
+                        mskd.push(t && index != startSelection - 1
+                            ? input.value.charAt(index)
+                            : '_');
+                    }
+                    else {
+                        if (index === selection - 1)
+                            selection--;
+                        if (startSelection - 1 === index)
+                            startSelection--;
+                        mskd.push(el);
+                    }
+                }
+                input.value = !onlyLodash ? mskd.reverse().join('') : '';
+                input.selectionStart = input.selectionEnd = selection < 0 ? 0 : selection;
+                const event = document.createEvent('Event');
+                event.initEvent('input', true, true);
+                input.dispatchEvent(event);
+            }
+        };
+        const keyPressHandler = (e) => {
+            const char = String.fromCharCode(e.charCode);
+            if (char) {
+                e.preventDefault();
+                let mskd = [];
+                let selectionStart = input.selectionStart;
+                let selection = selectionStart;
+                mask.forEach((el, index) => {
+                    if (d[el]) {
+                        const ch = (index != selectionStart)
+                            ? input.value.charAt(index)
+                            : char;
+                        let t = new RegExp(d[el], 'i').test(ch);
+                        mskd.push(t ? ch : '_');
+                        if (t && selectionStart === index)
+                            selection++;
+                    }
+                    else {
+                        mskd.push(el);
+                        if (selection === index)
+                            selection++;
+                        if (selectionStart === index)
+                            selectionStart++;
+                    }
+                });
+                input.value = mskd.join('');
+                input.selectionStart = input.selectionEnd = selection;
+                const event = document.createEvent('Event');
+                event.initEvent('input', true, true);
+                input.dispatchEvent(event);
+            }
+        };
+        const inputHandler = (e) => {
+            if (e.type === 'focus' && input.value !== '')
+                return;
+            let mskd = [];
+            let startSelection = input.selectionStart;
+            mask.forEach((el, index) => {
+                if (d[el]) {
+                    let t = new RegExp(d[el], 'i').test(input.value.charAt(index));
+                    mskd.push(t ? input.value.charAt(index) : '_');
+                }
+                else {
+                    mskd.push(el);
+                }
+            });
+            input.value = mskd.join('');
+            input.selectionStart = input.selectionEnd = startSelection;
+        };
+        input.addEventListener('keydown', keyDownHandler);
+        input.addEventListener('keypress', keyPressHandler);
+        input.addEventListener('input', inputHandler);
+        input.addEventListener('focus', inputHandler);
+    }
+
+    class DomElementBuilder {
+        constructor(tag, parent) {
+            if (typeof tag === "string") {
+                this.element = document.createElement(tag);
+            }
+            else {
+                this.element = tag;
+            }
+            if (parent && this.element.parentElement !== parent) {
+                parent.appendChild(this.element);
+            }
+        }
+        addChild(tag, childBuilder) {
+            const builder = domel(tag, this.element);
+            if (childBuilder) {
+                childBuilder(builder);
+            }
+            return this;
+        }
+        addChildElement(element) {
+            if (element) {
+                this.element.appendChild(element);
+            }
+            return this;
+        }
+        attr(attrId, attrValue) {
+            this.element.setAttribute(attrId, attrValue);
+            return this;
+        }
+        id(value) {
+            return this.attr("id", value);
+        }
+        focus() {
+            this.element.focus();
+            return this;
+        }
+        title(value) {
+            return this.attr('title', value);
+        }
+        data(dataId, dataValue = null) {
+            if (dataValue === null) {
+                this.element.removeAttribute('data-' + dataId);
+                return this;
+            }
+            else {
+                return this.attr('data-' + dataId, dataValue);
+            }
+        }
+        show() {
+            return this.removeStyle('display');
+        }
+        hide(toHide = true) {
+            return (toHide) ? this.setStyle('display', 'none') : this;
+        }
+        visible(isVisible = true) {
+            return isVisible ? this.setStyle('visibility', 'visible') : this.setStyle('visibility', 'hidden');
+        }
+        isVisible() {
+            return !!(this.element.offsetWidth || this.element.offsetHeight || this.element.getClientRects().length);
+        }
+        addClass(className, ...classNames) {
+            if (className) {
+                const fullList = [...className.trim().split(" "), ...classNames];
+                for (let i = 0; i < fullList.length; i++)
+                    this.element.classList.add(fullList[i]);
+            }
+            return this;
+        }
+        removeClass(className, ...classNames) {
+            if (className) {
+                const fullList = [...className.trim().split(" "), ...classNames];
+                for (let i = 0; i < fullList.length; i++)
+                    this.element.classList.remove(fullList[i]);
+            }
+            return this;
+        }
+        toggleClass(className, force = undefined) {
+            if (className) {
+                this.element.classList.toggle(className, force);
+            }
+            return this;
+        }
+        on(eventType, listener) {
+            const eventTypes = eventType.split(' ');
+            for (let i = 0; i < eventTypes.length; i++) {
+                this.element.addEventListener(eventTypes[i], listener);
+            }
+            return this;
+        }
+        off(eventType, listener) {
+            const eventTypes = eventType.split(' ');
+            for (let i = 0; i < eventTypes.length; i++) {
+                this.element.removeEventListener(eventTypes[i], listener);
+            }
+            return this;
+        }
+        setStyle(styleId, styleValue) {
+            this.element.style.setProperty(styleId, styleValue);
+            return this;
+        }
+        removeStyle(styleId) {
+            this.element.style.removeProperty(styleId);
+            return this;
+        }
+        text(text) {
+            this.element.innerText = text;
+            return this;
+        }
+        html(html) {
+            this.element.innerHTML = html;
+            return this;
+        }
+        clear() {
+            const oldElem = this.element;
+            this.element = document.createElement(this.element.tagName);
+            oldElem.replaceWith(this.element);
+        }
+        addText(text) {
+            const textEl = document.createTextNode(text);
+            this.element.appendChild(textEl);
+            return this;
+        }
+        addHtml(html) {
+            this.element.innerHTML += html;
+            return this;
+        }
+        toDOM() {
+            return this.element;
+        }
+        appendTo(parent) {
+            if (parent) {
+                parent.appendChild(this.element);
+            }
+            return this;
+        }
+    }
+    class DomTextAreaElementBuilder extends DomElementBuilder {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("textarea", parent);
+            }
+        }
+        name(value) {
+            this.element.name = value;
+            return this;
+        }
+        rows(rows) {
+            this.element.rows = rows;
+            return this;
+        }
+        cols(cols) {
+            this.element.cols = cols;
+            return this;
+        }
+        value(value) {
+            this.element.value = value;
+            return this;
+        }
+    }
+    class DomInputElementBuilder extends DomElementBuilder {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("input", parent);
+            }
+        }
+        name(value) {
+            this.element.name = value;
+            return this;
+        }
+        type(value) {
+            this.element.type = value;
+            return this;
+        }
+        size(value) {
+            this.element.size = value;
+            return this;
+        }
+        value(value) {
+            if (value instanceof Date) {
+                this.element.valueAsDate = value;
+            }
+            else if (typeof value === "number") {
+                this.element.valueAsNumber = value;
+            }
+            else {
+                this.element.value = value;
+            }
+            return this;
+        }
+        mask(maskPattern) {
+            mask(this.element, maskPattern);
+            return this;
+        }
+    }
+    class DomSelectElementBuilder extends DomElementBuilder {
+        constructor(element, parent) {
+            if (element) {
+                super(element, parent);
+            }
+            else {
+                super("select", parent);
+            }
+        }
+        addOption(value) {
+            const option = document.createElement('option');
+            if (typeof value === "string") {
+                option.value = value;
+                option.innerHTML = value;
+            }
+            else {
+                option.value = value.value;
+                option.innerHTML = value.title || value.value;
+                option.selected = value.selected || false;
+            }
+            this.element.appendChild(option);
+            return this;
+        }
+        value(value) {
+            this.element.value = value;
+            return this;
+        }
+    }
+    function domel(tag, parent) {
+        if (tag === "div" || tag instanceof HTMLDivElement) {
+            return new DomElementBuilder(tag, parent);
+        }
+        if (tag === "span" || tag instanceof HTMLSpanElement) {
+            return new DomElementBuilder(tag, parent);
+        }
+        else if (tag === "a" || tag instanceof HTMLAnchorElement) {
+            return new DomElementBuilder(tag, parent);
+        }
+        else if (tag === "button" || tag instanceof HTMLButtonElement) {
+            return new DomElementBuilder(tag, parent);
+        }
+        else if (tag === "img" || tag instanceof HTMLImageElement) {
+            return new DomElementBuilder(tag, parent);
+        }
+        else if (tag === "input" || tag instanceof HTMLInputElement) {
+            return new DomInputElementBuilder(tag instanceof HTMLInputElement ? tag : null, parent);
+        }
+        else if (tag === "textarea" || tag instanceof HTMLTextAreaElement) {
+            return new DomTextAreaElementBuilder(tag instanceof HTMLTextAreaElement ? tag : null, parent);
+        }
+        else if (tag === "select" || tag instanceof HTMLSelectElement) {
+            return new DomSelectElementBuilder(tag instanceof HTMLSelectElement ? tag : null, parent);
+        }
+        return new DomElementBuilder(tag, parent);
+    }
+
+    const touchEventIsDefined = typeof TouchEvent !== 'undefined';
+    var DropEffect;
+    (function (DropEffect) {
+        DropEffect["None"] = "none";
+        DropEffect["Allow"] = "allow";
+        DropEffect["Forbid"] = "forbid";
+    })(DropEffect || (DropEffect = {}));
+    class EqDragEvent {
+        constructor(item, dragImage, sourceEvent) {
+            this.dropEffect = DropEffect.Allow;
+            this.pageX = 0;
+            this.pageY = 0;
+            this.item = item;
+            this.dragImage = dragImage;
+            this.data = item.data;
+            this.sourceEvent = sourceEvent;
+            if (sourceEvent && sourceEvent instanceof MouseEvent) {
+                this.pageX = sourceEvent.pageX,
+                    this.pageY = sourceEvent.pageY;
+            }
+            if (sourceEvent && touchEventIsDefined && sourceEvent instanceof TouchEvent
+                && sourceEvent.touches[0]) {
+                this.pageX = sourceEvent.touches[0].pageX,
+                    this.pageY = sourceEvent.touches[0].pageY;
+            }
+        }
+    }
+    class Position {
+        constructor(ev) {
+            if (ev && ev instanceof MouseEvent) {
+                this.x = ev.pageX,
+                    this.y = ev.pageY;
+            }
+            if (ev && touchEventIsDefined && ev instanceof TouchEvent && ev.touches[0]) {
+                this.x = ev.touches[0].pageX,
+                    this.y = ev.touches[0].pageY;
+            }
+        }
+    }
+    class DragManager {
+        constructor() {
+            this.delta = 5;
+            this.draggableItem = null;
+            this.dragImage = null;
+            this.finishedSuccessfully = false;
+            this.mouseDownPosition = null;
+            this.containerDescriptors = [];
+            this.containerDescriptorIndex = -1;
+            this.dropEffect = DropEffect.None;
+            this.classPrefix = 'eqjs-drop';
+            this.DRAG_DISABLED_ATTR = 'drag-disabled';
+        }
+        registerDraggableItem(descriptor) {
+            const element = descriptor.element;
+            if (!element) {
+                throw Error("Element in draggle item is null or undefined");
+            }
+            element.ondragstart = function () {
+                return false;
+            };
+            const detectDragging = (ev) => {
+                if (element.hasAttribute(this.DRAG_DISABLED_ATTR)) {
+                    return;
+                }
+                ev.preventDefault();
+                if (ev instanceof MouseEvent) {
+                    ev.stopPropagation();
+                }
+                const cursorPosition = new Position(ev);
+                if (Math.abs(cursorPosition.x - this.mouseDownPosition.x) > this.delta
+                    || Math.abs(cursorPosition.y - this.mouseDownPosition.y) > this.delta) {
+                    startDragging(ev);
+                }
+            };
+            const mouseMoveEventListener = (ev) => {
+                this.mouseMoveDragListener(ev);
+            };
+            const startDragging = (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                element.removeEventListener('mousemove', detectDragging);
+                element.removeEventListener('touchmove', detectDragging);
+                this.finishedSuccessfully = false;
+                if (descriptor.beforeDragStart)
+                    descriptor.beforeDragStart();
+                this.dragImage = domel('div')
+                    .setStyle('position', 'absolute')
+                    .setStyle('z-index', '65530')
+                    .toDOM();
+                document.body.appendChild(this.dragImage);
+                this.dragImage.appendChild(element.cloneNode(true));
+                if (descriptor.renderer) {
+                    descriptor.renderer(this.dragImage);
+                }
+                this.dropEffect = DropEffect.None;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+                this.draggableItem = {
+                    element: element,
+                    scope: descriptor.scope,
+                    data: descriptor.data
+                };
+                this.updateDragItemPosition(ev);
+                const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = this.dropEffect;
+                if (descriptor.onDragStart) {
+                    descriptor.onDragStart(event);
+                }
+                if (this.dropEffect !== event.dropEffect) {
+                    this.dropEffect = event.dropEffect;
+                    this.updateImageClass(this.dropEffect);
+                }
+                document.addEventListener('mousemove', mouseMoveEventListener, true);
+                document.addEventListener('touchmove', mouseMoveEventListener, true);
+            };
+            const mouseDownListener = (ev) => {
+                if (touchEventIsDefined && ev instanceof TouchEvent) {
+                    ev.preventDefault();
+                }
+                this.mouseDownPosition = new Position(ev);
+                element.addEventListener('mousemove', detectDragging);
+                element.addEventListener('touchmove', detectDragging);
+                document.addEventListener('mouseup', mouseUpListener);
+                document.addEventListener('touchend', mouseUpListener);
+            };
+            element.addEventListener('mousedown', mouseDownListener);
+            element.addEventListener('touchstart', mouseDownListener);
+            const mouseUpListener = (ev) => {
+                this.mouseDownPosition = null;
+                element.removeEventListener('mousemove', detectDragging);
+                element.removeEventListener('touchmove', detectDragging);
+                document.removeEventListener('mousemove', mouseMoveEventListener, true);
+                document.removeEventListener('touchmove', mouseMoveEventListener, true);
+                if (this.draggableItem) {
+                    endDraggind(ev);
+                }
+            };
+            const endDraggind = (ev) => {
+                try {
+                    if (this.containerDescriptorIndex >= 0) {
+                        const dropContDesc = this.containerDescriptors[this.containerDescriptorIndex];
+                        const container = {
+                            element: dropContDesc.element,
+                            scopes: dropContDesc.scopes,
+                            data: dropContDesc.data
+                        };
+                        const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                        try {
+                            if (container.scopes.indexOf(this.draggableItem.scope) >= 0
+                                && this.dropEffect === DropEffect.Allow) {
+                                this.finishedSuccessfully = true;
+                                if (dropContDesc.onDrop) {
+                                    dropContDesc.onDrop(container, event);
+                                }
+                            }
+                        }
+                        finally {
+                            if (dropContDesc.onDragLeave) {
+                                dropContDesc.onDragLeave(container, event);
+                            }
+                        }
+                    }
+                }
+                finally {
+                    try {
+                        const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                        event.data.finishedSuccessfully = this.finishedSuccessfully;
+                        if (descriptor.onDragEnd) {
+                            descriptor.onDragEnd(event);
+                        }
+                    }
+                    finally {
+                        this.draggableItem = null;
+                        if (this.dragImage && this.dragImage.parentElement) {
+                            this.dragImage.parentElement.removeChild(this.dragImage);
+                        }
+                        this.dragImage = null;
+                        this.finishedSuccessfully = false;
+                        document.removeEventListener('mouseup', mouseUpListener);
+                        document.removeEventListener('touchend', mouseUpListener);
+                    }
+                }
+            };
+        }
+        registerDropContainer(descriptor) {
+            const element = descriptor.element;
+            if (!element) {
+                throw Error("Element in drop container is null or undefined");
+            }
+            this.containerDescriptors.push(descriptor);
+        }
+        removeDropContainer(descriptorOrSlot) {
+            const descs = this.containerDescriptors
+                .filter(desc => desc === descriptorOrSlot
+                || desc.element == descriptorOrSlot);
+            if (descs) {
+                for (const desc of descs) {
+                    utils.removeArrayItem(this.containerDescriptors, desc);
+                }
+            }
+        }
+        mouseMoveDragListener(ev) {
+            if (ev instanceof MouseEvent) {
+                ev.preventDefault();
+            }
+            ev.stopPropagation();
+            this.updateDragItemPosition(ev);
+            if (this.containerDescriptorIndex == -1) {
+                for (let i = 0; i < this.containerDescriptors.length; i++) {
+                    const descriptor = this.containerDescriptors[i];
+                    if (this.detectDragEnterEvent(descriptor.element, ev)) {
+                        this.containerDescriptorIndex = i;
+                        break;
+                    }
+                }
+                if (this.containerDescriptorIndex >= 0) {
+                    this.dragEnterEvent(ev);
+                }
+            }
+            else {
+                const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+                if (this.detectDragLeaveEvent(descriptor.element, ev)) {
+                    this.dragLeaveEvent(ev);
+                    this.containerDescriptorIndex = -1;
+                }
+            }
+            if (this.containerDescriptorIndex >= 0) {
+                const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+                const container = {
+                    element: descriptor.element,
+                    scopes: descriptor.scopes,
+                    data: descriptor.data
+                };
+                if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                    const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                    event.dropEffect = this.dropEffect;
+                    if (descriptor.onDragOver) {
+                        descriptor.onDragOver(container, event);
+                    }
+                }
+            }
+        }
+        updateCusror(dropEffect) {
+            switch (dropEffect) {
+                case DropEffect.Allow:
+                    this.setCursorStyle(this.dragImage, 'grabbing');
+                    break;
+                case DropEffect.Forbid:
+                    this.setCursorStyle(this.dragImage, 'no-drop');
+                    break;
+                default:
+                    this.setCursorStyle(this.dragImage, 'grabbing');
+                    break;
+            }
+        }
+        updateImageClass(dropEffect) {
+            this.dragImage.classList.remove(`${this.classPrefix}-allow`);
+            this.dragImage.classList.remove(`${this.classPrefix}-forbid`);
+            this.dragImage.classList.remove(`${this.classPrefix}-none`);
+            switch (dropEffect) {
+                case DropEffect.Allow:
+                    this.dragImage.classList.add(`${this.classPrefix}-allow`);
+                    break;
+                case DropEffect.None:
+                    this.dragImage.classList.add(`${this.classPrefix}-none`);
+                    break;
+                case DropEffect.Forbid:
+                    this.dragImage.classList.add(`${this.classPrefix}-forbid`);
+                    break;
+                default:
+                    this.dragImage.classList.add(`${this.classPrefix}-none`);
+                    break;
+            }
+        }
+        setCursorStyle(element, cursor) {
+            if (element) {
+                element.style.cursor = cursor;
+                for (let i = 0; i < element.children.length; i++) {
+                    this.setCursorStyle(element.children[i], cursor);
+                }
+            }
+        }
+        updateDragItemPosition(ev) {
+            if (this.dragImage) {
+                const pos = new Position(ev);
+                this.dragImage.style.top = (pos.y - this.dragImage.offsetHeight / 2) + 'px';
+                this.dragImage.style.left = (pos.x - this.dragImage.offsetWidth / 2) + 'px';
+            }
+        }
+        dragEnterEvent(ev) {
+            const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+            const container = {
+                element: descriptor.element,
+                scopes: descriptor.scopes,
+                data: descriptor.data
+            };
+            if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = DropEffect.Allow;
+                if (descriptor.onDragEnter) {
+                    descriptor.onDragEnter(container, event);
+                }
+                this.dropEffect = event.dropEffect;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+            }
+            else {
+                if (this.dropEffect !== DropEffect.Forbid) {
+                    this.dropEffect = DropEffect.None;
+                    this.updateCusror(this.dropEffect);
+                    this.updateImageClass(this.dropEffect);
+                }
+            }
+        }
+        dragLeaveEvent(ev) {
+            const descriptor = this.containerDescriptors[this.containerDescriptorIndex];
+            const container = {
+                element: descriptor.element,
+                scopes: descriptor.scopes,
+                data: descriptor.data
+            };
+            if (container.scopes.indexOf(this.draggableItem.scope) >= 0) {
+                const event = new EqDragEvent(this.draggableItem, this.dragImage, ev);
+                event.dropEffect = DropEffect.None;
+                if (descriptor.onDragLeave) {
+                    descriptor.onDragLeave(container, event);
+                }
+                this.dropEffect = event.dropEffect;
+                this.updateCusror(this.dropEffect);
+                this.updateImageClass(this.dropEffect);
+            }
+        }
+        detectDragEnterEvent(container, ev) {
+            const containerPos = getElementAbsolutePos(container);
+            const pos = new Position(ev);
+            if (pos.y < containerPos.y || pos.y > containerPos.y + container.offsetHeight) {
+                return false;
+            }
+            if (pos.x < containerPos.x || pos.x > containerPos.x + container.offsetWidth) {
+                return false;
+            }
+            return true;
+        }
+        detectDragLeaveEvent(container, ev) {
+            const containerPos = getElementAbsolutePos(container);
+            const pos = new Position(ev);
+            if (pos.y > containerPos.y && pos.y < containerPos.y + container.offsetHeight
+                && pos.x > containerPos.x && pos.x < containerPos.x + container.offsetWidth) {
+                return false;
+            }
+            return true;
+        }
+    }
+    //global variable
+    const eqDragManager = new DragManager();
+
+    var AutoResizeColumns;
+    (function (AutoResizeColumns) {
+        AutoResizeColumns[AutoResizeColumns["Always"] = 0] = "Always";
+        AutoResizeColumns[AutoResizeColumns["Once"] = 1] = "Once";
+        AutoResizeColumns[AutoResizeColumns["Never"] = 2] = "Never";
+    })(AutoResizeColumns || (AutoResizeColumns = {}));
+
+    //import { CellRendererType } from "./easy_grid_cell_renderer";
+    //import { GridCellRenderer } from './easy_grid_cell_renderer';
+    const DEFAULT_WIDTH_STRING = 250;
+    const ROW_NUM_WIDTH = 60;
+    var GridColumnAlign;
+    (function (GridColumnAlign) {
+        GridColumnAlign[GridColumnAlign["NONE"] = 1] = "NONE";
+        GridColumnAlign[GridColumnAlign["LEFT"] = 2] = "LEFT";
+        GridColumnAlign[GridColumnAlign["CENTER"] = 3] = "CENTER";
+        GridColumnAlign[GridColumnAlign["RIGHT"] = 4] = "RIGHT";
+    })(GridColumnAlign || (GridColumnAlign = {}));
+    function MapAlignment(alignment) {
+        switch (alignment) {
+            case ColumnAlignment.Left:
+                return GridColumnAlign.LEFT;
+            case ColumnAlignment.Center:
+                return GridColumnAlign.CENTER;
+            case ColumnAlignment.Right:
+                return GridColumnAlign.RIGHT;
+            default:
+                return GridColumnAlign.NONE;
+        }
+    }
+    class GridColumn {
+        constructor(column, grid, isRowNum = false) {
+            this._label = null;
+            this._description = null;
+            //public left: number;
+            this.align = GridColumnAlign.NONE;
+            this.isVisible = true;
+            this.isRowNum = false;
+            this.dataColumn = column;
+            this.grid = grid;
+            const widthOptions = grid.options.columnWidths || {};
+            if (column) {
+                if (column.style.alignment) {
+                    this.align = MapAlignment(column.style.alignment);
+                }
+                this.width = (widthOptions && widthOptions[this.type]) ? widthOptions[this.type].default : DEFAULT_WIDTH_STRING;
+                this._description = column.description;
+            }
+            else if (isRowNum) {
+                this.isRowNum = true;
+                this.width = (widthOptions && widthOptions.rowNumColumn) ? widthOptions.rowNumColumn.default : ROW_NUM_WIDTH;
+                this._label = '';
+            }
+        }
+        get label() {
+            return this._label ? this._label : this.isRowNum ? '' : this.dataColumn.label;
+        }
+        ;
+        set label(value) {
+            this._label = this.label;
+        }
+        /** Get column description. */
+        get description() {
+            return this._description;
+        }
+        get type() {
+            return this.dataColumn ? this.dataColumn.type : null;
+        }
+    }
+    class GridColumnList {
+        constructor(columnList, grid) {
+            this.items = [];
+            this.grid = grid;
+            this.sync(columnList);
+        }
+        sync(columnList, hasRowNumCol = true) {
+            this.clear();
+            const rowNumCol = new GridColumn(null, this.grid, true);
+            this.add(rowNumCol);
+            if (!hasRowNumCol) {
+                rowNumCol.isVisible = false;
+            }
+            if (columnList) {
+                for (let column of columnList.getItems()) {
+                    const col = new GridColumn(column, this.grid);
+                    if (this.grid.options.onSyncGridColumn) {
+                        this.grid.options.onSyncGridColumn(col);
+                    }
+                    this.add(col);
+                }
+            }
+        }
+        get count() {
+            return this.items.length;
+        }
+        add(col) {
+            const index = this.items.length;
+            this.items.push(col);
+            return index;
+        }
+        put(index, col) {
+            if (index >= 0 && index < this.items.length) {
+                this.items[index] = col;
+            }
+        }
+        move(col, newIndex) {
+            let oldIndex = this.items.indexOf(col);
+            if (oldIndex >= 0 && oldIndex != newIndex)
+                utils.moveArrayItem(this.items, oldIndex, newIndex);
+        }
+        get(index) {
+            if (index >= 0 && index < this.items.length) {
+                return this.items[index];
+            }
+            else {
+                return null;
+            }
+        }
+        //    public getIndex(name: string) : number {
+        //        return this.mapper[name];
+        //    }
+        getItems() {
+            return this.items;
+        }
+        removeAt(index) {
+            this.get(index);
+            this.items.splice(index, 1);
+            //delete this.mapper[col.name];
+        }
+        clear() {
+            this.items = [];
+            //this.mapper = {};
+        }
+    }
+
+    const cssPrefix$1 = "keg";
+    const DFMT_REGEX = /{0:(.*?)}/g;
+    var CellRendererType;
+    (function (CellRendererType) {
+        CellRendererType[CellRendererType["STRING"] = 1] = "STRING";
+        CellRendererType[CellRendererType["NUMBER"] = 2] = "NUMBER";
+        CellRendererType[CellRendererType["DATETIME"] = 3] = "DATETIME";
+        CellRendererType[CellRendererType["BOOL"] = 4] = "BOOL";
+    })(CellRendererType || (CellRendererType = {}));
+    const StringCellRendererDefault = (value, column, cellValueElement, rowElement) => {
+        const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
+        cellValueElement.innerText = text;
+        cellValueElement.title = text;
+        if (column.align == GridColumnAlign.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1}-cell-value-align-left`);
+        }
+    };
+    const NumberCellRendererDefault = (value, column, cellValueElement, rowElement) => {
+        let strValue = (value || '').toString();
+        if (typeof value == 'number') {
+            if (column.dataColumn && column.dataColumn.displayFormat
+                && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+                strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                    return i18n.numberToStr(value, $1);
+                });
+            }
+            else {
+                strValue = value.toLocaleString();
+            }
+        }
+        cellValueElement.innerText = strValue;
+        cellValueElement.title = strValue;
+        if (column.align == GridColumnAlign.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1}-cell-value-align-right`);
+        }
+    };
+    const DateTimeCellRendererDefault = (value, column, cellValueElement, rowElement) => {
+        const isDate = Object.prototype.toString.call(value) === '[object Date]';
+        let strValue = (value || '').toString();
+        if (isDate) {
+            if (column.dataColumn && column.dataColumn.displayFormat
+                && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+                strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                    return i18n.dateTimeToStrEx(value, column.type, $1);
+                });
+            }
+            else {
+                const locale = i18n.getCurrentLocale();
+                const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                switch (column.type) {
+                    case DataType.Date:
+                        strValue = value.toLocaleDateString(locale);
+                        break;
+                    case DataType.Time:
+                        strValue = value.toLocaleTimeString(locale, timeOptions);
+                        break;
+                    case DataType.DateTime:
+                        strValue = `${value.toLocaleDateString(locale)} ${value.toLocaleTimeString(locale, timeOptions)}`;
+                        break;
+                }
+            }
+        }
+        cellValueElement.innerText = strValue;
+        cellValueElement.title = strValue;
+        if (column.align == GridColumnAlign.NONE) {
+            cellValueElement.classList.add(`${cssPrefix$1}-cell-value-align-right`);
+        }
+    };
+    const BoolCellRendererDefault = (value, column, cellValueElement, rowElement) => {
+        if (column.dataColumn && column.dataColumn.displayFormat
+            && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+            const strValue = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                return i18n.booleanToStr(value, $1);
+            });
+            return StringCellRendererDefault(strValue, column, cellValueElement);
+        }
+        else {
+            cellValueElement.classList.add(`${cssPrefix$1}-cell-value-bool`);
+            cellValueElement.classList.add(`${cssPrefix$1}-${value ? 'cell-value-true' : 'cell-value-false'}`);
+        }
+    };
+    class GridCellRendererStore {
+        constructor(options) {
+            this.renderers = {};
+            this.defaultRenderers = {};
+            this.registerRenderer('StringDefault', StringCellRendererDefault);
+            this.setDefaultRenderer(CellRendererType.STRING, StringCellRendererDefault);
+            this.registerRenderer('NumberDefault', NumberCellRendererDefault);
+            this.setDefaultRenderer(CellRendererType.NUMBER, NumberCellRendererDefault);
+            this.registerRenderer('DateTimeDefault', DateTimeCellRendererDefault);
+            this.setDefaultRenderer(CellRendererType.DATETIME, DateTimeCellRendererDefault);
+            this.registerRenderer('BoolDefault', BoolCellRendererDefault);
+            this.setDefaultRenderer(CellRendererType.BOOL, BoolCellRendererDefault);
+        }
+        getDefaultRenderer(columnType) {
+            const cellType = this.getCellType(columnType);
+            return this.defaultRenderers[CellRendererType[cellType]];
+        }
+        getDefaultRendererByType(rendererType) {
+            return this.defaultRenderers[CellRendererType[rendererType]];
+        }
+        setDefaultRenderer(cellType, renderer) {
+            if (renderer) {
+                this.defaultRenderers[CellRendererType[cellType]] = renderer;
+            }
+        }
+        getRenderer(name) {
+            return this.renderers[name];
+        }
+        registerRenderer(name, renderer) {
+            this.renderers[name] = renderer;
+        }
+        getCellType(dataType) {
+            switch (dataType) {
+                case DataType.Autoinc:
+                case DataType.Byte:
+                case DataType.Word:
+                case DataType.Currency:
+                case DataType.Float:
+                case DataType.Int32:
+                case DataType.Int64:
+                    return CellRendererType.NUMBER;
+                case DataType.Date:
+                case DataType.DateTime:
+                case DataType.Time:
+                    return CellRendererType.DATETIME;
+                case DataType.Bool:
+                    return CellRendererType.BOOL;
+                default:
+                    return CellRendererType.STRING;
+            }
+        }
+    }
+
+    const DEFAULT_ROW_HEIGHT = 36;
+    /** Represents a grid widget with columns rows, paging, custom rendering and more */
+    class EasyGrid {
+        /** Creates and initializes all internal properties of the grid object */
+        constructor(options) {
+            this.cssPrefix = "keg";
+            this.pagination = { page: 1, pageSize: 30, total: 0 };
+            this.paginationOptions = {
+                maxButtonCount: 10,
+                useBootstrap: false //true
+            };
+            this.defaultDataGridOptions = {
+                slot: null,
+                dataTable: null,
+                fixHeightOnFirstRender: false,
+                syncGridColumns: true,
+                useRowNumeration: true,
+                allowDragDrop: false,
+                aggregates: {
+                    settings: null,
+                    calculator: null
+                },
+                paging: {
+                    enabled: true,
+                    pageSize: 30,
+                    pageSizeItems: [20, 30, 50, 100, 200]
+                },
+                columnWidths: {
+                    autoResize: AutoResizeColumns.Always,
+                    stringColumns: {
+                        min: 100,
+                        max: 500,
+                        default: 250
+                    },
+                    numberColumns: {
+                        min: 60,
+                        default: 120
+                    },
+                    boolColumns: {
+                        min: 50,
+                        default: 80
+                    },
+                    dateColumns: {
+                        min: 80,
+                        default: 200
+                    },
+                    otherColumns: {
+                        min: 100,
+                        max: 500,
+                        default: 250
+                    },
+                    rowNumColumn: {
+                        min: 40,
+                        default: 60
+                    }
+                },
+                showPlusButton: false,
+                viewportRowsCount: null,
+                showActiveRow: true
+            };
+            this.rowsOnPagePromise = null;
+            this.containerInitialHeight = 0;
+            this.firstRender = true;
+            this.prevRowTotals = null;
+            this.landingIndex = -1;
+            this.landingSlot = domel('div')
+                .addClass(`${this.cssPrefix}-col-landing-slot`)
+                .addChildElement(domel('div')
+                .toDOM())
+                .toDOM();
+            this._activeRowIndex = -1;
+            if (options && options.paging) {
+                options.paging = utils.assign(this.defaultDataGridOptions.paging, options.paging);
+            }
+            this.options = this.mergeOptions(options);
+            this.processColumnWidthsOptions();
+            if (!this.options.slot)
+                throw Error('"slot" parameter is required to initialize EasyDataGrid');
+            if (!this.options.dataTable)
+                throw Error('"dataTable" parameter is required to initialize EasyDataGrid');
+            this.dataTable = options.dataTable;
+            this.eventEmitter = new EventEmitter(this);
+            this.cellRendererStore = new GridCellRendererStore(options);
+            this.columns = new GridColumnList(this.dataTable.columns, this);
+            this.setSlot(this.options.slot);
+            this.init(this.options);
+        }
+        mergeOptions(options) {
+            const colWidthOptions = utils.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
+            const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
+            const result = utils.assign({}, this.defaultDataGridOptions, options);
+            result.columnWidths = colWidthOptions;
+            result.paging = pagingOptions;
+            return result;
+        }
+        processColumnWidthsOptions() {
+            const widthOptions = this.options.columnWidths;
+            if (!widthOptions)
+                return;
+            //string columns
+            utils.getStringDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.stringColumns), widthOptions[dataType]);
+            });
+            //numeric columns
+            utils.getNumericDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.numberColumns), widthOptions[dataType]);
+            });
+            //bool columns
+            widthOptions[DataType.Bool] = Object.assign(Object.assign({}, widthOptions.boolColumns), widthOptions[DataType.Bool]);
+            //date columns
+            utils.getDateDataTypes().forEach(dataType => {
+                widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.dateColumns), widthOptions[dataType]);
+            });
+            //other columns
+            const knownTypes = [
+                ...utils.getStringDataTypes(),
+                ...utils.getNumericDataTypes(),
+                ...utils.getDateDataTypes(),
+                DataType.Bool
+            ];
+            utils.getAllDataTypes().forEach(dataType => {
+                if (!(dataType in knownTypes)) {
+                    widthOptions[dataType] = Object.assign(Object.assign({}, widthOptions.otherColumns), widthOptions[dataType]);
+                }
+            });
+            widthOptions[DataType.Unknown] = widthOptions.otherColumns;
+        }
+        setSlot(slot) {
+            if (typeof slot === 'string') {
+                if (slot.length) {
+                    if (slot[0] === '#') {
+                        this.slot = document.getElementById(slot.substring(1));
+                    }
+                    else if (slot[0] === '.') {
+                        const result = document.getElementsByClassName(slot.substring(1));
+                        if (result.length)
+                            this.slot = result[0];
+                    }
+                    else {
+                        throw Error('Unrecognized slot parameter ' +
+                            '(Must be id, class or HTMLElement): ' + slot);
+                    }
+                }
+            }
+            else {
+                this.slot = slot;
+            }
+        }
+        /** Initializes grid widget according to the options passed in the parameter */
+        init(options) {
+            if (options.onInit) {
+                this.addEventListener('init', options.onInit);
+            }
+            if (options.onRowClick) {
+                this.addEventListener('rowClick', options.onRowClick);
+            }
+            if (options.onRowDbClick) {
+                this.addEventListener('rowDbClick', options.onRowDbClick);
+            }
+            if (options.onPlusButtonClick) {
+                this.addEventListener('plusButtonClick', options.onPlusButtonClick);
+            }
+            if (options.onColumnChanged) {
+                this.addEventListener('columnChanged', options.onColumnChanged);
+            }
+            if (options.onColumnDeleted) {
+                this.addEventListener('columnDeleted', options.onColumnDeleted);
+            }
+            if (options.onColumnMoved) {
+                this.addEventListener('columnMoved', options.onColumnMoved);
+            }
+            if (options.onPageChanged) {
+                this.addEventListener('pageChanged', options.onPageChanged);
+            }
+            if (options.onActiveRowChanged) {
+                this.addEventListener('activeRowChanged', options.onActiveRowChanged);
+            }
+            this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
+            utils.assignDeep(this.paginationOptions, options.pagination);
+            this.pagination.pageSize = this.options.paging.pageSize
+                || this.pagination.pageSize;
+            if (this.options.allowDragDrop) {
+                eqDragManager.registerDropContainer({
+                    element: this.slot,
+                    scopes: ["gridColumnMove"],
+                    onDragEnter: (_, ev) => {
+                        this.slot.classList.add(`${eqCssPrefix}-drophover`);
+                        this.showLandingSlot(ev.pageX, ev.pageY);
+                    },
+                    onDragOver: (_, ev) => {
+                        this.showLandingSlot(ev.pageX, ev.pageY);
+                    },
+                    onDragLeave: (_, ev) => {
+                        ev.dropEffect = DropEffect.Forbid;
+                        this.slot.classList.remove(`${eqCssPrefix}-drophover`);
+                        this.hideLandingSlot();
+                    },
+                    onDrop: (_, ev) => {
+                        this.dataTable.columns.move(ev.data.column, this.landingIndex);
+                        this.refresh();
+                        this.fireEvent({
+                            type: 'columnMoved',
+                            columnId: ev.data.column.id,
+                            newIndex: this.landingIndex
+                        });
+                    }
+                });
+            }
+            this.refresh();
+            this.fireEvent('init');
+        }
+        /** Fires a grid event. You can pass either an event type
+         * (like 'init', 'rowClick', 'pageChanged', etc )
+         * or a ready-to-use grid event object
+         * */
+        fireEvent(event) {
+            if (typeof event === "string") {
+                this.eventEmitter.fire(event);
+            }
+            else {
+                this.eventEmitter.fire(event.type, event);
+            }
+        }
+        /** Allows to set the data (represented by a EasyDataTable object)
+         *  or to replace the existing one associated with the grid */
+        setData(data) {
+            this.dataTable = data;
+            this.clear();
+            this.refresh();
+        }
+        /** Returns the EasyDataTable object associated with the grid via `setData()` call */
+        getData() {
+            return this.dataTable;
+        }
+        /** Gets the list of grid columns */
+        getColumns() {
+            return this.columns;
+        }
+        /** This function is called when the grid is destroyed */
+        destroy() {
+            this.slot.innerHTML = "";
+        }
+        /** Clears the current DOM object and re-renders everything from the scratch */
+        refresh() {
+            this.clearDOM();
+            this.render();
+        }
+        clearDOM() {
+            this.slot.innerHTML = '';
+        }
+        /** Clears all DOM object in the grid and return it to its initial state */
+        clear() {
+            this.pagination.page = 1;
+            this.clearDOM();
+        }
+        /** Renders the grid */
+        render() {
+            if (!this.hasData() && !this.options.showPlusButton)
+                return;
+            this.containerInitialHeight = this.slot.clientHeight;
+            this.rootDiv = document.createElement('div');
+            this.rootDiv.style.width = '100%';
+            this.rootDiv.classList.add(`${this.cssPrefix}-root`);
+            this.columns.sync(this.dataTable.columns, this.options.useRowNumeration);
+            this.renderHeader();
+            this.rootDiv.appendChild(this.headerDiv);
+            this.renderBody();
+            this.rootDiv.appendChild(this.bodyDiv);
+            this.renderFooter();
+            this.rootDiv.appendChild(this.footerDiv);
+            let gridContainer = document.createElement('div');
+            gridContainer.classList.add(`${this.cssPrefix}-container`);
+            gridContainer.appendChild(this.rootDiv);
+            this.slot.appendChild(gridContainer);
+            const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
+            if (this.rowsOnPagePromise) {
+                this.rowsOnPagePromise
+                    .then(() => this.updateHeight())
+                    .then(() => {
+                    this.firstRender = false;
+                    this.rowsOnPagePromise = null;
+                });
+            }
+            else {
+                setTimeout(() => {
+                    this.updateHeight()
+                        .then(() => {
+                        this.firstRender = false;
+                        if (needAutoResize) {
+                            this.resizeColumns();
+                        }
+                    });
+                }, 100);
+            }
+        }
+        updateHeight() {
+            return new Promise((resolve) => {
+                if (this.options.viewportRowsCount) {
+                    const firstRow = this.bodyCellContainerDiv.firstElementChild;
+                    const rowHeight = firstRow ? firstRow.offsetHeight : DEFAULT_ROW_HEIGHT;
+                    const rowCount = this.options.viewportRowsCount; // || DEFAULT_ROW_COUNT;
+                    let viewportHeight = rowHeight * rowCount;
+                    domel(this.bodyViewportDiv)
+                        .setStyle('height', `${viewportHeight}px`);
+                    setTimeout(() => {
+                        const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
+                        viewportHeight = viewportHeight + sbHeight;
+                        domel(this.bodyViewportDiv)
+                            .setStyle('height', `${viewportHeight}px`);
+                        resolve();
+                    }, 100);
+                    return;
+                }
+                else if (this.containerInitialHeight > 0) ;
+                resolve();
+            })
+                .then(() => {
+                if (this.options.fixHeightOnFirstRender && this.firstRender) {
+                    this.slot.style.height = `${this.slot.offsetHeight}px`;
+                }
+            });
+        }
+        getContainerWidth() {
+            return this.columns.getItems()
+                .filter(col => col.isVisible)
+                .map(col => col.width)
+                .reduce((sum, current) => { return sum + current; });
+        }
+        renderHeader() {
+            this.headerDiv = domel('div')
+                .addClass(`${this.cssPrefix}-header`)
+                .toDOM();
+            this.headerViewportDiv = domel('div', this.headerDiv)
+                .addClass(`${this.cssPrefix}-header-viewport`)
+                .toDOM();
+            this.headerCellContainerDiv = domel('div', this.headerViewportDiv)
+                .addClass(`${this.cssPrefix}-header-cell-container`)
+                .toDOM();
+            this.headerRowDiv = domel('div', this.headerCellContainerDiv)
+                .addClass(`${this.cssPrefix}-header-row`)
+                .toDOM();
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                let hd = this.renderColumnHeader(column, index);
+                this.headerRowDiv.appendChild(hd);
+                if (column.isRowNum) {
+                    domel(hd)
+                        .addChildElement(this.renderHeaderButtons());
+                }
+            });
+            const containerWidth = this.getContainerWidth();
+            domel(this.headerCellContainerDiv)
+                .setStyle('width', `${containerWidth}px`);
+        }
+        hasData() {
+            return this.dataTable.columns.count > 0;
+        }
+        renderColumnHeader(column, index) {
+            let colBuilder = domel('div')
+                .addClass(`${this.cssPrefix}-header-cell`)
+                .data('col-idx', `${index}`)
+                .setStyle('width', `${column.width}px`);
+            if (column.dataColumn) {
+                colBuilder
+                    .data('col-id', `${column.dataColumn.id}`);
+            }
+            let colDiv = colBuilder.toDOM();
+            domel('div', colDiv)
+                .addClass(`${this.cssPrefix}-header-cell-resize`);
+            if (!column.isRowNum) {
+                domel('div', colDiv)
+                    .addClass(`${this.cssPrefix}-header-cell-label`)
+                    .text(column.label);
+            }
+            if (column.description) {
+                domel('div', colDiv)
+                    .addClass('question-mark')
+                    .title(column.description);
+            }
+            if (this.options.allowDragDrop) {
+                eqDragManager.registerDraggableItem({
+                    element: colDiv,
+                    scope: "gridColumnMove",
+                    data: { column: column },
+                    renderer: (dragImage) => {
+                        dragImage.innerHTML = '';
+                        const attrLabel = document.createElement('div');
+                        attrLabel.innerText = column.label;
+                        dragImage.classList.add(`${this.cssPrefix}-sortable-helper`);
+                        dragImage.appendChild(attrLabel);
+                    },
+                    onDragStart: (ev) => {
+                        ev.dropEffect = DropEffect.Allow;
+                    }
+                });
+            }
+            return colDiv;
+        }
+        renderBody() {
+            this.bodyDiv = domel('div')
+                .addClass(`${this.cssPrefix}-body`)
+                .toDOM();
+            this.bodyViewportDiv = domel('div', this.bodyDiv)
+                .addClass(`${this.cssPrefix}-body-viewport`)
+                .attr('tabIndex', '0')
+                .toDOM();
+            this.bodyCellContainerDiv = domel('div', this.bodyViewportDiv)
+                .addClass(`${this.cssPrefix}-cell-container`)
+                .toDOM();
+            const showAggrs = this.canShowAggregates();
+            if (this.dataTable) {
+                this.showProgress();
+                this.rowsOnPagePromise = this.getRowsToRender()
+                    .then((rows) => {
+                    this.pagination.total = this.dataTable.getTotal();
+                    this.hideProgress();
+                    //prevent double rendering (bad solution, we have to figure out how to avoid this behavior properly)
+                    this.bodyCellContainerDiv.innerHTML = '';
+                    this.prevRowTotals = null;
+                    let rowsToRender = 0;
+                    if (rows.length) {
+                        const groups = showAggrs
+                            ? this.options.aggregates.settings.getGroups()
+                            : [];
+                        rowsToRender = (rows.length < this.pagination.pageSize)
+                            ? rows.length
+                            : this.pagination.pageSize;
+                        rows.forEach((row, index) => {
+                            if (showAggrs)
+                                this.updateTotalsState(groups, row);
+                            //we don't actually render the last row
+                            if (index < rowsToRender) {
+                                const tr = this.renderRow(row, index);
+                                this.bodyCellContainerDiv.appendChild(tr);
+                            }
+                        });
+                        const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
+                        if (showAggrs && (this.isLastPage() || showGrandTotalsOnEachPage)) {
+                            const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
+                            this.updateTotalsState(groups, row, true);
+                        }
+                    }
+                    const needAutoResize = this.options.columnWidths.autoResize !== AutoResizeColumns.Never;
+                    if (needAutoResize) {
+                        this.resizeColumns();
+                    }
+                    else {
+                        const containerWidth = this.getContainerWidth();
+                        domel(this.bodyCellContainerDiv)
+                            .setStyle('width', `${containerWidth}px`);
+                    }
+                    return rowsToRender;
+                })
+                    .catch(error => { console.error(error); return 0; });
+            }
+            this.bodyViewportDiv.addEventListener('scroll', ev => {
+                domel(this.headerViewportDiv)
+                    .setStyle('margin-left', `-${this.bodyViewportDiv.scrollLeft}px`);
+            });
+            this.bodyViewportDiv.addEventListener('keydown', this.onViewportKeydown.bind(this));
+        }
+        isLastPage() {
+            if (this.dataTable.elasticChunks) {
+                return this.dataTable.totalIsKnown()
+                    && (this.pagination.page * this.pagination.pageSize) >= this.pagination.total;
+            }
+            return this.pagination.page * this.pagination.pageSize >= this.pagination.total;
+        }
+        canShowAggregates() {
+            if (!this.options || !this.options.aggregates || !this.options.aggregates.settings)
+                return false;
+            const aggrSettings = this.options.aggregates.settings;
+            const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount())
+                && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals());
+            return result;
+        }
+        updateTotalsState(groups, newRow, isLast = false) {
+            const aggrSettings = this.options.aggregates.settings;
+            if (this.prevRowTotals && aggrSettings.hasGroups()) {
+                let changeLevel = -1;
+                for (let level = 1; level <= groups.length; level++) {
+                    const group = groups[level - 1];
+                    for (const col of group.columns) {
+                        if (!aggrSettings.compareValues(this.prevRowTotals.getValue(col), newRow.getValue(col))) {
+                            changeLevel = level;
+                            break;
+                        }
+                    }
+                    if (changeLevel !== -1)
+                        break;
+                }
+                if (changeLevel !== -1) {
+                    for (let level = groups.length; level >= changeLevel; level--) {
+                        const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
+                        const tr = this.renderTotalsRow(level, row);
+                        this.bodyCellContainerDiv.appendChild(tr);
+                    }
+                }
+            }
+            if (isLast && aggrSettings.hasGrandTotals() && aggrSettings.hasAggregates()) {
+                const tr = this.renderTotalsRow(0, newRow);
+                this.bodyCellContainerDiv.appendChild(tr);
+            }
+            this.prevRowTotals = newRow;
+        }
+        applyGroupColumnTemplate(template, value, count) {
+            let result = template.replace(/{{\s*GroupValue\s*}}/g, value ? `${value}` : '-');
+            result = result.replace(/{{\s*GroupCount\s*}}/g, count ? `${count}` : '-');
+            return result;
+        }
+        renderTotalsRow(level, row) {
+            const aggrSettings = this.options.aggregates.settings;
+            const group = (level > 0)
+                ? aggrSettings.getGroups()[level - 1]
+                : { columns: [], aggregates: aggrSettings.getAggregates() };
+            const rowBuilder = domel('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-totals`)
+                .addClass(`${this.cssPrefix}-totals-lv${level}`)
+                .data('totals-level', `${level}`)
+                .attr('tabindex', '-1');
+            const rowElement = rowBuilder.toDOM();
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                let val = '';
+                const colIndex = !column.isRowNum
+                    ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                    : -1;
+                if (!column.isRowNum && column.dataColumn) {
+                    if (group.columns.indexOf(column.dataColumn.id) >= 0) {
+                        val = row.getValue(colIndex);
+                    }
+                }
+                if (colIndex == this.dataTable.columns.count - 1) {
+                    val = '.  .  .  .  .  .';
+                }
+                rowElement.appendChild(this.renderCell(column, index, val, rowElement));
+            });
+            const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
+            const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
+            const key = aggrSettings.buildGroupKey(group, row);
+            aggrContainer.getAggregateData(level, key)
+                .then((values) => {
+                for (const aggrColId of aggrCols) {
+                    row.setValue(aggrColId, values[aggrColId]);
+                }
+                rowElement.innerHTML = '';
+                this.columns.getItems().forEach((column, index) => {
+                    if (!column.isVisible) {
+                        return;
+                    }
+                    let val = '';
+                    const colIndex = !column.isRowNum
+                        ? this.dataTable.columns.getIndex(column.dataColumn.id)
+                        : -1;
+                    if (!column.isRowNum) {
+                        let isLastGroupColumn = false;
+                        if (column.dataColumn) {
+                            const groupColIndex = group.columns.indexOf(column.dataColumn.id);
+                            const aggrColIndex = aggrCols.indexOf(column.dataColumn.id);
+                            if (level > 0) {
+                                isLastGroupColumn = groupColIndex == group.columns.length - 1;
+                            }
+                            else {
+                                //if it's a grand total row consider first column as the last group column
+                                isLastGroupColumn = colIndex == 0;
+                            }
+                            if (groupColIndex >= 0 || aggrColIndex >= 0) {
+                                val = row.getValue(colIndex);
+                            }
+                        }
+                        let groupFooterTemplate = '';
+                        if (level > 0) {
+                            groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
+                            //set the default template for the last grouping column
+                            if (!groupFooterTemplate && aggrSettings.hasRecordCount() && isLastGroupColumn) {
+                                groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
+                            }
+                        }
+                        if (groupFooterTemplate) {
+                            const cellDiv = this.renderCell(column, index, val, rowElement);
+                            const innerCell = cellDiv.firstChild;
+                            val = innerCell.innerHTML;
+                            val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[aggrSettings.COUNT_FIELD_NAME]);
+                        }
+                    }
+                    const cellDiv = this.renderCell(column, index, val, rowElement);
+                    rowElement.appendChild(cellDiv);
+                });
+            })
+                .catch((error) => console.error(error));
+            return rowElement;
+        }
+        onViewportKeydown(ev) {
+            if (this.options.showActiveRow) {
+                const rowCount = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row`).length;
+                let newValue;
+                switch (ev.key) {
+                    case 'ArrowLeft':
+                        break;
+                    case 'ArrowRight':
+                        break;
+                    case 'ArrowUp':
+                        ev.preventDefault();
+                        newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? rowCount - 1 : this.activeRowIndex - 1;
+                        this.activeRowIndex = newValue >= 0 ? newValue : 0;
+                        break;
+                    case 'ArrowDown':
+                        ev.preventDefault();
+                        newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? 0 : this.activeRowIndex + 1;
+                        this.activeRowIndex = newValue < rowCount ? newValue : rowCount - 1;
+                        break;
+                }
+            }
+        }
+        ensureRowVisibility(rowOrIndex) {
+            const row = typeof rowOrIndex === 'number'
+                ? this.getDataRow(rowOrIndex)
+                : rowOrIndex;
+            if (row) {
+                let rowRect = row.getBoundingClientRect();
+                const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
+                const rowTop = rowRect.top - viewportRect.top;
+                const rowBottom = rowRect.bottom - viewportRect.top;
+                const viewportHeight = this.bodyViewportDiv.clientHeight;
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                if (rowTop > 0 &&
+                    rowBottom <= viewportHeight &&
+                    rowRect.top > 0 &&
+                    rowRect.bottom < windowHeight) {
+                    return;
+                }
+                if (rowTop < 0) {
+                    this.bodyViewportDiv.scrollTop = this.bodyViewportDiv.scrollTop + rowTop;
+                }
+                else if (rowBottom > viewportHeight) {
+                    this.bodyViewportDiv.scrollTop = this.bodyViewportDiv.scrollTop + rowBottom - viewportHeight;
+                }
+                rowRect = row.getBoundingClientRect();
+                if (rowRect.top < 0) {
+                    document.documentElement.scrollTop = document.documentElement.scrollTop + rowRect.top;
+                }
+                else if (rowRect.bottom > windowHeight) {
+                    document.documentElement.scrollTop = document.documentElement.scrollTop + rowRect.bottom - windowHeight;
+                }
+            }
+        }
+        /** Returns a promise with the list of the rows to render on one page.
+         * The list contains pageSize+1 row to make it possible
+         * to render the totals row (if it appears to be on the edge between pages)
+         */
+        getRowsToRender() {
+            if (this.options.paging.enabled === false) {
+                return Promise.resolve(this.dataTable.getCachedRows());
+            }
+            return this.dataTable.getRows({
+                offset: (this.pagination.page - 1) * this.pagination.pageSize,
+                limit: this.pagination.pageSize + 1
+            })
+                .catch(error => {
+                console.error(error);
+                return [];
+            });
+        }
+        renderFooter() {
+            this.footerDiv = domel('div')
+                .addClass(`${this.cssPrefix}-footer`)
+                .toDOM();
+            if (this.rowsOnPagePromise) {
+                this.rowsOnPagePromise.then(count => {
+                    this.footerDiv.innerHTML = '';
+                    this.footerPaginateDiv = this.renderPageNavigator();
+                    this.footerDiv.appendChild(this.footerPaginateDiv);
+                    const pageInfoBlock = this.renderPageInfoBlock(count);
+                    this.footerDiv.appendChild(pageInfoBlock);
+                });
+            }
+        }
+        renderPageInfoBlock(count) {
+            const pageInfoDiv = domel('div')
+                .addClass(`${this.cssPrefix}-page-info`)
+                .toDOM();
+            const rowCount = this.dataTable.getTotal();
+            if (rowCount > 0) {
+                const fistPageRecordNum = count
+                    ? (this.pagination.page - 1) * this.pagination.pageSize + 1
+                    : 0;
+                const lastPageRecordNum = count
+                    ? fistPageRecordNum + count - 1
+                    : 0;
+                let totalStr = this.dataTable.getTotal().toString();
+                if (this.dataTable.elasticChunks) {
+                    const count = this.dataTable.getCachedCount();
+                    const total = this.dataTable.getTotal();
+                    if (count !== total)
+                        totalStr = '?';
+                }
+                pageInfoDiv.innerHTML = i18n.getText('GridPageInfo')
+                    .replace('{FirstPageRecordNum}', `<span>${fistPageRecordNum.toString()}</span>`)
+                    .replace('{LastPageRecordNum}', `<span>${lastPageRecordNum.toString()}</span>`)
+                    .replace('{Total}', `<span>${totalStr}</span>`);
+            }
+            return pageInfoDiv;
+        }
+        showProgress() {
+        }
+        hideProgress() {
+        }
+        getLocalIndexByGlobal(index) {
+            if (this.pagination) {
+                return index % this.pagination.pageSize;
+            }
+            else {
+                return index;
+            }
+        }
+        getGlobalIndexByLocal(index) {
+            if (this.pagination) {
+                return (this.pagination.page - 1) * this.pagination.pageSize + index;
+            }
+            else {
+                return index;
+            }
+        }
+        renderRow(row, index) {
+            let indexGlobal = this.getGlobalIndexByLocal(index);
+            let rowBuilder = domel('div')
+                .addClass(`${this.cssPrefix}-row`)
+                .addClass(`${this.cssPrefix}-row-${index % 2 == 1 ? 'odd' : 'even'}`)
+                .data('row-idx', `${indexGlobal}`)
+                .attr('tabindex', '-1')
+                .on('click', (ev) => {
+                this.activeRowIndex = index;
+                this.fireEvent({
+                    type: 'rowClick',
+                    row: row,
+                    rowIndex: index,
+                    sourceEvent: ev
+                });
+            })
+                .on('dblclick', (ev) => {
+                this.fireEvent({
+                    type: 'rowDbClick',
+                    row: row,
+                    rowIndex: index,
+                    sourceEvent: ev
+                });
+            });
+            if (index == 0) {
+                rowBuilder.addClass(`${this.cssPrefix}-row-first`);
+            }
+            let rowElement = rowBuilder.toDOM();
+            if (this.options.showActiveRow && index == this.activeRowIndex) {
+                rowBuilder.addClass(`${this.cssPrefix}-row-active`);
+            }
+            this.columns.getItems().forEach((column, index) => {
+                if (!column.isVisible) {
+                    return;
+                }
+                const colindex = column.isRowNum ? -1 : this.dataTable.columns.getIndex(column.dataColumn.id);
+                let val = column.isRowNum ? indexGlobal + 1 : row.getValue(colindex);
+                rowElement.appendChild(this.renderCell(column, index, val, rowElement));
+            });
+            return rowElement;
+        }
+        renderCell(column, colIndex, value, rowElement) {
+            const builder = domel('div')
+                .addClass(`${this.cssPrefix}-cell`)
+                .data('col-idx', `${colIndex}`)
+                .attr('tabindex', '-1')
+                .setStyle('width', `${column.width}px`);
+            if (column.align == GridColumnAlign.LEFT) {
+                builder.addClass(`${this.cssPrefix}-cell-align-left`);
+            }
+            else if (column.align == GridColumnAlign.RIGHT) {
+                builder.addClass(`${this.cssPrefix}-cell-align-right`);
+            }
+            else if (column.align == GridColumnAlign.CENTER) {
+                builder.addClass(`${this.cssPrefix}-cell-align-center`);
+            }
+            const cellElement = builder.toDOM();
+            const valueCell = cellElement.appendChild(domel('div')
+                .addClass(`${this.cssPrefix}-cell-value`)
+                .toDOM());
+            const cellRenderer = this.getCellRenderer(column);
+            if (cellRenderer) {
+                cellRenderer(value, column, valueCell, rowElement);
+            }
+            return cellElement;
+        }
+        getCellRenderer(column) {
+            let cellRenderer;
+            if (column.isRowNum) {
+                cellRenderer = this.cellRendererStore.getDefaultRendererByType(CellRendererType.NUMBER);
+            }
+            else {
+                cellRenderer = this.cellRendererStore.getDefaultRenderer(column.type);
+            }
+            if (this.options && this.options.onGetCellRenderer) {
+                cellRenderer = this.options.onGetCellRenderer(column, cellRenderer) || cellRenderer;
+            }
+            return cellRenderer;
+        }
+        /** Sets current grid pages (if paging is used) */
+        setPage(page) {
+            this.pagination.page = page;
+            this.fireEvent({ type: "pageChanged", page: page });
+            this.refresh();
+            this.bodyViewportDiv.focus();
+        }
+        renderPageNavigator() {
+            let paginateDiv = document.createElement('div');
+            paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
+            const rowCount = this.dataTable.getTotal();
+            if (this.options.paging && this.options.paging.enabled && rowCount > 0) {
+                const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
+                const buttonClickHandler = (ev) => {
+                    const element = ev.target;
+                    if (element.hasAttribute('data-page')) {
+                        const page = parseInt(element.getAttribute('data-page'));
+                        this.setPage(page);
+                    }
+                };
+                const renderPageCell = (pageIndex, content, disabled, extreme, active) => {
+                    const li = document.createElement('li');
+                    li.className = `${prefix}page-item`;
+                    if (!extreme) {
+                        if (active) {
+                            li.className += ' active';
+                        }
+                        const a = document.createElement('a');
+                        a.setAttribute('href', 'javascript:void(0)');
+                        a.innerHTML = content || pageIndex.toString();
+                        a.setAttribute("data-page", `${pageIndex}`);
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                        li.appendChild(a);
+                        return li;
+                    }
+                    let a = document.createElement('span');
+                    a.setAttribute('aria-hidden', 'true');
+                    a.className = `${prefix}page-link`;
+                    if (disabled) {
+                        li.className += ' disabled';
+                    }
+                    else {
+                        if (this.paginationOptions.useBootstrap) {
+                            a = document.createElement('a');
+                            a.setAttribute('href', 'javascript:void(0)');
+                            a.setAttribute("data-page", `${pageIndex}`);
+                        }
+                        else {
+                            let newA = document.createElement('a');
+                            newA.setAttribute('href', 'javascript:void(0)');
+                            newA.setAttribute('data-page', `${pageIndex}`);
+                            a = newA;
+                        }
+                        a.className = `${prefix}page-link`;
+                        a.addEventListener("click", buttonClickHandler);
+                    }
+                    a.innerHTML = content;
+                    li.appendChild(a);
+                    return li;
+                };
+                if (this.dataTable.elasticChunks) {
+                    const pageIndex = this.pagination.page || 1;
+                    let ul = document.createElement('ul');
+                    ul.className = `${prefix}pagination`;
+                    let cell = renderPageCell(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
+                    ul.appendChild(cell);
+                    cell = renderPageCell(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
+                    ul.appendChild(cell);
+                    paginateDiv.appendChild(ul);
+                }
+                else {
+                    if (this.pagination.total > this.pagination.pageSize) {
+                        const pageIndex = this.pagination.page || 1;
+                        const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
+                        const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
+                        const zeroBasedIndex = pageIndex - 1;
+                        let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
+                        let lastPageIndex = firstPageIndex + maxButtonCount - 1;
+                        if (lastPageIndex > pageCount) {
+                            lastPageIndex = pageCount;
+                        }
+                        let ul = document.createElement('ul');
+                        ul.className = `${prefix}pagination`;
+                        let cell = renderPageCell(firstPageIndex - 1, '&laquo;', firstPageIndex == 1, true, false);
+                        ul.appendChild(cell);
+                        for (let i = firstPageIndex; i <= lastPageIndex; i++) {
+                            cell = renderPageCell(i, i.toString(), false, false, i == pageIndex);
+                            ul.appendChild(cell);
+                        }
+                        cell = renderPageCell(lastPageIndex + 1, '&raquo;', lastPageIndex == pageCount, true, false);
+                        ul.appendChild(cell);
+                        paginateDiv.appendChild(ul);
+                    }
+                }
+                if (this.options.paging.allowPageSizeChange) {
+                    const selectChangeHandler = (ev) => {
+                        const newValue = parseInt(ev.target.value);
+                        this.pagination.pageSize = newValue;
+                        this.pagination.page = 1;
+                        this.refresh();
+                    };
+                    const pageSizes = document.createElement('div');
+                    pageSizes.className = `${this.cssPrefix}-page-sizes`;
+                    const selectSize = document.createElement('div');
+                    selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+                    pageSizes.appendChild(selectSize);
+                    const sel = document.createElement('select');
+                    const selOptions = this.options.paging.pageSizeItems || [];
+                    const selSet = new Set(selOptions);
+                    selSet.add(this.options.paging.pageSize || 20);
+                    Array.from(selSet).forEach(el => {
+                        const option = document.createElement("option");
+                        option.value = el.toString();
+                        option.text = el.toString();
+                        sel.appendChild(option);
+                    });
+                    sel.value = (this.pagination.pageSize || 20).toString();
+                    selectSize.appendChild(sel);
+                    sel.addEventListener('change', selectChangeHandler);
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+                    pageSizes.appendChild(labelDiv);
+                    const label = document.createElement('span');
+                    label.innerText = i18n.getText('GridItemsPerPage');
+                    labelDiv.appendChild(label);
+                    paginateDiv.appendChild(pageSizes);
+                }
+            }
+            return paginateDiv;
+        }
+        addEventListener(eventType, handler) {
+            return this.eventEmitter.subscribe(eventType, event => handler(event.data));
+        }
+        removeEventListener(eventType, handlerId) {
+            this.eventEmitter.unsubscribe(eventType, handlerId);
+        }
+        renderHeaderButtons() {
+            if (this.options.showPlusButton) {
+                return domel('div')
+                    .addClass(`${this.cssPrefix}-header-btn-plus`)
+                    .title(this.options.plusButtonTitle || 'Add')
+                    .addChild('a', builder => builder
+                    .attr('href', 'javascript:void(0)')
+                    .on('click', (e) => {
+                    e.preventDefault();
+                    this.fireEvent({
+                        type: 'plusButtonClick',
+                        sourceEvent: e
+                    });
+                }))
+                    .toDOM();
+            }
+            return domel('span')
+                .addText('#')
+                .toDOM();
+        }
+        showLandingSlot(pageX, pageY) {
+            const colElems = this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`);
+            const cols = [];
+            for (let i = 1; i < colElems.length; i++) {
+                const rowElem = colElems[i];
+                if (rowElem.style.display === 'none')
+                    continue;
+                cols.push(rowElem);
+            }
+            if (cols.length === 0) {
+                this.landingIndex = 0;
+                this.headerRowDiv.appendChild(this.landingSlot);
+                return;
+            }
+            const landingPos = getElementAbsolutePos(this.landingSlot);
+            if (pageX >= landingPos.x && pageX <= landingPos.x + this.landingSlot.offsetWidth) {
+                return;
+            }
+            let newLandingIndex = this.landingIndex;
+            for (let col of cols) {
+                const colPos = getElementAbsolutePos(col);
+                const width = col.offsetWidth;
+                if (pageX > colPos.x && pageX < colPos.x + width) {
+                    // -1 as we don't need to count add button here
+                    newLandingIndex = parseInt(col.getAttribute('data-col-idx')) - 1;
+                }
+            }
+            if (newLandingIndex != this.landingIndex) {
+                this.landingIndex = newLandingIndex;
+                if (this.landingIndex < cols.length) {
+                    this.headerRowDiv.insertBefore(this.landingSlot, cols[this.landingIndex]);
+                }
+                else {
+                    this.headerRowDiv.appendChild(this.landingSlot);
+                }
+            }
+        }
+        hideLandingSlot() {
+            this.landingIndex = -1;
+            setTimeout(() => {
+                if (this.landingSlot.parentElement) {
+                    this.landingSlot.parentElement.removeChild(this.landingSlot);
+                }
+            }, 10);
+        }
+        get activeRowIndex() {
+            return this._activeRowIndex;
+        }
+        set activeRowIndex(value) {
+            if (value !== this._activeRowIndex) {
+                const oldValue = this._activeRowIndex;
+                this._activeRowIndex = value;
+                this.updateActiveRow();
+                this.fireEvent({
+                    type: 'activeRowChanged',
+                    oldValue,
+                    newValue: this.activeRowIndex,
+                    rowIndex: this.getGlobalIndexByLocal(this.activeRowIndex)
+                });
+            }
+        }
+        updateActiveRow() {
+            if (this.options.showActiveRow) {
+                const rows = this.bodyCellContainerDiv.querySelectorAll(`[class*=${this.cssPrefix}-row-active]`);
+                rows.forEach(el => { el.classList.remove(`${this.cssPrefix}-row-active`); });
+                const activeRow = this.getActiveRow();
+                if (activeRow) {
+                    activeRow.classList.add(`${this.cssPrefix}-row-active`);
+                    this.ensureRowVisibility(this.activeRowIndex);
+                }
+            }
+        }
+        getActiveRow() {
+            return this.getDataRow(this.activeRowIndex);
+        }
+        getDataRow(index) {
+            const rows = Array.from(this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-row:not(.${this.cssPrefix}-row-totals)`));
+            if (index >= 0 && index < rows.length)
+                return rows[index];
+            return null;
+        }
+        /** Makes the grid focused for keyboard events */
+        focus() {
+            this.bodyViewportDiv.focus();
+        }
+        /** Resizes columns according to the data they represent */
+        resizeColumns() {
+            if (this.options.columnWidths.autoResize === AutoResizeColumns.Never)
+                return;
+            const containerWidth = this.bodyCellContainerDiv.style.width;
+            this.bodyCellContainerDiv.style.visibility = 'hidden';
+            this.bodyCellContainerDiv.style.width = '1px';
+            //this.headerRowDiv.style.visibility = 'hidden';
+            this.headerRowDiv.style.width = '1px';
+            let sumWidth = 0;
+            const columns = this.columns.getItems();
+            const headerCells = this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);
+            let headerIdx = 0;
+            for (let idx = 0; idx < this.columns.count; idx++) {
+                const column = columns[idx];
+                if (!column.isVisible)
+                    continue;
+                const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && column.dataColumn
+                    ? column.dataColumn.calculatedWidth
+                    : 0;
+                const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
+                let maxWidth = 0;
+                if (calculatedWidth > 0) {
+                    sumWidth += calculatedWidth;
+                    column.width = calculatedWidth;
+                    cellValues.forEach(value => {
+                        value.parentElement.style.width = `${calculatedWidth}px`;
+                    });
+                    headerCells[headerIdx].style.width = `${calculatedWidth}px`;
+                }
+                else {
+                    if (cellValues.length == 0) {
+                        headerCells[headerIdx].style.width = null;
+                        headerCells[headerIdx].style.whiteSpace = 'nowrap';
+                    }
+                    maxWidth = headerCells[headerIdx].offsetWidth;
+                    if (cellValues.length > 0) {
+                        cellValues.forEach(value => {
+                            value.parentElement.style.width = null;
+                            const width = value.parentElement.offsetWidth;
+                            if (width > maxWidth) {
+                                maxWidth = width;
+                            }
+                        });
+                        maxWidth += 3;
+                        const maxOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.max || 500
+                            : this.options.columnWidths[column.dataColumn.type].max || 2000;
+                        const minOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.min || 0
+                            : this.options.columnWidths[column.dataColumn.type].min || 20;
+                        if (maxWidth > maxOption) {
+                            maxWidth = maxOption;
+                        }
+                        if (maxWidth < minOption) {
+                            maxWidth = minOption;
+                        }
+                        if (utils.isNumericType(column.type)) {
+                            //increase the calculated width in 1.3 times for numeric columns
+                            maxWidth = Math.round(maxWidth * 1.3);
+                        }
+                        sumWidth += maxWidth;
+                        column.width = maxWidth;
+                        cellValues.forEach(value => {
+                            value.parentElement.style.width = `${maxWidth}px`;
+                        });
+                        headerCells[headerIdx].style.width = `${maxWidth}px`;
+                        if (column.dataColumn) {
+                            column.dataColumn.calculatedWidth = maxWidth;
+                        }
+                    }
+                    else {
+                        sumWidth += maxWidth;
+                    }
+                }
+                headerIdx++;
+            }
+            if (sumWidth > 0) {
+                this.bodyCellContainerDiv.style.width = `${sumWidth}px`;
+                this.headerCellContainerDiv.style.width = `${sumWidth}px`;
+            }
+            else {
+                this.bodyCellContainerDiv.style.width = containerWidth;
+                this.headerCellContainerDiv.style.width = containerWidth;
+            }
+            this.bodyCellContainerDiv.style.visibility = null;
+            this.headerRowDiv.removeAttribute('style');
+        }
+    }
+
+    class Calendar {
+        get cssPrefix() {
+            return 'kdtp-cal';
+        }
+        constructor(slot, options) {
+            this.slot = slot;
+            this.options = options || {};
+            if (!this.options.yearRange) {
+                this.options.yearRange = 'c-10:c+10';
+            }
+        }
+        setDate(date) {
+            this.currentDate = new Date(date);
+        }
+        getDate() {
+            return new Date(this.currentDate);
+        }
+        dateChanged(apply) {
+            if (this.options.onDateChanged) {
+                this.options.onDateChanged(this.currentDate, apply);
+            }
+        }
+    }
+
+    class DateTimePicker {
+        get cssPrefix() {
+            return 'kdtp';
+        }
+        constructor(options) {
+            this.calendar = null;
+            this.timePicker = null;
+            this.options = options;
+            this.render();
+        }
+        setDateTime(dateTime) {
+            this.currentDateTime = new Date(dateTime);
+            if (this.calendar) {
+                this.calendar.setDate(this.currentDateTime);
+            }
+            if (this.timePicker) {
+                this.timePicker.setTime(this.currentDateTime);
+            }
+        }
+        getDateTime() {
+            return new Date(this.currentDateTime);
+        }
+        render() {
+            if (this.options.showCalendar) {
+                this.calendar = this.createCalendar({
+                    yearRange: this.options.yearRange,
+                    showDateTimeInput: this.options.showDateTimeInput,
+                    timePickerIsUsed: this.options.showTimePicker,
+                    oneClickDateSelection: this.options.oneClickDateSelection,
+                    onDateChanged: (date, apply) => {
+                        this.currentDateTime = date;
+                        if (this.timePicker) {
+                            this.timePicker.setTime(this.currentDateTime);
+                        }
+                        if (this.options.showTimePicker) {
+                            this.dateTimeChanged();
+                        }
+                        if (apply) {
+                            this.apply(this.currentDateTime);
+                        }
+                    }
+                });
+                if (this.calendar)
+                    this.calendar.render();
+            }
+            if (this.options.showTimePicker) {
+                this.timePicker = this.createTimePicker({
+                    onTimeChanged: (time) => {
+                        this.currentDateTime.setHours(time.getHours());
+                        this.currentDateTime.setMinutes(time.getMinutes());
+                        if (this.calendar) {
+                            this.calendar.setDate(this.currentDateTime);
+                        }
+                        this.dateTimeChanged();
+                    }
+                });
+                if (this.timePicker)
+                    this.timePicker.render();
+            }
+            this.setDateTime(new Date());
+        }
+        createCalendar(options) {
+            return null;
+        }
+        createTimePicker(options) {
+            return null;
+        }
+        show(anchor) {
+            if (this.options.beforeShow) {
+                this.options.beforeShow();
+            }
+            const pos = getElementAbsolutePos(anchor || document.body);
+            this.slot.style.top = pos.y + anchor.clientHeight + 'px';
+            this.slot.style.left = pos.x + 'px';
+        }
+        apply(date) {
+            if (this.options.onApply) {
+                this.options.onApply(date);
+            }
+            this.destroy();
+        }
+        cancel() {
+            if (this.options.onCancel) {
+                this.options.onCancel();
+            }
+            this.destroy();
+        }
+        destroy() {
+            if (this.slot && this.slot.parentElement) {
+                this.slot.parentElement.removeChild(this.slot);
+            }
+        }
+        dateTimeChanged() {
+            if (this.options.onDateTimeChanged) {
+                this.options.onDateTimeChanged(this.currentDateTime);
+            }
+        }
+    }
+
+    class DefaultCalendar extends Calendar {
+        constructor(slot, options) {
+            super(slot, options);
+            this.daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            this.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            this.calendarBody = null;
+            this.isManualInputChanging = false;
+            for (let i = 0; i < this.daysOfWeek.length; i++) {
+                this.daysOfWeek[i] = i18n.getShortWeekDayName(i + 1);
+            }
+            for (let i = 0; i < this.months.length; i++) {
+                this.months[i] = i18n.getLongMonthName(i + 1);
+            }
+        }
+        setDate(date) {
+            super.setDate(date);
+            this.selectedMonth = this.currentDate.getMonth();
+            this.selectedYear = this.currentDate.getFullYear();
+            this.rerenderMonth();
+        }
+        render() {
+            const header = domel('div', this.slot)
+                .addClass(`${this.cssPrefix}-header`);
+            if (this.options.showDateTimeInput) {
+                header
+                    .addChildElement(this.renderManualDateInput());
+            }
+            else {
+                header
+                    .addChild('span', builder => this.headerTextElem = builder.toDOM());
+            }
+            domel(this.slot)
+                .addChildElement(this.renderCalendarButtons());
+            this.calendarBody = domel('div', this.slot)
+                .addClass(`${this.cssPrefix}-body`)
+                .toDOM();
+        }
+        getInputDateFormat() {
+            const settings = i18n.getLocaleSettings();
+            return (this.options.timePickerIsUsed)
+                ? `${settings.editDateFormat} ${settings.editTimeFormat}`
+                : settings.editDateFormat;
+        }
+        renderManualDateInput() {
+            const format = this.getInputDateFormat();
+            const builder = domel('input')
+                .attr('placeholder', format)
+                .addClass(`${this.cssPrefix}-header-input`);
+            builder
+                .mask(format.replace('yyyy', '9999')
+                .replace('MM', '99')
+                .replace('dd', '99')
+                .replace('HH', '99')
+                .replace('mm', '99')
+                .replace('ss', '99'))
+                .on('input', ev => {
+                builder.removeClass('error');
+                try {
+                    this.isManualInputChanging = true;
+                    const newDate = utils.strToDateTime(this.manualInputElem.value, format);
+                    this.currentDate = newDate;
+                    this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
+                    this.dateChanged(false);
+                }
+                catch (e) {
+                    builder.addClass('error');
+                }
+                finally {
+                    this.isManualInputChanging = false;
+                }
+            })
+                .on('keydown', (ev) => {
+                if (ev.keyCode === 13) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (this.manualInputElem.className.indexOf('error') < 0
+                        && !this.isManualInputChanging)
+                        this.dateChanged(true);
+                }
+            })
+                .on('focus', () => {
+                setTimeout(() => {
+                    this.manualInputElem.selectionStart = 0;
+                    this.manualInputElem.selectionEnd = 0;
+                }, 50);
+            });
+            this.manualInputElem = builder.toDOM();
+            return this.manualInputElem;
+        }
+        updateDisplayedDateValue() {
+            if (this.manualInputElem) {
+                if (!this.isManualInputChanging) {
+                    const format = this.getInputDateFormat();
+                    this.manualInputElem.value = i18n.dateTimeToStr(this.currentDate, format);
+                    this.manualInputElem.focus();
+                }
+            }
+            else if (this.headerTextElem) {
+                const locale = i18n.getCurrentLocale();
+                this.headerTextElem.innerText = this.currentDate.toLocaleString(locale == 'en' ? undefined : locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+            }
+        }
+        renderCalendarButtons() {
+            const builder = domel('nav')
+                .addClass(`${this.cssPrefix}-nav`)
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-prev`)
+                .on('click', () => {
+                this.prev();
+            })
+                .addChild('span', builder => builder.html('&lsaquo;')))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-selectors`)
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-month`)
+                .addChild('select', builder => {
+                builder
+                    .on('change', () => {
+                    this.jump(this.selectedYear, parseInt(this.selectMonthElem.value));
+                });
+                for (let i = 0; i < this.months.length; i++) {
+                    builder.addChild('option', builder => builder
+                        .attr('value', i.toString())
+                        .text(this.months[i]));
+                }
+                this.selectMonthElem = builder.toDOM();
+            }))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-year`)
+                .addChild('select', builder => this.selectYearElem = builder
+                .on('change', () => {
+                this.jump(parseInt(this.selectYearElem.value), this.selectedMonth);
+            })
+                .toDOM())))
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-nav-next`)
+                .on('click', () => {
+                this.next();
+            })
+                .addChild('span', builder => builder.html('&rsaquo;')));
+            return builder.toDOM();
+        }
+        prev() {
+            this.selectedYear = (this.selectedMonth === 0) ? this.selectedYear - 1 : this.selectedYear;
+            this.selectedMonth = (this.selectedMonth === 0) ? 11 : this.selectedMonth - 1;
+            this.rerenderMonth();
+        }
+        next() {
+            this.selectedYear = (this.selectedMonth === 11) ? this.selectedYear + 1 : this.selectedYear;
+            this.selectedMonth = (this.selectedMonth + 1) % 12;
+            this.rerenderMonth();
+        }
+        rerenderSelectYear() {
+            const match = /c-(\d*):c\+(\d*)/g.exec(this.options.yearRange);
+            let minusYear = 0;
+            let plusYear = 1;
+            if (match !== null) {
+                minusYear = parseInt(match[1]);
+                plusYear = parseInt(match[2]);
+            }
+            this.selectYearElem.innerHTML = '';
+            for (let i = 0; i <= minusYear + plusYear; i++) {
+                let op = document.createElement("option");
+                let year = this.selectedYear - minusYear + i;
+                op.value = year.toString();
+                op.innerText = year.toString();
+                this.selectYearElem.appendChild(op);
+            }
+        }
+        jump(year, month) {
+            this.selectedYear = year;
+            this.selectedMonth = month;
+            this.rerenderMonth();
+        }
+        rerenderMonth() {
+            //header text
+            this.updateDisplayedDateValue();
+            this.rerenderSelectYear();
+            let firstDay = (new Date(this.selectedYear, this.selectedMonth)).getDay();
+            let daysInMonth = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+            this.calendarBody.innerHTML = "";
+            this.selectYearElem.value = this.selectedYear.toString();
+            this.selectMonthElem.value = this.selectedMonth.toString();
+            this.daysOfWeek.forEach((day, idx) => {
+                domel('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-weekday`)
+                    .addClass(idx == 0 || idx == 6 ? `${this.cssPrefix}-weekend` : '')
+                    .text(day);
+            });
+            // Add empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                domel('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day-empty`);
+            }
+            // Add all month days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const builder = domel('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day`)
+                    .attr('data-date', day.toString())
+                    .text(day.toString())
+                    .on('click', (e) => {
+                    this.currentDate.setFullYear(this.selectedYear);
+                    this.currentDate.setMonth(this.selectedMonth);
+                    this.currentDate.setDate(parseInt(e.target.getAttribute('data-date')));
+                    this.dateChanged(this.options.oneClickDateSelection);
+                });
+                if (day === today.getDate() && this.selectedYear === today.getFullYear() && this.selectedMonth === today.getMonth()) {
+                    builder.addClass(`${this.cssPrefix}-day-current`);
+                }
+                if (day === this.currentDate.getDate() && this.selectedYear === this.currentDate.getFullYear() && this.selectedMonth === this.currentDate.getMonth()) {
+                    builder.addClass(`${this.cssPrefix}-day-selected`);
+                }
+                const dayOfWeek = (firstDay + day - 1) % 7;
+                if (dayOfWeek == 0 || dayOfWeek == 6) {
+                    builder.addClass(`${this.cssPrefix}-weekend`);
+                }
+                if (typeof this.options.onDrawDay === "function") {
+                    this.options.onDrawDay.apply(builder.toDOM(), [
+                        builder.toDOM(),
+                        new Date(this.selectedYear, this.selectedMonth, day)
+                    ]);
+                }
+            }
+            // Add empty cells after last day
+            const cellsDrawnInLastRow = (firstDay + daysInMonth) % 7;
+            const cellsToDraw = cellsDrawnInLastRow == 0 ? 0 : 7 - cellsDrawnInLastRow;
+            for (let i = 0; i < cellsToDraw; i++) {
+                domel('div', this.calendarBody)
+                    .addClass(`${this.cssPrefix}-day-empty`);
+            }
+        }
+        dateChanged(apply) {
+            super.dateChanged(apply);
+            this.rerenderMonth();
+        }
+    }
+
+    class TimePicker {
+        get cssPrefix() {
+            return 'kdtp-tp';
+        }
+        constructor(slot, options) {
+            this.slot = slot;
+            this.options = options || {};
+        }
+        setTime(time) {
+            this.currentTime = new Date(time);
+        }
+        getTime() {
+            return new Date(this.currentTime);
+        }
+        timeChanged() {
+            if (this.options.onTimeChanged) {
+                this.options.onTimeChanged(this.currentTime);
+            }
+        }
+    }
+
+    class DefaultTimePicker extends TimePicker {
+        setTime(time) {
+            super.setTime(time);
+            this.updateDisplayedTime();
+            this.hoursInput.valueAsNumber = time.getHours();
+            this.minutesInput.valueAsNumber = time.getMinutes();
+        }
+        render() {
+            domel('div', this.slot)
+                .addClass(`${this.cssPrefix}-time`)
+                .addChild('span', builder => this.timeText = builder.toDOM())
+                .toDOM();
+            const slidersBuilder = domel('div', this.slot)
+                .addClass(`${this.cssPrefix}-sliders`);
+            slidersBuilder
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-time-row`)
+                .title('Hours')
+                .addChild('input', builder => this.hoursInput = builder
+                .addClass(`${this.cssPrefix}-input-hours`)
+                .type('range')
+                .attr('min', '0')
+                .attr('max', '23')
+                .attr('step', '1')
+                .on('input', (e) => {
+                this.currentTime.setHours(this.hoursInput.valueAsNumber);
+                this.updateDisplayedTime();
+                this.timeChanged();
+            })
+                .toDOM()));
+            slidersBuilder
+                .addChild('div', builder => builder
+                .addClass(`${this.cssPrefix}-time-row`)
+                .title('Minutes')
+                .addChild('input', builder => this.minutesInput = builder
+                .addClass(`${this.cssPrefix}-input-minutes`)
+                .type('range')
+                .attr('min', '0')
+                .attr('max', '59')
+                .attr('step', '1')
+                .on('input', (e) => {
+                this.currentTime.setMinutes(this.minutesInput.valueAsNumber);
+                this.updateDisplayedTime();
+                this.timeChanged();
+            })
+                .toDOM()));
+            return this.slot;
+        }
+        updateDisplayedTime() {
+            const locale = i18n.getCurrentLocale();
+            const timeToDraw = this.currentTime.toLocaleString(locale == 'en' ? undefined : locale, {
+                hour: "numeric",
+                minute: "numeric"
+            });
+            this.timeText.innerText = timeToDraw;
+        }
+    }
+
+    class DefaultDateTimePicker extends DateTimePicker {
+        render() {
+            const sb = domel('div', document.body)
+                .addClass(`${this.cssPrefix}`)
+                .attr('tabIndex', '0')
+                .setStyle('position', 'absolute')
+                .setStyle('top', '-1000px')
+                .setStyle('left', '-1000px')
+                .on('keydown', (ev) => {
+                if (ev.keyCode === 27) { // ESC is pressed
+                    this.cancel();
+                }
+                else if (ev.keyCode === 13) { // Enter is pressed
+                    this.apply(this.getDateTime());
+                }
+                return false;
+            });
+            if (this.options.zIndex) {
+                sb.setStyle('z-index', `${this.options.zIndex}`);
+            }
+            this.slot = sb.toDOM();
+            super.render();
+            this.renderButtons();
+            this.globalMouseDownHandler = (e) => {
+                let event = window.event || e;
+                event.srcElement || event.target;
+                let isOutside = !this.slot.contains(event.target);
+                if (isOutside) {
+                    document.removeEventListener('mousedown', this.globalMouseDownHandler, true);
+                    this.cancel();
+                }
+                return true;
+            };
+        }
+        renderButtons() {
+            const builder = domel('div', this.slot)
+                .addClass(`${this.cssPrefix}-buttons`)
+                .addChild('button', b => this.nowButton = b
+                .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-now`)
+                .text(i18n.getText('ButtonNow'))
+                .on('click', () => {
+                this.setDateTime(new Date());
+                this.dateTimeChanged();
+                return false;
+            })
+                .toDOM());
+            if (this.options.showTimePicker || !this.options.oneClickDateSelection) {
+                builder.addChild('button', b => this.submitButton = b
+                    .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-apply`)
+                    .text(i18n.getText('ButtonApply'))
+                    .on('click', () => {
+                    this.apply(this.getDateTime());
+                    return false;
+                })
+                    .toDOM());
+            }
+            builder.addChild('button', b => this.submitButton = b
+                .addClass(`${this.cssPrefix}-button ${this.cssPrefix}-button-cancel`)
+                .text(i18n.getText('ButtonCancel'))
+                .on('click', () => {
+                this.cancel();
+                return false;
+            })
+                .toDOM());
+        }
+        createCalendar(options) {
+            this.calendarSlot =
+                domel('div', this.slot)
+                    .addClass(`${this.cssPrefix}-cal`)
+                    .toDOM();
+            return new DefaultCalendar(this.calendarSlot, options);
+        }
+        createTimePicker(options) {
+            this.timePickerSlot =
+                domel('div', this.slot)
+                    .addClass(`${this.cssPrefix}-tp`)
+                    .toDOM();
+            return new DefaultTimePicker(this.timePickerSlot, options);
+        }
+        show(anchor) {
+            if (this.options.showDateTimeInput) {
+                if (this.options.beforeShow) {
+                    this.options.beforeShow();
+                }
+                const anchorPos = getElementAbsolutePos(anchor || document.body);
+                const parentPos = getElementAbsolutePos(anchor ? anchor.parentElement || anchor : document.body);
+                this.slot.style.top = parentPos.y + 'px';
+                this.slot.style.left = anchorPos.x + 'px';
+            }
+            else {
+                super.show(anchor);
+                this.slot.focus();
+            }
+            setTimeout(() => {
+                document.addEventListener('mousedown', this.globalMouseDownHandler, true);
+            }, 1);
+        }
+    }
+
+    var DialogFooterAlignment;
+    (function (DialogFooterAlignment) {
+        DialogFooterAlignment[DialogFooterAlignment["Left"] = 1] = "Left";
+        DialogFooterAlignment[DialogFooterAlignment["Center"] = 2] = "Center";
+        DialogFooterAlignment[DialogFooterAlignment["Right"] = 3] = "Right";
+    })(DialogFooterAlignment || (DialogFooterAlignment = {}));
+
+    const cssPrefix = "kdlg";
+    class DefaultDialogService {
+        openConfirm(title, content, callback) {
+            const template = `<div id="${cssPrefix}-dialog-confirm">${content}</div>`;
+            const options = {
+                title: title,
+                closable: false,
+                submitable: true,
+                cancelable: true,
+                body: template
+            };
+            if (callback) {
+                options.onSubmit = () => {
+                    callback(true);
+                };
+                options.onCancel = () => {
+                    callback(false);
+                };
+                this.open(options);
+                return;
+            }
+            return new Promise((resolve) => {
+                options.onSubmit = () => {
+                    resolve(true);
+                };
+                options.onCancel = () => {
+                    resolve(false);
+                };
+                this.open(options);
+            });
+        }
+        openPrompt(title, content, defVal, callback) {
+            const template = `<div id="${cssPrefix}-dialog-form" class="kfrm-form">
+            <div class="kfrm-fields label-above">
+                <label for="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-content">${content}</label>
+                <input type="text" name="${cssPrefix}-dialog-form-input" id="${cssPrefix}-dialog-form-input" />
+            </div>
+        </div>`;
+            const options = {
+                title: title,
+                submitable: true,
+                closable: true,
+                cancelable: true,
+                submitOnEnter: true,
+                body: template,
+                arrangeParents: false,
+                beforeOpen: () => {
+                    const input = document.getElementById(`${cssPrefix}-dialog-form-input`);
+                    if (defVal) {
+                        input.value = defVal;
+                    }
+                    input.focus();
+                }
+            };
+            const processInput = (callback) => {
+                const input = document.getElementById(`${cssPrefix}-dialog-form-input`);
+                const result = input.value;
+                if (result && result.replace(/\s/g, '').length > 0) {
+                    callback(result);
+                    return true;
+                }
+                input.classList.add('eqjs-invalid');
+                return false;
+            };
+            if (callback) {
+                options.onSubmit = () => {
+                    return processInput(callback);
+                };
+                options.onCancel = () => {
+                    callback("");
+                };
+                this.open(options);
+                return;
+            }
+            return new Promise((resolve) => {
+                options.onSubmit = () => {
+                    return processInput(resolve);
+                };
+                options.onCancel = () => {
+                    resolve("");
+                };
+                this.open(options);
+            });
+        }
+        open(options, data) {
+            const dialog = new DefaultDialog(options, data);
+            const onDestroy = options.onDestroy;
+            options.onDestroy = (dlg) => {
+                this.untrack(dlg);
+                onDestroy && onDestroy(dlg);
+            };
+            dialog.open();
+            this.track(dialog);
+            return dialog;
+        }
+        createSet(options) {
+            return new DefaultDialogSet(options, this);
+        }
+        untrack(dlg) {
+            const index = DefaultDialogService.openDialogs.indexOf(dlg);
+            if (index >= 0) {
+                DefaultDialogService.openDialogs.splice(index, 1);
+            }
+        }
+        track(dlg) {
+            DefaultDialogService.openDialogs.push(dlg);
+        }
+        openProgress(options) {
+            const dialog = new DefaultProgressDialog(options);
+            const onDestroy = options.onDestroy;
+            options.onDestroy = (dlg) => {
+                this.untrack(dlg);
+                onDestroy && onDestroy(dlg);
+            };
+            dialog.open();
+            this.track(dialog);
+            return dialog;
+        }
+        getAllDialogs() {
+            return Array.from(DefaultDialogService.openDialogs);
+        }
+        closeAllDialogs() {
+            for (const dialog of Array.from(DefaultDialogService.openDialogs)) {
+                dialog.close();
+            }
+        }
+    }
+    DefaultDialogService.openDialogs = [];
+    class DefaultDialog {
+        constructor(options, data) {
+            this.options = options;
+            this.submitHandler = (token) => {
+                if (this.options.onSubmit && this.options.onSubmit(this, token) === false) {
+                    return false;
+                }
+                this.destroy();
+                return true;
+            };
+            this.cancelHandler = () => {
+                if (this.options.onCancel) {
+                    this.options.onCancel(this);
+                }
+                this.destroy();
+            };
+            this.keydownHandler = (ev) => {
+                if (ev.keyCode == 13 && this.isActiveDialog()) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (this.submitHandler()) {
+                        window.removeEventListener('keydown', this.keydownHandler, false);
+                        return false;
+                    }
+                }
+                return true;
+            };
+            this.dialogId = utils.generateId('dlg');
+            this.data = data;
+            this.slot =
+                domel('div', document.body)
+                    .attr('tab-index', '-1')
+                    .data('dialog-id', this.dialogId)
+                    .addClass(`${cssPrefix}-modal`, 'is-active')
+                    .focus()
+                    .addChild('div', b => b
+                    .addClass('kdlg-modal-background'))
+                    .addChild('div', b => this.windowElement = b
+                    .addClass(`${cssPrefix}-modal-window`)
+                    .addChild('header', b => {
+                    this.headerElement = b
+                        .addClass(`${cssPrefix}-header`)
+                        .addChild('p', b => b
+                        .addClass(`${cssPrefix}-header-title`)
+                        .addText(options.title))
+                        .toDOM();
+                    if (options.closable !== false)
+                        b.addChild('button', b => b
+                            .addClass(`${cssPrefix}-modal-close`)
+                            .on('click', () => {
+                            this.cancelHandler();
+                        })
+                            .focus());
+                })
+                    .addChild('div', b => {
+                    b.addClass(`${cssPrefix}-alert-container`);
+                    this.alertElement = b.toDOM();
+                })
+                    .addChild('section', b => {
+                    this.bodyElement = b
+                        .addClass(`${cssPrefix}-body`)
+                        .toDOM();
+                    if (typeof options.body === 'string') {
+                        const html = liquid.renderLiquidTemplate(options.body, data);
+                        b.addHtml(html);
+                    }
+                    else {
+                        b.addChildElement(options.body);
+                    }
+                })
+                    .addChild('footer', b => {
+                    let alignClass = null;
+                    if (options.footerAlignment && options.footerAlignment == DialogFooterAlignment.Center) {
+                        alignClass = 'align-center';
+                    }
+                    else {
+                        alignClass = 'align-right';
+                    }
+                    this.footerElement = b
+                        .addClass(`${cssPrefix}-footer`)
+                        .toDOM();
+                    b.addClass(alignClass);
+                    if (options.submitable === false)
+                        return;
+                    b.addChild('button', bb => {
+                        bb.id(this.dialogId + '-btn-submit')
+                            .addClass('kfrm-button', 'is-info')
+                            .addText(options.submitButtonText || i18n.getText('ButtonOK'));
+                        if (options.recaptchaSiteKey) {
+                            bb.data('sitekey', options.recaptchaSiteKey);
+                            bb.addClass('g-recaptcha');
+                            bb.on('click', (e) => {
+                                if (grecaptcha) {
+                                    grecaptcha.ready(() => {
+                                        grecaptcha.execute(options.recaptchaSiteKey, { action: 'submit' })
+                                            .then((token) => {
+                                            this.submitHandler(token);
+                                        });
+                                    });
+                                }
+                                else {
+                                    this.submitHandler();
+                                }
+                            });
+                        }
+                        else {
+                            bb.on('click', (e) => {
+                                this.submitHandler();
+                            });
+                        }
+                        bb.focus();
+                    });
+                    if (options.cancelable !== false)
+                        b.addChild('button', bb => bb
+                            .id(this.dialogId + '-btn-cancel')
+                            .addClass('kfrm-button')
+                            .addText(options.cancelButtonText || i18n.getText('ButtonCancel'))
+                            .on('click', (e) => {
+                            this.cancelHandler();
+                        }));
+                })
+                    .toDOM())
+                    .toDOM();
+        }
+        getData() {
+            return this.data;
+        }
+        getRootElement() {
+            return this.slot;
+        }
+        getSubmitButtonElement() {
+            return document.getElementById(this.dialogId + '-btn-submit');
+        }
+        getCancelButtonElement() {
+            return document.getElementById(this.dialogId + '-btn-cancel');
+        }
+        open() {
+            if (this.options.beforeOpen) {
+                this.options.beforeOpen(this);
+            }
+            domel(this.slot).show();
+            if (this.options.arrangeParents) {
+                this.arrangeParents(true);
+            }
+            const windowDiv = this.slot
+                .querySelector(`.${cssPrefix}-modal-window`);
+            if (this.options.height) {
+                windowDiv.style.height = typeof this.options.height === 'string'
+                    ? this.options.height
+                    : `${this.options.height}px`;
+            }
+            if (this.options.width) {
+                windowDiv.style.width = typeof this.options.width === 'string'
+                    ? this.options.width
+                    : `${this.options.width}px`;
+            }
+            if (this.options.submitOnEnter) {
+                window.addEventListener('keydown', this.keydownHandler, false);
+            }
+            //clear alert on change in any input element 
+            this.slot.querySelectorAll('input')
+                .forEach(element => element.addEventListener('input', () => {
+                this.clearAlert();
+                if (this.options.onInput) {
+                    this.options.onInput(this);
+                }
+            }));
+            if (this.options.onShow) {
+                this.options.onShow(this);
+            }
+        }
+        submit() {
+            this.submitHandler();
+        }
+        cancel() {
+            this.cancelHandler();
+        }
+        close() {
+            this.destroy();
+        }
+        disableButtons() {
+            const buttons = this.slot.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+        }
+        enableButtons() {
+            const buttons = this.slot.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = false);
+        }
+        showAlert(text, reason, replace) {
+            let alert = domel('div')
+                .addClass(`${cssPrefix}-alert ${reason || ''}`)
+                .addChild('span', b => b
+                .addClass(`${cssPrefix}-alert-closebtn`)
+                .text('×')
+                .on('click', (ev) => {
+                const alert = ev.target.parentElement;
+                alert.parentElement.removeChild(alert);
+            }))
+                .addText(text)
+                .toDOM();
+            if (replace === true) {
+                this.clearAlert();
+            }
+            this.alertElement.appendChild(alert);
+        }
+        clearAlert() {
+            this.alertElement.innerHTML = '';
+        }
+        destroy() {
+            const elem = document.querySelectorAll(`[data-dialog-id="${this.dialogId}"]`);
+            if (elem.length <= 0)
+                return;
+            if (this.options.arrangeParents) {
+                this.arrangeParents(false);
+            }
+            document.body.removeChild(this.slot);
+            if (this.options.submitOnEnter) {
+                window.removeEventListener('keydown', this.keydownHandler, false);
+            }
+            if (this.options.onDestroy) {
+                this.options.onDestroy(this);
+            }
+        }
+        isActiveDialog() {
+            const windowDivs = document.documentElement.querySelectorAll('.kdlg-modal');
+            return windowDivs[windowDivs.length - 1] === this.slot;
+        }
+        arrangeParents(turnOn) {
+            const windowDivs = document.documentElement.querySelectorAll('.kdlg-modal-window');
+            for (let i = 0; i < windowDivs.length - 1; i++) {
+                if (turnOn) {
+                    const offset = i == 0 ? 20 : i * 40 + 20;
+                    domel(windowDivs[i])
+                        .setStyle('margin-top', `${offset}px`)
+                        .setStyle('margin-left', `${offset}px`);
+                }
+                else {
+                    domel(windowDivs[i])
+                        .removeStyle('margin-top')
+                        .removeStyle('margin-left');
+                }
+            }
+        }
+    }
+    class DefaultProgressDialog extends DefaultDialog {
+        constructor(options, data) {
+            let contentElement;
+            let progressElement;
+            const body = domel('div')
+                .addChild('div', b => contentElement = b
+                .text(options.content || '')
+                .toDOM())
+                .addChild('div', b => {
+                b
+                    .addClass(`${cssPrefix}-progress-line`)
+                    .addChild('div', b => {
+                    progressElement = b
+                        .addClass('fill')
+                        .toDOM();
+                    if (options.determinated) {
+                        b.setStyle('width', '0%');
+                    }
+                    else {
+                        b.addClass('indeterminate');
+                    }
+                });
+            })
+                .toDOM();
+            super({
+                title: options.title,
+                body: body,
+                beforeOpen: options.beforeOpen,
+                onSubmit: options.onSubmit,
+                width: options.width,
+                height: options.height,
+                submitable: false,
+                cancelable: false,
+                closable: false,
+                onDestroy: options.onDestroy
+            }, data);
+            this.contentElement = contentElement;
+            this.progressElement = progressElement;
+        }
+        updateContent(content) {
+            this.contentElement.innerText = content;
+        }
+        updateProgress(progress) {
+            progress = this.in01(progress);
+            this.progressElement.style.width = `${progress * 100}%`;
+            if (progress === 1) {
+                // postpone for 0.5s for smooth closing
+                setTimeout(() => {
+                    this.submit();
+                }, 500);
+            }
+        }
+        in01(num) {
+            if (num > 1)
+                return 1;
+            if (num < 0)
+                return 0;
+            return num;
+        }
+    }
+    class DefaultDialogSet {
+        constructor(options, dialogService) {
+            this.options = options;
+            this.dialogService = dialogService;
+            this.currentDialog = null;
+            this.currentIndex = 0;
+            this.options = options;
+            this.dialogService = dialogService;
+        }
+        getCurrent() {
+            return this.currentDialog;
+        }
+        openNext(data) {
+            return this.open(this.currentIndex + 1, data);
+        }
+        openPrev(data) {
+            return this.open(this.currentIndex - 1, data);
+        }
+        open(page, data) {
+            if (page < 0) {
+                this.currentIndex = 0;
+            }
+            else if (page >= this.options.length) {
+                this.currentIndex = this.options.length - 1;
+            }
+            else {
+                this.currentIndex = page;
+            }
+            if (this.currentDialog) {
+                try {
+                    this.currentDialog.close();
+                }
+                catch (e) { }
+            }
+            const dlgOptions = this.options[this.currentIndex];
+            this.currentDialog = this.dialogService.open(dlgOptions, data);
+            return this.currentDialog;
+        }
+        close() {
+            if (this.currentDialog) {
+                this.currentDialog.close();
+                this.currentDialog = null;
+            }
+        }
+    }
+
+    function addEasyDataUITexts() {
+        i18n.updateDefaultTexts({
+            GridPageInfo: '{FirstPageRecordNum} - {LastPageRecordNum} of {Total} records',
+            GridItemsPerPage: 'items per page',
+            ButtonOK: "OK",
+            ButtonCancel: "Cancel",
+            ButtonApply: 'Apply',
+            ButtonNow: 'Now',
+            LblTotal: 'Total'
+        });
+    }
+    addEasyDataUITexts();
+
+    var PRE_SELECT;
+    (function (PRE_SELECT) {
+        PRE_SELECT[PRE_SELECT["THIS_WEEK"] = 0] = "THIS_WEEK";
+        PRE_SELECT[PRE_SELECT["LAST_WEEK"] = 1] = "LAST_WEEK";
+        PRE_SELECT[PRE_SELECT["THIS_MONTH"] = 2] = "THIS_MONTH";
+        PRE_SELECT[PRE_SELECT["FIRST_MONTH"] = 3] = "FIRST_MONTH";
+        PRE_SELECT[PRE_SELECT["LAST_MONTH"] = 4] = "LAST_MONTH";
+        PRE_SELECT[PRE_SELECT["THIS_YEAR"] = 5] = "THIS_YEAR";
+        PRE_SELECT[PRE_SELECT["QUARTER_1"] = 6] = "QUARTER_1";
+        PRE_SELECT[PRE_SELECT["QUARTER_2"] = 7] = "QUARTER_2";
+        PRE_SELECT[PRE_SELECT["QUARTER_3"] = 8] = "QUARTER_3";
+        PRE_SELECT[PRE_SELECT["QUARTER_4"] = 9] = "QUARTER_4";
+    })(PRE_SELECT || (PRE_SELECT = {}));
+    var JUMP_TO;
+    (function (JUMP_TO) {
+        JUMP_TO["UNDEF"] = "-1";
+        JUMP_TO["TODAY"] = "1";
+        JUMP_TO["YESTERDAY"] = "2";
+        JUMP_TO["TOMORROW"] = "3";
+        JUMP_TO["WEEK_START"] = "4";
+        JUMP_TO["WEEK_END"] = "5";
+        JUMP_TO["MONTH_START"] = "6";
+        JUMP_TO["MONTH_END"] = "7";
+        JUMP_TO["YEAR_START"] = "8";
+        JUMP_TO["YEAR_END"] = "9";
+    })(JUMP_TO || (JUMP_TO = {}));
+
+    const internalDateFormat = 'yyyy-MM-dd';
+    const internalTimeFormat = 'HH:mm';
+    const getInternalDateTimeFormat = (dtype) => {
+        if (dtype == DataType$1.Date)
+            return internalDateFormat;
+        if (dtype == DataType$1.Time)
+            return internalTimeFormat;
+        return `${internalDateFormat}T${internalTimeFormat}`;
+    };
+    const getEditDateTimeFormat = (dtype) => {
+        const settings = i18n$1.getLocaleSettings();
+        if (dtype == DataType$1.Date)
+            return settings.editDateFormat;
+        if (dtype == DataType$1.Time)
+            return settings.editTimeFormat;
+        return `${settings.editDateFormat} ${settings.editTimeFormat}`;
+    };
+    const setLocation = (path) => {
+        const state = window.history.state;
+        history.pushState(state, document.title, path);
+        window.dispatchEvent(new Event('ed_set_location'));
+    };
+
+    class Validator {
+    }
+
+    class DateTimeValidator extends Validator {
+        constructor() {
+            super();
+            this.name = 'DateTime';
+        }
+        validate(attr, value) {
+            if (!utils$1.IsDefinedAndNotNull(value) || value == '')
+                return { successed: true };
+            if (utils$1.getDateDataTypes().indexOf(attr.dataType) >= 0) {
+                try {
+                    const editFormat = getEditDateTimeFormat(attr.dataType);
+                    const newDate = utils$1.strToDateTime(value, editFormat);
+                }
+                catch (_a) {
+                    return {
+                        successed: false,
+                        messages: [i18n$1.getText('DateTimeError')]
+                    };
+                }
+            }
+            return { successed: true };
+        }
+    }
+
+    class EntityEditForm {
+        constructor(context) {
+            this.context = context;
+            this.validators = [new DateTimeValidator()];
+        }
+        getHtml() {
+            return this.html;
+        }
+        setHtmlInt(html) {
+            this.html = html;
+            this.errorsDiv = this.html.querySelector('.errors-block');
+        }
+        validate() {
+            this.clearErrors();
+            const inputs = Array.from(this.html.querySelectorAll('input, select'));
+            let isValid = true;
+            for (const input of inputs) {
+                const attr = this.context.getMetaData().getAttributeById(input.name);
+                if (input.type === 'checkbox')
+                    continue;
+                const result = this.validateValue(attr, input.value);
+                if (!result.successed) {
+                    if (isValid) {
+                        domel(this.errorsDiv)
+                            .addChild('ul');
+                    }
+                    isValid = false;
+                    for (const message of result.messages) {
+                        this.errorsDiv.firstElementChild.innerHTML += `<li>${attr.caption}: ${message}</li>`;
+                    }
+                }
+                this.markInputValid(input, result.successed);
+            }
+            return isValid;
+        }
+        getData() {
+            return new Promise((resolve, reject) => {
+                const filePromises = [];
+                const inputs = Array.from(this.html
+                    .querySelectorAll('input, select, textarea'));
+                let obj = {};
+                for (const input of inputs) {
+                    const property = input.name.substring(input.name.lastIndexOf('.') + 1);
+                    const attr = this.context.getMetaData().getAttributeById(input.name);
+                    if (input.type === 'checkbox') {
+                        obj[property] = input.checked;
+                    }
+                    else if (input.type === 'file') {
+                        filePromises.push(this.fileToBase64(input.files[0])
+                            .then(content => obj[property] = content));
+                    }
+                    else {
+                        obj[property] = this.mapValue(attr.dataType, input.value);
+                    }
+                }
+                Promise.all(filePromises)
+                    .then(() => resolve(obj))
+                    .catch((e) => reject(e));
+            });
+        }
+        fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const result = reader.result.toString();
+                    resolve(result.substring(result.indexOf(',') + 1));
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+        useValidator(...validator) {
+            this.useValidators(validator);
+        }
+        useValidators(validators) {
+            this.validators = this.validators.concat(validators);
+        }
+        mapValue(type, value) {
+            if (utils$1.getDateDataTypes().indexOf(type) >= 0) {
+                if (type !== DataType$1.Time && value && value.length) {
+                    const editFormat = getEditDateTimeFormat(type);
+                    const internalFormat = getInternalDateTimeFormat(type);
+                    const date = utils$1.strToDateTime(value, editFormat);
+                    return i18n$1.dateTimeToStr(date, internalFormat);
+                }
+                return value && value.length ? value : null;
+            }
+            if (utils$1.isIntType(type))
+                return parseInt(value);
+            if (utils$1.isNumericType(type))
+                return parseFloat(value);
+            return value;
+        }
+        clearErrors() {
+            this.errorsDiv.innerHTML = '';
+            this.html.querySelectorAll('input, select').forEach(el => {
+                el.classList.remove('is-valid');
+                el.classList.remove('is-invalid');
+            });
+        }
+        markInputValid(input, valid) {
+            input.classList.add(valid ? 'is-valid' : 'is-invalid');
+        }
+        validateValue(attr, value) {
+            const result = { successed: true, messages: [] };
+            for (const validator of this.validators) {
+                const res = validator.validate(attr, value);
+                if (!res.successed) {
+                    result.successed = false;
+                    result.messages = result.messages.concat(res.messages);
+                }
+            }
+            return result;
+        }
+    }
+
+    class TextFilterWidget {
+        constructor(slot, grid, filter, options) {
+            this.slot = slot;
+            this.grid = grid;
+            this.filter = filter;
+            this.options = {
+                focus: false,
+                instantMode: false,
+                instantTimeout: 1000
+            };
+            this.options = utils$1.assignDeep(this.options, options || {});
+            const stringDefRenderer = this.grid.cellRendererStore
+                .getDefaultRendererByType(CellRendererType.STRING);
+            this.grid.cellRendererStore
+                .setDefaultRenderer(CellRendererType.STRING, (value, column, cellElement, rowElement) => this.highlightCellRenderer(stringDefRenderer, value, column, cellElement, rowElement));
+            const numDefRenderer = this.grid.cellRendererStore
+                .getDefaultRendererByType(CellRendererType.NUMBER);
+            this.grid.cellRendererStore
+                .setDefaultRenderer(CellRendererType.NUMBER, (value, column, cellElement, rowElement) => this.highlightCellRenderer(numDefRenderer, value, column, cellElement, rowElement));
+            this.render();
+        }
+        render() {
+            const horizClass = browserUtils.IsIE()
+                ? 'kfrm-fields-ie is-horizontal'
+                : 'kfrm-fields is-horizontal';
+            const isEdgeOrIE = browserUtils.IsIE() || browserUtils.IsEdge();
+            domel(this.slot)
+                .addClass(horizClass)
+                .addChild('div', b => {
+                b
+                    .addClass('control')
+                    .addChild('input', b => {
+                    this.filterInput = b.toDOM();
+                    b
+                        .attr('placeholder', i18n$1.getText('SearchInputPlaceholder'))
+                        .type('text');
+                    b.on('keydown', this.inputKeydownHandler.bind(this));
+                    if (this.options.instantMode) {
+                        b.on('keyup', this.inputKeyupHandler.bind(this));
+                    }
+                });
+                if (!isEdgeOrIE) {
+                    b
+                        .addClass('has-icons-right')
+                        .addChild('span', b => {
+                        b
+                            .addClass('icon')
+                            .addClass('is-right')
+                            .addClass('is-clickable')
+                            .html('&#x1F5D9;')
+                            .on('click', this.clearButtonClickHander.bind(this));
+                    });
+                }
+            });
+            if (!this.options.instantMode) {
+                domel(this.slot)
+                    .addChild('button', b => b
+                    .addClass('kfrm-button')
+                    .addText(i18n$1.getText('SearchBtn'))
+                    .on('click', this.searchButtonClickHandler.bind(this)));
+            }
+            if (this.options.focus) {
+                this.filterInput.focus();
+            }
+        }
+        inputKeydownHandler(ev) {
+            if (ev.keyCode == 13) {
+                this.applyFilter(true);
+            }
+        }
+        inputKeyupHandler() {
+            if (this.applyFilterTimeout) {
+                clearTimeout(this.applyFilterTimeout);
+            }
+            this.applyFilterTimeout = setTimeout(() => {
+                this.applyFilter(true);
+            }, this.options.instantTimeout);
+        }
+        clearButtonClickHander() {
+            this.filterInput.value = '';
+            this.filterInput.focus();
+            this.applyFilter(true);
+        }
+        searchButtonClickHandler() {
+            this.applyFilter(true);
+        }
+        applyFilter(checkChange) {
+            if (this.applyFilterTimeout) {
+                clearTimeout(this.applyFilterTimeout);
+            }
+            const filterValue = this.filter.getValue();
+            if (!checkChange || filterValue != this.filterInput.value) {
+                this.filter.apply(this.filterInput.value)
+                    .then(data => {
+                    this.grid.setData(data);
+                });
+                return true;
+            }
+            return false;
+        }
+        highlightCellRenderer(defaultRenderer, value, column, cellElement, rowElement) {
+            if (utils$1.isNumericType(column.type)
+                || utils$1.getStringDataTypes().indexOf(column.type) >= 0) {
+                if (value) {
+                    if (column.dataColumn && column.dataColumn.displayFormat
+                        && DFMT_REGEX.test(column.dataColumn.displayFormat)) {
+                        value = column.dataColumn.displayFormat.replace(DFMT_REGEX, (_, $1) => {
+                            return i18n$1.numberToStr(value, $1);
+                        });
+                    }
+                    else {
+                        value = value.toLocaleString();
+                    }
+                    const result = this.highlightText(value.toString());
+                    if (result instanceof HTMLElement) {
+                        cellElement.title = value;
+                        cellElement.appendChild(result);
+                        return;
+                    }
+                }
+            }
+            defaultRenderer(value, column, cellElement, rowElement);
+        }
+        highlightText(content) {
+            const normalizedContent = content.toLowerCase();
+            const filterValue = this.filter.getValue().toString();
+            if (filterValue && filterValue.length > 0 && content && content.length > 0) {
+                const indexInMas = [];
+                const words = filterValue.split('||').map(w => w.trim().toLowerCase());
+                for (let i = 0; i < words.length; i++) {
+                    let pos = 0;
+                    const lowerWord = words[i];
+                    if (!lowerWord.length)
+                        continue;
+                    if (lowerWord === normalizedContent) {
+                        const highlightSpan = document.createElement('span');
+                        highlightSpan.style.backgroundColor = 'yellow';
+                        highlightSpan.innerText = content;
+                        return highlightSpan;
+                    }
+                    while (pos < content.length - 1) {
+                        const index = normalizedContent.indexOf(lowerWord, pos);
+                        if (index >= 0) {
+                            indexInMas.push({ index: index, length: words[i].length });
+                            pos = index + lowerWord.length;
+                        }
+                        else {
+                            pos++;
+                        }
+                    }
+                }
+                if (indexInMas.length > 0) {
+                    //sort array item by index
+                    indexInMas.sort((item1, item2) => {
+                        if (item1.index > item2.index) {
+                            return 1;
+                        }
+                        else if (item1.index == item2.index2) {
+                            return 0;
+                        }
+                        else {
+                            return -1;
+                        }
+                    });
+                    //remove intersecting gaps
+                    for (let i = 0; i < indexInMas.length - 1;) {
+                        const delta = indexInMas[i + 1].index - (indexInMas[i].index + indexInMas[i].length);
+                        if (delta < 0) {
+                            const addDelta = indexInMas[i + 1].length + delta;
+                            if (addDelta > 0) {
+                                indexInMas[i].length += addDelta;
+                            }
+                            indexInMas.splice(i + 1, 1);
+                        }
+                        else {
+                            i++;
+                        }
+                    }
+                    const div = document.createElement('div');
+                    for (let i = 0; i < indexInMas.length; i++) {
+                        if (i === 0) {
+                            const text = document.createTextNode(content.substring(0, indexInMas[i].index));
+                            div.appendChild(text);
+                        }
+                        const highlightSpan = document.createElement('span');
+                        highlightSpan.style.backgroundColor = 'yellow';
+                        highlightSpan.innerText = content.substring(indexInMas[i].index, indexInMas[i].index + indexInMas[i].length);
+                        div.appendChild(highlightSpan);
+                        const text = (i < indexInMas.length - 1)
+                            ? document.createTextNode(content.substring(indexInMas[i].index
+                                + indexInMas[i].length, indexInMas[i + 1].index))
+                            : document.createTextNode(content.substring(indexInMas[i].index
+                                + indexInMas[i].length));
+                        div.appendChild(text);
+                    }
+                    return div;
+                }
+            }
+            return content;
+        }
+    }
+
+    const isIE = browserUtils.IsIE();
+    class EntityEditFormBuilder {
+        constructor(context, params) {
+            this.context = context;
+            this.params = params;
+            this.params = params || {};
+            this.reset();
+        }
+        reset() {
+            this.form = new EntityEditForm(this.context);
+        }
+        setupLookupField(parent, attr, readOnly, value) {
+            const lookupEntity = this.context.getMetaData().getRootEntity()
+                .subEntities.filter(ent => ent.id == attr.lookupEntity)[0];
+            const dataAttr = this.context.getMetaData().getAttributeById(attr.dataAttr);
+            if (!dataAttr)
+                return;
+            readOnly = readOnly || !dataAttr.isEditable;
+            value = this.params.values
+                ? this.params.values.getValue(dataAttr.id)
+                : undefined;
+            const horizClass = isIE
+                ? 'kfrm-fields-ie is-horizontal'
+                : 'kfrm-fields is-horizontal';
+            let inputEl;
+            domel(parent)
+                .addChild('div', b => {
+                b
+                    .addClass(horizClass)
+                    .addChild('input', b => {
+                    inputEl = b.toDOM();
+                    b.attr('readonly', '');
+                    b.name(dataAttr.id);
+                    b.type(this.resolveInputType(dataAttr.dataType));
+                    b.value(utils$1.IsDefinedAndNotNull(value)
+                        ? value.toString() : '');
+                });
+                if (!readOnly)
+                    b.addChild('button', b => b
+                        .addClass('kfrm-button')
+                        .attr('title', i18n$1.getText('NavigationBtnTitle'))
+                        .addText('...')
+                        .on('click', (ev) => {
+                        const lookupTable = new EasyDataTable({
+                            loader: {
+                                loadChunk: (chunkParams) => this.context.getDataLoader()
+                                    .loadChunk(Object.assign(Object.assign({}, chunkParams), { id: lookupEntity.id }))
+                            }
+                        });
+                        this.context.getDataLoader()
+                            .loadChunk({ offset: 0, limit: 1000, needTotal: true, sourceId: lookupEntity.id })
+                            .then(data => {
+                            for (const col of data.table.columns.getItems()) {
+                                const attrs = lookupEntity.attributes.filter(attr => attr.id == col.id && (attr.isPrimaryKey || attr.showInLookup));
+                                if (attrs.length) {
+                                    lookupTable.columns.add(col);
+                                }
+                            }
+                            lookupTable.setTotal(data.total);
+                            for (const row of data.table.getCachedRows()) {
+                                lookupTable.addRow(row);
+                            }
+                            const ds = new DefaultDialogService();
+                            let gridSlot = null;
+                            let selectedSlot = null;
+                            let widgetSlot;
+                            const slot = domel('div')
+                                .addClass(`kfrm-form`)
+                                .addChild('div', b => b
+                                .addClass(`kfrm-field`)
+                                .addChild('label', b => b
+                                .addText(i18n$1.getText('LookupSelectedItem'))
+                                .toDOM())
+                                .addChild('div', b => selectedSlot = b
+                                .addText('None')
+                                .toDOM()))
+                                .addChild('div', b => widgetSlot = b.toDOM())
+                                .addChild('div', b => b
+                                .addClass('kfrm-control')
+                                .addChild('div', b => gridSlot = b.toDOM()))
+                                .toDOM();
+                            let selectedValue = inputEl.value;
+                            const getValue = (row, colId) => {
+                                if (row instanceof DataRow$1) {
+                                    return row.getValue(colId);
+                                }
+                                const property = colId.substring(colId.lastIndexOf('.') + 1);
+                                return row[property];
+                            };
+                            const updateSelectedValue = (row) => {
+                                selectedSlot.innerHTML = lookupTable.columns
+                                    .getItems()
+                                    .map(col => {
+                                    return `<b>${col.label}:</b> ${getValue(row, col.id)}`;
+                                })
+                                    .join(', ');
+                            };
+                            if (selectedValue) {
+                                const attr = lookupEntity.getFirstPrimaryAttr();
+                                const key = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                                this.context.fetchRecord({ [key]: selectedValue }, lookupEntity.id)
+                                    .then(data => {
+                                    if (data.entity) {
+                                        updateSelectedValue(data.entity);
+                                    }
+                                })
+                                    .catch(error => {
+                                    console.error(error);
+                                });
+                            }
+                            const lookupGrid = new EasyGrid({
+                                slot: gridSlot,
+                                dataTable: lookupTable,
+                                fixHeightOnFirstRender: true,
+                                paging: {
+                                    pageSize: 10
+                                },
+                                onActiveRowChanged: (ev) => {
+                                    lookupGrid.getData().getRow(ev.rowIndex)
+                                        .then((row) => {
+                                        selectedValue = row.getValue(attr.lookupDataAttr);
+                                        updateSelectedValue(row);
+                                    });
+                                }
+                            });
+                            ds.open({
+                                title: i18n$1.getText('LookupDlgCaption')
+                                    .replace('{entity}', lookupEntity.caption),
+                                body: slot,
+                                arrangeParents: true,
+                                beforeOpen: () => {
+                                    const dataFilter = this.context.createFilter(lookupEntity.id, lookupGrid.getData(), true);
+                                    new TextFilterWidget(widgetSlot, lookupGrid, dataFilter, { instantMode: true, focus: true });
+                                },
+                                onSubmit: () => {
+                                    inputEl.value = selectedValue;
+                                    return true;
+                                },
+                                onDestroy: () => {
+                                    lookupGrid.destroy();
+                                    // return focus on button
+                                    b.toDOM().focus();
+                                }
+                            });
+                        });
+                    }));
+            });
+        }
+        setupDateTimeField(parent, attr, value, readOnly, hidden) {
+            const horizClass = isIE
+                ? 'kfrm-fields-ie is-horizontal'
+                : 'kfrm-fields is-horizontal';
+            const editFormat = getEditDateTimeFormat(attr.dataType);
+            let inputEl;
+            const mask = editFormat
+                .replace('yyyy', '9999')
+                .replace('MM', '99')
+                .replace('dd', '99')
+                .replace('HH', '99')
+                .replace('mm', '99')
+                .replace('ss', '99');
+            domel(parent)
+                .addChild('div', b => {
+                b
+                    .addClass(horizClass)
+                    .addChild('input', b => {
+                    inputEl = b.toDOM();
+                    b.name(attr.id);
+                    b.type(hidden ? 'hidden' : this.resolveInputType(attr.dataType));
+                    if (readOnly) {
+                        b.attr('readonly', '');
+                    }
+                    else {
+                        b.mask(mask);
+                        b.on('keypress', (ev) => this.applySumbit(ev))
+                            .on('input', ev => {
+                            b.removeClass('is-invalid');
+                            try {
+                                const newDate = utils$1.strToDateTime(inputEl.value, editFormat);
+                            }
+                            catch (e) {
+                                b.addClass('is-invalid');
+                            }
+                            finally {
+                            }
+                        })
+                            .on('blur', ev => {
+                            if (inputEl.value === mask.replace(/[9]/g, '_')) {
+                                inputEl.value = '';
+                            }
+                        });
+                    }
+                    b.value((utils$1.IsDefinedAndNotNull(value)
+                        ? i18n$1.dateTimeToStr(value, editFormat)
+                        : ''));
+                });
+                if (!readOnly)
+                    b.addChild('button', b => b
+                        .addClass('kfrm-button')
+                        .attr('title', i18n$1.getText(attr.dataType !== DataType$1.Time
+                        ? 'CalendarBtnTitle'
+                        : 'TimerBtnTitle'))
+                        .addChild('i', b => b.addClass(attr.dataType !== DataType$1.Time
+                        ? 'ed-calendar-icon'
+                        : 'ed-timer-icon'))
+                        .on('click', (ev) => {
+                        let value;
+                        try {
+                            value = inputEl.value.length
+                                ? attr.dataType !== DataType$1.Time
+                                    ? utils$1.strToDateTime(inputEl.value, editFormat)
+                                    : utils$1.strToTime(inputEl.value)
+                                : new Date(new Date().setSeconds(0));
+                        }
+                        catch (_a) {
+                            value = new Date(new Date().setSeconds(0));
+                        }
+                        const pickerOptions = {
+                            zIndex: 9999999999,
+                            showCalendar: attr.dataType !== DataType$1.Time,
+                            showTimePicker: attr.dataType !== DataType$1.Date,
+                            onApply: (dateTime) => {
+                                dateTime.setSeconds(0);
+                                dateTime.setMilliseconds(0);
+                                inputEl.value = i18n$1.dateTimeToStr(dateTime, editFormat);
+                            }
+                        };
+                        const dtp = new DefaultDateTimePicker(pickerOptions);
+                        dtp.setDateTime(value);
+                        dtp.show(ev.target);
+                    }).toDOM());
+            });
+        }
+        setupListField(parent, attr, value, values, readOnly) {
+            domel(parent)
+                .addChild('div', b => b
+                .addClass('kfrm-select full-width')
+                .addChild('select', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+                b.attr('name', attr.id);
+                b.on('keypress', (ev) => this.applySumbit(ev));
+                if (values) {
+                    for (let i = 0; i < values.length; i++) {
+                        const val = values[i];
+                        b.addOption({
+                            value: val.id,
+                            title: val.text,
+                            selected: i === 0
+                        });
+                    }
+                }
+                b.value(value);
+            }));
+        }
+        setupFileField(parent, attr, readOnly, accept) {
+            domel(parent)
+                .addChild('input', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+                b.name(attr.id)
+                    .type(this.resolveInputType(attr.dataType));
+                b.attr('accept', accept);
+            });
+        }
+        setupTextField(parent, attr, value, readOnly, hidden) {
+            domel(parent)
+                .addChild('input', b => {
+                if (readOnly) {
+                    b.attr('readonly', '');
+                }
+                b.type(hidden ? 'hidden' : this.resolveInputType(attr.dataType));
+                b.name(attr.id)
+                    .type(this.resolveInputType(attr.dataType));
+                if (attr.dataType == DataType$1.Bool) {
+                    if (value)
+                        b.attr('checked', '');
+                }
+                else {
+                    b.on('keypress', (ev) => this.applySumbit(ev))
+                        .value(utils$1.IsDefinedAndNotNull(value)
+                        ? value.toString()
+                        : '');
+                }
+            });
+        }
+        setupTextArea(parent, attr, value, readOnly) {
+            // feature: modify size in value editor ??
+            domel(parent)
+                .addChild('textarea', b => {
+                if (readOnly)
+                    b.attr('readonly', '');
+                b.attr('name', attr.id);
+                b.setStyle('height', `120px`);
+                b.value(utils$1.IsDefinedAndNotNull(value)
+                    ? value.toString()
+                    : '');
+            });
+        }
+        addFormField(parent, attr) {
+            const value = (this.params.values && attr.kind !== EntityAttrKind$1.Lookup)
+                ? this.params.values.getValue(attr.id)
+                : !this.params.isEditForm
+                    ? attr.defaultValue
+                    : undefined;
+            const editor = this.resolveEditor(attr);
+            const readOnly = this.params.isEditForm && (attr.isPrimaryKey || !attr.isEditable);
+            const required = !attr.isNullable;
+            if (isIE) {
+                parent = domel('div', parent)
+                    .addClass('kfrm-field-ie')
+                    .toDOM();
+            }
+            domel(parent)
+                .addChild('label', b => {
+                b.attr('for', attr.id);
+                b.addHtml(`${attr.caption} ${required ? '<sup style="color: red">*</sup>' : ''}: `);
+                if (attr.description) {
+                    b.addChild('div', b => b
+                        .attr('title', attr.description)
+                        .addClass('question-mark')
+                        .setStyle('vertical-align', 'middle')
+                        .setStyle('display', 'inline-block'));
+                }
+            });
+            const hidden = attr.isPrimaryKey;
+            if (attr.kind === EntityAttrKind$1.Lookup) {
+                this.setupLookupField(parent, attr, readOnly, value);
+                return;
+            }
+            switch (editor.tag) {
+                case EditorTag.DateTime:
+                    this.setupDateTimeField(parent, attr, value, readOnly, hidden);
+                    break;
+                case EditorTag.List:
+                    this.setupListField(parent, attr, value, editor.values, readOnly);
+                    break;
+                case EditorTag.File:
+                    this.setupFileField(parent, attr, readOnly, editor.accept);
+                    break;
+                case EditorTag.Edit:
+                default:
+                    if (editor.multiline) {
+                        this.setupTextArea(parent, attr, value, readOnly);
+                    }
+                    else {
+                        this.setupTextField(parent, attr, value, readOnly, hidden);
+                    }
+                    break;
+            }
+        }
+        resolveInputType(dataType) {
+            if (dataType === DataType$1.Bool)
+                return 'checkbox';
+            if (dataType === DataType$1.Blob)
+                return 'file';
+            return 'text';
+        }
+        resolveEditor(attr) {
+            let editor = attr.defaultEditor || new ValueEditor();
+            if (editor.tag == EditorTag.Unknown) {
+                if (utils$1.getDateDataTypes().indexOf(attr.dataType) >= 0) {
+                    editor.tag = EditorTag.DateTime;
+                }
+                else {
+                    editor.tag = EditorTag.Edit;
+                }
+            }
+            return editor;
+        }
+        applySumbit(ev) {
+            if (ev.keyCode === 13) {
+                this.sumbitCallback && this.sumbitCallback();
+                return false;
+            }
+            return false;
+        }
+        onSubmit(sumbitCallback) {
+            this.sumbitCallback = sumbitCallback;
+            return this;
+        }
+        build() {
+            let fb;
+            const formHtml = domel('div')
+                .addClass('kfrm-form')
+                .addChild('div', b => b
+                .addClass(`errors-block`)
+                .toDOM())
+                .addChild('div', b => {
+                b.addClass(`${isIE
+                ? 'kfrm-fields-ie col-ie-1-4 label-align-right'
+                : 'kfrm-fields col-a-1 label-align-right'}`);
+                fb = b;
+            })
+                .toDOM();
+            this.form['setHtmlInt'](formHtml);
+            for (const attr of this.context.getActiveEntity().attributes) {
+                if (!this.params.isEditForm && !attr.showOnCreate)
+                    continue;
+                if (!attr.isPrimaryKey && this.params.isEditForm && !attr.showOnEdit) {
+                    continue;
+                }
+                this.addFormField(fb.toDOM(), attr);
+            }
+            return this.form;
+        }
+    }
+
+    class ProgressBar {
+        constructor(slot) {
+            this.slot = slot;
+            this.hide();
+            this.slot.classList.add('ed-progress-bar');
+        }
+        show() {
+            this.slot.style.removeProperty('display');
+        }
+        hide() {
+            this.slot.style.display = 'none';
+        }
+    }
+
+    class EasyDataServerLoader {
+        constructor(context) {
+            this.context = context;
+        }
+        loadChunk(params) {
+            const url = this.context.resolveEndpoint('FetchDataset', { sourceId: params.sourceId || this.context.getActiveEntity().id });
+            delete params.sourceId;
+            this.context.startProcess();
+            const http = this.context.getHttpClient();
+            return http.post(url, params)
+                .then((result) => {
+                const dataTable = new EasyDataTable({
+                    chunkSize: 1000
+                });
+                const resultSet = result.resultSet;
+                for (const col of resultSet.cols) {
+                    dataTable.columns.add(col);
+                }
+                for (const row of resultSet.rows) {
+                    dataTable.addRow(row);
+                }
+                let totalRecords = 0;
+                if (result.meta && result.meta.totalRecords) {
+                    totalRecords = result.meta.totalRecords;
+                }
+                return {
+                    table: dataTable,
+                    total: totalRecords,
+                    hasNext: !params.needTotal
+                        || params.offset + params.limit < totalRecords
+                };
+            })
+                .finally(() => {
+                this.context.endProcess();
+            });
+        }
+    }
+
+    class DataContext {
+        constructor(options) {
+            this.endpoints = new Map();
+            this.endpointVarsRegex = /\{.*?\}/g;
+            this.options = options || {};
+            this.http = new HttpClient();
+            this.model = new MetaData();
+            this.model.id = options.metaDataId || '__default';
+            this.dataLoader = new EasyDataServerLoader(this);
+            const dataTableOptions = Object.assign({ loader: this.dataLoader }, options.dataTable);
+            this.data = new EasyDataTable(dataTableOptions);
+            this.setDefaultEndpoints(this.options.endpoint || '/api/easydata');
+        }
+        getActiveEntity() {
+            return this.activeEntity;
+        }
+        setActiveSource(entityId) {
+            this.activeEntity = this.model.getRootEntity().subEntities
+                .filter(e => e.id == entityId)[0];
+        }
+        getMetaData() {
+            return this.model;
+        }
+        getData() {
+            return this.data;
+        }
+        getDataLoader() {
+            return this.dataLoader;
+        }
+        createFilter(sourceId, data, isLookup) {
+            return new TextDataFilter(this.dataLoader, data || this.getData(), sourceId || this.activeEntity.id, isLookup);
+        }
+        loadMetaData() {
+            const url = this.resolveEndpoint('GetMetaData');
+            this.startProcess();
+            return this.http.get(url)
+                .then(result => {
+                if (result.model) {
+                    this.model.loadFromData(result.model);
+                }
+                return this.model;
+            })
+                .catch(error => {
+                console.error(`Error: ${error.message}. Source: ${error.sourceError}`);
+                return null;
+            })
+                .finally(() => {
+                this.endProcess();
+            });
+        }
+        getHttpClient() {
+            return this.http;
+        }
+        fetchDataset() {
+            this.data.clear();
+            return this.dataLoader.loadChunk({ offset: 0, limit: this.data.chunkSize, needTotal: true })
+                .then(result => {
+                for (const col of result.table.columns.getItems()) {
+                    this.data.columns.add(col);
+                }
+                this.data.setTotal(result.total);
+                for (const row of result.table.getCachedRows()) {
+                    this.data.addRow(row);
+                }
+                return this.data;
+            });
+        }
+        fetchRecord(keys, sourceId) {
+            const url = this.resolveEndpoint('FetchRecord', { sourceId: sourceId || this.activeEntity.id });
+            this.startProcess();
+            return this.http.get(url, { queryParams: keys })
+                .finally(() => this.endProcess());
+        }
+        createRecord(obj, sourceId) {
+            const url = this.resolveEndpoint('CreateRecord', { sourceId: sourceId || this.activeEntity.id });
+            this.startProcess();
+            return this.http.post(url, obj, { dataType: 'json' })
+                .finally(() => this.endProcess());
+        }
+        updateRecord(obj, sourceId) {
+            const url = this.resolveEndpoint('UpdateRecord', { sourceId: sourceId || this.activeEntity.id });
+            this.startProcess();
+            return this.http.post(url, obj, { dataType: 'json' })
+                .finally(() => this.endProcess());
+        }
+        deleteRecord(obj, sourceId) {
+            const url = this.resolveEndpoint('DeleteRecord', { sourceId: sourceId || this.activeEntity.id });
+            this.startProcess();
+            return this.http.post(url, obj, { dataType: 'json' })
+                .finally(() => this.endProcess());
+        }
+        setEndpoint(key, value) {
+            this.endpoints.set(key, value);
+        }
+        setEnpointIfNotExist(key, value) {
+            if (!this.endpoints.has(key))
+                this.endpoints.set(key, value);
+        }
+        resolveEndpoint(endpointKey, options) {
+            options = options || {};
+            let result = this.endpoints.get(endpointKey);
+            if (!result) {
+                throw endpointKey + ' endpoint is not defined';
+            }
+            let matches = result.match(this.endpointVarsRegex);
+            if (matches) {
+                for (let match of matches) {
+                    let opt = match.substring(1, match.length - 1);
+                    let optVal = options[opt];
+                    if (!optVal) {
+                        if (opt == 'modelId') {
+                            optVal = this.model.getId();
+                        }
+                        else if (opt == 'sourceId') {
+                            optVal = this.activeEntity.id;
+                        }
+                        else {
+                            throw `Parameter [${opt}] is not defined`;
+                        }
+                    }
+                    result = result.replace(match, optVal);
+                }
+            }
+            return result;
+        }
+        startProcess() {
+            if (this.options.onProcessStart)
+                this.options.onProcessStart();
+        }
+        endProcess() {
+            if (this.options.onProcessEnd)
+                this.options.onProcessEnd();
+        }
+        setDefaultEndpoints(endpointBase) {
+            this.setEnpointIfNotExist('GetMetaData', combinePath(endpointBase, 'models/{modelId}'));
+            this.setEnpointIfNotExist('FetchDataset', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+            this.setEnpointIfNotExist('FetchRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/fetch'));
+            this.setEnpointIfNotExist('CreateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/create'));
+            this.setEnpointIfNotExist('UpdateRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/update'));
+            this.setEnpointIfNotExist('DeleteRecord', combinePath(endpointBase, 'models/{modelId}/sources/{sourceId}/delete'));
+        }
+    }
+
+    class TypeValidator extends Validator {
+        constructor() {
+            super();
+            this.name = 'Type';
+        }
+        validate(attr, value) {
+            if (!utils$1.IsDefinedAndNotNull(value) || value == '')
+                return { successed: true };
+            if (utils$1.isNumericType(attr.dataType)) {
+                if (!utils$1.isNumeric(value))
+                    return {
+                        successed: false,
+                        messages: [i18n$1.getText('NumberError')]
+                    };
+                if (utils$1.isIntType(attr.dataType)
+                    && !Number.isInteger(Number.parseFloat(value))) {
+                    return {
+                        successed: false,
+                        messages: [i18n$1.getText('IntNumberError')]
+                    };
+                }
+            }
+            return { successed: true };
+        }
+    }
+
+    class RequiredValidator extends Validator {
+        constructor() {
+            super();
+            this.name = 'Required';
+        }
+        validate(attr, value) {
+            if (!attr.isNullable && (!utils$1.IsDefinedAndNotNull(value)
+                || value === ''))
+                return {
+                    successed: false,
+                    messages: [i18n$1.getText('RequiredError')]
+                };
+            return { successed: true };
+        }
+    }
+
+    class EntityDataView {
+        constructor(slot, context, basePath, options) {
+            this.slot = slot;
+            this.context = context;
+            this.basePath = basePath;
+            this.options = {
+                showFilterBox: true,
+                showBackToEntities: true
+            };
+            this.defaultValidators = [new RequiredValidator(), new TypeValidator()];
+            this.options = utils$1.assignDeep(this.options, options || {});
+            this.dlg = new DefaultDialogService();
+            const ent = this.context.getActiveEntity();
+            if (!ent) {
+                throw "Can't find active entity for " + window.location.pathname;
+            }
+            this.slot.innerHTML += `<h1>${ent.captionPlural || ent.caption}</h1>`;
+            if (this.options.showBackToEntities) {
+                domel(this.slot)
+                    .addChild('a', b => b
+                    .attr('href', 'javascript:void(0)')
+                    .text(`← ${i18n$1.getText('BackToEntities')}`)
+                    .on('click', (e) => {
+                    e.preventDefault();
+                    setLocation(this.basePath);
+                }));
+            }
+            this.renderGrid();
+        }
+        syncGridColumnHandler(column) {
+            if (column.dataColumn) {
+                const attr = this.context.getMetaData().getAttributeById(column.dataColumn.id);
+                if (attr) {
+                    column.isVisible = attr.showOnView;
+                }
+            }
+        }
+        renderGrid() {
+            this.context.fetchDataset()
+                .then(result => {
+                const gridSlot = document.createElement('div');
+                this.slot.appendChild(gridSlot);
+                gridSlot.id = 'Grid';
+                this.grid = new EasyGrid(utils$1.assignDeep({
+                    slot: gridSlot,
+                    dataTable: result,
+                    paging: {
+                        pageSize: 15,
+                        allowPageSizeChange: true,
+                        pageSizeItems: [15, 30, 50, 100, 200]
+                    },
+                    showPlusButton: this.context.getActiveEntity().isEditable,
+                    plusButtonTitle: i18n$1.getText('AddRecordBtnTitle'),
+                    showActiveRow: false,
+                    onPlusButtonClick: this.addClickHandler.bind(this),
+                    onGetCellRenderer: this.manageCellRenderer.bind(this),
+                    onRowDbClick: this.rowDbClickHandler.bind(this),
+                    onSyncGridColumn: this.syncGridColumnHandler.bind(this)
+                }, this.options.grid || {}));
+                if (this.options.showFilterBox) {
+                    let filterWidgetSlot;
+                    const filterBarDiv = domel('div')
+                        .addClass(`kfrm-form`)
+                        .setStyle('margin', '10px 0px')
+                        .addChild('div', b => filterWidgetSlot = b.toDOM()).toDOM();
+                    this.slot.insertBefore(filterBarDiv, gridSlot);
+                    const dataFilter = this.context.createFilter();
+                    this.filterWidget = new TextFilterWidget(filterWidgetSlot, this.grid, dataFilter);
+                }
+            });
+        }
+        manageCellRenderer(column, defaultRenderer) {
+            if (column.isRowNum) {
+                column.width = 110;
+                return (value, column, cell, rowEl) => {
+                    const b = domel('div', cell)
+                        .addClass(`keg-cell-value`);
+                    if (this.context.getActiveEntity().isEditable) {
+                        b.addChild('a', b => b
+                            .attr('href', 'javascript:void(0)')
+                            .text(i18n$1.getText('EditBtn'))
+                            .on('click', (ev) => this.editClickHandler(ev, parseInt(rowEl.getAttribute('data-row-idx')))))
+                            .addChild('span', b => b.text(' | '))
+                            .addChild('a', b => b
+                            .attr('href', 'javascript:void(0)')
+                            .text(i18n$1.getText('DeleteBtn'))
+                            .on('click', (ev) => this.deleteClickHandler(ev, parseInt(rowEl.getAttribute('data-row-idx')))));
+                    }
+                };
+            }
+        }
+        addClickHandler() {
+            const activeEntity = this.context.getActiveEntity();
+            const form = new EntityEditFormBuilder(this.context)
+                .onSubmit(() => dlg.submit())
+                .build();
+            form.useValidators(this.defaultValidators);
+            const dlg = this.dlg.open({
+                title: i18n$1.getText('AddDlgCaption')
+                    .replace('{entity}', activeEntity.caption),
+                body: form.getHtml(),
+                onSubmit: () => {
+                    if (!form.validate())
+                        return false;
+                    form.getData()
+                        .then(obj => this.context.createRecord(obj))
+                        .then(() => {
+                        return this.refreshData();
+                    })
+                        .catch((error) => {
+                        this.processError(error);
+                    });
+                }
+            });
+        }
+        editClickHandler(ev, rowIndex) {
+            this.grid.getData().getRow(rowIndex)
+                .then(row => {
+                if (row) {
+                    this.showEditForm(row);
+                }
+            });
+        }
+        showEditForm(row) {
+            const activeEntity = this.context.getActiveEntity();
+            const form = new EntityEditFormBuilder(this.context, { isEditForm: true, values: row })
+                .onSubmit(() => dlg.submit())
+                .build();
+            form.useValidators(this.defaultValidators);
+            const dlg = this.dlg.open({
+                title: i18n$1.getText('EditDlgCaption')
+                    .replace('{entity}', activeEntity.caption),
+                body: form.getHtml(),
+                onSubmit: () => {
+                    if (!form.validate())
+                        return false;
+                    form.getData()
+                        .then(obj => this.context.updateRecord(obj))
+                        .then(() => {
+                        return this.refreshData();
+                    })
+                        .catch((error) => {
+                        this.processError(error);
+                    });
+                }
+            });
+        }
+        rowDbClickHandler(ev) {
+            if (this.context.getActiveEntity().isEditable) {
+                this.showEditForm(ev.row);
+            }
+        }
+        deleteClickHandler(ev, rowIndex) {
+            this.grid.getData().getRow(rowIndex)
+                .then(row => {
+                if (row) {
+                    const activeEntity = this.context.getActiveEntity();
+                    const keyAttrs = activeEntity.getPrimaryAttrs();
+                    const keyVals = keyAttrs.map(attr => row.getValue(attr.id));
+                    const keys = keyAttrs.reduce((val, attr, index) => {
+                        const property = attr.id.substring(attr.id.lastIndexOf('.') + 1);
+                        val[property] = keyVals[index];
+                        return val;
+                    }, {});
+                    this.dlg.openConfirm(i18n$1.getText('DeleteDlgCaption')
+                        .replace('{entity}', activeEntity.caption), i18n$1.getText('DeleteDlgMessage')
+                        .replace('{recordId}', Object.keys(keys)
+                        .map(key => `${key}:${keys[key]}`).join(';')))
+                        .then((result) => {
+                        if (result) {
+                            this.context.deleteRecord(keys)
+                                .then(() => {
+                                return this.refreshData();
+                            })
+                                .catch((error) => {
+                                this.processError(error);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        processError(error) {
+            this.dlg.open({
+                title: 'Ooops, something went wrong',
+                body: error.message,
+                closable: true,
+                cancelable: false
+            });
+        }
+        refreshData() {
+            return this.context.fetchDataset()
+                .then(() => {
+                let processed = false;
+                if (this.filterWidget) {
+                    processed = this.filterWidget.applyFilter(false);
+                }
+                if (!processed) {
+                    this.grid.refresh();
+                }
+            });
+        }
+    }
+
+    class RootDataView {
+        constructor(slot, context, basePath) {
+            this.slot = slot;
+            this.context = context;
+            this.basePath = basePath;
+            this.metaData = this.context.getMetaData();
+            this.slot.innerHTML += `<h1>${i18n$1.getText('RootViewTitle')}</h1>`;
+            this.renderEntitySelector();
+        }
+        renderEntitySelector() {
+            const entities = this.metaData.getRootEntity().subEntities;
+            if (this.slot) {
+                domel(this.slot)
+                    .addChild('div', b => b
+                    .addClass('ed-root')
+                    .addChild('div', b => b
+                    .addClass('ed-menu-description')
+                    .addText(i18n$1.getText(!this.metaData.isEmpty() ? 'EntityMenuDesc' : 'ModelIsEmpty')))
+                    .addChild('ul', b => {
+                    b.addClass('ed-entity-menu');
+                    entities.forEach(ent => {
+                        b.addChild('li', b => {
+                            b.addClass('ed-entity-item')
+                                .on('click', () => {
+                                setLocation(`${this.basePath}/${decodeURIComponent(ent.id)}`);
+                            })
+                                .addChild('div', b => {
+                                b.addClass('ed-entity-item-caption')
+                                    .addText(ent.captionPlural || ent.caption);
+                            });
+                            if (ent.description) {
+                                b.addChild('div', b => {
+                                    b.addClass('ed-entity-item-descr')
+                                        .addText(`${ent.description}`);
+                                });
+                            }
+                        });
+                    });
+                }));
+            }
+        }
+    }
+
+    class EasyDataViewDispatcher {
+        constructor(options) {
+            this.options = {
+                container: '#EasyDataContainer',
+                basePath: 'easydata'
+            };
+            this.onSetLocation = () => {
+                this.setActiveView();
+            };
+            this.attach = () => {
+                window.addEventListener('ed_set_location', this.onSetLocation);
+                window.addEventListener('popstate', this.onSetLocation);
+            };
+            this.options = utils$1.assign(this.options, options || {});
+            if (this.options.rootEntity) {
+                this.options.showBackToEntities = false;
+                this.basePath = '/';
+            }
+            else {
+                this.basePath = this.normalizeBasePath(this.options.basePath);
+            }
+            this.setContainer(this.options.container);
+            const progressBarSlot = document.createElement('div');
+            const bar = new ProgressBar(progressBarSlot);
+            const parent = this.container.parentElement;
+            parent.insertBefore(progressBarSlot, parent.firstElementChild);
+            this.context = new DataContext({
+                endpoint: this.options.endpoint,
+                dataTable: this.options.dataTable,
+                onProcessStart: () => bar.show(),
+                onProcessEnd: () => bar.hide()
+            });
+        }
+        normalizeBasePath(basePath) {
+            basePath = this.trimSlashes(basePath);
+            const fullPath = decodeURIComponent(window.location.pathname);
+            const idx = fullPath.toLocaleLowerCase().indexOf(basePath);
+            return idx >= 0 ? fullPath.substring(0, idx + basePath.length) : '/';
+        }
+        trimSlashes(path) {
+            return path.replace(/^\/|\/$/g, '');
+        }
+        setContainer(container) {
+            if (!container) {
+                throw 'Container is undefined';
+            }
+            if (typeof container === 'string') {
+                if (container.length) {
+                    if (container[0] === '.') {
+                        const result = document.getElementsByClassName(container.substring(1));
+                        if (result.length)
+                            this.container = result[0];
+                    }
+                    else {
+                        if (container[0] === '#') {
+                            container = container.substring(1);
+                        }
+                        this.container = document.getElementById(container);
+                    }
+                    if (!this.container) {
+                        throw Error('Unrecognized `container` parameter: ' + container + '\n'
+                            + 'It must be an element ID, a class name (starting with .) or an HTMLElement object itself.');
+                    }
+                }
+            }
+            else {
+                this.container = container;
+            }
+        }
+        getActiveSourceId() {
+            if (this.options.rootEntity)
+                return this.options.rootEntity;
+            const path = decodeURIComponent(window.location.pathname);
+            const idIndex = this.basePath.length + 1;
+            return idIndex < path.length ? path.substring(idIndex) : null;
+        }
+        run() {
+            this.attach();
+            return this.context.loadMetaData()
+                .then(() => {
+                this.setActiveView();
+            })
+                .catch(error => console.error(error));
+        }
+        setActiveView() {
+            this.clear();
+            const sourceId = this.getActiveSourceId();
+            if (sourceId) {
+                this.context.setActiveSource(sourceId);
+                window['EDView'] = new EntityDataView(this.container, this.context, this.basePath, this.options);
+            }
+            else {
+                window['EDView'] = new RootDataView(this.container, this.context, this.basePath);
+            }
+        }
+        clear() {
+            this.container.innerHTML = '';
+            this.context.getData().clear();
+        }
+        detach() {
+            window.removeEventListener('ed_set_location', this.onSetLocation);
+            window.removeEventListener('popstate', this.onSetLocation);
+        }
+    }
+
+    function addEasyDataCRUDTexts() {
+        i18n$1.updateDefaultTexts({
+            RequiredError: 'Value is required.',
+            NumberError: 'Value should be a number',
+            IntNumberError: 'Value should be an integer number',
+            DateTimeError: 'Invalid date or time value',
+            LookupSelectedItem: 'Selected item: ',
+            LookupDlgCaption: 'Select {entity}',
+            None: 'None',
+            NavigationBtnTitle: 'Navigation values',
+            CalendarBtnTitle: 'Open calendar',
+            TimerBtnTitle: 'Open timer',
+            AddBtnTitle: 'Add',
+            AddRecordBtnTitle: 'Add record',
+            EditBtn: 'Edit',
+            DeleteBtn: 'Delete',
+            SelectLink: '[ select ]',
+            AddDlgCaption: 'Create {entity}',
+            EditDlgCaption: 'Edit {entity}',
+            DeleteDlgCaption: 'Delete {entity}',
+            DeleteDlgMessage: 'Are you sure you want to remove this record: {{recordId}}?',
+            EntityMenuDesc: 'Click on an entity to view/edit its content',
+            BackToEntities: 'Back to entities',
+            SearchBtn: 'Search',
+            SearchInputPlaceholder: 'Search...',
+            RootViewTitle: 'Entities',
+            ModelIsEmpty: 'No entity was found.'
+        });
+    }
+    addEasyDataCRUDTexts();
+
+    var easydata_crud_es = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        DataContext: DataContext,
+        EasyDataServerLoader: EasyDataServerLoader,
+        EasyDataViewDispatcher: EasyDataViewDispatcher,
+        EntityDataView: EntityDataView,
+        EntityEditForm: EntityEditForm,
+        EntityEditFormBuilder: EntityEditFormBuilder,
+        ProgressBar: ProgressBar,
+        RequiredValidator: RequiredValidator,
+        RootDataView: RootDataView,
+        TextDataFilter: TextDataFilter,
+        TextFilterWidget: TextFilterWidget,
+        TypeValidator: TypeValidator,
+        Validator: Validator
+    });
+
+    exports.core = easydata_core_es;
+    exports.crud = easydata_crud_es;
+    exports.ui = easydata_ui_es;
+
+    return exports;
 
 })({});

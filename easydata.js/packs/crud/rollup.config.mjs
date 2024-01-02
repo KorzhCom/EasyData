@@ -56,7 +56,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             },
             {
@@ -65,7 +65,7 @@ export default [
                 sourcemap,
                 banner,
                 plugins: [
-                    terser(),
+                    // terser(),
                 ]
             }
         ]
@@ -79,7 +79,7 @@ export default [
             nodeResolve(),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
