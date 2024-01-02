@@ -46,6 +46,7 @@ export default [
             {
                 file: './wwwroot/js/easydata.js',
                 format: 'iife',
+                name: 'myEasyData',
                 sourcemap,
                 banner,
                 plugins: [

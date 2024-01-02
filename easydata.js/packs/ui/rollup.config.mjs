@@ -14,14 +14,13 @@ import pkg from './package.json' assert { type: 'json' };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production
 
 const banner = `
 /*!
- * EasyData.JS UI v${pkg.version}
- * Copyright ${new Date().getFullYear()} Korzh.com
+ * EasyData.JS UI
+ * Copyright 2020 - ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */
 `
