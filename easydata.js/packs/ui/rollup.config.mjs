@@ -20,7 +20,7 @@ const
 const banner = `
 /*!
  * EasyData.JS UI
- * Copyright ${new Date().getFullYear()} Korzh.com
+ * Copyright 2020 - ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  !*/
 `

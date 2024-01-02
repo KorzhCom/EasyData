@@ -9,6 +9,7 @@
     "watch": "rollup --config -w"
   },
   "dependencies": {
+    "@easydata/core": "*",
     "@easydata/ui": "*",
     "@easydata/crud": "*"
   }

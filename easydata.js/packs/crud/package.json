@@ -30,7 +30,7 @@
     "browserslist": [
         "defaults and supports es6-module"
     ],
-    "dependencies": {
+    "peerDependencies": {
         "@easydata/core": "*",
         "@easydata/ui": "*"
     },
