@@ -9,6 +9,7 @@ import typedoc from '@olton/rollup-plugin-typedoc'
 import noEmit from 'rollup-plugin-no-emit'
 import * as path from "path";
 import { fileURLToPath } from 'url';
+import pkg from './package.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,14 +23,14 @@ const banner = `
  * EasyData.JS UI
  * Copyright 2020 - ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
- !*/
+ */
 `
 
 export default [
     {
         input: './src/public_api.ts',
         watch: {
-            include: 'src/**/*.ts',
+            include: 'src/**',
             clearScreen: false
         },
         plugins: [
@@ -92,7 +93,6 @@ export default [
         ],
         output: {
             dir: './dist/assets/css',
-            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
@@ -122,7 +122,6 @@ export default [
         ],
         output: {
             dir: './dist/assets/css',
-            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
@@ -152,7 +151,6 @@ export default [
         ],
         output: {
             dir: './dist/assets/css',
-            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
