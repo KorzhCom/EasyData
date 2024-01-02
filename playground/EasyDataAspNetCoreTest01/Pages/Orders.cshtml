@@ -12,7 +12,7 @@
 
     <script>
         window.addEventListener('load', function () {
-            new easydata.crud.EasyDataViewDispatcher({
+            myEasyData.runDispatcher({
                 endpoint: '/api/easy-crud',
                 rootEntity: 'Order'
             }).run()

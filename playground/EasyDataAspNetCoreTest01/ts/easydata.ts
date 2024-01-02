@@ -1,5 +1,6 @@
-﻿import { EasyDataViewDispatcher } from '@easydata/crud';
+﻿import '@easydata/core'
 import { showTimeSpanPicker } from '@easydata/ui' 
+import { EasyDataViewDispatcher, EasyDataViewDispatcherOptions } from '@easydata/crud';
 
 window.addEventListener('load', () => {
     console.log(showTimeSpanPicker)
@@ -29,3 +30,9 @@ globalThis.showPickerWithPreset = () => {
         `)
     });
 }
+
+
+export function runDispatcher(options: EasyDataViewDispatcherOptions): void {
+    new EasyDataViewDispatcher(options).run();
+}
+
