@@ -1,6 +1,6 @@
 {
     "name": "@easydata/ui",
-    "version": "1.4.20",
+    "version": "1.4.21",
     "description": "EasyData.JS: DOM manipulation functions and UI widgets",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.ui.js",
@@ -34,7 +34,7 @@
         "defaults"
     ],
     "peerDependencies": {
-        "@easydata/core": "^1.4.20"
+        "@easydata/core": "^1.4.21"
     },
     "dependencies": {
         "@juggle/resize-observer": "^3.4.0"

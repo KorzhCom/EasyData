@@ -1,6 +1,6 @@
 {
     "name": "@easydata/bundle-crud",
-    "version": "1.4.20",
+    "version": "1.4.21",
     "description": "EasyData.JS bundle",
     "scripts": {
         "test": "vitest run",
@@ -27,8 +27,8 @@
         "defaults and supports es6-module"
     ],
     "dependencies": {
-        "@easydata/ui": "^1.4.20",
-        "@easydata/crud": "^1.4.20"
+        "@easydata/ui": "^1.4.21",
+        "@easydata/crud": "^1.4.21"
     },
     "files": [
         "dist"
