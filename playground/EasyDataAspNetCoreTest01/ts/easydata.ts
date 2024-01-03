@@ -1,4 +1,4 @@
-﻿import '@easydata/core'
+﻿// import '@easydata/crud'
 import { showTimeSpanPicker } from '@easydata/ui' 
 import { EasyDataViewDispatcher, EasyDataViewDispatcherOptions } from '@easydata/crud';
 
