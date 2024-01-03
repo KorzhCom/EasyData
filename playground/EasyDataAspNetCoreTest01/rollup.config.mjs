@@ -51,7 +51,7 @@ export default [
         ],
         output: [
             {
-                file: './wwwroot/js/easydata.js',
+                file: './wwwroot/js/easydata-all.js',
                 format: 'iife',
                 name: 'easydata',
                 sourcemap,
@@ -60,7 +60,7 @@ export default [
                 ]
             },
             {
-                file: './wwwroot/js/easydata.min.js',
+                file: './wwwroot/js/easydata-all.min.js',
                 format: 'iife',
                 name: 'easydata',
                 sourcemap,
