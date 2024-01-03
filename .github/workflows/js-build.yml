@@ -103,7 +103,7 @@ jobs:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './bundles/crud/dist'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
@@ -159,7 +159,7 @@ jobs:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './bundles/crud/dist'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
