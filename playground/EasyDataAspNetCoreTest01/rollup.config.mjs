@@ -7,15 +7,15 @@ import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
 import typedoc from '@olton/rollup-plugin-typedoc'
 import noEmit from 'rollup-plugin-no-emit'
+import multi from '@rollup/plugin-multi-entry'
 import * as path from "path";
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production
 
 const banner = `
 /*!
@@ -27,43 +27,20 @@ const banner = `
 
 export default [
     {
-        input: './ts/easydata.ts',
+        input: ['./ts/styles.js', './ts/easydata.ts'],
         watch: {
-            include: './ts/**/*.ts',
+            include: './ts/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
+            progress({ clearLine: true, }),
+            multi(),
+            typescript({sourceMap: sourcemap, declaration: false, }),
             nodeResolve({
-                browser: true
             }),
             commonjs(),
-        ],
-        output: [
-            {
-                file: './wwwroot/js/easydata.js',
-                format: 'iife',
-                name: 'myEasyData',
-                sourcemap,
-                banner,
-                plugins: [
-                    terser(),
-                ]
-            },
-        ]
-    },
-    {
-        input: './ts/styles.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve(),
             postcss({
-                extract: 'easydata.css',
+                extract: false,
                 minimize: true,
                 use: ['less'],
                 sourceMap: sourcemap,
@@ -71,15 +48,27 @@ export default [
                     autoprefixer(),
                 ]
             }),
-            noEmit({
-                match(fileName, output) {
-                    return 'styles.js' === fileName
-                }
-            }),
         ],
-        output: {
-            dir: './wwwroot/css',
-            banner,
-        }
+        output: [
+            {
+                file: './wwwroot/js/easydata.js',
+                format: 'iife',
+                name: 'easydata',
+                sourcemap,
+                banner,
+                plugins: [
+                ]
+            },
+            {
+                file: './wwwroot/js/easydata.min.js',
+                format: 'iife',
+                name: 'easydata',
+                sourcemap,
+                banner,
+                plugins: [
+                    terser()
+                ]
+            },
+        ]
     },
 ];

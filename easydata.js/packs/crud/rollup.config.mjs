@@ -4,6 +4,7 @@ import terser from '@rollup/plugin-terser'
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
 import typedoc from '@olton/rollup-plugin-typedoc'
+import multi from '@rollup/plugin-multi-entry'
 import * as path from "path";
 import { fileURLToPath } from 'url';
 import noEmit from 'rollup-plugin-no-emit'
@@ -14,9 +15,9 @@ import pkg from './package.json' assert { type: 'json' };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production,
+    cache = false
 
 const banner = `
 /*!
@@ -29,18 +30,15 @@ const banner = `
 export default [
     {
         input: './src/public_api.ts',
+        cache,
         watch: {
             include: 'src/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
-            nodeResolve({
-                browser: true
-            }),
+            progress({ clearLine: true, }),
+            typescript({ sourceMap: sourcemap, }),
+            nodeResolve({ browser: true, }),
             commonjs(),
             typedoc({
                 json: '../../docs/easydata-crud.json',
@@ -49,33 +47,94 @@ export default [
                 tsconfig: './tsconfig.json'
             }),
         ],
+        external: [
+            "@easydata/core", "@easydata/ui"
+        ],
+        context: "window",
         output: [
             {
-                file: './dist/easydata.crud.es.js',
-                format: 'es',
+                file: './dist/easydata.crud.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataCRUD",
                 plugins: [
-                    // terser(),
-                ]
+                ],
+                globals: {
+                    "@easydata/core": "easydata.core",
+                    "@easydata/ui": "easydata.ui",
+                }
             },
             {
-                file: './dist/easydata.crud.cjs.js',
-                format: 'cjs',
+                file: './dist/easydata.crud.min.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataCRUD",
                 plugins: [
-                    // terser(),
-                ]
-            }
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
+                ],
+                globals: {
+                    "@easydata/core": "easydata.core",
+                    "@easydata/ui": "easydata.ui",
+                }
+            },
+        ]
+    },
+    {
+        input: './src/api-easydata.js',
+        cache,
+        plugins: [
+            progress({ clearLine: true, }),
+            nodeResolve(),
+        ],
+        external: [
+            "@easydata/core", "@easydata/ui"
+        ],
+        context: "window",
+        output: [
+            {
+                file: './dist/browser/easydata.js',
+                format: 'iife',
+                sourcemap,
+                banner,
+                name: "myEasyData",
+                extend: true,
+                plugins: [
+                ],
+                globals: {
+                    "@easydata/core": "easydata.core",
+                    "@easydata/ui": "easydata.ui",
+                }
+            },
+            {
+                file: './dist/browser/easydata.min.js',
+                format: 'iife',
+                sourcemap,
+                banner,
+                name: "myEasyData",
+                extend: true,
+                plugins: [
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    })
+                ],
+                globals: {
+                    "@easydata/core": "easydata.core",
+                    "@easydata/ui": "easydata.ui",
+                }
+            },
         ]
     },
     {
         input: './src/css-easydata.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             nodeResolve(),
             postcss({
                 extract: true,
@@ -92,89 +151,10 @@ export default [
                 }
             }),
         ],
-        output: {
-            file: './lib/easydata.min.css',
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
-    },
-    {
-        input: './src/css-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve(),
-            postcss({
-                extract: true,
-                minimize: false,
-                use: ['less'],
-                sourceMap: false,
-                plugins: [
-                    autoprefixer(),
-                ]
-            }),
-            noEmit({
-                match(fileName, output) {
-                    return 'css-easydata.js' === fileName
-                }
-            }),
-        ],
-        output: {
-            file: './lib/easydata.css',
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
-    },
-    {
-        input: './src/api-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve({
-                browser: true
-            }),
-            commonjs(),
-        ],
         output: [
             {
-                file: './lib/easydata.min.js',
-                format: 'iife',
-                name: 'easydata',
-                sourcemap,
-                banner,
-                plugins: [
-                    terser(),
-                ]
-            }
-        ]
-    },
-    {
-        input: './src/api-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve({
-                browser: true
-            }),
-            commonjs(),
-        ],
-        output: [
-            {
-                file: './lib/easydata.js',
-                format: 'iife',
-                name: 'easydata',
-                sourcemap: false,
-                banner,
-                plugins: [
-                ]
-            }
+                file: './dist/browser/ed-view.css',
+            },
         ]
     },
 ]

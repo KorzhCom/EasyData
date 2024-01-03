@@ -15,7 +15,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const production = !(process.env.ROLLUP_WATCH),
-    sourcemap = !production
+    sourcemap = !production,
+    cache = false
 
 const banner = `
 /*!
@@ -28,18 +29,15 @@ const banner = `
 export default [
     {
         input: './src/public_api.ts',
+        cache,
         watch: {
             include: 'src/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
-            nodeResolve({
-                browser: true
-            }),
+            progress({ clearLine: true, }),
+            typescript({ sourceMap: sourcemap, }),
+            nodeResolve({ browser: true, }),
             commonjs(),
             typedoc({
                 json: '../../docs/easydata-ui.json',
@@ -48,33 +46,43 @@ export default [
                 tsconfig: './tsconfig.json'
             }),
         ],
+        external: ["@easydata/core"],
         output: [
             {
-                file: './dist/easydata.ui.es.js',
-                format: 'es',
+                file: './dist/easydata.ui.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataUI",
                 plugins: [
-                    // terser(),
-                ]
+                ],
+                globals: {
+                    "@easydata/core": "easydataCore"
+                }
             },
             {
-                file: './dist/easydata.ui.cjs.js',
-                format: 'cjs',
+                file: './dist/easydata.ui.min.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataUI",
                 plugins: [
-                    // terser(),
-                ]
-            }
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
+                ],
+                globals: {
+                    "@easydata/core": "easydataCore"
+                }
+            },
         ]
     },
     {
         input: './src/easy-forms.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
                 minimize: false,
@@ -100,10 +108,9 @@ export default [
     },
     {
         input: './src/easy-dialog.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
                 minimize: false,
@@ -129,10 +136,9 @@ export default [
     },
     {
         input: './src/easy-grid.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
                 minimize: false,
