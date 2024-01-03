@@ -1,0 +1,39 @@
+{
+    "name": "@easydata/bundle",
+    "version": "1.4.20",
+    "description": "EasyData.JS UI widgets and views for CRUD manipulations",
+    "types": "./dist/types/public_api.d.ts",
+    "main": "./dist/easydata.crud.js",
+    "scripts": {
+        "test": "vitest run",
+        "clear": "shx rm -rf dist/* docs/* lib/*",
+        "build": "npm run clear && rollup -c",
+        "watch": "rollup -c -w",
+        "docs": "typedoc src/public_api.ts --out ./docs"
+    },
+    "author": "Korzh.com",
+    "homepage": "https://github.com/KorzhCom/EasyData",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KorzhCom/EasyData.git"
+    },
+    "keywords": [
+        "database",
+        "crud",
+        "paging",
+        "data table",
+        "data filter"
+    ],
+    "bugs": "https://github.com/KorzhCom/EasyData/issues",
+    "license": "MIT",
+    "browserslist": [
+        "defaults and supports es6-module"
+    ],
+    "dependencies": {
+        "@easydata/ui": "^1.4.20",
+        "@easydata/crud": "^1.4.20"
+    },
+    "files": [
+        "dist"
+    ]
+}
