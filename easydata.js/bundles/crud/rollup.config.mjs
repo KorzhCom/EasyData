@@ -78,4 +78,66 @@ export default [
             },
         ]
     },
+    {
+        input: './src/css-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
+            postcss({
+                extract: true,
+                minimize: true,
+                use: ['less'],
+                sourceMap: sourcemap,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'css-easydata.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            file: './dist/easydata.min.css',
+            banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
+        }
+    },
+    {
+        input: './src/css-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
+            postcss({
+                extract: true,
+                minimize: false,
+                use: ['less'],
+                sourceMap: false,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'css-easydata.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            file: './dist/easydata.css',
+            banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
+        }
+    },
 ]

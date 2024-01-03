@@ -85,57 +85,10 @@ export default [
         ]
     },
     {
-        input: './src/api-easydata.js',
+        input: './src/ed-view.js',
         cache,
         plugins: [
             progress({ clearLine: true, }),
-            nodeResolve(),
-        ],
-        external: [
-            "@easydata/core", "@easydata/ui"
-        ],
-        context: "window",
-        output: [
-            {
-                file: './dist/browser/easydata.js',
-                format: 'iife',
-                sourcemap,
-                banner,
-                name: "myEasyData",
-                extend: true,
-                plugins: [
-                ],
-                globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
-                }
-            },
-            {
-                file: './dist/browser/easydata.min.js',
-                format: 'iife',
-                sourcemap,
-                banner,
-                name: "myEasyData",
-                extend: true,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    })
-                ],
-                globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
-                }
-            },
-        ]
-    },
-    {
-        input: './src/css-easydata.js',
-        cache,
-        plugins: [
-            progress({ clearLine: true, }),
-            nodeResolve(),
             postcss({
                 extract: true,
                 minimize: false,
@@ -147,14 +100,16 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'css-easydata.js' === fileName
+                    return 'ed-view.js' === fileName
                 }
             }),
         ],
-        output: [
-            {
-                file: './dist/browser/ed-view.css',
-            },
-        ]
+        output: {
+            dir: './dist/assets/css',
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
+        }
     },
 ]
