@@ -3,7 +3,6 @@
     "version": "1.4.21",
     "description": "EasyData.JS bundle",
     "scripts": {
-        "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/* lib/*",
         "build": "npm run clear && rollup -c",
         "watch": "rollup -c -w"
