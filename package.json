@@ -2,7 +2,8 @@
   "name": "@easydata/root",
   "private": true,
   "workspaces": [
-    "easydata.js/packs/*", 
+    "easydata.js/packs/*",
+    "easydata.js/bundles/*",
     "playground/*"
   ],
   "scripts": {
@@ -12,10 +13,12 @@
     "watch:core": "lerna run watch --scope=@easydata/core",
     "watch:crud": "lerna run watch --scope=@easydata/crud",
     "watch:ui": "lerna run watch --scope=@easydata/ui",
+    "watch:bundle": "lerna run watch --scope=@easydata/bundle-crud",
     "build": "lerna run build",
     "build:core": "lerna run build --scope=@easydata/core",
     "build:crud": "lerna run build --scope=@easydata/crud",
     "build:ui": "lerna run build --scope=@easydata/ui",
+    "build:bundle": "lerna run build --scope=@easydata/bundle-crud",
     "build:demo1": "lerna run build --scope=demo1",
     "build:demo2": "lerna run build --scope=demo2",
     "dev": "lerna run watch --parallel --scope=@easydata/*",
@@ -24,6 +27,7 @@
   "devDependencies": {
     "@olton/rollup-plugin-typedoc": "^0.1.4",
     "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-multi-entry": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
@@ -35,7 +39,7 @@
     "rollup-plugin-progress": "^1.1.2",
     "shx": "^0.3.4",
     "tslib": "^2.6.2",
-    "typedoc": "^0.25.4",
+    "typedoc": "^0.25.6",
     "typescript": "^5.3.3",
     "vitest": "^1.1.1"
   }

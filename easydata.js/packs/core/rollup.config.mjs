@@ -11,9 +11,9 @@ import pkg from './package.json' assert { type: 'json' };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production,
+    cache = false
 
 const banner = `
 /*!
@@ -26,18 +26,15 @@ const banner = `
 export default [
     {
         input: './src/public_api.ts',
+        cache,
         watch: {
             include: 'src/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
-            nodeResolve({
-                browser: true
-            }),
+            progress({ clearLine: true, }),
+            typescript({ sourceMap: sourcemap, }),
+            nodeResolve({ browser: true, }),
             commonjs(),
             typedoc({
                 json: '../../docs/easydata-core.json',
@@ -48,23 +45,27 @@ export default [
         ],
         output: [
             {
-                file: './dist/easydata.core.es.js',
-                format: 'es',
+                file: './dist/easydata.core.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataCore",
                 plugins: [
-                    terser(),
                 ]
             },
             {
-                file: './dist/easydata.core.cjs.js',
-                format: 'cjs',
+                file: './dist/easydata.core.min.js',
+                format: 'umd',
                 sourcemap,
                 banner,
+                name: "easydataCore",
                 plugins: [
-                    terser(),
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
                 ]
-            }
+            },
         ]
     }
 ]

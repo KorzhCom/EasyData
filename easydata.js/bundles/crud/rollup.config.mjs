@@ -21,7 +21,7 @@ const production = !(process.env.ROLLUP_WATCH),
 
 const banner = `
 /*!
- * EasyData.JS CRUD v${pkg.version}
+ * EasyData.JS Bundle v${pkg.version}
  * Copyright ${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */
@@ -29,7 +29,7 @@ const banner = `
 
 export default [
     {
-        input: './src/public_api.ts',
+        input: './src/index.ts',
         cache,
         watch: {
             include: 'src/**',
@@ -37,61 +37,57 @@ export default [
         },
         plugins: [
             progress({ clearLine: true, }),
-            typescript({ sourceMap: sourcemap, }),
+            typescript({ sourceMap: sourcemap, declaration: false, }),
             nodeResolve({ browser: true, }),
             commonjs(),
-            typedoc({
-                json: '../../docs/easydata-crud.json',
-                out: './docs',
-                entryPoints: ['./src/**/*.ts'],
-                tsconfig: './tsconfig.json'
+            postcss({
+                extract: false,
+                minimize: false,
+                use: ['less'],
+                sourceMap: sourcemap,
+                plugins: [
+                    autoprefixer(),
+                ]
             }),
-        ],
-        external: [
-            "@easydata/core", "@easydata/ui"
         ],
         context: "window",
         output: [
             {
-                file: './dist/easydata.crud.js',
+                file: './dist/easydata.js',
                 format: 'umd',
                 sourcemap,
                 banner,
-                name: "easydataCRUD",
+                name: "easydata",
+                extend: true,
                 plugins: [
                 ],
-                globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
-                }
             },
             {
-                file: './dist/easydata.crud.min.js',
+                file: './dist/easydata.min.js',
                 format: 'umd',
                 sourcemap,
                 banner,
-                name: "easydataCRUD",
+                name: "easydata",
+                extend: true,
                 plugins: [
                     terser({
                         keep_classnames: true,
                         keep_fnames: true,
                     }),
                 ],
-                globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
-                }
             },
         ]
     },
     {
-        input: './src/ed-view.js',
-        cache,
+        input: './src/css-easydata.js',
         plugins: [
-            progress({ clearLine: true, }),
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
             postcss({
                 extract: true,
-                minimize: false,
+                minimize: true,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -100,12 +96,44 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'ed-view.js' === fileName
+                    return 'css-easydata.js' === fileName
                 }
             }),
         ],
         output: {
-            dir: './dist/assets/css',
+            file: './dist/easydata.min.css',
+            banner,
+        },
+        onwarn: message => {
+            if (/Generated an empty chunk/.test(message)) return;
+            console.error( message )
+        }
+    },
+    {
+        input: './src/css-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
+            postcss({
+                extract: true,
+                minimize: false,
+                use: ['less'],
+                sourceMap: false,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'css-easydata.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            file: './dist/easydata.css',
+            banner,
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
