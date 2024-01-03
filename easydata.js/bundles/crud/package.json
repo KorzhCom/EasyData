@@ -1,15 +1,12 @@
 {
-    "name": "@easydata/bundle",
+    "name": "@easydata/bundle-crud",
     "version": "1.4.20",
-    "description": "EasyData.JS UI widgets and views for CRUD manipulations",
-    "types": "./dist/types/public_api.d.ts",
-    "main": "./dist/easydata.crud.js",
+    "description": "EasyData.JS bundle",
     "scripts": {
         "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/* lib/*",
         "build": "npm run clear && rollup -c",
-        "watch": "rollup -c -w",
-        "docs": "typedoc src/public_api.ts --out ./docs"
+        "watch": "rollup -c -w"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",
