@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "easydata.js/packs/*",
+    "easydata.js/bundles/*",
     "playground/*"
   ],
   "scripts": {
