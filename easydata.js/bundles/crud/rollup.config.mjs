@@ -48,6 +48,11 @@ export default [
                 transforms: {forOf: false}
             }),
             nodeResolve({ browser: true, }),
+            // copy({
+            //     targets: [
+            //         {src: './dist/easydata.min.js', dest: '../../../playground/EasyDataAspNetCoreTest03/wwwroot/js'}
+            //     ]
+            // }),
         ],
         context: "window",
         output: [

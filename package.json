@@ -33,6 +33,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
     "autoprefixer": "^10.4.16",
+    "copyfiles": "^2.4.1",
     "lerna": "^8.0.1",
     "rollup": "^4.9.2",
     "rollup-plugin-no-emit": "^1.1.1",
