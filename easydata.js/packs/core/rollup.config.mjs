@@ -49,24 +49,12 @@ export default [
                 format: 'es',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ]
             },
             {
                 file: './dist/easydata.core.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ]
             },
         ]
     }

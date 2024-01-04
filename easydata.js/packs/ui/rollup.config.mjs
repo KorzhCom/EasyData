@@ -26,6 +26,15 @@ const banner = `
  */
 `
 
+const onwarn = warn => {
+    if (/Generated an empty chunk/.test(warn)) return;
+    console.error( warn )
+}
+
+const cssOutput = {
+    dir: './dist/assets/css',
+} 
+
 export default [
     {
         input: './src/public_api.ts',
@@ -53,12 +62,6 @@ export default [
                 format: 'cjs',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ],
                 globals: {
                     "@easydata/core": "easydataCore"
                 }
@@ -68,12 +71,6 @@ export default [
                 format: 'esm',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ],
                 globals: {
                     "@easydata/core": "easydataCore"
                 }
@@ -100,13 +97,8 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     },
     {
         input: './src/easy-dialog.js',
@@ -128,13 +120,8 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     },
     {
         input: './src/easy-grid.js',
@@ -156,12 +143,7 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     }
 ];

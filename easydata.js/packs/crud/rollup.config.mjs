@@ -55,12 +55,6 @@ export default [
                 format: 'cjs',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ],
                 globals: {
                     "@easydata/core": "easydataCore",
                     "@easydata/ui": "easydataUI",
@@ -71,12 +65,6 @@ export default [
                 format: 'esm',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser({
-                        keep_classnames: true,
-                        keep_fnames: true,
-                    }),
-                ],
                 globals: {
                     "@easydata/core": "easydataCore",
                     "@easydata/ui": "easydataUI",

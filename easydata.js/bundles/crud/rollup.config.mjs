@@ -44,9 +44,8 @@ export default [
         },
         plugins: [
             progress({ clearLine: true, }),
-            typescript({
-                sourceMap: false,
-                declaration: false,
+            buble({
+                transforms: {forOf: false}
             }),
             nodeResolve({ browser: true, }),
         ],
