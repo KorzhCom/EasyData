@@ -1,5 +1,5 @@
-﻿import { EasyDataViewDispatcher } from '@easydata/crud';
+﻿import * as crud from '@easydata/crud';
 
 window.addEventListener('load', () => {
-    new EasyDataViewDispatcher().run()
+    new crud.EasyDataViewDispatcher().run()
 });

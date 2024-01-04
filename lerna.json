@@ -3,6 +3,7 @@
   "version": "independent",
   "packages": [
     "easydata.js/packs/*", 
+    "easydata.js/bundles/*", 
     "playground/*"
   ],
   "command": {
