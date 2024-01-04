@@ -4,7 +4,7 @@
     "description": "EasyData.JS bundle",
     "scripts": {
         "clear": "shx rm -rf dist/* docs/* lib/*",
-        "build": "npm run clear && rollup -c",
+        "build": "npm run clear && rollup -c && copyfiles -f dist/easydata.min.js ../../../playground/EasyDataAspNetCoreTest03/wwwroot/js && copyfiles -f dist/easydata.min.css ../../../playground/EasyDataAspNetCoreTest03/wwwroot/css",
         "watch": "rollup -c -w"
     },
     "author": "Korzh.com",

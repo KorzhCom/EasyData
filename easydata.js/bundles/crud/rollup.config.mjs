@@ -11,6 +11,7 @@ import noEmit from 'rollup-plugin-no-emit'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
 import pkg from './package.json' assert { type: 'json' };
+import buble from '@rollup/plugin-buble'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,12 @@ const banner = `
  */
 `
 
+const onwarn = warn => {
+    if (/Generated an empty chunk/.test(warn) || warn.code === 'FILE_NAME_CONFLICT') return;
+    console.error( warn )
+}
+
+
 export default [
     {
         input: './src/index.ts',
@@ -37,18 +44,15 @@ export default [
         },
         plugins: [
             progress({ clearLine: true, }),
-            typescript({ sourceMap: sourcemap, declaration: false, }),
-            nodeResolve({ browser: true, }),
-            commonjs(),
-            postcss({
-                extract: false,
-                minimize: false,
-                use: ['less'],
-                sourceMap: sourcemap,
-                plugins: [
-                    autoprefixer(),
-                ]
+            buble({
+                transforms: {forOf: false}
             }),
+            nodeResolve({ browser: true, }),
+            // copy({
+            //     targets: [
+            //         {src: './dist/easydata.min.js', dest: '../../../playground/EasyDataAspNetCoreTest03/wwwroot/js'}
+            //     ]
+            // }),
         ],
         context: "window",
         output: [
@@ -59,8 +63,6 @@ export default [
                 banner,
                 name: "easydata",
                 extend: true,
-                plugins: [
-                ],
             },
             {
                 file: './dist/easydata.min.js',
@@ -77,37 +79,6 @@ export default [
                 ],
             },
         ]
-    },
-    {
-        input: './src/css-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve(),
-            postcss({
-                extract: true,
-                minimize: true,
-                use: ['less'],
-                sourceMap: sourcemap,
-                plugins: [
-                    autoprefixer(),
-                ]
-            }),
-            noEmit({
-                match(fileName, output) {
-                    return 'css-easydata.js' === fileName
-                }
-            }),
-        ],
-        output: {
-            file: './dist/easydata.min.css',
-            banner,
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
     },
     {
         input: './src/css-easydata.js',
@@ -135,9 +106,34 @@ export default [
             file: './dist/easydata.css',
             banner,
         },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        onwarn,
+    },
+    {
+        input: './src/css-easydata.js',
+        plugins: [
+            progress({
+                clearLine: true,
+            }),
+            nodeResolve(),
+            postcss({
+                extract: true,
+                minimize: true,
+                use: ['less'],
+                sourceMap: sourcemap,
+                plugins: [
+                    autoprefixer(),
+                ]
+            }),
+            noEmit({
+                match(fileName, output) {
+                    return 'css-easydata.js' === fileName
+                }
+            }),
+        ],
+        output: {
+            file: './dist/easydata.min.css',
+            banner,
+        },
+        onwarn,
     },
 ]
