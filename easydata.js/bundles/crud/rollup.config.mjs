@@ -12,6 +12,7 @@ import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
 import pkg from './package.json' assert { type: 'json' };
 import buble from '@rollup/plugin-buble'
+import cleanup from 'rollup-plugin-cleanup'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,15 +45,11 @@ export default [
         },
         plugins: [
             progress({ clearLine: true, }),
+            cleanup(),
             buble({
                 transforms: {forOf: false}
             }),
             nodeResolve({ browser: true, }),
-            // copy({
-            //     targets: [
-            //         {src: './dist/easydata.min.js', dest: '../../../playground/EasyDataAspNetCoreTest03/wwwroot/js'}
-            //     ]
-            // }),
         ],
         context: "window",
         output: [

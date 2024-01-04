@@ -20,7 +20,7 @@ const production = !(process.env.ROLLUP_WATCH),
     cache = false
 
 const banner = `
-/*!
+/*
  * EasyData.JS CRUD v${pkg.version}
  * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
