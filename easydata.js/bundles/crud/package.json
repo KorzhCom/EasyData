@@ -23,7 +23,7 @@
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
     "browserslist": [
-        "defaults and supports es6-module"
+        "defaults"
     ],
     "dependencies": {
         "@easydata/ui": "^1.4.21",
