@@ -22,8 +22,8 @@ const production = !(process.env.ROLLUP_WATCH),
 
 const banner = `
 /*!
- * EasyData.JS Bundle v${pkg.version}
- * Copyright ${new Date().getFullYear()} Korzh.com
+ * EasyData.JS CRUD Bundle v${pkg.version}
+ * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */
 `

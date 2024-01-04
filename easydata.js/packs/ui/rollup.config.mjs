@@ -20,8 +20,8 @@ const production = !(process.env.ROLLUP_WATCH),
 
 const banner = `
 /*!
- * EasyData.JS UI
- * Copyright 2020 - ${new Date().getFullYear()} Korzh.com
+ * EasyData.JS UI v${pkg.version}
+ * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */
 `
