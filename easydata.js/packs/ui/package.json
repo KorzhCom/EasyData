@@ -37,7 +37,7 @@
         "@easydata/core": "^1.4.21"
     },
     "dependencies": {
-        "@juggle/resize-observer": "^3.4.0"
+
     },
     "files": [
         "dist"
