@@ -49,23 +49,25 @@ export default [
         external: ["@easydata/core"],
         output: [
             {
-                file: './dist/easydata.ui.js',
-                format: 'umd',
+                file: './dist/easydata.ui.cjs.js',
+                format: 'cjs',
                 sourcemap,
                 banner,
-                name: "easydataUI",
                 plugins: [
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
                 ],
                 globals: {
                     "@easydata/core": "easydataCore"
                 }
             },
             {
-                file: './dist/easydata.ui.min.js',
-                format: 'umd',
+                file: './dist/easydata.ui.esm.js',
+                format: 'esm',
                 sourcemap,
                 banner,
-                name: "easydataUI",
                 plugins: [
                     terser({
                         keep_classnames: true,

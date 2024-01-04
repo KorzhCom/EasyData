@@ -45,20 +45,22 @@ export default [
         ],
         output: [
             {
-                file: './dist/easydata.core.js',
-                format: 'umd',
+                file: './dist/easydata.core.esm.js',
+                format: 'es',
                 sourcemap,
                 banner,
-                name: "easydataCore",
                 plugins: [
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
                 ]
             },
             {
-                file: './dist/easydata.core.min.js',
-                format: 'umd',
+                file: './dist/easydata.core.cjs.js',
+                format: 'cjs',
                 sourcemap,
                 banner,
-                name: "easydataCore",
                 plugins: [
                     terser({
                         keep_classnames: true,

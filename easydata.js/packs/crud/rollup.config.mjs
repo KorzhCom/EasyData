@@ -30,7 +30,6 @@ const banner = `
 export default [
     {
         input: './src/public_api.ts',
-        cache,
         watch: {
             include: 'src/**',
             clearScreen: false
@@ -50,27 +49,12 @@ export default [
         external: [
             "@easydata/core", "@easydata/ui"
         ],
-        context: "window",
         output: [
             {
-                file: './dist/easydata.crud.js',
-                format: 'umd',
+                file: './dist/easydata.crud.cjs.js',
+                format: 'cjs',
                 sourcemap,
                 banner,
-                name: "easydataCRUD",
-                plugins: [
-                ],
-                globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
-                }
-            },
-            {
-                file: './dist/easydata.crud.min.js',
-                format: 'umd',
-                sourcemap,
-                banner,
-                name: "easydataCRUD",
                 plugins: [
                     terser({
                         keep_classnames: true,
@@ -78,15 +62,30 @@ export default [
                     }),
                 ],
                 globals: {
-                    "@easydata/core": "easydata.core",
-                    "@easydata/ui": "easydata.ui",
+                    "@easydata/core": "easydataCore",
+                    "@easydata/ui": "easydataUI",
+                }
+            },
+            {
+                file: './dist/easydata.crud.esm.js',
+                format: 'esm',
+                sourcemap,
+                banner,
+                plugins: [
+                    terser({
+                        keep_classnames: true,
+                        keep_fnames: true,
+                    }),
+                ],
+                globals: {
+                    "@easydata/core": "easydataCore",
+                    "@easydata/ui": "easydataUI",
                 }
             },
         ]
     },
     {
         input: './src/ed-view.js',
-        cache,
         plugins: [
             progress({ clearLine: true, }),
             postcss({
