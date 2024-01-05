@@ -26,7 +26,6 @@
         "defaults"
     ],
     "dependencies": {
-        "@easydata/ui": "1.4.21",
         "@easydata/crud": "1.4.21"
     },
     "files": [
