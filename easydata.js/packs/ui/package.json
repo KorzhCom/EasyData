@@ -1,15 +1,15 @@
 {
     "name": "@easydata/ui",
-    "version": "1.4.20",
+    "version": "1.4.21",
     "description": "EasyData.JS: DOM manipulation functions and UI widgets",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.ui.cjs.js",
-    "module": "./dist/easydata.ui.es.js",
+    "module": "./dist/easydata.ui.esm.js",
     "scripts": {
         "test": "vitest run",
         "clear": "shx rm -rf dist/* docs/*",
-        "build": "npm run clear && rollup --config",
-        "watch": "npm run clear && rollup --config -w",
+        "build": "npm run clear && rollup -c",
+        "watch": "rollup -c -w",
         "docs": "typedoc src/public_api.ts --out ./docs"
     },
     "author": "Korzh.com",
@@ -34,9 +34,8 @@
     "browserslist": [
         "defaults"
     ],
-    "dependencies": {
-        "@juggle/resize-observer": "^3.4.0",
-        "@easydata/core": "*"
+    "peerDependencies": {
+        "@easydata/core": "1.4.21"
     },
     "files": [
         "dist"

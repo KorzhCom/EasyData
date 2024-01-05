@@ -68,13 +68,13 @@ jobs:
           ./easydata.js/packs/*/LICENSE.md
           ./easydata.js/packs/*/README.md
 
-    - name: Upload browser artifacts
+    - name: Upload Bundles artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: browser
+        name: bundles
         path: | 
-          ./easydata.js/packs/crud/lib/*.js
-          ./easydata.js/packs/crud/lib/*.css
+          ./easydata.js/bundles/**/*.js
+          ./easydata.js/bundles/**/*.css
 
   release_dev:
     name: Development Release
@@ -85,11 +85,11 @@ jobs:
     steps: 
     - uses: actions/checkout@v4
 
-    - name: Download browser artifacts
+    - name: Download Bundles artifacts
       uses: actions/download-artifact@v4
       with:
-        name: browser
-        path: browser
+        name: bundles
+        path: bundles
 
     - name: Read version.json to env
       uses: antifree/json-to-variables@v1.0.1
@@ -103,7 +103,7 @@ jobs:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './browser/'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
@@ -141,11 +141,11 @@ jobs:
     steps: 
     - uses: actions/checkout@v4
 
-    - name: Download browser artifacts
+    - name: Download bundles artifacts
       uses: actions/download-artifact@v4
       with:
-        name: browser
-        path: browser
+        name: bundles
+        path: bundles
 
     - name: Read version.json to env
       uses: antifree/json-to-variables@v1.0.1
@@ -159,7 +159,7 @@ jobs:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './browser/'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts

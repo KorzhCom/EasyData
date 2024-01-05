@@ -1,8 +1,10 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.1.0",
+  "version": "independent",
   "packages": [
-    "easydata.js/packs/*", "playground/*"
+    "easydata.js/packs/*", 
+    "easydata.js/bundles/*", 
+    "playground/*"
   ],
   "command": {
     "run": {

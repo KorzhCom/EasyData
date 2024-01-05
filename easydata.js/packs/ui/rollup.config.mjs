@@ -9,37 +9,44 @@ import typedoc from '@olton/rollup-plugin-typedoc'
 import noEmit from 'rollup-plugin-no-emit'
 import * as path from "path";
 import { fileURLToPath } from 'url';
+import pkg from './package.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production,
+    cache = false
 
 const banner = `
-/*!
- * EasyData.JS UI
- * Copyright ${new Date().getFullYear()} Korzh.com
+/*
+ * EasyData.JS UI v${pkg.version}
+ * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
- !*/
+ */
 `
+
+const onwarn = warn => {
+    if (/Generated an empty chunk/.test(warn)) return;
+    console.error( warn )
+}
+
+const cssOutput = {
+    dir: './dist/assets/css',
+} 
 
 export default [
     {
         input: './src/public_api.ts',
+        cache,
         watch: {
-            include: 'src/**/*.ts',
+            include: 'src/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
-            nodeResolve({
-                browser: true
-            }),
+            progress({ clearLine: true, }),
+            typescript({ sourceMap: sourcemap, }),
+            nodeResolve({ browser: true, }),
             commonjs(),
             typedoc({
                 json: '../../docs/easydata-ui.json',
@@ -48,36 +55,36 @@ export default [
                 tsconfig: './tsconfig.json'
             }),
         ],
+        external: ["@easydata/core"],
         output: [
-            {
-                file: './dist/easydata.ui.es.js',
-                format: 'es',
-                sourcemap,
-                banner,
-                plugins: [
-                    terser(),
-                ]
-            },
             {
                 file: './dist/easydata.ui.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser(),
-                ]
-            }
+                globals: {
+                    "@easydata/core": "easydataCore"
+                }
+            },
+            {
+                file: './dist/easydata.ui.esm.js',
+                format: 'esm',
+                sourcemap,
+                banner,
+                globals: {
+                    "@easydata/core": "easydataCore"
+                }
+            },
         ]
     },
     {
         input: './src/easy-forms.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -90,24 +97,17 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-            banner,
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     },
     {
         input: './src/easy-dialog.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -120,24 +120,17 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-            banner,
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     },
     {
         input: './src/easy-grid.js',
+        cache,
         plugins: [
-            progress({
-                clearLine: true,
-            }),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -150,13 +143,7 @@ export default [
                 }
             }),
         ],
-        output: {
-            dir: './dist/assets/css',
-            banner,
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
+        output: cssOutput,
+        onwarn,
     }
 ];

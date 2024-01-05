@@ -7,15 +7,15 @@
 <div id="EasyDataContainer"></div>
 
 @section Scripts {
-    <link rel="stylesheet" href="https://cdn.korzh.com/ed/1.4.0/easydata.min.css" />
-    <script src="https://cdn.korzh.com/ed/1.4.0/easydata.min.js" type="text/javascript"></script>
+    @* <link rel="stylesheet" href="/css/easydata.css" /> *@
+    <script src="/js/easydata-all.js" type="text/javascript"></script>
 
     <script>
         window.addEventListener('load', function () {
-            new easydata.crud.EasyDataViewDispatcher({
+            easydata.runDispatcher({
                 endpoint: '/api/easy-crud',
                 rootEntity: 'Order'
-            }).run()
+            })
         });
     </script>
 }

@@ -4,42 +4,40 @@ import terser from '@rollup/plugin-terser'
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
 import typedoc from '@olton/rollup-plugin-typedoc'
+import multi from '@rollup/plugin-multi-entry'
 import * as path from "path";
 import { fileURLToPath } from 'url';
 import noEmit from 'rollup-plugin-no-emit'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
+import pkg from './package.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const
-    dev = (process.env.NODE_ENV !== 'production'),
-    sourcemap = dev
+const production = !(process.env.ROLLUP_WATCH),
+    sourcemap = !production,
+    cache = false
 
 const banner = `
-/*!
- * EasyData.JS CRUD
- * Copyright ${new Date().getFullYear()} Korzh.com
+/*
+ * EasyData.JS CRUD v${pkg.version}
+ * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
- !*/
+ */
 `
 
 export default [
     {
         input: './src/public_api.ts',
         watch: {
-            include: 'src/**/*.ts',
+            include: 'src/**',
             clearScreen: false
         },
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            typescript(),
-            nodeResolve({
-                browser: true
-            }),
+            progress({ clearLine: true, }),
+            typescript({ sourceMap: sourcemap, }),
+            nodeResolve({ browser: true, }),
             commonjs(),
             typedoc({
                 json: '../../docs/easydata-crud.json',
@@ -48,37 +46,39 @@ export default [
                 tsconfig: './tsconfig.json'
             }),
         ],
+        external: [
+            "@easydata/core", "@easydata/ui"
+        ],
         output: [
-            {
-                file: './dist/easydata.crud.es.js',
-                format: 'es',
-                sourcemap,
-                banner,
-                plugins: [
-                    terser(),
-                ]
-            },
             {
                 file: './dist/easydata.crud.cjs.js',
                 format: 'cjs',
                 sourcemap,
                 banner,
-                plugins: [
-                    terser(),
-                ]
-            }
+                globals: {
+                    "@easydata/core": "easydataCore",
+                    "@easydata/ui": "easydataUI",
+                }
+            },
+            {
+                file: './dist/easydata.crud.esm.js',
+                format: 'esm',
+                sourcemap,
+                banner,
+                globals: {
+                    "@easydata/core": "easydataCore",
+                    "@easydata/ui": "easydataUI",
+                }
+            },
         ]
     },
     {
-        input: './src/css-easydata.js',
+        input: './src/ed-view.js',
         plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve(),
+            progress({ clearLine: true, }),
             postcss({
                 extract: true,
-                minimize: true,
+                minimize: false,
                 use: ['less'],
                 sourceMap: sourcemap,
                 plugins: [
@@ -87,95 +87,16 @@ export default [
             }),
             noEmit({
                 match(fileName, output) {
-                    return 'css-easydata.js' === fileName
+                    return 'ed-view.js' === fileName
                 }
             }),
         ],
         output: {
-            file: './lib/easydata.min.css',
-            banner,
+            dir: './dist/assets/css',
         },
         onwarn: message => {
             if (/Generated an empty chunk/.test(message)) return;
             console.error( message )
         }
-    },
-    {
-        input: './src/css-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve(),
-            postcss({
-                extract: true,
-                minimize: false,
-                use: ['less'],
-                sourceMap: false,
-                plugins: [
-                    autoprefixer(),
-                ]
-            }),
-            noEmit({
-                match(fileName, output) {
-                    return 'css-easydata.js' === fileName
-                }
-            }),
-        ],
-        output: {
-            file: './lib/easydata.css',
-            banner,
-        },
-        onwarn: message => {
-            if (/Generated an empty chunk/.test(message)) return;
-            console.error( message )
-        }
-    },
-    {
-        input: './src/api-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve({
-                browser: true
-            }),
-            commonjs(),
-        ],
-        output: [
-            {
-                file: './lib/easydata.min.js',
-                format: 'iife',
-                name: 'easydata',
-                sourcemap,
-                banner,
-                plugins: [
-                    terser(),
-                ]
-            }
-        ]
-    },
-    {
-        input: './src/api-easydata.js',
-        plugins: [
-            progress({
-                clearLine: true,
-            }),
-            nodeResolve({
-                browser: true
-            }),
-            commonjs(),
-        ],
-        output: [
-            {
-                file: './lib/easydata.js',
-                format: 'iife',
-                name: 'easydata',
-                sourcemap: false,
-                banner,
-                plugins: [
-                ]
-            }
-        ]
     },
 ]

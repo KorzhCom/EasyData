@@ -6,10 +6,10 @@
   "license": "ISC",
   "scripts": {
     "build": "rollup --config",
-    "watch": "rollup --config -w"
+    "watch1": "rollup --config -w"
   },
   "dependencies": {
-    "@easydata/ui": "*",
-    "@easydata/crud": "*"
+    "@easydata/ui": "^1.4.20",
+    "@easydata/crud": "^1.4.20"
   }
 }
