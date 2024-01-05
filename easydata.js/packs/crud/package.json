@@ -31,8 +31,8 @@
         "defaults and supports es6-module"
     ],
     "peerDependencies": {
-        "@easydata/core": "^1.4.21",
-        "@easydata/ui": "^1.4.21"
+        "@easydata/core": "1.4.21",
+        "@easydata/ui": "1.4.21"
     },
     "files": [
         "dist"

@@ -32,21 +32,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x'
     - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '5.0.x'
     - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '3.1.x'
 
@@ -83,15 +83,15 @@ jobs:
 
     steps:        
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: packs
         path: packs
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '6.0.x'
 
     - name: Publish packages to MyGet
       run: dotnet nuget push packs/**/*.nupkg -s https://www.myget.org/F/korzh-nuget/api/v2/package -k ${{ secrets.MYGET_ACCESS_TOKEN }}
@@ -110,9 +110,9 @@ jobs:
         path: packs
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '6.0.x'
 
     - name: Publish packages to NuGet
       run: dotnet nuget push packs/**/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_ACCESS_TOKEN }} --skip-duplicate

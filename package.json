@@ -14,6 +14,7 @@
     "watch:crud": "lerna run watch --scope=@easydata/crud",
     "watch:ui": "lerna run watch --scope=@easydata/ui",
     "watch:bundle": "lerna run watch --scope=@easydata/bundle-crud",
+    "rebuild": "nx reset && lerna run build",
     "build": "lerna run build",
     "build:core": "lerna run build --scope=@easydata/core",
     "build:crud": "lerna run build --scope=@easydata/crud",
