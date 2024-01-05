@@ -266,6 +266,11 @@ export namespace i18n {
         utils.assignDeep(currentLocale.texts, texts);
     }
 
+    /**
+     * Updates the default texts for the current locale and all other locales available now
+     * This function does rewrite the texts in the locales, it just adds new textual resources if they didn't exists previously
+     * @param texts A plain JS object that contains textual resources
+     */    
     export function updateDefaultTexts(texts: TextResources)
     {
         for (let localeId in allLocales) {
