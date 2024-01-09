@@ -36,7 +36,7 @@ export namespace utils {
     export function assign(target: any, ...args: any[]): any {
         for (let i = 0; i < args.length; i++) {
             let source = args[i];
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {
                     if (source.hasOwnProperty(key)) {
                         target[key] = source[key];
@@ -67,14 +67,15 @@ export namespace utils {
         }
 
         for (let source of sources) {
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {                
                     if (source.hasOwnProperty(key)) {
                         let sourceVal = source[key];
                         if (sourceVal !== null && typeof sourceVal === 'object') {
                             if (hashSet.has(sourceVal)) {
                                 target[key] = hashSet.get(sourceVal);
-                            } else {
+                            } 
+                            else {
                                 if (Array.isArray(sourceVal)) {
                                     target[key] = createArrayFrom(sourceVal);
                                     hashSet.set(sourceVal, target[key]);
