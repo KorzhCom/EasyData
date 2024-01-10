@@ -286,14 +286,14 @@ export namespace i18n {
      * If the locale does exist yet - it will be added
      * @param localeInfo  a LocaleInfo object that contains the locale settings and textual resources
      */
-    export function updateLocaleInfo(localeId: string, localeData: LocaleInfo) : void {
-        mapInfo(localeData);
+    export function updateLocaleInfo(localeId: string, localeInfo: LocaleInfo) : void {
+        mapInfo(localeInfo);
 
         let localeInfoToUpdate = currentLocale;
 
         if (localeId) {
-            if (!localeData.localeId) {
-                localeData.localeId = localeId;
+            if (!localeInfo.localeId) {
+                localeInfo.localeId = localeId;
             }
     
             localeInfoToUpdate = allLocales[localeId];
@@ -302,7 +302,7 @@ export namespace i18n {
                 allLocales[localeId] = localeInfoToUpdate;
             }    
         }
-        utils.assignDeep(localeInfoToUpdate, localeData);
+        utils.assignDeep(localeInfoToUpdate, localeInfo);
     }
 
     /**
@@ -473,28 +473,28 @@ export namespace i18n {
 
     /**
     * Converts a numeric value to the string taking into the account the decimal separator
-    * @param value - the number to convert 
+    * @param num - the number to convert 
     * @param format - the format of the number representation (D - decimal, F - float, C - currency)
     * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
     */
-    export function numberToStr(number: number, format?: string, decimalSeparator?: string): string {
+    export function numberToStr(num: number, format?: string, decimalSeparator?: string): string {
         if (format && format.length > 0) {
             const type = format.charAt(0).toUpperCase();
             if (type === 'S') {
-                return formatWithSequence(number, format.slice(1));
+                return formatWithSequence(num, format.slice(1));
             }
             else if (['D', 'F', 'C'].indexOf(type) >= 0) {
                 const locale = getCurrentLocale();
-                return number.toLocaleString(locale, getNumberFormatOptions(format));
+                return num.toLocaleString(locale, getNumberFormatOptions(format));
             }
             else {
-                return convertWithMask(Math.trunc(number), format);
+                return convertWithMask(Math.trunc(num), format);
             }
         }
 
         const localeSettings = getLocaleSettings();
         decimalSeparator = decimalSeparator || localeSettings.decimalSeparator;
-        return number.toString().replace('.', decimalSeparator);
+        return num.toString().replace('.', decimalSeparator);
     }    
 
     export function booleanToStr(bool: boolean, format?: string) {

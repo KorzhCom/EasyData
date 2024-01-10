@@ -130,7 +130,12 @@ export class AggregationSettings {
 
     public isEmpty(): boolean {
         return !(this.hasAggregates() || this.hasGroups() || 
-                 this.hasAggregates() || this.hasRecordCount());
+                 this.hasGrandTotals() || this.hasRecordCount());
+    }
+
+    public isValid() : boolean {
+        return (this.hasGroups() && (this.hasAggregates() || this.hasRecordCount())) 
+                || (this.hasAggregates && this.hasGrandTotals());
     }
 
     public drop() {
