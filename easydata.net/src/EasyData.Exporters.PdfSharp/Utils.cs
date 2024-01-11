@@ -66,7 +66,7 @@ namespace EasyData.Export
                 var format = BuildShortDateTimeFormat(settings.Culture, dataType);
                 return dt.ToString(format, CultureInfo.InvariantCulture);
             }
-            else if (val is float || val is double || val is int || val is decimal) {
+            else if (DataTypeList.RangeDataTypes.Contains(dataType) && (val is float || val is double || val is int || val is decimal)) {
                 if (!string.IsNullOrEmpty(displayFormat))
                     return string.Format(settings.Culture, displayFormat, val);
 
