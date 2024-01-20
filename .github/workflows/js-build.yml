@@ -33,47 +33,48 @@ jobs:
 
     defaults: 
       run:
-        working-directory: ./easydata.js  
+        working-directory: ./
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
-        node-version: 14.x
+        node-version: 20.x
     - name: Install dependencies
-      run: npm run installall
+      run: npm install
 
     - name: Set version
       run: npm run setver
       
     - name: Build
-      run: npm run build:prod
+      run: npm run build
 
     - name: Test
       run: npm test
       continue-on-error: true
 
     - name: Upload packs artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: packs
         path: | 
+          !./easydata.js/packs/**/node_modules/**/*.*
           ./easydata.js/packs/*/dist/**/*.*
           ./easydata.js/packs/*/package.json
-          ./easydata.js/packs/*/LICENSE.md
-          ./easydata.js/packs/*/README.md
           ./easydata.js/packs/*/tsconfig.json
           ./easydata.js/packs/*/*.js
-          !./easydata.js/packs/**/node_modules/**/*.*
+          ./easydata.js/packs/*/*.mjs
+          ./easydata.js/packs/*/LICENSE.md
+          ./easydata.js/packs/*/README.md
 
-    - name: Upload browser artifacts
-      uses: actions/upload-artifact@v2
+    - name: Upload Bundles artifacts
+      uses: actions/upload-artifact@v4
       with:
-        name: browser
+        name: bundles
         path: | 
-          ./easydata.js/packs/crud/dist/browser/*.js
-          ./easydata.js/packs/crud/dist/browser/*.css
+          ./easydata.js/bundles/**/*.js
+          ./easydata.js/bundles/**/*.css
 
   release_dev:
     name: Development Release
@@ -82,52 +83,52 @@ jobs:
     runs-on: windows-latest
     
     steps: 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Download browser artifacts
-      uses: actions/download-artifact@v2
+    - name: Download Bundles artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: browser
-        path: browser
+        name: bundles
+        path: bundles
 
     - name: Read version.json to env
-      uses: antifree/json-to-variables@v1.0.0
+      uses: antifree/json-to-variables@v1.0.1
       with:
         filename: ./easydata.js/version.json
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './browser/'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: packs
         path: packs
 
     - name: Use Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         registry-url: 'https://www.myget.org/F/korzh-npm/npm/'
 
     - name: Publish @easydata/core
-      run: npm publish packs/core
+      run: npm publish ./packs/core
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui
+      run: npm publish ./packs/ui
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud
+      run: npm publish ./packs/crud
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.MYGET_ACCESS_TOKEN }}
 
@@ -138,51 +139,51 @@ jobs:
     runs-on: windows-latest
     
     steps: 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Download browser artifacts
-      uses: actions/download-artifact@v2
+    - name: Download bundles artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: browser
-        path: browser
+        name: bundles
+        path: bundles
 
     - name: Read version.json to env
-      uses: antifree/json-to-variables@v1.0.0
+      uses: antifree/json-to-variables@v1.0.1
       with:
         filename: ./easydata.js/version.json
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './browser/'
+        local-dir: './bundles/crud/dist/'
         server-dir: 'cdn.korzh.com/ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: packs
         path: packs
 
     - name: Use Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with: 
         registry-url: 'https://registry.npmjs.org'
 
     - name: Publish @easydata/core
-      run: npm publish packs/core --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/core --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/ui
-      run: npm publish packs/ui --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/ui --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
     - name: Publish @easydata/crud
-      run: npm publish packs/crud --access public --tag ${{ env.ed_tag }}
+      run: npm publish ./packs/crud --access public --tag ${{ env.ed_tag }}
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}

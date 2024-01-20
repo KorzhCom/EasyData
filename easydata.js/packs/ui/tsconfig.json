@@ -11,13 +11,17 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
-		"target": "es5",
+		"target": "es6",
 		"typeRoots": ["node_modules/@types"],
-		"lib": ["es2017", "dom"],
+		"lib": ["ESNext", "dom"],
 		"baseUrl": ".",
-		"outDir": "./dist/lib"
-	  },
+		"outDir": "./dist/types",
+		"noEmitOnError": true
+	},
 	"include": [
 		"./src/**/*.ts"
+	],
+	"exclude": [
+		"node_modules"
 	]
 }

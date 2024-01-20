@@ -176,7 +176,7 @@ namespace EasyData.Export
                                                 : Convert.ToDateTime(value);
                                 break;
                             case XLDataType.Text:
-                                cell.Value = !string.IsNullOrEmpty(value.ToString())
+                                cell.Value = value != null
                                     ? (XLCellValue)("'" + value)
                                     : Blank.Value;
                                 break;

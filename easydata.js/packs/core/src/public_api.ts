@@ -2,6 +2,7 @@
 export * from './types/data_type'
 export * from './types/entity_attr_kind'
 export * from './types/editor_tag'
+export * from './types/time_utils'
 
 //http
 export * from './http/http_method'

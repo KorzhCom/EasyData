@@ -1,7 +1,4 @@
-import * as strf from './string_utils';
 import { DataType } from '../types/data_type';
-import { i18n } from '../i18n/i18n';
-
 
 export namespace utils {
     export function getAllDataTypes(): DataType[] {
@@ -39,7 +36,7 @@ export namespace utils {
     export function assign(target: any, ...args: any[]): any {
         for (let i = 0; i < args.length; i++) {
             let source = args[i];
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {
                     if (source.hasOwnProperty(key)) {
                         target[key] = source[key];
@@ -70,14 +67,15 @@ export namespace utils {
         }
 
         for (let source of sources) {
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {                
                     if (source.hasOwnProperty(key)) {
                         let sourceVal = source[key];
                         if (sourceVal !== null && typeof sourceVal === 'object') {
                             if (hashSet.has(sourceVal)) {
                                 target[key] = hashSet.get(sourceVal);
-                            } else {
+                            } 
+                            else {
                                 if (Array.isArray(sourceVal)) {
                                     target[key] = createArrayFrom(sourceVal);
                                     hashSet.set(sourceVal, target[key]);
@@ -525,57 +523,5 @@ export namespace utils {
         }
     }
 
-    const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
 
-    /**
-     * Returns string representation of the date/time value according to the custom format (second parameter) 
-     * The format is compatible with the one used in .NET: https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
-     * @param date 
-     * @param format 
-     */
-    export function dateTimeToStr(date: Date, format: string): string {
-        const year = date.getFullYear();
-        const yearStr = year.toString();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        
-        const hour = date.getHours();
-        const minute = date.getMinutes();
-        const second = date.getSeconds();
-
-        const hour12 = hour % 12 || 12; //the remainder of the division by 12. Or 12 if it's 0
-        const isPm = hour > 11;
-
-        const matches = {
-            yyyy: yearStr,
-            yy: yearStr.substring(yearStr.length - 2),
-            MMMM: i18n.getLongMonthName(month),
-            MMM: i18n.getShortMonthName(month),
-            MM: (month < 10) ? '0' + month : month.toString(),
-            M: month.toString(),
-            dd: (day < 10) ? '0' + day : day.toString(),
-            d: day.toString(),
-            HH: (hour < 10) ? '0' + hour : hour.toString(),
-            H: hour.toString(),
-            hh: (hour12 < 10) ? '0' + hour12 : hour12.toString(),
-            h: hour12.toString(),
-            tt: isPm ? 'PM' : 'AM',
-            mm: (minute < 10) ? '0' + minute : minute.toString(),
-            ss: (second < 10) ? '0' + second : second.toString()
-        }
-
-        return format.replace(DT_FORMAT_RGEX, (match, $1) => {
-            return $1 || matches[match];
-        });
-    }
-
-    /**
-    * Converts a numeric value to the string taking into the account the decimal separator
-    * @param value - the number to convert 
-    * @param decimalSeparator - the symbol that represents decimal separator. If not specified the function gets the one from the current locale settings.
-    */
-    export function numberToStr(number: Number, decimalSeparator?: string) {
-        decimalSeparator = decimalSeparator || i18n.getLocaleSettings().decimalSeparator;
-        return number.toString().replace('.', decimalSeparator);
-    }
 }

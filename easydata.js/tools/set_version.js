@@ -25,8 +25,8 @@ function writePackageJson(pack) {
 	packageJson.version = version;
 
 	packs.map(pack => {
-		if (packageJson.peerDependencies && packageJson.peerDependencies[`@easydata/${pack}`]) {
-			packageJson.peerDependencies[`@easydata/${pack}`] = `^${version}`;
+		if (packageJson.dependencies && packageJson.dependencies[`@easydata/${pack}`]) {
+			packageJson.dependencies[`@easydata/${pack}`] = `^${version}`;
 		}
 		return pack;
 	});

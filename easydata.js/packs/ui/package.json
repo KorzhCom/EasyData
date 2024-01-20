@@ -1,17 +1,16 @@
 {
     "name": "@easydata/ui",
-    "version": "1.4.1",
+    "version": "1.4.21",
     "description": "EasyData.JS: DOM manipulation functions and UI widgets",
-    "types": "./dist/lib/public_api.d.ts",
-    "main": "./dist/bundles/easydata.ui.js",
-    "module": "./dist/lib/public_api.js",
+    "types": "./dist/types/public_api.d.ts",
+    "main": "./dist/easydata.ui.cjs.js",
+    "module": "./dist/easydata.ui.esm.js",
     "scripts": {
-        "clean": "rimraf ./dist",
-        "build:dev": "set NODE_ENV=development&& npm run clean && tsc && webpack --mode=development",
-        "build:prod": "set NODE_ENV=production&& npm run clean && tsc && webpack --mode=production",
-        "watch": "nodemon",
-        "test": "npm run clean-test && tsc -p tsconfig-test.json && jasmine JASMINE_CONFIG_PATH=jasmine.json",
-        "clean-test": "rimraf ./test/dist"
+        "test": "vitest run",
+        "clear": "shx rm -rf dist/* docs/*",
+        "build": "npm run clear && rollup -c",
+        "watch": "rollup -c -w",
+        "docs": "typedoc src/public_api.ts --out ./docs"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",
@@ -32,47 +31,13 @@
     ],
     "bugs": "https://github.com/KorzhCom/EasyData/issues",
     "license": "MIT",
-    "peerDependencies": {
-        "@easydata/core": "^1.4.1"
-    },
-    "devDependencies": {
-        "@olton/typedoc-webpack-plugin": "^0.1.0",
-        "@types/jasmine": "^4.3.2",
-        "@types/node": "20.2.5",
-        "autoprefixer": "^10.4.14",
-        "css-loader": "^6.7.4",
-        "es6-promise": "^4.2.8",
-        "filemanager-webpack-plugin": "^8.0.0",
-        "jasmine": "^5.0.0",
-        "jasmine-ts-console-reporter": "^3.1.1",
-        "jsdom": "^22.1.0",
-        "mini-css-extract-plugin": "^2.7.6",
-        "nodemon": "2.0.22",
-        "optimize-css-assets-webpack-plugin": "6.0.1",
-        "postcss-loader": "^7.3.1",
-        "rimraf": "5.0.1",
-        "style-loader": "^3.3.3",
-        "terser-webpack-plugin": "^5.3.9",
-        "ts-loader": "^9.4.3",
-        "ts-node": "^10.9.1",
-        "typedoc": "^0.24.7",
-        "typescript": "5.0.*",
-        "typings-for-css-modules-loader": "1.7.0",
-        "webpack": "^5.84.1",
-        "webpack-cli": "^5.1.1"
-    },
     "browserslist": [
         "defaults"
     ],
-    "nodemonConfig": {
-        "watch": [
-            "src"
-        ],
-        "delay": "1000",
-        "ext": "ts,js",
-        "exec": "tsc"
+    "peerDependencies": {
+        "@easydata/core": "^1.4.21"
     },
-    "dependencies": {
-        "@juggle/resize-observer": "^3.4.0"
-    }
+    "files": [
+        "dist"
+    ]
 }

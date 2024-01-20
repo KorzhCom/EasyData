@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "independent",
+  "packages": [
+    "easydata.js/packs/*", 
+    "easydata.js/bundles/*", 
+    "playground/*"
+  ],
+  "command": {
+    "run": {
+      "npmClient": "npm"
+    }
+  }
+}

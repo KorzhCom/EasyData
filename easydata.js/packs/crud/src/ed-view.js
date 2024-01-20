@@ -1,0 +1,1 @@
+import '../assets/css/ed-view.css'

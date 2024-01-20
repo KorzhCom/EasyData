@@ -1,8 +1,8 @@
 import { 
     DataRow, DataType, EasyDataTable, 
     EditorTag, EntityAttrKind, i18n, 
-    MetaEntityAttr, utils as dataUtils,
-    ValueEditor, DataContext
+    MetaEntityAttr, utils as coreUtils,
+    ValueEditor
 } from '@easydata/core';
 
 import { 
@@ -12,6 +12,8 @@ import {
 } from '@easydata/ui';
 
 import * as crudUtils from '../utils/utils';
+
+import { DataContext } from '../main/data_context';
 import { EntityEditForm } from './entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
@@ -63,7 +65,7 @@ export class EntityEditFormBuilder {
                         b.name(dataAttr.id)
                         b.type(this.resolveInputType(dataAttr.dataType));
 
-                        b.value(dataUtils.IsDefinedAndNotNull(value)
+                        b.value(coreUtils.IsDefinedAndNotNull(value)
                             ? value.toString() : '');
                     });
 
@@ -238,7 +240,7 @@ export class EntityEditFormBuilder {
                                 .on('input', ev => {
                                     b.removeClass('is-invalid');
                                     try {
-                                        const newDate = dataUtils.strToDateTime(inputEl.value, editFormat);
+                                        const newDate = coreUtils.strToDateTime(inputEl.value, editFormat);
                                     }
                                     catch (e) {
                                         b.addClass('is-invalid');
@@ -254,8 +256,8 @@ export class EntityEditFormBuilder {
                                 });
                         }
 
-                        b.value((dataUtils.IsDefinedAndNotNull(value)
-                            ? dataUtils.dateTimeToStr(value, editFormat)
+                        b.value((coreUtils.IsDefinedAndNotNull(value)
+                            ? i18n.dateTimeToStr(value, editFormat)
                             : ''))
                     });
 
@@ -274,8 +276,8 @@ export class EntityEditFormBuilder {
                             try {
                                 value = inputEl.value.length
                                     ? attr.dataType !== DataType.Time
-                                        ? dataUtils.strToDateTime(inputEl.value, editFormat)
-                                        : dataUtils.strToTime(inputEl.value)
+                                        ? coreUtils.strToDateTime(inputEl.value, editFormat)
+                                        : coreUtils.strToTime(inputEl.value)
                                     : new Date(new Date().setSeconds(0));
                             }
                             catch {
@@ -290,7 +292,7 @@ export class EntityEditFormBuilder {
                                     dateTime.setSeconds(0);
                                     dateTime.setMilliseconds(0);
 
-                                    inputEl.value = dataUtils.dateTimeToStr(dateTime, editFormat);
+                                    inputEl.value = i18n.dateTimeToStr(dateTime, editFormat);
 
                                 }
                             };
@@ -358,7 +360,7 @@ export class EntityEditFormBuilder {
                 } 
                 else {
                     b.on('keypress', (ev) => this.applySumbit(ev as KeyboardEvent))
-                     .value(dataUtils.IsDefinedAndNotNull(value)
+                     .value(coreUtils.IsDefinedAndNotNull(value)
                         ? value.toString()
                         : '');
                 }
@@ -374,7 +376,7 @@ export class EntityEditFormBuilder {
                     
                 b.attr('name', attr.id)
                 b.setStyle('height', `120px`)
-                b.value(dataUtils.IsDefinedAndNotNull(value)
+                b.value(coreUtils.IsDefinedAndNotNull(value)
                     ? value.toString()
                     : '');
             });
@@ -458,7 +460,7 @@ export class EntityEditFormBuilder {
     private resolveEditor(attr: MetaEntityAttr): ValueEditor {
         let editor = attr.defaultEditor || new ValueEditor();
         if (editor.tag == EditorTag.Unknown) {
-            if (dataUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
+            if (coreUtils.getDateDataTypes().indexOf(attr.dataType) >= 0) {
                 editor.tag = EditorTag.DateTime;
             }
             else {

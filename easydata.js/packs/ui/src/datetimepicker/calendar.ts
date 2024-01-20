@@ -4,6 +4,7 @@ export interface CalendarOptions {
     timePickerIsUsed?: boolean;
     oneClickDateSelection?: boolean;
     onDateChanged?: (date: Date, apply?: boolean) => void;
+    onDrawDay?: (cell: HTMLElement, date: Date) => void;
 }
 
 export abstract class Calendar {

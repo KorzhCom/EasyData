@@ -16,7 +16,7 @@
 }
 
 .keg-root {
-    font-family: "Roboto", Arial;
+    font-family: "Roboto", Arial, serif;
     display: flex;
     flex-direction: column;
     border: 1px solid #babfc7;
