@@ -337,5 +337,28 @@ namespace EasyData.AspNetCore
                 await jsonWriter.WriteValueAsync(errorMessage, cancellationToken);
             }, ct);
         }
+
+        internal async Task HandleGetDataSources(CancellationToken ct)
+        {
+            var dsStorage = Manager.GetDataSourceStorage();
+            var dataSources = dsStorage.ListDataSources().OrderBy(ds => ds.Index);
+            await WriteOkJsonResponseAsync(HttpContext, async (jsonWriter, cancellationToken) => {
+                await jsonWriter.WritePropertyNameAsync("dataSources", cancellationToken);
+                await jsonWriter.WriteStartArrayAsync(cancellationToken);
+                foreach (var ds in dataSources) {
+                    await jsonWriter.WriteStartObjectAsync(cancellationToken);
+                    await jsonWriter.WritePropertyNameAsync("id", cancellationToken);
+                    await jsonWriter.WriteValueAsync(ds.Id, cancellationToken);
+                    await jsonWriter.WritePropertyNameAsync("name", cancellationToken);
+                    await jsonWriter.WriteValueAsync(ds.Name, cancellationToken);
+                    await jsonWriter.WritePropertyNameAsync("description", cancellationToken);
+                    await jsonWriter.WriteValueAsync(ds.Description, cancellationToken);
+                    await jsonWriter.WritePropertyNameAsync("isEditable", cancellationToken);
+                    await jsonWriter.WriteValueAsync(ds.IsEditable, cancellationToken);
+                    await jsonWriter.WriteEndObjectAsync(cancellationToken);
+                }
+                await jsonWriter.WriteEndArrayAsync(cancellationToken);
+            }, ct);
+        }
     }
 }
