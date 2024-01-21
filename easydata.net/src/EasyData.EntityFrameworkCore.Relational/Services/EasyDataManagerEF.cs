@@ -69,10 +69,6 @@ namespace EasyData.Services
 
             await GetModelAsync(modelId);
 
-            if (Model.TryGetDataSource(sourceId, out var dataSource)) {
-                return await FetchFromDataSourceAsync(dataSource, filters, sorters, offset, fetch, ct);
-            }
-
             var entityType = GetCurrentEntityType(DbContext, sourceId);
             var records = GetRecordsQuery(DbContext, entityType.ClrType,
                     filters, sorters, isLookup, offset, fetch, ct);

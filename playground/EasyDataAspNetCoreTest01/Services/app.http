@@ -1,0 +1,4 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+
+GET https://localhost:44300/api/easy-crud/datasources

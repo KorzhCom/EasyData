@@ -13,6 +13,25 @@ builder.Services.AddDbContext<AppDbContext>(options
     => options.UseSqlite(builder.Configuration.GetConnectionString("EasyDataDB")));
 builder.Services.AddRazorPages();
 
+var dsStorage = new MemoryDataSourceStorage();
+dsStorage.Add(new DataSource() {
+    Id = "DS1",
+    Name = "All USA customers",
+    Description = "Returns the list of all customers from USA",
+    IsEditable = false,
+    Index = 1
+});
+
+dsStorage.Add(new DataSource() {
+    Id = "DS2",
+    Name = "This year orders",
+    Description = "Returns the list of orders created this year",
+    IsEditable = false,
+    Index = 2
+});
+
+builder.Services.AddSingleton<IDataSourceStorage>(dsStorage);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -94,7 +113,7 @@ static void EnsureDbInitialized(WebApplication app)
         if (context.Database.EnsureCreated()) {
             DbInitializer.Create(options => {
                 options.UseSqlite(app.Configuration.GetConnectionString("EasyDataDB"));
-                options.UseZipPacker(System.IO.Path.Combine(app.Environment.ContentRootPath, "App_Data", "EqDemoData.zip"));
+                options.UseZipPacker(System.IO.Path.Combine(app.Environment.ContentRootPath, "App_Data", "EdDemoData.zip"));
             })
             .Seed();
         }

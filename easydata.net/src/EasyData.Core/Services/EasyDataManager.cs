@@ -16,6 +16,8 @@ namespace EasyData.Services
 
         protected MetaData Model { get; private set; } = new MetaData();
 
+        protected IDataSourceStorage DataSourceStorage;
+
 
         public EasyDataManager(IServiceProvider services, EasyDataOptions options)
         {
@@ -39,6 +41,18 @@ namespace EasyData.Services
         {
             Options.ModelTuner?.Invoke(Model);
             return Task.CompletedTask;
+        }
+
+        public IDataSourceStorage GetDataSourceStorage()
+        {
+            if (DataSourceStorage == null) {
+                DataSourceStorage = Services.GetService(typeof(IDataSourceStorage)) as IDataSourceStorage;
+            }
+            if (DataSourceStorage == null) {
+                throw new EasyDataException("IDataSourceStorage service is not registered");
+            }
+
+            return DataSourceStorage;
         }
 
         public abstract Task<EasyDataResultSet> FetchDataAsync(
