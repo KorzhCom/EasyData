@@ -34,6 +34,10 @@ export namespace utils {
      * @param args  - an array of the source objects
      */
     export function assign(target: any, ...args: any[]): any {
+        if (!target) {
+            target = {};
+        }
+        
         for (let i = 0; i < args.length; i++) {
             let source = args[i];
             if (source && source.hasOwnProperty) {

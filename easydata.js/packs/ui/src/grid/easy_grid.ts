@@ -62,7 +62,7 @@ export class EasyGrid implements EasyGridBase {
 
     protected paginationOptions = {
         maxButtonCount: 10,
-        useBootstrap: false //true
+        useBootstrap: false
     }
 
     protected defaultDataGridOptions : EasyGridOptions = {
@@ -251,8 +251,7 @@ export class EasyGrid implements EasyGridBase {
 
         this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
 
-
-        utils.assignDeep(this.paginationOptions, options.pagination);
+        utils.assign(this.paginationOptions, options.pagination);
 
         this.pagination.pageSize = this.options.paging.pageSize
             || this.pagination.pageSize;

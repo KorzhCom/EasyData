@@ -76,7 +76,7 @@ export class EntityDataView {
                 const gridSlot = document.createElement('div');
                 this.slot.appendChild(gridSlot);
                 gridSlot.id = 'Grid';
-                this.grid = new EasyGrid(dataUtils.assignDeep({
+                let gridOptions = {
                     slot: gridSlot,
                     dataTable: result,
                     paging: {
@@ -91,7 +91,11 @@ export class EntityDataView {
                     onGetCellRenderer: this.manageCellRenderer.bind(this),
                     onRowDbClick: this.rowDbClickHandler.bind(this),
                     onSyncGridColumn: this.syncGridColumnHandler.bind(this)
-                }, this.options.grid || {}));
+                };
+
+                const sourceOptions = this.options.grid || {};
+                gridOptions = dataUtils.assignDeep(gridOptions, sourceOptions);
+                this.grid = new EasyGrid(gridOptions);
 
                 if (this.options.showFilterBox) {
                     let filterWidgetSlot: HTMLElement;
