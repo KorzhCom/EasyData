@@ -144,11 +144,13 @@ export class EasyGrid implements EasyGridBase {
     }
 
     private mergeOptions(options: EasyGridOptions): EasyGridOptions {
+        const aggrOptions = utils.assignDeep({}, this.defaultDataGridOptions.aggregates, options.aggregates )
         const colWidthOptions = utils.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
         const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
 
         const result: EasyGridOptions = utils.assign({}, this.defaultDataGridOptions, options);
         
+        result.aggregates = aggrOptions;
         result.columnWidths = colWidthOptions;
         result.paging = pagingOptions;
         
