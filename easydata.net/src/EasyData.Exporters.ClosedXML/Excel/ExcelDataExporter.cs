@@ -176,9 +176,14 @@ namespace EasyData.Export
                                                 : Convert.ToDateTime(value);
                                 break;
                             case XLDataType.Text:
-                                cell.Value = value != null
-                                    ? (XLCellValue)("'" + value)
-                                    : Blank.Value;
+                                if (value != null) {
+                                    cell.Value = (XLCellValue)(settings.PreserveFormatting && !column.Style.AllowAutoFormatting
+                                        ? "'" + value
+                                        : value);
+                                }
+                                else { 
+                                    cell.Value = Blank.Value;
+                                }
                                 break;
                             case XLDataType.Number:
                                 cell.Value = Convert.ToDouble(value);
