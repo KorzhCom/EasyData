@@ -177,9 +177,10 @@ namespace EasyData.Export
                                 break;
                             case XLDataType.Text:
                                 if (value != null) {
-                                    cell.Value = (XLCellValue)(settings.PreserveFormatting && !column.Style.AllowAutoFormatting
+                                    var strValue = settings.PreserveFormatting && !column.Style.AllowAutoFormatting
                                         ? "'" + value
-                                        : value);
+                                        : value.ToString();
+                                    cell.Value = (XLCellValue)strValue;
                                 }
                                 else { 
                                     cell.Value = Blank.Value;
