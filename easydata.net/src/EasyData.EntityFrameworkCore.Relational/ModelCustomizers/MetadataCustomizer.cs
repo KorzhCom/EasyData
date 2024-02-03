@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace EasyData.EntityFrameworkCore
 {
     /// <summary>
-    /// Build entity metadata.
+    /// Builds entity metadata.
     /// </summary>
     public class MetadataCustomizer
     {
@@ -21,7 +21,7 @@ namespace EasyData.EntityFrameworkCore
 
         /// <summary>
         /// Gets the customizer for an entity by its type.
-        /// This is a virtual method that can be overriden in descendants
+        /// This is a virtual method that can be overridden in descendants
         /// </summary>
         /// <typeparam name="TEntity">Entity type.</typeparam>
         /// <returns>An instance of IMetaEntityCustomizer&lt;TEntity&gt;.</returns>

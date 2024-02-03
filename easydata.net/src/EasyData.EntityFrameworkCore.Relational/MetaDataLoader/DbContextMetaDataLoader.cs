@@ -137,10 +137,9 @@ namespace EasyData.EntityFrameworkCore
             var entityTypes = GetEntityTypes();
 
             if (Options.KeepDbSetDeclarationOrder) {
-                // EF Core keeps information about entity types 
-                // in alphabetical order.
+                // EF Core keeps information about entity types in alphabetical order.
                 // To make it possible to keep the original order
-                // we reoder the list of entities according to the orer of DbSets
+                // we reorder the list of entities according to the order of DbSets
 
                 entityTypes = entityTypes.OrderBy(t => 
                     _dbSetTypes.TryGetValue(t.ClrType, out var index) ? index : int.MaxValue);

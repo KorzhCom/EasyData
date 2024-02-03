@@ -4,12 +4,11 @@ import { ProgressBar } from '../widgets/progress_bar';
 import { DataContext } from '../main/data_context';
 import { EntityDataView } from './entity_data_view';
 import { EasyDataViewDispatcherOptions } from './options';
-import { RootDataView } from './root_data_view';
+import { RootDataView, RootDataViewOptions } from './root_data_view';
 
 export class EasyDataViewDispatcher {
     private context: DataContext;
     private basePath: string;
-
     private container: HTMLElement;
 
     private options: EasyDataViewDispatcherOptions = {
@@ -114,7 +113,11 @@ export class EasyDataViewDispatcher {
                 this.basePath, this.options);
         }
         else {
-            window['EDView'] = new RootDataView(this.container, this.context, this.basePath);
+            const rootViewOptions: RootDataViewOptions = {};
+            if (typeof this.options.usePluralNames !== 'undefined') {
+                rootViewOptions.usePluralNames = this.options.usePluralNames;
+            } 
+            window['EDView'] = new RootDataView(this.container, this.context, this.basePath, rootViewOptions);
         }
     }
 

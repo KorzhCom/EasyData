@@ -13,4 +13,5 @@ export interface EasyDataViewDispatcherOptions extends EasyDataViewOptions {
     basePath? : string;
     rootEntity?: string,
     container?: HTMLElement | string;
+    usePluralNames?: boolean;
 }
