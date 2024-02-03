@@ -65,7 +65,7 @@ namespace EasyData.Export
         bool ShowDatasetInfo { get; set; }
 
         /// <summary>
-        /// Gets or sets value indicating whether the exporter shoud preserve the formatting in the original value
+        /// Gets or sets value indicating whether the exporter should preserve the formatting in the original value
         /// </summary>
         bool PreserveFormatting { get; set; }
 

@@ -34,9 +34,13 @@ export namespace utils {
      * @param args  - an array of the source objects
      */
     export function assign(target: any, ...args: any[]): any {
+        if (!target) {
+            target = {};
+        }
+        
         for (let i = 0; i < args.length; i++) {
             let source = args[i];
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {
                     if (source.hasOwnProperty(key)) {
                         target[key] = source[key];
@@ -67,14 +71,19 @@ export namespace utils {
         }
 
         for (let source of sources) {
-            if (source) {
+            if (source && source.hasOwnProperty) {
                 for (let key in source) {                
                     if (source.hasOwnProperty(key)) {
                         let sourceVal = source[key];
-                        if (sourceVal !== null && typeof sourceVal === 'object') {
+
+                        //we don't make a deep copy of HTML elements and any other property makred as a 'reference' (ends with 'Ref')
+                        if (sourceVal !== null && typeof sourceVal === 'object' 
+                            && key.endsWith('Ref') && !(sourceVal instanceof HTMLElement)) 
+                        {
                             if (hashSet.has(sourceVal)) {
                                 target[key] = hashSet.get(sourceVal);
-                            } else {
+                            } 
+                            else {
                                 if (Array.isArray(sourceVal)) {
                                     target[key] = createArrayFrom(sourceVal);
                                     hashSet.set(sourceVal, target[key]);

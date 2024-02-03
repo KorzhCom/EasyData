@@ -4,8 +4,12 @@ import { HttpMethod } from './http_method';
 import { HttpHeaders, HttpRequest, HttpRequestDescriptor, HttpRequestOptions } from './http_request';
 
 export class HttpResponseError extends Error {
-    constructor(public status: number, message: string) {
+    public status: number;
+
+    constructor(status: number, message: string) {
         super(message);
+        Object.setPrototypeOf(this, HttpResponseError.prototype);
+        this.status = status;
     }
 }
 

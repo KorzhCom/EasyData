@@ -25,7 +25,7 @@ export class TextFilterWidget {
         private filter: DataFilter,
         options?: TextFilterWidgetOptions) {
 
-        this.options = dataUtils.assignDeep(this.options, options || {});
+        this.options = dataUtils.assign(this.options, options || {});
 
         const stringDefRenderer = this.grid.cellRendererStore
             .getDefaultRendererByType(CellRendererType.STRING);

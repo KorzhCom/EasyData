@@ -62,7 +62,7 @@ export class EasyGrid implements EasyGridBase {
 
     protected paginationOptions = {
         maxButtonCount: 10,
-        useBootstrap: false //true
+        useBootstrap: false
     }
 
     protected defaultDataGridOptions : EasyGridOptions = {
@@ -144,11 +144,13 @@ export class EasyGrid implements EasyGridBase {
     }
 
     private mergeOptions(options: EasyGridOptions): EasyGridOptions {
+        const aggrOptions = utils.assignDeep({}, this.defaultDataGridOptions.aggregates, options.aggregates )
         const colWidthOptions = utils.assignDeep({}, this.defaultDataGridOptions.columnWidths, options.columnWidths);
         const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
 
         const result: EasyGridOptions = utils.assign({}, this.defaultDataGridOptions, options);
         
+        result.aggregates = aggrOptions;
         result.columnWidths = colWidthOptions;
         result.paging = pagingOptions;
         
@@ -249,8 +251,7 @@ export class EasyGrid implements EasyGridBase {
 
         this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
 
-
-        utils.assignDeep(this.paginationOptions, options.pagination);
+        utils.assign(this.paginationOptions, options.pagination);
 
         this.pagination.pageSize = this.options.paging.pageSize
             || this.pagination.pageSize;

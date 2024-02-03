@@ -9,11 +9,12 @@
   "scripts": {
     "clean": "lerna clean",
     "test": "lerna run test",
-    "watch": "lerna run build --scope=@easydata/* && lerna watch --scope=@easydata/* -- lerna run build --since --include-dependents",
+    "watch": "lerna run build --scope=@easydata/* && lerna watch --scope=@easydata/* -- lerna run build --scope=%LERNA_PACKAGE_NAME% --include-dependents",
     "watch:core": "lerna run watch --scope=@easydata/core",
     "watch:crud": "lerna run watch --scope=@easydata/crud",
     "watch:ui": "lerna run watch --scope=@easydata/ui",
     "watch:bundle": "lerna run watch --scope=@easydata/bundle-crud",
+    "rebuild": "nx reset && lerna run build",
     "build": "lerna run build",
     "build:core": "lerna run build --scope=@easydata/core",
     "build:crud": "lerna run build --scope=@easydata/crud",

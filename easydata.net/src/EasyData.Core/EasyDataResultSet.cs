@@ -18,6 +18,8 @@ namespace EasyData
     public class EasyDataColStyle
     {
         public ColumnAlignment Alignment { get; set; } = ColumnAlignment.None;
+
+        public bool AllowAutoFormatting { get; set; } = false;
     }
 
 
@@ -69,8 +71,6 @@ namespace EasyData
         /// The style of the property to display in UI.
         /// </summary>
         public EasyDataColStyle Style { get; set; }
-
-
     }
 
     public class EasyDataCol

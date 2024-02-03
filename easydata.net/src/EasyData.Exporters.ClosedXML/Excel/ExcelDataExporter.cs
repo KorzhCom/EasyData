@@ -64,7 +64,7 @@ namespace EasyData.Export
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="ExcelDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
+        /// Asynchronous version of <see cref="ExcelDataExporter.Export(IEasyDataResultSet,Stream)"/> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
@@ -76,12 +76,12 @@ namespace EasyData.Export
         }
 
         /// <summary>
-        /// Asynchronical version of <see cref="ExcelDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
+        /// Asynchronous version of <see cref="ExcelDataExporter.Export(IEasyDataResultSet,Stream, IDataExportSettings)" /> method.
         /// </summary>
         /// <param name="data">The fetched data.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="settings">The settings.</param>
-        /// <param name="ct">The cacnellation token.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
@@ -129,7 +129,6 @@ namespace EasyData.Export
                 cellNum++;
             }
 
-
             var endHeaderNum = cellNum;
             var endColId = GetExcelColumnId(data.Cols.Count - 1 + startColNum);
 
@@ -176,9 +175,15 @@ namespace EasyData.Export
                                                 : Convert.ToDateTime(value);
                                 break;
                             case XLDataType.Text:
-                                cell.Value = value != null
-                                    ? (XLCellValue)("'" + value)
-                                    : Blank.Value;
+                                if (value != null) {
+                                    var strValue = settings.PreserveFormatting && !column.Style.AllowAutoFormatting
+                                        ? "'" + value
+                                        : value.ToString();
+                                    cell.Value = (XLCellValue)strValue;
+                                }
+                                else { 
+                                    cell.Value = Blank.Value;
+                                }
                                 break;
                             case XLDataType.Number:
                                 cell.Value = Convert.ToDouble(value);

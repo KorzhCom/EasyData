@@ -94,12 +94,12 @@ namespace EasyData.Export
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets value indicating wether title and description will be shown 
+        /// Gets or sets value indicating whether title and description will be shown 
         /// </summary>
         public bool ShowDatasetInfo { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets value indicating whether the exporter shoud preserve the formatting in the original value
+        /// Gets or sets value indicating whether the exporter should preserve the formatting in the original value
         /// </summary>
         public bool PreserveFormatting { get; set; } = true;
 
