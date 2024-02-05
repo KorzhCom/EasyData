@@ -1,6 +1,6 @@
 {
     "name": "@easydata/core",
-    "version": "1.4.21",
+    "version": "1.5.1",
     "description": "EasyData.JS core functions, classes, and data structures",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.core.cjs.js",
