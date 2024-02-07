@@ -4,6 +4,8 @@ export namespace browserUtils {
 
     let _isIE: boolean = null;
 
+    let mobileModeChangeHandler: (newValue: boolean) => void;
+
     export function IsIE(): boolean {
         if (_isIE === null) {
              const ua = navigator.userAgent;
@@ -68,7 +70,6 @@ export namespace browserUtils {
         }
     }    
 
-    let mobileModeChangeHandler: (newValue: boolean) => void;
     export function onMobileModeChanged(callback: (newValue: boolean) => void) {
         mobileModeChangeHandler = callback;
     }
