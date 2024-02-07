@@ -6,28 +6,24 @@ export namespace browserUtils {
 
     let mobileModeChangeHandler: (newValue: boolean) => void;
 
-    export function IsIE(): boolean {
+    export function isIE(): boolean {
         if (_isIE === null) {
              const ua = navigator.userAgent;
-            /* MSIE used to detect old browsers and Trident used to newer ones*/
-            _isIE = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+            return ua.includes('MSIE') || ua.includes('Trident')
         }
         return _isIE;
     }
 
-    export function IsEdge(): boolean {
+    export function isEdge(): boolean {
         const ua = window.navigator.userAgent;
-
-        return !IsIE() && ua.includes('Edge/')
+        return !isIE() && ua.includes('Edge/')
     }
 
-    export function IsFirefox(): boolean {
-
+    export function isFirefox(): boolean {
         if (_isFirefox === null) {
             const ua = navigator.userAgent;
-            _isFirefox = ua.toLowerCase().indexOf('firefox') > -1;
+            _isFirefox = ua.toLowerCase().includes('firefox');
         }
-
         return _isFirefox;
     }
 
@@ -72,10 +68,6 @@ export namespace browserUtils {
 
     export function onMobileModeChanged(callback: (newValue: boolean) => void) {
         mobileModeChangeHandler = callback;
-    }
-
-    export function getMobileCssClass(): string | null {
-        return isMobileMode() ? 'k-mobile' : null;
     }
 
 }
