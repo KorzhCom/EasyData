@@ -17,7 +17,7 @@ import { DataContext } from '../main/data_context';
 import { EntityEditForm } from './entity_edit_form';
 import { TextFilterWidget } from '../widgets/text_filter_widget';
 
-const isIE = browserUtils.IsIE();
+const isIE = browserUtils.isIE();
 
 export type FormBuildParams = {
     values?: DataRow,
