@@ -130,7 +130,7 @@ export function getViewportSize() {
 
 export function getDocSize() {
 
-    if (browserUtils.IsIE())
+    if (browserUtils.isIE())
         return getWinSize();
 
     const width = Math.max(document.documentElement.clientWidth, document.body.clientWidth || 0);
@@ -272,3 +272,6 @@ export function slideUp(target: HTMLElement,  duration: number, callback?: () =>
 
 export const eqCssPrefix = 'eqjs';
 export const eqCssMobile = 'eqjs-mobile';
+export function getMobileCssClass(): string | null {
+    return browserUtils.isMobileMode() ? 'k-mobile' : null;
+}

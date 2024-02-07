@@ -45,11 +45,11 @@ export class TextFilterWidget {
     private filterInput: HTMLInputElement;
 
     private render() {        
-        const horizClass = browserUtils.IsIE() 
+        const horizClass = browserUtils.isIE() 
             ? 'kfrm-fields-ie is-horizontal' 
             : 'kfrm-fields is-horizontal';
 
-        const isEdgeOrIE = browserUtils.IsIE() || browserUtils.IsEdge();
+        const isEdgeOrIE = browserUtils.isIE() || browserUtils.isEdge();
         
         domel(this.slot)
         .addClass(horizClass)
