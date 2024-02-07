@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 import {utils} from "../src/public_api"
 
+// Create a fake DOM for testing with $.ajax
 test('AssignDeep', () => {
     let object1 = {
         data: {
