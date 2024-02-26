@@ -29,7 +29,6 @@ export default [
     {
         input: ['./ts/styles.js', './ts/easydata.ts'],
         watch: {
-            include: './ts/**',
             clearScreen: false
         },
         plugins: [
