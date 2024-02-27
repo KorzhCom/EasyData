@@ -1051,7 +1051,7 @@ export class EasyGrid implements EasyGridBase {
         const totalRows = this.dataTable.getTotal()
         const pageSize = this.pagination.pageSize
         const totalPages = Math.ceil(totalRows / pageSize)
-        const distance: number = 10, islandSize = 3
+        const distance: number = 8, islandSize = 3
         const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`
 
         if (!this.options.paging || !this.options.paging.enabled || rowCount <= pageSize) {
@@ -1071,7 +1071,8 @@ export class EasyGrid implements EasyGridBase {
             content?: string,
             disabled?: boolean, 
             extreme?: boolean, 
-            active?: boolean
+            active?: boolean,
+            title?: string
         ): HTMLElement => {
             const li = document.createElement('li');
             li.className = `${prefix}page-item`;
@@ -1086,6 +1087,9 @@ export class EasyGrid implements EasyGridBase {
                 a.setAttribute("data-page", `${pageIndex}`);
                 a.className = `${prefix}page-link`;
                 a.addEventListener("click", buttonClickHandler);
+                if (title) {
+                    a.setAttribute("title", title)
+                }
                 li.appendChild(a);
                 return li;
             }
@@ -1114,6 +1118,9 @@ export class EasyGrid implements EasyGridBase {
                 a.addEventListener("click", buttonClickHandler);
             }
             a.innerHTML = content;
+            if (title) {
+                a.setAttribute("title", title)
+            }
 
             li.appendChild(a);
 
@@ -1134,11 +1141,11 @@ export class EasyGrid implements EasyGridBase {
             cell = renderPaginationItem(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
             ul.appendChild(cell);
         } else {
-            const prev10 = renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false)
-            ul.appendChild(prev10);
+            if (totalPages > 10) {
+                ul.appendChild(renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false, "Jump left on 10 pages"));
+            }
 
-            const prev = renderPaginationItem(pageIndex - 1, '&lsaquo;', pageIndex == 1, true, false)
-            ul.appendChild(prev);
+            ul.appendChild(renderPaginationItem(pageIndex - 1, '&lsaquo;', pageIndex == 1, true, false, "Prev Page"));
 
             ul.appendChild(renderPaginationItem(1, '1', pageIndex == 1, false, pageIndex === 1));
             
@@ -1187,11 +1194,11 @@ export class EasyGrid implements EasyGridBase {
                 ul.appendChild(renderPaginationItem(totalPages, `${totalPages}`, pageIndex === totalPages, false, pageIndex === totalPages))
             } 
 
-            const next = renderPaginationItem(pageIndex + 1, '&rsaquo;', pageIndex == totalPages, true, false)
-            ul.appendChild(next);
+            ul.appendChild(renderPaginationItem(pageIndex + 1, '&rsaquo;', pageIndex == totalPages, true, false, "Next Page"));
 
-            const next10 = renderPaginationItem(pageIndex + 10, '&raquo;', pageIndex >= totalPages - 10, true, false)
-            ul.appendChild(next10);
+            if (totalPages > 10) {
+                ul.appendChild(renderPaginationItem(pageIndex + 10, '&raquo;', pageIndex >= totalPages - 10, true, false, "Jump right on 10 pages"));
+            }
 
         }
 
