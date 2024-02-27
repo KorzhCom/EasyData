@@ -184,6 +184,7 @@
 /* Pagination */
 .keg-pagination-wrapper {
     display: inline-flex;
+    margin-left: 10px;
 }
 
 .keg-pagination {
