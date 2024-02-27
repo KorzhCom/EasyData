@@ -1134,7 +1134,10 @@ export class EasyGrid implements EasyGridBase {
             cell = renderPaginationItem(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
             ul.appendChild(cell);
         } else {
-            const prev = renderPaginationItem(pageIndex - 1, '&laquo;', pageIndex == 1, true, false)
+            const prev10 = renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false)
+            ul.appendChild(prev10);
+
+            const prev = renderPaginationItem(pageIndex - 1, '&lsaquo;', pageIndex == 1, true, false)
             ul.appendChild(prev);
 
             ul.appendChild(renderPaginationItem(1, '1', pageIndex == 1, false, pageIndex === 1));
@@ -1184,16 +1187,12 @@ export class EasyGrid implements EasyGridBase {
                 ul.appendChild(renderPaginationItem(totalPages, `${totalPages}`, pageIndex === totalPages, false, pageIndex === totalPages))
             } 
 
-            const next = renderPaginationItem(pageIndex + 1, '&raquo;', pageIndex == totalPages, true, false)
+            const next = renderPaginationItem(pageIndex + 1, '&rsaquo;', pageIndex == totalPages, true, false)
             ul.appendChild(next);
 
-            if (pageIndex === 1) {
-                prev.classList.add("disabled");
-            }
+            const next10 = renderPaginationItem(pageIndex + 10, '&raquo;', pageIndex >= totalPages - 10, true, false)
+            ul.appendChild(next10);
 
-            if (pageIndex === totalPages) {
-                next.classList.add("disabled");
-            }
         }
 
         if (this.options.paging.allowPageSizeChange) {
