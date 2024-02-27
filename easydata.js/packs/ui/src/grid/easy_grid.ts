@@ -1051,7 +1051,7 @@ export class EasyGrid implements EasyGridBase {
         const totalRows = this.dataTable.getTotal()
         const pageSize = this.pagination.pageSize
         const totalPages = Math.ceil(totalRows / pageSize)
-        const distance: number = 10
+        const distance: number = 10, islandSize = 3
         const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`
 
         if (!this.options.paging || !this.options.paging.enabled || rowCount <= pageSize) {
@@ -1141,12 +1141,12 @@ export class EasyGrid implements EasyGridBase {
             
             if (distance === 0 || totalPages <= 10) {
                 for (let i = 2; i < totalPages; i++) {
-                    ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, true, pageIndex === i));
-                }
+                    ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
+                } 
             } else {
                 if (pageIndex < distance) {
                     for (let i = 2; i <= distance; i++) {
-                        ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
+                        ul.appendChild(renderPaginationItem(i, `${i}`, false, false, pageIndex === i));
                     }
 
                     if (totalPages > distance) {
@@ -1161,17 +1161,22 @@ export class EasyGrid implements EasyGridBase {
                         ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
                     }
                 } else {
-                    ul.appendChild(renderPaginationItem(2, `2`, false, false, false))
-                    ul.appendChild(renderPaginationItem(3, `3`, false, false, false))
                     ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
 
-                    ul.appendChild(renderPaginationItem(pageIndex - 1, `${pageIndex - 1}`, false, false, false))
+                    // Island Left Side
+                    for(let i = islandSize; i > 0; i--) {
+                        ul.appendChild(renderPaginationItem(pageIndex - i, `${pageIndex - i}`, false, false, false))
+                    }
+                    
+                    // Center of Island
                     ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, false, false, true))
-                    ul.appendChild(renderPaginationItem(pageIndex + 1, `${pageIndex + 1}`, false, false, false))
+                    
+                    // Island Right Size
+                    for(let i = 1; i <= islandSize; i++) {
+                        ul.appendChild(renderPaginationItem(pageIndex + i, `${pageIndex + i}`, false, false, false))
+                    }
 
                     ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
-                    ul.appendChild(renderPaginationItem(totalPages - 2, `${totalPages - 2}`, false, false, false))
-                    ul.appendChild(renderPaginationItem(totalPages - 1, `${totalPages - 1}`, false, false, false))
                 }
             }
             
