@@ -427,6 +427,12 @@ export namespace i18n {
             else if (format == 'F') {
                 format = buildLongDateTimeFormat(DataType.DateTime);
             }
+            else if (format == 'u') {
+                format = buildUniversalDateTimeFormat(dataType);
+            }
+            else {
+                format = buildUniversalDateTimeFormat(dataType);
+            }
         }
         else {
             format = buildShortDateTimeFormat(dataType);
@@ -465,6 +471,25 @@ export namespace i18n {
                 break;
             default:
                 format = localeSettings.longDateFormat + ' ' + localeSettings.longTimeFormat;
+                break;
+        }
+
+        return format;
+    }
+
+    function buildUniversalDateTimeFormat(dataType: DataType): string {
+        const localeSettings = getLocaleSettings();
+        let format: string;
+        const dateFormat = 'yyyy-MM-dd';
+        switch (dataType) {
+            case DataType.Date:
+                format = dateFormat;
+                break;
+            case DataType.Time:
+                format = localeSettings.shortTimeFormat;
+                break;
+            default:
+                format = dateFormat + ' ' + localeSettings.shortTimeFormat;
                 break;
         }
 

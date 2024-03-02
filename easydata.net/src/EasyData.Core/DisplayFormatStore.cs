@@ -6,7 +6,6 @@ namespace EasyData
 {
     public class DisplayFormatDescriptor
     {
-
         public DisplayFormatDescriptor(string name, string format)
         {
             Name = name;
@@ -22,13 +21,10 @@ namespace EasyData
 
     public class DisplayFormatStore : IEnumerable<KeyValuePair<DataType, List<DisplayFormatDescriptor>>>
     {
-
         private readonly Dictionary<DataType, List<DisplayFormatDescriptor>> _dict = new Dictionary<DataType, List<DisplayFormatDescriptor>>();
 
-
         public DisplayFormatStore()
-        { 
-        
+        {        
         }
 
         public DisplayFormatStore(Dictionary<DataType, List<DisplayFormatDescriptor>> dict)

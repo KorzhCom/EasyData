@@ -1,5 +1,4 @@
 export namespace browserUtils {
-
     let _isFirefox: boolean = null;
 
     let _isIE: boolean = null;
@@ -69,5 +68,4 @@ export namespace browserUtils {
     export function onMobileModeChanged(callback: (newValue: boolean) => void) {
         mobileModeChangeHandler = callback;
     }
-
 }

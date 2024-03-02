@@ -343,6 +343,7 @@ namespace EasyData
             // Date
             DisplayFormats.AddOrUpdate(DataType.Date, "Short date", "{0:d}");
             DisplayFormats.AddOrUpdate(DataType.Date, "Long date", "{0:D}");
+            DisplayFormats.AddOrUpdate(DataType.Date, "Universal", "{0:u}");
 
             // Time
             DisplayFormats.AddOrUpdate(DataType.Time, "Short time", "{0:HH:mm}");
@@ -355,6 +356,7 @@ namespace EasyData
             DisplayFormats.AddOrUpdate(DataType.DateTime, "Long date", "{0:D}");
             DisplayFormats.AddOrUpdate(DataType.DateTime, "Short time", "{0:HH:mm}");
             DisplayFormats.AddOrUpdate(DataType.DateTime, "Full time", "{0:HH:mm:ss}");
+            DisplayFormats.AddOrUpdate(DataType.DateTime, "Universal", "{0:u}");
         }
 
 

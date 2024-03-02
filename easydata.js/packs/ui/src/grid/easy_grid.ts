@@ -865,17 +865,17 @@ export class EasyGrid implements EasyGridBase {
         this.footerDiv = domel('div')
                     .addClass(`${this.cssPrefix}-footer`)
                     .toDOM();
-
+        
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise.then(count => {
                 this.footerDiv.innerHTML = '';
-                
+
                 this.footerPaginateDiv = this.renderPageNavigator();
                 this.footerDiv.appendChild(this.footerPaginateDiv);
                 const pageInfoBlock = this.renderPageInfoBlock(count);
                 this.footerDiv.appendChild(pageInfoBlock);
             });
-        }       
+        }   
     }
 
     protected renderPageInfoBlock(count: number): HTMLDivElement {
@@ -894,7 +894,6 @@ export class EasyGrid implements EasyGridBase {
                 : 0;
                 
             let totalStr = this.dataTable.getTotal().toString();
-
             if (this.dataTable.elasticChunks) {
                 const count = this.dataTable.getCachedCount();
                 const total = this.dataTable.getTotal();
@@ -1048,158 +1047,204 @@ export class EasyGrid implements EasyGridBase {
         paginateDiv.className = `${this.cssPrefix}-pagination-wrapper`;
         const rowCount = this.dataTable.getTotal();
 
+        const totalRows = this.dataTable.getTotal()
+        const pageSize = this.pagination.pageSize
+        const totalPages = Math.ceil(totalRows / pageSize)
+        const distance: number = 8, islandSize = 3
+        const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`
 
-        if (this.options.paging && this.options.paging.enabled && rowCount > 0) {
-            const prefix = this.paginationOptions.useBootstrap ? '' : `${this.cssPrefix}-`;
+        if (!this.options.paging || !this.options.paging.enabled || rowCount <= pageSize) {
+            return paginateDiv
+        }
 
-            const buttonClickHandler = (ev: MouseEvent) => {
-                const element = ev.target as HTMLElement;
-                if (element.hasAttribute('data-page')) {
-                    const page = parseInt(element.getAttribute('data-page'));
-                    this.setPage(page);
+        const buttonClickHandler = (ev: MouseEvent) => {
+            const element = ev.target as HTMLElement;
+            if (element.hasAttribute('data-page')) {
+                const page = parseInt(element.getAttribute('data-page'));
+                this.setPage(page);
+            }
+        };
+
+        const renderPaginationItem = (
+            pageIndex: number, 
+            content?: string,
+            disabled?: boolean, 
+            extreme?: boolean, 
+            active?: boolean,
+            title?: string
+        ): HTMLElement => {
+            const li = document.createElement('li');
+            li.className = `${prefix}page-item`;
+
+            if (!extreme) {
+                if (active) {
+                    li.className += ' active';
                 }
-            };
-
-            const renderPageCell = (pageIndex: number, content?: string, 
-                disabled?: boolean, extreme?: boolean, active?: boolean): HTMLElement => 
-            {
-                const li = document.createElement('li');
-                li.className = `${prefix}page-item`;
-
-                if (!extreme) {
-                    if (active) {
-                        li.className += ' active';
-                    }
-                    const a = document.createElement('a');
-                    a.setAttribute('href', 'javascript:void(0)');
-                    a.innerHTML = content || pageIndex.toString();
-                    a.setAttribute("data-page", `${pageIndex}`);
-                    a.className = `${prefix}page-link`;
-                    a.addEventListener("click", buttonClickHandler);
-                    li.appendChild(a);
-                    return li;
-                }
-
-                let a: HTMLElement = document.createElement('span');
-                a.setAttribute('aria-hidden', 'true');
-
+                const a = document.createElement('a');
+                a.setAttribute('href', 'javascript:void(0)');
+                a.innerHTML = content || pageIndex.toString();
+                a.setAttribute("data-page", `${pageIndex}`);
                 a.className = `${prefix}page-link`;
-
-                if (disabled) {
-                    li.className += ' disabled';
+                a.addEventListener("click", buttonClickHandler);
+                if (title) {
+                    a.setAttribute("title", title)
                 }
-                else {  
-                    if (this.paginationOptions.useBootstrap) {
-                        a = document.createElement('a');
-                        a.setAttribute('href', 'javascript:void(0)');
-                        a.setAttribute("data-page", `${pageIndex}`);
-                    }
-                    else {
-                        let newA = document.createElement('a');
-                        newA.setAttribute('href', 'javascript:void(0)');
-                        newA.setAttribute('data-page', `${pageIndex}`);
-                        a = newA;
-                    }
-                    a.className = `${prefix}page-link`;
-                    a.addEventListener("click", buttonClickHandler);
-                }
-                a.innerHTML = content;
-
                 li.appendChild(a);
-
                 return li;
             }
 
-            if (this.dataTable.elasticChunks) {
-                const pageIndex = this.pagination.page || 1;
+            let a: HTMLElement = document.createElement('span');
+            a.setAttribute('aria-hidden', 'true');
 
-                let ul = document.createElement('ul');
-                ul.className = `${prefix}pagination`;
+            a.className = `${prefix}page-link`;
 
-                let cell = renderPageCell(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
-                ul.appendChild(cell);
-
-                cell = renderPageCell(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
-                ul.appendChild(cell);
-
-                paginateDiv.appendChild(ul);
+            if (disabled) {
+                li.className += ' disabled';
             }
             else {
-                if (this.pagination.total > this.pagination.pageSize) {
-                    const pageIndex = this.pagination.page || 1;
-                    const pageCount = Math.ceil(this.pagination.total / this.pagination.pageSize) || 1;
+                if (this.paginationOptions.useBootstrap) {
+                    a = document.createElement('a');
+                    a.setAttribute('href', 'javascript:void(0)');
+                    a.setAttribute("data-page", `${pageIndex}`);
+                }
+                else {
+                    let newA = document.createElement('a');
+                    newA.setAttribute('href', 'javascript:void(0)');
+                    newA.setAttribute('data-page', `${pageIndex}`);
+                    a = newA;
+                }
+                a.className = `${prefix}page-link`;
+                a.addEventListener("click", buttonClickHandler);
+            }
+            a.innerHTML = content;
+            if (title) {
+                a.setAttribute("title", title)
+            }
+            li.appendChild(a);
 
-                    const maxButtonCount = this.paginationOptions.maxButtonCount || 10;
-                    const zeroBasedIndex = pageIndex - 1;
-                    let firstPageIndex = zeroBasedIndex - (zeroBasedIndex % maxButtonCount) + 1;
-                    let lastPageIndex = firstPageIndex + maxButtonCount - 1;
-                    if (lastPageIndex > pageCount) {
-                        lastPageIndex = pageCount;
+            return li;
+        }
+
+        const pageIndex = this.pagination.page || 1;
+        let ul = document.createElement('ul');
+        ul.className = `${prefix}pagination`;
+        ul.style.userSelect = 'none'
+        paginateDiv.appendChild(ul);
+
+        if (this.dataTable.elasticChunks) {
+            let cell = renderPaginationItem(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
+            ul.appendChild(cell);
+
+            cell = renderPaginationItem(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
+            ul.appendChild(cell);
+        } 
+        else {
+            if (totalPages > 10) {
+                ul.appendChild(renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false, "Jump left on 10 pages"));
+            }
+
+            ul.appendChild(renderPaginationItem(pageIndex - 1, '&lsaquo;', pageIndex == 1, true, false, "Prev Page"));
+
+            ul.appendChild(renderPaginationItem(1, '1', pageIndex == 1, false, pageIndex === 1));
+            
+            if (distance === 0 || totalPages <= 10) {
+                for (let i = 2; i < totalPages; i++) {
+                    ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
+                } 
+            } 
+            else {
+                if (pageIndex < distance) {
+                    for (let i = 2; i <= distance; i++) {
+                        ul.appendChild(renderPaginationItem(i, `${i}`, false, false, pageIndex === i));
                     }
 
-                    let ul = document.createElement('ul');
-                    ul.className = `${prefix}pagination`;
-
-                    let cell = renderPageCell(firstPageIndex - 1, '&laquo;', 
-                        firstPageIndex == 1, true, false);
-                    ul.appendChild(cell);
-
-                    for (let i = firstPageIndex; i <= lastPageIndex; i++) {
-                        cell = renderPageCell(i, i.toString(),
-                            false, false, i == pageIndex);
-                        ul.appendChild(cell);
+                    if (totalPages > distance) {
+                        ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+                    }
+                } 
+                else if (pageIndex <= totalPages && pageIndex > totalPages - distance + 1) {
+                    if (totalPages > distance) {
+                        ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                     }
 
-                    cell = renderPageCell(lastPageIndex + 1, '&raquo;', lastPageIndex == pageCount, true, false);
-                    ul.appendChild(cell);
+                    for (let i = totalPages - distance + 1; i < totalPages; i++) {
+                        ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
+                    }
+                } 
+                else {
+                    ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
 
-                    paginateDiv.appendChild(ul);
+                    // Island Left Side
+                    for(let i = islandSize; i > 0; i--) {
+                        ul.appendChild(renderPaginationItem(pageIndex - i, `${pageIndex - i}`, false, false, false))
+                    }
+                    
+                    // Center of Island
+                    ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, false, false, true))
+                    
+                    // Island Right Size
+                    for (let i = 1; i <= islandSize; i++) {
+                        ul.appendChild(renderPaginationItem(pageIndex + i, `${pageIndex + i}`, false, false, false))
+                    }
+
+                    ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                 }
             }
+            
+            if (totalPages > 1 || pageIndex < totalPages) {
+                ul.appendChild(renderPaginationItem(totalPages, `${totalPages}`, pageIndex === totalPages, false, pageIndex === totalPages))
+            } 
 
-            if (this.options.paging.allowPageSizeChange) {
-                const selectChangeHandler = (ev: Event) => {
-                    const newValue = parseInt((ev.target as HTMLOptionElement).value);
-                    this.pagination.pageSize = newValue;
-                    this.pagination.page = 1;
-                    this.refresh();
-                };
+            ul.appendChild(renderPaginationItem(pageIndex + 1, '&rsaquo;', pageIndex == totalPages, true, false, "Next Page"));
 
-                const pageSizes = document.createElement('div');
-                pageSizes.className = `${this.cssPrefix}-page-sizes`;
-
-                const selectSize = document.createElement('div');
-                selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
-                pageSizes.appendChild(selectSize);
-
-                const sel = document.createElement('select');
-                const selOptions = this.options.paging.pageSizeItems || [];
-                const selSet = new Set(selOptions);
-                selSet.add(this.options.paging.pageSize || 20);
-
-
-                Array.from(selSet).forEach(el => {
-                    const option = document.createElement("option");
-                    option.value = el.toString();
-                    option.text = el.toString();
-                    sel.appendChild(option);
-                });
-
-                sel.value = (this.pagination.pageSize || 20).toString();
-                selectSize.appendChild(sel);
-                sel.addEventListener('change', selectChangeHandler);
-
-                const labelDiv = document.createElement('div');
-                labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
-                pageSizes.appendChild(labelDiv);
-
-                const label = document.createElement('span');
-                label.innerText = i18n.getText('GridItemsPerPage');
-                labelDiv.appendChild(label);
-
-                paginateDiv.appendChild(pageSizes);
+            if (totalPages > 10) {
+                ul.appendChild(renderPaginationItem(pageIndex + 10, '&raquo;', pageIndex >= totalPages - 10, true, false, "Jump right on 10 pages"));
             }
-        }  
+
+        }
+
+        if (this.options.paging.allowPageSizeChange) {
+            const selectChangeHandler = (ev: Event) => {
+                const newValue = parseInt((ev.target as HTMLOptionElement).value);
+                this.pagination.pageSize = newValue;
+                this.pagination.page = 1;
+                this.refresh();
+            };
+
+            const pageSizes = document.createElement('div');
+            pageSizes.className = `${this.cssPrefix}-page-sizes`;
+
+            const selectSize = document.createElement('div');
+            selectSize.className = `kfrm-select ${this.cssPrefix}-page-sizes-select`;
+            pageSizes.appendChild(selectSize);
+
+            const sel = document.createElement('select');
+            const selOptions = this.options.paging.pageSizeItems || [];
+            const selSet = new Set(selOptions);
+            selSet.add(this.options.paging.pageSize || 20);
+
+
+            Array.from(selSet).forEach(el => {
+                const option = document.createElement("option");
+                option.value = el.toString();
+                option.text = el.toString();
+                sel.appendChild(option);
+            });
+
+            sel.value = (this.pagination.pageSize || 20).toString();
+            selectSize.appendChild(sel);
+            sel.addEventListener('change', selectChangeHandler);
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = `${this.cssPrefix}-page-sizes-label`;
+            pageSizes.appendChild(labelDiv);
+
+            const label = document.createElement('span');
+            label.innerText = i18n.getText('GridItemsPerPage');
+            labelDiv.appendChild(label);
+
+            paginateDiv.appendChild(pageSizes);
+        }
 
         return paginateDiv;
     }
