@@ -894,7 +894,6 @@ export class EasyGrid implements EasyGridBase {
                 : 0;
                 
             let totalStr = this.dataTable.getTotal().toString();
-
             if (this.dataTable.elasticChunks) {
                 const count = this.dataTable.getCachedCount();
                 const total = this.dataTable.getTotal();
@@ -1121,14 +1120,12 @@ export class EasyGrid implements EasyGridBase {
             if (title) {
                 a.setAttribute("title", title)
             }
-
             li.appendChild(a);
 
             return li;
         }
 
         const pageIndex = this.pagination.page || 1;
-
         let ul = document.createElement('ul');
         ul.className = `${prefix}pagination`;
         ul.style.userSelect = 'none'
@@ -1140,7 +1137,8 @@ export class EasyGrid implements EasyGridBase {
 
             cell = renderPaginationItem(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
             ul.appendChild(cell);
-        } else {
+        } 
+        else {
             if (totalPages > 10) {
                 ul.appendChild(renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false, "Jump left on 10 pages"));
             }
@@ -1153,7 +1151,8 @@ export class EasyGrid implements EasyGridBase {
                 for (let i = 2; i < totalPages; i++) {
                     ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
                 } 
-            } else {
+            } 
+            else {
                 if (pageIndex < distance) {
                     for (let i = 2; i <= distance; i++) {
                         ul.appendChild(renderPaginationItem(i, `${i}`, false, false, pageIndex === i));
@@ -1162,7 +1161,8 @@ export class EasyGrid implements EasyGridBase {
                     if (totalPages > distance) {
                         ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                     }
-                } else if (pageIndex <= totalPages && pageIndex > totalPages - distance + 1) {
+                } 
+                else if (pageIndex <= totalPages && pageIndex > totalPages - distance + 1) {
                     if (totalPages > distance) {
                         ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                     }
@@ -1170,7 +1170,8 @@ export class EasyGrid implements EasyGridBase {
                     for (let i = totalPages - distance + 1; i < totalPages; i++) {
                         ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
                     }
-                } else {
+                } 
+                else {
                     ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
 
                     // Island Left Side
@@ -1182,7 +1183,7 @@ export class EasyGrid implements EasyGridBase {
                     ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, false, false, true))
                     
                     // Island Right Size
-                    for(let i = 1; i <= islandSize; i++) {
+                    for (let i = 1; i <= islandSize; i++) {
                         ul.appendChild(renderPaginationItem(pageIndex + i, `${pageIndex + i}`, false, false, false))
                     }
 
