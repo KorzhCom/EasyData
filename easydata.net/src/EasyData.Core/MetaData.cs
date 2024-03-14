@@ -117,7 +117,6 @@ namespace EasyData
             nullEntity.Name = "";
 
             AddDefaultDisplayFormats();
-
         }
 
         /// <summary>
@@ -523,7 +522,7 @@ namespace EasyData
 
 
         /// <summary>
-        /// Inits the model loading.
+        /// Initializes the model loading.
         /// </summary>
         public virtual void InitModelLoading()
         {
@@ -912,10 +911,6 @@ namespace EasyData
         /// <returns>Task.</returns>
         protected virtual async Task WriteContentToJsonAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-
-            await writer.WritePropertyNameAsync("displayFormats", ct).ConfigureAwait(false);
-            await WriteDisplayFormatsToJsonAsync(writer, ct).ConfigureAwait(false);
-
             await WriteBasicNodesAsync(writer, rwOptions, ct).ConfigureAwait(false);
 
             await WriteEntitiesAsync(writer, rwOptions, ct).ConfigureAwait(false);
@@ -923,7 +918,6 @@ namespace EasyData
 
         protected virtual async Task WriteBasicNodesAsync(JsonWriter writer, BitOptions rwOptions, CancellationToken ct)
         {
-
             await writer.WritePropertyNameAsync("displayFormats", ct).ConfigureAwait(false);
             await WriteDisplayFormatsToJsonAsync(writer, ct).ConfigureAwait(false);
 

@@ -43,7 +43,7 @@ export interface EasyGridOptions {
     aggregates?: {
         showGrandTotalsOnEachPage?: boolean,
         settings: AggregationSettings,
-        calculator: AggregatesCalculator
+        calculatorRef: AggregatesCalculator
     },
     showPlusButton?: boolean;
     plusButtonTitle?: string;

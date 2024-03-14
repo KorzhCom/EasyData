@@ -74,7 +74,7 @@ export class EasyGrid implements EasyGridBase {
         allowDragDrop: false,
         aggregates: {
             settings: null,
-            calculator: null
+            calculatorRef: null
         },
         paging: {
             enabled: true,
@@ -710,7 +710,7 @@ export class EasyGrid implements EasyGridBase {
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
         
-        const aggrContainer = this.options.aggregates.calculator.getAggrContainer();
+        const aggrContainer = this.options.aggregates.calculatorRef.getAggrContainer();
         const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
 
         const key = aggrSettings.buildGroupKey(group, row);
