@@ -1049,6 +1049,7 @@ namespace EasyData
                     await Editors.ReadFromJsonAsync(reader, ct).ConfigureAwait(false);
                     break;
                 case "dataFormats":
+                case "displayFormats":
                     await reader.ReadAsync(ct).ConfigureAwait(false); //reading StartObject token
                     await ReadDisplayFormatsFromJsonAsync(reader, ct).ConfigureAwait(false);
                     break;
@@ -1071,7 +1072,7 @@ namespace EasyData
                 var formatType = reader.Value.ToString().StrToDataType();
 
                 await reader.ReadAsync(ct).ConfigureAwait(false);
-                if (reader.TokenType != JsonToken.StartArray) {
+                if (reader.TokenType == JsonToken.StartArray) {
                     while ((await reader.ReadAsync(ct).ConfigureAwait(false))
                         && reader.TokenType != JsonToken.EndArray)
                     {

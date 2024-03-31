@@ -45,6 +45,11 @@ namespace EasyData
                 desc = new DisplayFormatDescriptor(name, format);
                 desc.IsDefault = isDefault;
                 if (_dict.TryGetValue(type, out var formats)) {
+                    if (isDefault) {
+                        foreach (var fmt in formats) {
+                            fmt.IsDefault = false;
+                        }
+                    }
                     formats.Add(desc);
                 }
                 else {
