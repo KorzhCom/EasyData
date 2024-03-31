@@ -430,9 +430,6 @@ export namespace i18n {
             else if (format == 'u') {
                 format = buildUniversalDateTimeFormat(dataType);
             }
-            else {
-                format = buildUniversalDateTimeFormat(dataType);
-            }
         }
         else {
             format = buildShortDateTimeFormat(dataType);
