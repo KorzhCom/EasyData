@@ -12,11 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.1.0-preview-2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
   </ItemGroup>
+
   
 </Project>

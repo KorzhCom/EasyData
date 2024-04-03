@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
+using PdfSharp.Fonts;
+using PdfSharp.Snippets.Font;
 
 namespace EasyData.Export
 {
@@ -87,12 +89,15 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
+            if (PdfSharp.Capabilities.Build.IsCoreBuild)
+                GlobalFontSettings.FontResolver = new FailsafeFontResolver();
+
             var pdfSettings = MapSettings(settings);
 
             var document = new Document();
             document.Info.Title = pdfSettings.Title;
-            document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
-            document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
+            //document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
+            //document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
 
             ApplyStyles(document, pdfSettings);
 
@@ -262,7 +267,7 @@ namespace EasyData.Export
             }
 
             // rendering pdf
-            var pdfRenderer = new PdfDocumentRenderer(true);
+            var pdfRenderer = new PdfDocumentRenderer(); // (true);
             pdfRenderer.Document = document;
             pdfRenderer.RenderDocument();
 
@@ -359,7 +364,7 @@ namespace EasyData.Export
 
             // Create a new style called Table based on style Normal
             style = document.Styles.AddStyle("Table", "Normal");
-            style.Font.Name = "Verdana";
+            //style.Font.Name = "Verdana";
             style.Font.Name = "Times New Roman";
             style.Font.Size = 9;
 
