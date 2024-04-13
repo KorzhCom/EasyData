@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace EasyData.Export
 {
@@ -158,12 +159,17 @@ namespace EasyData.Export
 
                     var excelDataType = XLDataType.Text;
                     if (value != null) {
-                        if (!isExtraRow) {
+                        if (isExtraRow) {
+                            if (!string.IsNullOrEmpty(groupFooterTemplate)) {
+                                var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
+                                value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
+                            }
+                            else { 
+                                excelDataType = DataUtils.IsNumber(value) ? XLDataType.Number : XLDataType.Text;
+                            }
+                        } 
+                        else {
                             excelDataType = MapDataType(column.DataType);
-                        }
-                        else if (!string.IsNullOrEmpty(groupFooterTemplate)) {
-                            var formattedValue = DataFormatUtils.GetFormattedValue(row[i], column.DataType, settings.Culture, dfmt);
-                            value = ExportHelpers.ApplyGroupFooterColumnTemplate(groupFooterTemplate, formattedValue, extraData);
                         }
                     }
 
