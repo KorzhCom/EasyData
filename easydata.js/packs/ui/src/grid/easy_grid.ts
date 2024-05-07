@@ -1,5 +1,5 @@
-import { 
-    EventEmitter, EasyDataTable, 
+import {
+    EventEmitter, EasyDataTable,
     DataRow, utils, i18n, DataType,
     DataGroup
 } from '@easydata/core';
@@ -9,9 +9,9 @@ import { domel } from '../utils/dom_elem_builder';
 import { getElementAbsolutePos, eqCssPrefix } from '../utils/ui-utils';
 
 import { EasyGridOptions, AutoResizeColumns } from './easy_grid_options';
-import { 
-    GridEventType, GridEvent, 
-    ColumnMovedEvent, 
+import {
+    GridEventType, GridEvent,
+    ColumnMovedEvent,
     RowClickEvent,
     AddColumnClickEvent as PlusButtonClickEvent,
     PageChangedEvent,
@@ -123,7 +123,7 @@ export class EasyGrid implements EasyGridBase {
             options.paging = utils.assign(this.defaultDataGridOptions.paging,
                 options.paging);
         }
-     
+
         this.options = this.mergeOptions(options);
         this.processColumnWidthsOptions();
 
@@ -149,11 +149,11 @@ export class EasyGrid implements EasyGridBase {
         const pagingOptions = utils.assignDeep({}, this.defaultDataGridOptions.paging, options.paging);
 
         const result: EasyGridOptions = utils.assign({}, this.defaultDataGridOptions, options);
-        
+
         result.aggregates = aggrOptions;
         result.columnWidths = colWidthOptions;
         result.paging = pagingOptions;
-        
+
         return result;
     }
 
@@ -203,11 +203,11 @@ export class EasyGrid implements EasyGridBase {
                 }
                 else if (slot[0] === '.') {
                     const result = document.getElementsByClassName(slot.substring(1));
-                    if (result.length) 
+                    if (result.length)
                         this.slot = result[0] as HTMLElement;
                 }
                 else {
-                    throw Error('Unrecognized slot parameter ' + 
+                    throw Error('Unrecognized slot parameter ' +
                     '(Must be id, class or HTMLElement): ' + slot);
                 }
             }
@@ -260,7 +260,7 @@ export class EasyGrid implements EasyGridBase {
             eqDragManager.registerDropContainer({
                 element: this.slot,
                 scopes: ["gridColumnMove"],
-                onDragEnter: (_, ev) => {  
+                onDragEnter: (_, ev) => {
                     this.slot.classList.add(`${eqCssPrefix}-drophover`);
                     this.showLandingSlot(ev.pageX, ev.pageY);
                 },
@@ -289,8 +289,8 @@ export class EasyGrid implements EasyGridBase {
         this.fireEvent('init');
     }
 
-    /** Fires a grid event. You can pass either an event type 
-     * (like 'init', 'rowClick', 'pageChanged', etc ) 
+    /** Fires a grid event. You can pass either an event type
+     * (like 'init', 'rowClick', 'pageChanged', etc )
      * or a ready-to-use grid event object
      * */
     public fireEvent(event: GridEvent | GridEventType) {
@@ -347,7 +347,7 @@ export class EasyGrid implements EasyGridBase {
 
     /** Renders the grid */
     protected render() {
-        if (!this.hasData() && !this.options.showPlusButton) 
+        if (!this.hasData() && !this.options.showPlusButton)
             return;
 
         this.containerInitialHeight = this.slot.clientHeight;
@@ -363,7 +363,7 @@ export class EasyGrid implements EasyGridBase {
 
         this.renderBody();
         this.rootDiv.appendChild(this.bodyDiv);
-    
+
         this.renderFooter();
         this.rootDiv.appendChild(this.footerDiv);
 
@@ -392,7 +392,7 @@ export class EasyGrid implements EasyGridBase {
                         this.resizeColumns();
                     }
                 });
-            }, 100);    
+            }, 100);
         }
     }
 
@@ -405,7 +405,7 @@ export class EasyGrid implements EasyGridBase {
                 let viewportHeight = rowHeight * rowCount;
                 domel(this.bodyViewportDiv)
                     .setStyle('height', `${viewportHeight}px`);
-    
+
                 setTimeout(() => {
                     const sbHeight = this.bodyViewportDiv.offsetHeight - this.bodyViewportDiv.clientHeight;
                     viewportHeight = viewportHeight + sbHeight;
@@ -429,7 +429,7 @@ export class EasyGrid implements EasyGridBase {
             if (this.options.fixHeightOnFirstRender && this.firstRender) {
                 this.slot.style.height = `${this.slot.offsetHeight}px`
             }
-        });        
+        });
     }
 
     protected getContainerWidth() : number {
@@ -455,25 +455,25 @@ export class EasyGrid implements EasyGridBase {
             this.headerRowDiv = domel('div', this.headerCellContainerDiv)
             .addClass(`${this.cssPrefix}-header-row`)
             .toDOM();
-            
+
             this.columns.getItems().forEach((column, index) => {
                 if (!column.isVisible) {
                     return;
                 }
-    
+
                 let hd = this.renderColumnHeader(column, index);
                 this.headerRowDiv.appendChild(hd);
-    
+
                 if (column.isRowNum) {
                     domel(hd)
                         .addChildElement(this.renderHeaderButtons());
                 }
-            }); 
+            });
 
         const containerWidth = this.getContainerWidth();
         domel(this.headerCellContainerDiv)
             .setStyle('width', `${containerWidth}px`)
-    
+
     }
 
     protected hasData(): boolean {
@@ -491,7 +491,7 @@ export class EasyGrid implements EasyGridBase {
                 .data('col-id', `${column.dataColumn.id}`)
         }
 
-        let colDiv = colBuilder.toDOM(); 
+        let colDiv = colBuilder.toDOM();
 
         domel('div', colDiv)
             .addClass(`${this.cssPrefix}-header-cell-resize`)
@@ -507,7 +507,7 @@ export class EasyGrid implements EasyGridBase {
                 .addClass('question-mark')
                 .title(column.description);
         }
-        
+
         if (this.options.allowDragDrop) {
             eqDragManager.registerDraggableItem({
                 element: colDiv,
@@ -519,7 +519,7 @@ export class EasyGrid implements EasyGridBase {
                     const attrLabel = document.createElement('div');
                     attrLabel.innerText = column.label;
                     dragImage.classList.add(`${this.cssPrefix}-sortable-helper`);
-                    
+
                     dragImage.appendChild(attrLabel);
                 },
                 onDragStart: (ev) => {
@@ -528,7 +528,7 @@ export class EasyGrid implements EasyGridBase {
             });
         }
 
-        return colDiv; 
+        return colDiv;
     }
 
     protected renderBody() {
@@ -550,7 +550,7 @@ export class EasyGrid implements EasyGridBase {
         if (this.dataTable) {
             this.showProgress();
             this.rowsOnPagePromise = this.getRowsToRender()
-                .then((rows) => { 
+                .then((rows) => {
                     this.pagination.total = this.dataTable.getTotal();
 
                     this.hideProgress();
@@ -560,17 +560,17 @@ export class EasyGrid implements EasyGridBase {
 
                     this.prevRowTotals = null;
 
-                    let rowsToRender = 0;                            
+                    let rowsToRender = 0;
                     if (rows.length) {
-                        const groups = showAggrs 
-                            ? this.options.aggregates.settings.getGroups() 
+                        const groups = showAggrs
+                            ? this.options.aggregates.settings.getGroups()
                             : [];
-                            
+
 
                         rowsToRender = (rows.length < this.pagination.pageSize)
                                 ? rows.length
                                 : this.pagination.pageSize;
-                                
+
                         rows.forEach((row, index) => {
                             if (showAggrs)
                                 this.updateTotalsState(groups, row);
@@ -578,10 +578,10 @@ export class EasyGrid implements EasyGridBase {
                             //we don't actually render the last row
                             if (index < rowsToRender) {
                                 const tr = this.renderRow(row, index);
-                                this.bodyCellContainerDiv.appendChild(tr);    
-                            }    
+                                this.bodyCellContainerDiv.appendChild(tr);
+                            }
                         });
-    
+
                         const showGrandTotalsOnEachPage = this.options.aggregates && this.options.aggregates.showGrandTotalsOnEachPage;
                         if (showAggrs && (this.isLastPage() || showGrandTotalsOnEachPage)) {
                             const row = new DataRow(this.dataTable.columns, new Array(this.dataTable.columns.count));
@@ -596,7 +596,7 @@ export class EasyGrid implements EasyGridBase {
                     else {
                         const containerWidth = this.getContainerWidth();
                         domel(this.bodyCellContainerDiv)
-                            .setStyle('width', `${containerWidth}px`);                    
+                            .setStyle('width', `${containerWidth}px`);
                     }
 
                     return rowsToRender;
@@ -626,8 +626,8 @@ export class EasyGrid implements EasyGridBase {
             return false;
 
         const aggrSettings = this.options.aggregates.settings;
-        const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount()) 
-                        && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals()); 
+        const result = (aggrSettings.hasAggregates() || aggrSettings.hasRecordCount())
+                        && (aggrSettings.hasGroups() || aggrSettings.hasGrandTotals());
         return result;
     }
 
@@ -649,10 +649,10 @@ export class EasyGrid implements EasyGridBase {
                 if (changeLevel !== -1)
                     break;
             }
-          
+
             if (changeLevel !== -1) {
                 for (let level = groups.length; level >= changeLevel; level--) {
-                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());                    
+                    const row = new DataRow(this.dataTable.columns, this.prevRowTotals.toArray());
                     const tr = this.renderTotalsRow(level, row);
                     this.bodyCellContainerDiv.appendChild(tr);
                 }
@@ -702,14 +702,14 @@ export class EasyGrid implements EasyGridBase {
                     val = row.getValue(colIndex);
                 };
             }
-                           
+
             if (colIndex == this.dataTable.columns.count - 1) {
                 val = '.  .  .  .  .  .'
             }
 
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
-        
+
         const aggrContainer = this.options.aggregates.calculatorRef.getAggrContainer();
         const aggrCols = aggrSettings.getAggregates().map(c => c.colId);
 
@@ -727,12 +727,12 @@ export class EasyGrid implements EasyGridBase {
                     if (!column.isVisible) {
                         return;
                     }
-        
+
                     let val = '';
                     const colIndex = !column.isRowNum
                         ? this.dataTable.columns.getIndex(column.dataColumn.id)
                         : -1;
-    
+
                     if (!column.isRowNum) {
                         let isLastGroupColumn = false;
                         if (column.dataColumn) {
@@ -740,7 +740,7 @@ export class EasyGrid implements EasyGridBase {
                             const aggrColIndex = aggrCols.indexOf(column.dataColumn.id);
                             if (level > 0) {
                                 isLastGroupColumn = groupColIndex == group.columns.length - 1;
-                            } 
+                            }
                             else {
                                 //if it's a grand total row consider first column as the last group column
                                 isLastGroupColumn = colIndex == 0;
@@ -750,16 +750,16 @@ export class EasyGrid implements EasyGridBase {
                                 val = row.getValue(colIndex);
                             };
                         }
-           
+
                         let groupFooterTemplate = '';
-                        
+
                         if (level > 0) {
-                            groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;  
+                            groupFooterTemplate = column.dataColumn.groupFooterColumnTemplate;
                             //set the default template for the last grouping column
                             if (!groupFooterTemplate && aggrSettings.hasRecordCount() && isLastGroupColumn) {
                                 groupFooterTemplate = '{{GroupValue}} ({{GroupCount}})';
                             }
-                        } 
+                        }
 
                         if (groupFooterTemplate) {
                             const cellDiv = this.renderCell(column, index, val, rowElement);
@@ -767,14 +767,14 @@ export class EasyGrid implements EasyGridBase {
                             val = innerCell.innerHTML;
                             val = this.applyGroupColumnTemplate(groupFooterTemplate, val, values[aggrSettings.COUNT_FIELD_NAME]);
                         }
-                    }    
+                    }
 
                     const cellDiv = this.renderCell(column, index, val, rowElement);
                     rowElement.appendChild(cellDiv);
                 });
             })
             .catch((error) => console.error(error));
-        
+
         return rowElement;
     }
 
@@ -790,12 +790,12 @@ export class EasyGrid implements EasyGridBase {
                 case 'ArrowUp':
                     ev.preventDefault();
                     newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? rowCount - 1 : this.activeRowIndex - 1;
-                    this.activeRowIndex = newValue >= 0 ? newValue : 0; 
+                    this.activeRowIndex = newValue >= 0 ? newValue : 0;
                     break;
                 case 'ArrowDown':
                     ev.preventDefault();
                     newValue = this.activeRowIndex < 0 || this.activeRowIndex >= rowCount ? 0 : this.activeRowIndex + 1;
-                    this.activeRowIndex = newValue < rowCount ? newValue : rowCount - 1; 
+                    this.activeRowIndex = newValue < rowCount ? newValue : rowCount - 1;
                     break;
             }
         }
@@ -806,7 +806,7 @@ export class EasyGrid implements EasyGridBase {
             ? this.getDataRow(rowOrIndex)
             : rowOrIndex;
 
-        if (row) { 
+        if (row) {
             let rowRect = row.getBoundingClientRect();
             const viewportRect = this.bodyViewportDiv.getBoundingClientRect();
 
@@ -815,11 +815,11 @@ export class EasyGrid implements EasyGridBase {
             const viewportHeight = this.bodyViewportDiv.clientHeight;
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 
-            if (rowTop > 0 && 
-                rowBottom <= viewportHeight && 
+            if (rowTop > 0 &&
+                rowBottom <= viewportHeight &&
                 rowRect.top > 0 &&
                 rowRect.bottom < windowHeight) {
-            
+
                     return;
             }
 
@@ -843,15 +843,15 @@ export class EasyGrid implements EasyGridBase {
 
 
     /** Returns a promise with the list of the rows to render on one page.
-     * The list contains pageSize+1 row to make it possible 
-     * to render the totals row (if it appears to be on the edge between pages) 
+     * The list contains pageSize+1 row to make it possible
+     * to render the totals row (if it appears to be on the edge between pages)
      */
     private getRowsToRender():Promise<DataRow[]> {
         if (this.options.paging.enabled === false) {
             return Promise.resolve(this.dataTable.getCachedRows());
         }
 
-        return this.dataTable.getRows({ 
+        return this.dataTable.getRows({
             offset: (this.pagination.page - 1) * this.pagination.pageSize,
             limit: this.pagination.pageSize + 1
         })
@@ -865,7 +865,7 @@ export class EasyGrid implements EasyGridBase {
         this.footerDiv = domel('div')
                     .addClass(`${this.cssPrefix}-footer`)
                     .toDOM();
-        
+
         if (this.rowsOnPagePromise) {
             this.rowsOnPagePromise.then(count => {
                 this.footerDiv.innerHTML = '';
@@ -875,7 +875,7 @@ export class EasyGrid implements EasyGridBase {
                 const pageInfoBlock = this.renderPageInfoBlock(count);
                 this.footerDiv.appendChild(pageInfoBlock);
             });
-        }   
+        }
     }
 
     protected renderPageInfoBlock(count: number): HTMLDivElement {
@@ -885,14 +885,14 @@ export class EasyGrid implements EasyGridBase {
 
         const rowCount = this.dataTable.getTotal();
         if (rowCount > 0) {
-            const fistPageRecordNum = count 
-                ? (this.pagination.page - 1) * this.pagination.pageSize + 1 
+            const fistPageRecordNum = count
+                ? (this.pagination.page - 1) * this.pagination.pageSize + 1
                 : 0;
 
-            const lastPageRecordNum = count 
-                ? fistPageRecordNum + count - 1 
+            const lastPageRecordNum = count
+                ? fistPageRecordNum + count - 1
                 : 0;
-                
+
             let totalStr = this.dataTable.getTotal().toString();
             if (this.dataTable.elasticChunks) {
                 const count = this.dataTable.getCachedCount();
@@ -944,7 +944,7 @@ export class EasyGrid implements EasyGridBase {
                 .attr('tabindex', '-1')
                 .on('click', (ev) => {
                     this.activeRowIndex = index;
- 
+
                     this.fireEvent({
                         type: 'rowClick',
                         row:  row,
@@ -960,7 +960,7 @@ export class EasyGrid implements EasyGridBase {
                         sourceEvent: ev
                     } as RowClickEvent)
                 });
-        
+
         if (index == 0) {
             rowBuilder.addClass(`${this.cssPrefix}-row-first`);
         }
@@ -981,7 +981,7 @@ export class EasyGrid implements EasyGridBase {
 
             rowElement.appendChild(this.renderCell(column, index, val, rowElement));
         });
-        
+
         return rowElement;
     }
 
@@ -1066,10 +1066,10 @@ export class EasyGrid implements EasyGridBase {
         };
 
         const renderPaginationItem = (
-            pageIndex: number, 
+            pageIndex: number,
             content?: string,
-            disabled?: boolean, 
-            extreme?: boolean, 
+            disabled?: boolean,
+            extreme?: boolean,
             active?: boolean,
             title?: string
         ): HTMLElement => {
@@ -1135,9 +1135,18 @@ export class EasyGrid implements EasyGridBase {
             let cell = renderPaginationItem(pageIndex - 1, '&laquo;', pageIndex == 1, true, false);
             ul.appendChild(cell);
 
+            if (pageIndex === 1) {
+                ul.appendChild(renderPaginationItem(1, '1', true, false, true));
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+            } else {
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+                ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, true, false, true));
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+            }
+
             cell = renderPaginationItem(pageIndex + 1, '&raquo;', this.isLastPage(), true, false);
             ul.appendChild(cell);
-        } 
+        }
         else {
             if (totalPages > 10) {
                 ul.appendChild(renderPaginationItem(pageIndex - 10, '&laquo;', pageIndex <= 10, true, false, "Jump left on 10 pages"));
@@ -1146,12 +1155,12 @@ export class EasyGrid implements EasyGridBase {
             ul.appendChild(renderPaginationItem(pageIndex - 1, '&lsaquo;', pageIndex == 1, true, false, "Prev Page"));
 
             ul.appendChild(renderPaginationItem(1, '1', pageIndex == 1, false, pageIndex === 1));
-            
+
             if (distance === 0 || totalPages <= 10) {
                 for (let i = 2; i < totalPages; i++) {
                     ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
-                } 
-            } 
+                }
+            }
             else {
                 if (pageIndex < distance) {
                     for (let i = 2; i <= distance; i++) {
@@ -1161,7 +1170,7 @@ export class EasyGrid implements EasyGridBase {
                     if (totalPages > distance) {
                         ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                     }
-                } 
+                }
                 else if (pageIndex <= totalPages && pageIndex > totalPages - distance + 1) {
                     if (totalPages > distance) {
                         ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
@@ -1170,7 +1179,7 @@ export class EasyGrid implements EasyGridBase {
                     for (let i = totalPages - distance + 1; i < totalPages; i++) {
                         ul.appendChild(renderPaginationItem(i, `${i}`, pageIndex === i, false, pageIndex === i));
                     }
-                } 
+                }
                 else {
                     ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
 
@@ -1178,10 +1187,10 @@ export class EasyGrid implements EasyGridBase {
                     for(let i = islandSize; i > 0; i--) {
                         ul.appendChild(renderPaginationItem(pageIndex - i, `${pageIndex - i}`, false, false, false))
                     }
-                    
+
                     // Center of Island
                     ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, false, false, true))
-                    
+
                     // Island Right Size
                     for (let i = 1; i <= islandSize; i++) {
                         ul.appendChild(renderPaginationItem(pageIndex + i, `${pageIndex + i}`, false, false, false))
@@ -1190,10 +1199,10 @@ export class EasyGrid implements EasyGridBase {
                     ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                 }
             }
-            
+
             if (totalPages > 1 || pageIndex < totalPages) {
                 ul.appendChild(renderPaginationItem(totalPages, `${totalPages}`, pageIndex === totalPages, false, pageIndex === totalPages))
-            } 
+            }
 
             ul.appendChild(renderPaginationItem(pageIndex + 1, '&rsaquo;', pageIndex == totalPages, true, false, "Next Page"));
 
@@ -1261,10 +1270,10 @@ export class EasyGrid implements EasyGridBase {
     public addEventListener(eventType: GridEventType | string, handler: (data: any) => void): string {
         return this.eventEmitter.subscribe(eventType, event => handler(event.data));
     }
-    
+
     public removeEventListener(eventType: string, handlerId: string) {
         this.eventEmitter.unsubscribe(eventType, handlerId);
-    } 
+    }
 
     protected renderHeaderButtons(): HTMLElement {
         if (this.options.showPlusButton) {
@@ -1274,7 +1283,7 @@ export class EasyGrid implements EasyGridBase {
                 .addChild('a', builder => builder
                     .attr('href', 'javascript:void(0)')
                     .on('click', (e) => {
-                        e.preventDefault();   
+                        e.preventDefault();
                         this.fireEvent({
                             type: 'plusButtonClick',
                             sourceEvent: e
@@ -1297,7 +1306,7 @@ export class EasyGrid implements EasyGridBase {
                     domel('div')
                     .toDOM())
                 .toDOM();
-    
+
     private showLandingSlot(pageX: number, pageY: number) {
         const colElems = this.headerRowDiv.querySelectorAll(`[class*=${this.cssPrefix}-table-col]`) as NodeListOf<HTMLElement>;
         const cols: HTMLElement[] = [];
@@ -1412,7 +1421,7 @@ export class EasyGrid implements EasyGridBase {
 
         //this.headerRowDiv.style.visibility = 'hidden';
         this.headerRowDiv.style.width = '1px';
-        
+
         let sumWidth = 0;
         const columns = this.columns.getItems();
         const headerCells = this.headerCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-header-cell`);
@@ -1422,12 +1431,12 @@ export class EasyGrid implements EasyGridBase {
             const column = columns[idx];
             if (!column.isVisible) continue;
 
-            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && column.dataColumn 
-                        ? column.dataColumn.calculatedWidth 
+            const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && column.dataColumn
+                        ? column.dataColumn.calculatedWidth
                         : 0;
 
             const cellValues = this.bodyCellContainerDiv.querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"] > .${this.cssPrefix}-cell-value`);
-            
+
             let maxWidth = 0;
 
             if (calculatedWidth > 0) {
@@ -1458,17 +1467,17 @@ export class EasyGrid implements EasyGridBase {
 
                     maxWidth += 3;
 
-                    const maxOption = column.isRowNum 
-                            ? this.options.columnWidths.rowNumColumn.max || 500 
+                    const maxOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.max || 500
                             : this.options.columnWidths[column.dataColumn.type].max || 2000;
 
-                    const minOption = column.isRowNum 
-                            ? this.options.columnWidths.rowNumColumn.min || 0 
+                    const minOption = column.isRowNum
+                            ? this.options.columnWidths.rowNumColumn.min || 0
                             : this.options.columnWidths[column.dataColumn.type].min || 20;
 
                     if (maxWidth > maxOption) {
                         maxWidth = maxOption;
-                    }                
+                    }
 
                     if (maxWidth < minOption) {
                         maxWidth = minOption;
