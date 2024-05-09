@@ -1136,9 +1136,25 @@ export class EasyGrid implements EasyGridBase {
             ul.appendChild(cell);
 
             if (pageIndex === 1) {
+                // [<][1]...[>]
                 ul.appendChild(renderPaginationItem(1, '1', true, false, true));
+                ul.appendChild(renderPaginationItem(2, '2', false, false, true));
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+            } else if (pageIndex === 2) {
+                // [<][1][2][3]...[>]
+                ul.appendChild(renderPaginationItem(1, `1`, false, false, true));
+                ul.appendChild(renderPaginationItem(2, `2`, true, false, true));
+                ul.appendChild(renderPaginationItem(3, `3`, false, false, true));
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+            } else if (pageIndex >- 3) {
+                // [<]...[2][3][4]...[>]
+                ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
+                ul.appendChild(renderPaginationItem(pageIndex - 1, `${pageIndex - 1}`, true, false, true));
+                ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, true, false, true));
+                ul.appendChild(renderPaginationItem(pageIndex + 1, `${pageIndex + 1}`, true, false, true));
                 ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
             } else {
+                // [<]...[x]...[>]
                 ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
                 ul.appendChild(renderPaginationItem(pageIndex, `${pageIndex}`, true, false, true));
                 ul.appendChild(renderPaginationItem(-1, `...`, true, true, false))
