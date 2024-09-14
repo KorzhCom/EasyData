@@ -9,12 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Korzh.DbUtils.Import" Version="1.4.1" />
     <PackageReference Include="Korzh.DbUtils.SqlServer" Version="1.4.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.19">
+		<PackageReference Include="Korzh.DbUtils.Sqlite" Version="1.4.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.19">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.19" />
-  </ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.19" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\easydata.net\src\EasyData.AspNetCore\EasyData.AspNetCore.csproj" />
