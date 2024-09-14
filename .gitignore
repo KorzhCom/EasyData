@@ -392,3 +392,6 @@ docs2
 /playground/EasyDataAspNetCoreTest01/wwwroot/js/easydata-all.js
 /playground/EasyDataAspNetCoreTest01/wwwroot/js/easydata-all.min.js
 easydata.js/.npmrc
+/playground/EasyDataAspNetCoreTest01/eqdemo-sqlite.db
+/playground/EasyDataAspNetCoreTest01/eqdemo-sqlite.db-shm
+/playground/EasyDataAspNetCoreTest01/eqdemo-sqlite.db-wal
