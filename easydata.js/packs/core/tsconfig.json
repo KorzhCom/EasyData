@@ -19,7 +19,7 @@
 		"outDir": "./dist/types",
 		"noEmitOnError": true,
 		"esModuleInterop": true,
-		"incremental": true
+		"incremental": true,
 	},
 	"include": [
 		"./src/**/*.ts"
