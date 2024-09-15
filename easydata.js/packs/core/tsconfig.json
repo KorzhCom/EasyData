@@ -1,4 +1,5 @@
 {
+	"$schema": "https://json.schemastore.org/tsconfig",
 	"compileOnSave": false,
 	"compilerOptions": {	
 		"noImplicitAny": false,
@@ -16,8 +17,10 @@
 		"lib": ["ESNext", "dom"],
 		"baseUrl": ".",
 		"outDir": "./dist/types",
-		"noEmitOnError": true
-	  },
+		"noEmitOnError": true,
+		"esModuleInterop": true,
+		"incremental": true
+	},
 	"include": [
 		"./src/**/*.ts"
 	],

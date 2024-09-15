@@ -1,0 +1,134 @@
+import {describe, it, beforeEach} from "node:test"
+import * as assert from "node:assert/strict"
+import { JSDOM } from "jsdom"
+import { utils } from "../src/public_api";
+
+describe(`Test assign methods`, () => {
+    beforeEach(()=>{
+        const dom = new JSDOM()
+        globalThis.document = dom.window.document
+        globalThis.HTMLElement = dom.window.HTMLElement
+    })
+
+    it(`assign()`, () => {
+        let object1 = {
+            data: "Hello",
+            val: "test"
+        };
+
+        let object2 = {
+            data: "why",
+            prop: "hello",
+        };
+
+        let object3 = {
+            column: "test"
+        };
+
+        let result = utils.assign(object1, object2, object3);
+
+        assert.deepStrictEqual(result, {
+            data: "why",
+            val: "test",
+            prop: "hello",
+            column: "test"
+        });
+    })
+
+    it(`assignDeep() -> Fields`, () => {
+        let object1 = {
+            data: {
+                get: "bla",
+                set: "kek"
+            },
+            val: "test",
+        };
+
+        let object2: any = {
+            data: {
+                get: "why"
+            },
+            prop: "hello",
+        };
+
+        let object3 = {
+            data: {
+                set: "ohh"
+            },
+            column: "test"
+        };
+
+        let result = utils.assignDeep(object1, object2, object3);
+
+        assert.deepStrictEqual(result, {
+            data: {
+                get: "why",
+                set: "ohh"
+            },
+            val: "test",
+            prop: "hello",
+            column: "test"
+        });
+    })
+
+    it(`assignDeep() -> Refs`, () => {
+        const source = {
+            scalar: 'value',
+            refObject: {
+                nested: 'nestedValue',
+                array: [1, 2, 3],
+                html: document.createElement('div'),
+            },
+            refArray: [{nested: 'nestedValue'}, 1, 'two'],
+            refArrayRef: [{nested: 'nestedValueRef'}, 1, 'two'],
+            htmlRef: document.createElement('div'),
+        };
+
+        // @ts-ignore
+        source.refArray[3] = source.refArray;
+
+        const target = utils.assignDeep({}, source);
+
+        assert.deepStrictEqual(target, source);
+    })
+
+    it(`assignDeep() -> Array`, () => {
+        let object1 = {
+            arr: [
+                {
+                    data: {
+                        get: "bla",
+                        set: "kek"
+                    }
+                }
+            ]
+        }
+
+        let object2 = {
+            arr: [
+                {
+                    data: {
+                        get: "why"
+                    }
+                }
+            ]
+
+        }
+
+        utils.assignDeep(object1, object2);
+
+        assert.strictEqual(object1.arr[0].data.get, object2.arr[0].data.get);
+    })
+
+    it(`assignDeep() -> circular`, () => {
+        const a = {b: null};
+        const b = {a: null};
+
+        a.b = b;
+        b.a = a;
+
+        const result = utils.assignDeep({}, a);
+
+        assert.deepStrictEqual(result.b.a, a);
+    })
+})

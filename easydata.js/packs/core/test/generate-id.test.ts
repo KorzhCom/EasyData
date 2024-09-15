@@ -1,8 +1,8 @@
-import { expect, test } from 'vitest'
-import {utils} from "../src/public_api";
+import {test} from "node:test"
+import * as assert from "node:assert/strict"
+import { utils } from "../src/public_api";
 
-// @ts-ignore
-test('Generate ID', async () => {
+test(`generateId()`, async () => {
     const array = []
 
     const gen_pack = () => {
@@ -28,5 +28,5 @@ test('Generate ID', async () => {
     // @ts-ignore
     const test = new Set(array)
 
-    expect(array.length).toEqual(test.size)
-}, 20000)
+    assert.strictEqual(test.size, array.length);
+})
