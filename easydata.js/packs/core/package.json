@@ -6,11 +6,11 @@
     "main": "./dist/easydata.core.cjs.js",
     "module": "./dist/easydata.core.esm.js",
     "scripts": {
-        "clear": "shx rm -rf dist/* docs/*",
-        "build": "npm run clear && rollup -c",
+        "clean": "shx rm -rf dist/* docs/*",
+        "build": "npm run clean && rollup -c",
         "watch": "rollup -c -w",
         "docs": "typedoc src/public_api.ts --out ./docs",
-        "test": "node --require tsx/cjs --test test/**/*.ts"
+        "test": "node --require tsx/cjs --test __tests__/**/*.ts"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",

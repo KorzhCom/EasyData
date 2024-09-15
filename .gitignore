@@ -386,6 +386,7 @@ playground/EasyDataAspNetCoreTest01/wwwroot/js/dashboard.js.map
 dist2
 docs2
 .nx
+*.cache
 /playground/EasyDataAspNetCoreTest01/wwwroot/js/easydata.min.js
 /playground/EasyDataAspNetCoreTest03/wwwroot/css
 /playground/EasyDataAspNetCoreTest03/wwwroot/js

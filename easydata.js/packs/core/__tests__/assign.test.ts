@@ -1,15 +1,9 @@
 import {describe, it, beforeEach} from "node:test"
 import * as assert from "node:assert/strict"
-import { JSDOM } from "jsdom"
+import 'global-jsdom/register'
 import { utils } from "../src/public_api";
 
 describe(`Test assign methods`, () => {
-    beforeEach(()=>{
-        const dom = new JSDOM()
-        globalThis.document = dom.window.document
-        globalThis.HTMLElement = dom.window.HTMLElement
-    })
-
     it(`assign()`, () => {
         let object1 = {
             data: "Hello",

@@ -26,20 +26,19 @@
     "setver": "node ./easydata.js/tools/set_version.js"
   },
   "devDependencies": {
-    "@olton/rollup-plugin-typedoc": "^0.1.4",
+    "@olton/rollup-plugin-typedoc": "^0.2.0",
     "@rollup/plugin-buble": "^1.0.3",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-multi-entry": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/dom": "^10.4.0",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.5.5",
-    "@vitest/ui": "^2.1.1",
     "autoprefixer": "^10.4.20",
     "copyfiles": "^2.4.1",
-    "jsdom": "^25.0.0",
+    "global-jsdom": "^24.0.0",
     "lerna": "^8.1.8",
     "rollup": "^4.21.3",
     "rollup-plugin-cleanup": "^3.2.1",
@@ -47,11 +46,9 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-progress": "^1.1.2",
     "shx": "^0.3.4",
-    "ts-node": "^10.9.2",
     "tslib": "^2.7.0",
     "tsx": "^4.19.1",
     "typedoc": "^0.26.7",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
+    "typescript": "^5.6.2"
   }
 }

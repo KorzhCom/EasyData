@@ -6,7 +6,7 @@
     "main": "./dist/easydata.crud.cjs.js",
     "module": "./dist/easydata.crud.esm.js",
     "scripts": {
-        "test": "vitest run",
+        "test": "node --require tsx/cjs --test __tests__/**/*.ts",
         "clear": "shx rm -rf dist/* docs/* lib/*",
         "build": "npm run clear && rollup -c",
         "watch": "rollup -c -w",
