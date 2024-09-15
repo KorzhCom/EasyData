@@ -77,8 +77,7 @@ export namespace utils {
                         let sourceVal = source[key];
 
                         //we don't make a deep copy of HTML elements and any other property marked as a 'reference' (ends with 'Ref')
-                        // if (sourceVal && typeof sourceVal === 'object' && !(sourceVal.nodeType === 1 && typeof sourceVal.nodeName === 'string'))
-                        if (sourceVal && typeof sourceVal === 'object' && !(sourceVal instanceof HTMLElement))
+                        if (sourceVal && typeof sourceVal === 'object' && !(key.endsWith('Ref') || sourceVal instanceof HTMLElement))
                         {
                             if (hashSet.has(sourceVal)) {
                                 target[key] = hashSet.get(sourceVal);
