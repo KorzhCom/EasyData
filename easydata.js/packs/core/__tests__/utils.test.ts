@@ -53,4 +53,31 @@ describe(`Test utilities functions`, () => {
             utils.createArrayFrom(set1)
         }, /^TypeError: collection is not iterable$/,);
     })
+
+    it(`findItemById()`, () => {
+        const array = [
+            {id: 1, value: 1},
+            {id: 2, value: 2},
+        ]
+        const result = utils.findItemById(array, 1)
+        assert.deepStrictEqual(result, {id: 1, value: 1});
+    })
+
+    it(`findItemIndexById()`, () => {
+        const array = [
+            {id: 1, value: 1},
+            {id: 2, value: 2},
+        ]
+        const result = utils.findItemIndexById(array, 1)
+        assert.deepStrictEqual(result, 0);
+    })
+
+    it(`findItemIndexById() - not found, must return -1`, () => {
+        const array = [
+            {id: 1, value: 1},
+            {id: 2, value: 2},
+        ]
+        const result = utils.findItemIndexById(array, 3)
+        assert.deepStrictEqual(result, -1);
+    })
 })
