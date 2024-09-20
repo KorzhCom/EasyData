@@ -8,7 +8,7 @@ describe(`Test generators`, () => {
         const array = []
 
         const gen_pack = () => {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 1000; i++) {
                 array.push(utils.generateId('id'))
             }
         }
