@@ -1,7 +1,8 @@
-import {describe, it, beforeEach} from "node:test"
+import {describe, it} from "node:test"
 import * as assert from "node:assert/strict"
 import 'global-jsdom/register'
 import {utils} from "../src/utils/utils";
+import {DataType} from "../src/types/data_type";
 
 describe(`Test utilities functions`, () => {
     it(`getAllDataTypes()`, () => {
@@ -133,6 +134,31 @@ describe(`Test utilities functions`, () => {
         const array = [1, 2, 3, 4, 5]
         utils.fillArray(array, 0, 1, 3)
         assert.deepStrictEqual(array, [1, 0, 0, 4, 5]);
+    })
+
+    it(`isObject()`, () => {
+        assert.deepStrictEqual(utils.isObject([1, 0, 0, 4, 5]), true);
+        assert.deepStrictEqual(utils.isObject({}), true);
+        assert.deepStrictEqual(utils.isObject(null), false);
+        assert.deepStrictEqual(utils.isObject(undefined), false);
+        assert.deepStrictEqual(utils.isObject(123), false);
+        assert.deepStrictEqual(utils.isObject(`123`), false);
+    })
+
+    it(`isNumericType()`, () => {
+        assert.deepStrictEqual(utils.isNumericType(DataType.Unknown), false);
+        assert.deepStrictEqual(utils.isNumericType(DataType.Currency), true);
+        assert.deepStrictEqual(utils.isNumericType(DataType.Blob), false);
+    })
+
+    it(`isIntType()`, () => {
+        assert.deepStrictEqual(utils.isIntType(DataType.Float), false);
+        assert.deepStrictEqual(utils.isIntType(DataType.Int32), true);
+    })
+
+    it(`isNumeric()`, () => {
+        assert.deepStrictEqual(utils.isNumeric(123), true);
+        assert.deepStrictEqual(utils.isNumeric(`123`), false);
     })
 
 })
