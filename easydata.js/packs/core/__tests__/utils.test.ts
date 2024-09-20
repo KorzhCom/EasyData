@@ -161,4 +161,20 @@ describe(`Test utilities functions`, () => {
         assert.deepStrictEqual(utils.isNumeric(`123`), false);
     })
 
+    it(`areCompatibleDataTypes()`, () => {
+        assert.deepStrictEqual(utils.areCompatibleDataTypes(DataType.Date, DataType.DateTime), true);
+        assert.deepStrictEqual(utils.areCompatibleDataTypes(DataType.Int32, DataType.Int64), false);
+    })
+
+    it(`isPropSet()`, () => {
+        const obj = {
+            id: 1,
+            zero: 0,
+            bool: false
+        }
+        assert.deepStrictEqual(utils.isPropSet(obj, 'id'), 1);
+        assert.deepStrictEqual(utils.isPropSet(obj, 'zero'), 0);
+        assert.deepStrictEqual(utils.isPropSet(obj, 'bool'), false);
+    })
+
 })
