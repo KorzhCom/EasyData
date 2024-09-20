@@ -47,6 +47,18 @@ describe(`Test utilities functions`, () => {
         assert.deepStrictEqual(result, [1, 2, 3]);
     })
 
+    it(`createArrayFrom() - string`, () => {
+        const set1 = `123`
+        const result = utils.createArrayFrom(set1);
+        assert.deepStrictEqual(result, [`1`, `2`, `3`]);
+    })
+
+    it(`createArrayFrom() - 123 hasn't iterator`, () => {
+        const set1 = 123
+        const result = utils.createArrayFrom(set1);
+        assert.deepStrictEqual(result, [1, 2, 3]);
+    })
+
     it(`createArrayFrom() - exception`, () => {
         const set1 = 123
         assert.throws(()=>{
@@ -80,4 +92,47 @@ describe(`Test utilities functions`, () => {
         const result = utils.findItemIndexById(array, 3)
         assert.deepStrictEqual(result, -1);
     })
+
+    it(`indexOfArrayItem()`, () => {
+        const array = [1, 2, 3, NaN]
+        const result = utils.indexOfArrayItem(array, 2)
+        assert.deepStrictEqual(result, 1);
+    })
+
+    it(`indexOfArrayItem() - NaN != NaN`, () => {
+        const array = [1, 2, 3, NaN]
+        const result = utils.indexOfArrayItem(array, NaN)
+        assert.deepStrictEqual(result, 3);
+    })
+
+    it(`moveArrayItem()`, () => {
+        const array = [1, 2, 3]
+        utils.moveArrayItem(array, 1, 2)
+        assert.deepStrictEqual(array[2], 2);
+    })
+
+    it(`removeArrayItem()`, () => {
+        const array = [1, 2, 3]
+        utils.removeArrayItem(array, 2)
+        assert.deepStrictEqual(array, [1, 3]);
+    })
+
+    it(`insertArrayItem()`, () => {
+        const array = [1, 3]
+        utils.insertArrayItem(array, 1, 2)
+        assert.deepStrictEqual(array, [1, 2, 3]);
+    })
+
+    it(`fillArray() - from index to end of array`, () => {
+        const array = [1, 2, 3]
+        utils.fillArray(array, 0, 1)
+        assert.deepStrictEqual(array, [1, 0, 0]);
+    })
+
+    it(`fillArray() - from index to index (end index not included)`, () => {
+        const array = [1, 2, 3, 4, 5]
+        utils.fillArray(array, 0, 1, 3)
+        assert.deepStrictEqual(array, [1, 0, 0, 4, 5]);
+    })
+
 })
