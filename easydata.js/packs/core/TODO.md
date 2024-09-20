@@ -7,4 +7,5 @@
 + `isNumericType()` - redundant index
 + `isIntType()` - redundant index
 + `isNumeric()` - не проходить тест на `isNumeric(123)`
-+ `isPropSet()` - функція `is...` має вертати `bool`, false якщо значення `0` або `false` 
++ `isPropSet()` - функція `is...` має вертати `bool`, false якщо значення `0` або `false`
++ `safeParseInt()` - функції типу `safe...` не мають викликати ексепшен, а мають повертати якесь значення
