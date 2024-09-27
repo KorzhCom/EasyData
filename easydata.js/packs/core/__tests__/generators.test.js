@@ -1,7 +1,4 @@
-import {describe, it} from "node:test"
-import * as assert from "node:assert/strict"
-import 'global-jsdom/register'
-import { utils } from "../src/public_api";
+import { utils } from "../src/public_api.ts";
 
 describe(`Test generators`, () => {
     it(`generateId()`, async () => {
@@ -13,8 +10,7 @@ describe(`Test generators`, () => {
             }
         }
 
-        const delay = (ms: number) => {
-            // @ts-ignore
+        const delay = (ms) => {
             return new Promise((resolve, reject) => {
                 setTimeout(resolve, ms);
             });
@@ -27,9 +23,17 @@ describe(`Test generators`, () => {
             gen_pack()
         }
 
-        // @ts-ignore
         const test = new Set(array)
 
-        assert.strictEqual(test.size, array.length);
+        return expect(test.size).toBe(array.length);
+    })
+
+    it(`generateId() - unique in 1_000_000 ids`, () => {
+        const array = []
+        for(let i = 0; i < 1_000_000; i++) {
+            array.push(utils.generateId('id'))
+        }
+        const expected = new Set(array)
+        return expect(expected.size).toBe(array.length, 'Must be a 1_000_000 unique ids')
     })
 })

@@ -1,7 +1,5 @@
-import {describe, it, beforeEach} from "node:test"
-import * as assert from "node:assert/strict"
-import 'global-jsdom/register'
-import { utils } from "../src/public_api";
+import {describe, it, expect} from "@olton/easytest"
+import { utils } from "../src/public_api.ts";
 
 describe(`Test assign methods`, () => {
     it(`assign()`, () => {
@@ -21,12 +19,12 @@ describe(`Test assign methods`, () => {
 
         let result = utils.assign(object1, object2, object3);
 
-        assert.deepStrictEqual(result, {
+        return expect(result).toBeEqualObject({
             data: "why",
             val: "test",
             prop: "hello",
             column: "test"
-        });
+        })
     })
 
     it(`assignDeep() -> Fields`, () => {
@@ -38,7 +36,7 @@ describe(`Test assign methods`, () => {
             val: "test",
         };
 
-        let object2: any = {
+        let object2 = {
             data: {
                 get: "why"
             },
@@ -54,7 +52,7 @@ describe(`Test assign methods`, () => {
 
         let result = utils.assignDeep(object1, object2, object3);
 
-        assert.deepStrictEqual(result, {
+        return expect(result).toBeDeepEqual({
             data: {
                 get: "why",
                 set: "ohh"
@@ -83,7 +81,7 @@ describe(`Test assign methods`, () => {
 
         const target = utils.assignDeep({}, source);
 
-        assert.deepStrictEqual(target, source);
+        return expect(target).toBeDeepEqual(source);
     })
 
     it(`assignDeep() -> Array`, () => {
@@ -111,7 +109,7 @@ describe(`Test assign methods`, () => {
 
         utils.assignDeep(object1, object2);
 
-        assert.strictEqual(object1.arr[0].data.get, object2.arr[0].data.get);
+        return expect(object1.arr[0].data.get).toBe(object2.arr[0].data.get);
     })
 
     it(`assignDeep() -> circular`, () => {
@@ -123,6 +121,6 @@ describe(`Test assign methods`, () => {
 
         const result = utils.assignDeep({}, a);
 
-        assert.deepStrictEqual(result.b.a, a);
+        return expect(result.b.a).toBeDeepEqualSafe(a);
     })
 })

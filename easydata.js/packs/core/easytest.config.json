@@ -1,0 +1,12 @@
+{
+  "include": [
+    "**/*.spec.{t,j}s",
+    "**/*.spec.{t,j}sx",
+    "**/*.test.{t,j}s",
+    "**/*.test.{t,j}sx"
+  ],
+  "exclude": [
+    "node_modules/**/*"
+  ],
+  "coverage": true
+}
