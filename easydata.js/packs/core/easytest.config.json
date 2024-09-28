@@ -8,5 +8,5 @@
   "exclude": [
     "node_modules/**/*"
   ],
-  "coverage": true
+  "coverage": false
 }
