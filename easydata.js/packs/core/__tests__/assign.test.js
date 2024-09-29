@@ -19,7 +19,7 @@ describe(`Test assign methods`, () => {
 
         let result = utils.assign(object1, object2, object3);
 
-        return expect(result).toBeEqualObject({
+        return expect(result).toBeObject({
             data: "why",
             val: "test",
             prop: "hello",

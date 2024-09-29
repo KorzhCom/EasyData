@@ -70,7 +70,7 @@ describe(`Test utilities functions`, () => {
             {id: 2, value: 2},
         ]
         const result = utils.findItemById(array, 1)
-        return expect(result).toBeEqualObject({id: 1, value: 1});
+        return expect(result).toBeObject({id: 1, value: 1});
     })
 
     it(`findItemIndexById()`, () => {
