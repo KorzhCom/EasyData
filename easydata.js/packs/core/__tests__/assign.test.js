@@ -19,7 +19,7 @@ describe(`Test assign methods`, () => {
 
         let result = utils.assign(object1, object2, object3);
 
-        return expect(result).toBeObject({
+        expect(result).toBeObject({
             data: "why",
             val: "test",
             prop: "hello",
@@ -52,7 +52,7 @@ describe(`Test assign methods`, () => {
 
         let result = utils.assignDeep(object1, object2, object3);
 
-        return expect(result).toBeDeepEqual({
+        expect(result).toBeDeepEqual({
             data: {
                 get: "why",
                 set: "ohh"
@@ -81,7 +81,7 @@ describe(`Test assign methods`, () => {
 
         const target = utils.assignDeep({}, source);
 
-        return expect(target).toBeDeepEqual(source);
+        expect(target).toBeDeepEqual(source);
     })
 
     it(`assignDeep() -> Array`, () => {
@@ -109,7 +109,7 @@ describe(`Test assign methods`, () => {
 
         utils.assignDeep(object1, object2);
 
-        return expect(object1.arr[0].data.get).toBe(object2.arr[0].data.get);
+        expect(object1.arr[0].data.get).toBe(object2.arr[0].data.get);
     })
 
     it(`assignDeep() -> circular`, () => {
@@ -121,6 +121,6 @@ describe(`Test assign methods`, () => {
 
         const result = utils.assignDeep({}, a);
 
-        return expect(result.b.a).toBeDeepEqualSafe(a);
+        expect(result.b.a).toBeDeepEqualSafe(a);
     })
 })

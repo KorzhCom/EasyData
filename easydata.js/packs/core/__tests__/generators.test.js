@@ -25,7 +25,7 @@ describe(`Test generators`, () => {
 
         const test = new Set(array)
 
-        return expect(test.size).toBe(array.length);
+        expect(test.size).toBe(array.length);
     })
 
     it(`generateId() - unique in 1_000_000 ids`, () => {
@@ -34,6 +34,6 @@ describe(`Test generators`, () => {
             array.push(utils.generateId('id'))
         }
         const expected = new Set(array)
-        return expect(expected.size).toBe(array.length, 'Must be a 1_000_000 unique ids')
+        expect(expected.size).toBe(array.length, 'Must be a 1_000_000 unique ids')
     })
 })

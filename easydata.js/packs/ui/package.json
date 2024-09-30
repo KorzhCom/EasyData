@@ -5,12 +5,13 @@
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.ui.cjs.js",
     "module": "./dist/easydata.ui.esm.js",
+    "type": "module",
     "scripts": {
-        "test": "node --require tsx/cjs --test __tests__/**/*.ts",
         "clear": "shx rm -rf dist/* docs/*",
         "build": "npm run clear && rollup -c",
         "watch": "rollup -c -w",
-        "docs": "typedoc src/public_api.ts --out ./docs"
+        "docs": "typedoc src/public_api.ts --out ./docs",
+        "test": "cross-env NODE_OPTIONS=\"--import tsx\" easytest --coverage"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",

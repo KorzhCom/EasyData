@@ -11,7 +11,7 @@
         "build": "npm run clean && rollup -c",
         "watch": "rollup -c -w",
         "docs": "typedoc src/public_api.ts --out ./docs",
-        "test": "cross-env NODE_OPTIONS=\"--import tsx\" easytest --coverage"
+        "test": "cross-env NODE_OPTIONS=\"--import tsx\" easytest --coverage --verbose"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",

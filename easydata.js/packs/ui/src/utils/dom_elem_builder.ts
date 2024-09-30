@@ -13,6 +13,7 @@ export class DomElementBuilder<TElement extends HTMLElement>  {
             this.element = tag;
         }
         if (parent && this.element.parentElement !== parent) {
+            console.log("parent", parent);
             parent.appendChild(this.element);
         }
     }
