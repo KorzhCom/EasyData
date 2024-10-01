@@ -1,4 +1,5 @@
 import { repeatString, reverseString, combinePath, strEndsWith } from "../src/utils/string_utils.js";
+import {describe, expect, it} from "@olton/easytest";
 
 describe(`String utils tests`, () => {
     it(`repeatString()`, () => {

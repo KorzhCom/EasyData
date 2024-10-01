@@ -1,5 +1,6 @@
 import {utils} from "../src/utils/utils.ts";
 import {DataType} from "../src/types/data_type.ts";
+import {describe, expect, it} from "@olton/easytest";
 
 describe(`Test utilities functions`, () => {
     it(`getAllDataTypes()`, () => {

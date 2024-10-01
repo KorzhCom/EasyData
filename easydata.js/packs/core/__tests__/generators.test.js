@@ -1,4 +1,5 @@
 import { utils } from "../src/public_api.ts";
+import {describe, expect, it} from "@olton/easytest";
 
 describe(`Test generators`, () => {
     it(`generateId()`, async () => {
