@@ -35,7 +35,7 @@
         "defaults"
     ],
     "peerDependencies": {
-        "@easydata/core": "^1.5.2"
+        "@easydata/core": "*"
     },
     "files": [
         "dist"
