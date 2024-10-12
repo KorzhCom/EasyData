@@ -8,5 +8,9 @@
   "exclude": [
     "node_modules/**/*"
   ],
-  "coverage": false
+  "coverage": true,
+  "report": {
+    "type": "lcov",
+    "dir": "coverage"
+  }
 }

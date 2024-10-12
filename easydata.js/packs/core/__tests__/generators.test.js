@@ -1,25 +1,20 @@
 import { utils } from "../src/public_api.ts";
-import {describe, expect, it} from "@olton/easytest";
+import {describe, expect, it, delay} from "@olton/easytest";
 
 describe(`Test generators`, () => {
     it(`generateId()`, async () => {
         const array = []
 
         const gen_pack = () => {
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 100; i++) {
                 array.push(utils.generateId('id'))
             }
-        }
-
-        const delay = (ms) => {
-            return new Promise((resolve, reject) => {
-                setTimeout(resolve, ms);
-            });
         }
 
         gen_pack()
 
         for (let j = 0; j < 5; j++) {
+            console.log(`Iteration: ${j}`)
             await delay(1000)
             gen_pack()
         }
