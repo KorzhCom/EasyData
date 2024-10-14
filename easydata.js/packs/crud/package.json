@@ -2,15 +2,16 @@
     "name": "@easydata/crud",
     "version": "1.5.5",
     "description": "EasyData.JS UI widgets and views for CRUD manipulations",
+    "type": "module",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.crud.cjs.js",
     "module": "./dist/easydata.crud.esm.js",
     "scripts": {
-        "test": "vitest run",
-        "clear": "shx rm -rf dist/* docs/* lib/*",
-        "build": "npm run clear && rollup -c",
-        "watch": "rollup -c -w",
-        "docs": "typedoc src/public_api.ts --out ./docs"
+        "clean": "shx rm -rf dist/* docs/*",
+        "build": "npm run clean && cross-env NODE_NO_WARNINGS=1 node build.js",
+        "watch": "npm run clean && cross-env NODE_NO_WARNINGS=1 node watch.js",
+        "docs": "typedoc src/public_api.ts --out ./docs",
+        "test": "vitest run"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",

@@ -1,11 +1,12 @@
 {
     "name": "@easydata/bundle-crud",
     "version": "1.4.21",
+    "type": "module",
     "description": "EasyData.JS bundle",
     "scripts": {
-        "clear": "shx rm -rf dist/* docs/* lib/*",
-        "build": "npm run clear && rollup -c && copyfiles -f dist/easydata.min.js ../../../playground/EasyDataAspNetCoreTest03/wwwroot/js && copyfiles -f dist/easydata.min.css ../../../playground/EasyDataAspNetCoreTest03/wwwroot/css",
-        "watch": "rollup -c -w"
+        "clean": "shx rm -rf dist/* docs/*",
+        "build": "npm run clean && cross-env NODE_NO_WARNINGS=1 node build.js",
+        "watch": "npm run clean && cross-env NODE_NO_WARNINGS=1 node watch.js"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",
@@ -26,7 +27,7 @@
         "defaults"
     ],
     "dependencies": {
-        "@easydata/crud": "^1.5.2"
+        "@easydata/crud": "^1.5.5"
     },
     "files": [
         "dist"

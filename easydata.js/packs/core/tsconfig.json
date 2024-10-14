@@ -16,8 +16,9 @@
 		"lib": ["ESNext", "dom"],
 		"baseUrl": ".",
 		"outDir": "./dist/types",
-		"noEmitOnError": true
-	  },
+		"noEmitOnError": true,
+		"resolveJsonModule": true
+	},
 	"include": [
 		"./src/**/*.ts"
 	],

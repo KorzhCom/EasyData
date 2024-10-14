@@ -1,6 +1,5 @@
 import { i18n } from '@easydata/core';
 
-
 function addEasyDataCRUDTexts() {
     i18n.updateDefaultTexts({
         RequiredError: 'Value is required.',

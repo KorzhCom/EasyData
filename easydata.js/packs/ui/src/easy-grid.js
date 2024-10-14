@@ -1,1 +1,1 @@
-import '../assets/css/easy-grid.css'
+import './css/easy-grid.css'

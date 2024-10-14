@@ -108,7 +108,6 @@
     width: 100%;
     text-align: center;
     word-break: keep-all;
-    -ms-word-wrap: keep-all;
 }
 
 .keg-cell {

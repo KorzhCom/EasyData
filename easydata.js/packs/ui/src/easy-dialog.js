@@ -1,1 +1,1 @@
-import '../assets/css/easy-dialog.css'
+import './css/easy-dialog.css'

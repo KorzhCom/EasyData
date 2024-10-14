@@ -1,8 +1,8 @@
 
 .ed-entity-menu {
-    display: -ms-flexbox;
+    /*display: -ms-flexbox;*/
     display: flex;
-    -ms-flex-direction: column;
+    /*-ms-flex-direction: column;*/
     flex-direction: column;
     padding-left: 0;
     margin-bottom: 0;
