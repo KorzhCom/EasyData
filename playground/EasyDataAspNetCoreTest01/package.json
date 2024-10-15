@@ -1,12 +1,14 @@
 {
   "name": "demo1",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "rollup --config",
-    "watch": "rollup --config -w"
+    "build": "cross-env MODE=production NODE_NO_WARNINGS=1 node build.js",
+    "dev": "cross-env MODE=development NODE_NO_WARNINGS=1 node build.js",
+    "watch": "cross-env MODE=development NODE_NO_WARNINGS=1 node watch.js"
   },
   "dependencies": {
     "@easydata/ui": "*",

@@ -1,12 +1,14 @@
 {
   "name": "demo2",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "rollup --config",
-    "watch1": "rollup --config -w"
+    "build": "cross-env MODE=production NODE_NO_WARNINGS=1 node build.js",
+    "dev": "cross-env MODE=development NODE_NO_WARNINGS=1 node build.js",
+    "watch": "cross-env MODE=development NODE_NO_WARNINGS=1 node watch.js"
   },
   "dependencies": {
     "@easydata/crud": "*"
