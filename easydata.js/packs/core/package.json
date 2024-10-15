@@ -10,6 +10,7 @@
         "clean": "shx rm -rf dist/* docs/*",
         "build": "npm run clean && cross-env NODE_NO_WARNINGS=1 node build.js",
         "watch": "npm run clean && cross-env NODE_NO_WARNINGS=1 node watch.js",
+        "docs": "typedoc src/public_api.ts --out ./docs",
         "test": "vitest run"
     },
     "author": "Korzh.com",

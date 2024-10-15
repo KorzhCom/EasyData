@@ -23,6 +23,7 @@
     "build:demo1": "lerna run build --scope=demo1",
     "build:demo2": "lerna run build --scope=demo2",
     "dev": "lerna run watch --parallel --scope=@easydata/*",
+    "docs": "lerna run docs --scope=@easydata/*",
     "setver": "node ./easydata.js/tools/set_version.js"
   },
   "devDependencies": {
