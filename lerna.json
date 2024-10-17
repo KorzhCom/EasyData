@@ -10,5 +10,6 @@
     "run": {
       "npmClient": "npm"
     }
-  }
+  },
+  "useNx": true
 }
