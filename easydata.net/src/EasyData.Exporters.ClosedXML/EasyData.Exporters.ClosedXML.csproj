@@ -12,11 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.102.3" />
+		<PackageReference Include="System.Memory" Version="4.5.5" />
+		<PackageReference Include="ClosedXML" Version="0.104.2" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
+		<ProjectReference Include="..\EasyData.Core\EasyData.Core.csproj" />
   </ItemGroup>
 
 </Project>
