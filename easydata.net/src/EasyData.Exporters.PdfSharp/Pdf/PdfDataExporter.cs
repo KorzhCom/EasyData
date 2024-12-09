@@ -99,8 +99,9 @@ namespace EasyData.Export
 
             var document = new Document();
             document.Info.Title = pdfSettings.Title;
-            document.DefaultPageSetup.Orientation = pdfSettings.Orientation;
-            document.DefaultPageSetup.PageFormat = pdfSettings.PageFormat;
+            var pageSetup = document.DefaultPageSetup.Clone();
+            pageSetup.Orientation = pdfSettings.Orientation;
+            pageSetup.PageFormat = pdfSettings.PageFormat;
 
             ApplyStyles(document, pdfSettings);
 
@@ -269,8 +270,10 @@ namespace EasyData.Export
                 await pdfSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
             }
 
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             // rendering pdf
-            var pdfRenderer = new PdfDocumentRenderer(true);
+            var pdfRenderer = new PdfDocumentRenderer();
             pdfRenderer.Document = document;
             pdfRenderer.RenderDocument();
 
