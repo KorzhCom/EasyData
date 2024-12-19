@@ -85,6 +85,7 @@
     justify-content: flex-start;
     padding: 20px;
     position: relative;
+    width: 100%;
 }
 
 .kdlg-footer.align-right {
@@ -190,6 +191,7 @@
     padding: 20px;
     font-size: 1em;
     color: #4a4a4a;
+    width: 100%;
 }
 
 

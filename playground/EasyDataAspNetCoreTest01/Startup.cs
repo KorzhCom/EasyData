@@ -38,8 +38,11 @@ namespace EasyDataBasicDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("EasyDataDb");
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("EasyDataDB")));
+                options.UseSqlite(connectionString)
+                //options.UseSqlServer(connectionString)
+                );
 
             services.AddRazorPages();
         }
@@ -128,7 +131,9 @@ namespace EasyDataBasicDemo
                 if (context.Database.EnsureCreated())
                 {
                     DbInitializer.Create(options => {
-                        options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
+                        //options.UseSqlServer(config.GetConnectionString("EasyDataDB"));
+
+                        options.UseSqlite(config.GetConnectionString("EasyDataDB"));
                         options.UseZipPacker(System.IO.Path.Combine(env.ContentRootPath, "App_Data", "EdDemoData.zip"));
                     })
                     .Seed();

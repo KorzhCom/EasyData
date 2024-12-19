@@ -26,6 +26,15 @@ namespace EasyData.Export
         }
 
         /// <summary>
+        /// Gets the preferred file extension by the exporting format.
+        /// </summary>
+        /// <returns>A string object that represents the file extension (without the dot)</returns>
+        public string GetFileExtension() 
+        {
+            return "xlsx";
+        }
+
+        /// <summary>
         /// Gets default settings
         /// </summary>
         /// <param name="culture">The culture info</param>
