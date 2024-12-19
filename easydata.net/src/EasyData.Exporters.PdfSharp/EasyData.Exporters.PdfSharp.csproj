@@ -12,7 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.1" />
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.1.1" />
   </ItemGroup>
 
   <ItemGroup>

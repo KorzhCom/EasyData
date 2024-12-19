@@ -1,6 +1,6 @@
 {
     "name": "@easydata/crud",
-    "version": "1.5.2",
+    "version": "1.5.5",
     "description": "EasyData.JS UI widgets and views for CRUD manipulations",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.crud.cjs.js",
@@ -31,8 +31,8 @@
         "defaults and supports es6-module"
     ],
     "peerDependencies": {
-        "@easydata/core": "^1.5.2",
-        "@easydata/ui": "^1.5.2"
+        "@easydata/core": "*",
+        "@easydata/ui": "*"
     },
     "files": [
         "dist"

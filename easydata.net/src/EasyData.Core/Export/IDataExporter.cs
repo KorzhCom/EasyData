@@ -53,6 +53,12 @@ namespace EasyData.Export
         /// Gets the MIME content type of the exporting format.
         /// </summary>
         /// <returns>System.String.</returns>
-        string GetContentType();        
+        string GetContentType();
+
+        /// <summary>
+        /// Gets the preferred file extension by the exporting format.
+        /// </summary>
+        /// <returns>A string object that represents the file extension (without the dot)</returns>
+        string GetFileExtension();
     }
 }

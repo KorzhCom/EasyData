@@ -241,6 +241,14 @@ namespace EasyData.Export
             return "text/html";
         }
 
+        /// <summary>
+        /// Gets the preferred file extension by the exporting format.
+        /// </summary>
+        /// <returns>A string object that represents the file extension (without the dot)</returns>
+        public string GetFileExtension()
+        {
+            return "html";
+        }
 
         /// <summary>
         /// Converts string into HTML format.
