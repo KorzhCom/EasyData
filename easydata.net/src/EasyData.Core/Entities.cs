@@ -167,7 +167,8 @@ namespace EasyData
         public string GetFullName(string separator)
         {
             string parentName = Parent?.GetFullName(separator);
-            string result = string.IsNullOrEmpty(parentName) ? Name : parentName + separator + Name;
+            string entityName = Name ?? "";
+            string result = string.IsNullOrEmpty(parentName) ? Name : parentName + separator + entityName;
 
             return result;
         }
