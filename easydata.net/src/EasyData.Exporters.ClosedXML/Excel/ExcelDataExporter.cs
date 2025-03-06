@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace EasyData.Export
 {
@@ -182,35 +183,7 @@ namespace EasyData.Export
                         }
                     }
 
-                    if (!(value is DBNull)) {
-                        switch (excelDataType) {
-                            case XLDataType.DateTime:
-                                cell.Value = value is DateTimeOffset
-                                                ? ((DateTimeOffset)value).DateTime
-                                                : Convert.ToDateTime(value);
-                                break;
-                            case XLDataType.Text:
-                                if (value != null) {
-                                    var strValue = settings.PreserveFormatting && !column.Style.AllowAutoFormatting
-                                        ? "'" + value
-                                        : value.ToString();
-                                    cell.Value = (XLCellValue)strValue;
-                                }
-                                else { 
-                                    cell.Value = Blank.Value;
-                                }
-                                break;
-                            case XLDataType.Number:
-                                cell.Value = Convert.ToDouble(value);
-                                break;
-                            default:
-                                cell.Value = value.ToString();
-                                break;
-                        }
-                    }
-                    else {
-                        cell.Value = Blank.Value;
-                    }
+                    cell.Value = (XLCellValue)MapCellValue(value, excelDataType, column, mappedSettings);
 
                     // setting the cell's format
                     var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
@@ -294,6 +267,35 @@ namespace EasyData.Export
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
+            }
+        }
+
+        protected virtual object MapCellValue(object value, XLDataType excelDataType, EasyDataCol column, ExcelDataExportSettings settings)
+        {
+            if (!(value is DBNull)) {
+                switch (excelDataType) {
+                    case XLDataType.DateTime:
+                        return value is DateTimeOffset
+                                        ? ((DateTimeOffset)value).DateTime
+                                        : Convert.ToDateTime(value);
+                    case XLDataType.Text:
+                        if (value != null) {
+                            var strValue = settings.PreserveFormatting && !column.Style.AllowAutoFormatting
+                                ? "'" + value
+                                : value.ToString();
+                            return strValue;
+                        }
+                        else {
+                            return Blank.Value;
+                        }
+                    case XLDataType.Number:
+                        return Convert.ToDouble(value);
+                    default:
+                        return value.ToString();
+                }
+            }
+            else {
+                return Blank.Value;
             }
         }
 
