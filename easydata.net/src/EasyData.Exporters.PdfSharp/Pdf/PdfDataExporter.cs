@@ -235,13 +235,10 @@ namespace EasyData.Export
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 
+                    value = MapCellValue(value, col, pdfSettings);
+
                     var cell = pdfRow.Cells[i];
-                    cell.Shading.Color = Color.FromRgb(255, 255, 255);
-                    cell.VerticalAlignment = VerticalAlignment.Center;
-                    cell.Format.Alignment = MapAlignment(col.Style.Alignment);
-                    cell.Format.FirstLineIndent = 1;
-                    cell.Format.Font.Bold = isExtra;
-                    cell.AddParagraph(value);
+                    DrawCell(cell, value, col, pdfSettings, isExtra);
 
                     table.SetEdge(0, 1, colsCount, 1,
                          Edge.Box, BorderStyle.Single, 0.75);
@@ -283,6 +280,21 @@ namespace EasyData.Export
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
+        }
+
+        protected virtual string MapCellValue(string value, EasyDataCol column, PdfDataExportSettings settings)
+        {
+            return value;
+        }
+
+        protected virtual void DrawCell(Cell cell, string value, EasyDataCol col, PdfDataExportSettings pdfSettings, bool isExtra)
+        {
+            cell.Shading.Color = Color.FromRgb(255, 255, 255);
+            cell.VerticalAlignment = VerticalAlignment.Center;
+            cell.Format.Alignment = MapAlignment(col.Style.Alignment);
+            cell.Format.FirstLineIndent = 1;
+            cell.Format.Font.Bold = isExtra;
+            cell.AddParagraph(value);
         }
 
         private (int Width, int Height) GetPageSizes(PageFormat pageFormat)
