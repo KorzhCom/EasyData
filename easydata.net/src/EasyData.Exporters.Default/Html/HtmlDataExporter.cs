@@ -258,7 +258,7 @@ namespace EasyData.Export
         /// <param name="settings">Different settings of result HTML file.</param>
         /// <param name="displayFormat">The display format.</param>
         /// <returns>System.String.</returns>
-        protected string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
+        protected virtual string GetFormattedValue(object val, DataType dataType, HtmlDataExportSettings settings, string displayFormat)
         {
             var result = DataFormatUtils.GetFormattedValue(val, dataType, settings.Culture, displayFormat);
 

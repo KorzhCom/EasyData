@@ -206,7 +206,7 @@ namespace EasyData.Export
         /// <param name="displayFormat">The display format.</param>
         /// <returns>System.String.</returns>
 
-        protected string GetFormattedValue(object val, DataType dataType, CsvDataExportSettings settings, string displayFormat)
+        protected virtual string GetFormattedValue(object val, DataType dataType, CsvDataExportSettings settings, string displayFormat)
         {
             if (val == null) {
                 return "";
