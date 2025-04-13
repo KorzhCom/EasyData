@@ -51,6 +51,12 @@ namespace EasyData.Export
         public IDataExportSettings DefaultSettings => ExcelDataExportSettings.Default;
 
         /// <summary>
+        /// Gets the current export settings passed in the ExportAsync method.
+        /// </summary>
+        protected ExcelDataExportSettings ExportSettings { get; private set; }
+
+
+        /// <summary>
         /// Exports the specified data to the stream.
         /// </summary>
         /// <param name="data">The fetched data.</param>
@@ -96,12 +102,12 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            var mappedSettings = MapSettings(settings);
+            ExportSettings = MapSettings(settings);
 
             // predefined formatters
             var predefinedFormatters = GetPredefinedFormatters(data.Cols, settings);
 
-            var sheetName = Utils.ToExcelSheetName(mappedSettings.Title);
+            var sheetName = Utils.ToExcelSheetName(ExportSettings.Title);
 
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add(sheetName);
@@ -112,13 +118,13 @@ namespace EasyData.Export
             var cellNum = startColNum;
 
             var xlColID = GetExcelColumnId(startColNum);
-            if (mappedSettings.ShowDatasetInfo) {
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
-                    ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Title;
+            if (ExportSettings.ShowDatasetInfo) {
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Title)) {
+                    ws.Cell($"{xlColID}{cellNum}").Value = ExportSettings.Title;
                     cellNum++;
                 }
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Description)) {
-                    ws.Cell($"{xlColID}{cellNum}").Value = mappedSettings.Description;
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Description)) {
+                    ws.Cell($"{xlColID}{cellNum}").Value = ExportSettings.Description;
                     cellNum++;
                 }
             }
@@ -158,7 +164,7 @@ namespace EasyData.Export
                     xlColID = GetExcelColumnId(i + startColNum);
 
                     var cell = ws.Cell($"{xlColID}{cellNum}");
-
+                  
                     object value;
                     if (!string.IsNullOrEmpty(dfmt) && predefinedFormatters.TryGetValue(dfmt, out var provider)) {
                         value = string.Format(provider, dfmt, row[i]);
@@ -183,10 +189,10 @@ namespace EasyData.Export
                         }
                     }
 
-                    cell.Value = (XLCellValue)MapCellValue(value, excelDataType, column, mappedSettings);
+                    WriteCellValue(cell, value, excelDataType, column);
 
                     // setting the cell's format
-                    var cellFormat = GetCellFormat(excelDataType, column.DataType, mappedSettings, dfmt);
+                    var cellFormat = GetCellFormat(excelDataType, column.DataType, ExportSettings, dfmt);
                     if (!string.IsNullOrEmpty(cellFormat)) {
                         if (excelDataType == XLDataType.Number) {
                             cell.Style.NumberFormat.Format = cellFormat;
@@ -218,31 +224,31 @@ namespace EasyData.Export
                 if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
                     continue;
 
-                if (mappedSettings.BeforeRowInsert != null)
-                    await mappedSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct).ConfigureAwait(false);
+                if (ExportSettings.BeforeRowInsert != null)
+                    await ExportSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct).ConfigureAwait(false);
 
                 await WriteRowAsync(row, cancellationToken: ct).ConfigureAwait(false);
 
                 currentRowNum++;
             }
 
-            if (mappedSettings.BeforeRowInsert != null)
-                await mappedSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct).ConfigureAwait(false);
+            if (ExportSettings.BeforeRowInsert != null)
+                await ExportSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct).ConfigureAwait(false);
 
             cellNum--;
 
             // Setup styles
             var rngTable = ws.Range($"{startColId}{startColNum}:{endColId}{cellNum}");
             var rowNum = 1;
-            if (mappedSettings.ShowDatasetInfo) {
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Title)) {
+            if (ExportSettings.ShowDatasetInfo) {
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Title)) {
                     rngTable.Cell(rowNum, 1).Style.Font.Bold = true;
                     rngTable.Cell(rowNum, 1).Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
                     rngTable.Cell(rowNum, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     rngTable.Row(rowNum).Merge();
                     rowNum++;
                 }
-                if (!string.IsNullOrWhiteSpace(mappedSettings.Description)) {
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Description)) {
                     rngTable.Cell(rowNum, 1).Style.Font.Bold = true;
                     rngTable.Cell(rowNum, 1).Style.Fill.BackgroundColor = XLColor.White;
                     rngTable.Cell(rowNum, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -270,32 +276,36 @@ namespace EasyData.Export
             }
         }
 
-        protected virtual object MapCellValue(object value, XLDataType excelDataType, EasyDataCol column, ExcelDataExportSettings settings)
+        protected virtual void WriteCellValue(IXLCell cell, object value, XLDataType xlDataType, EasyDataCol column)
         {
             if (!(value is DBNull)) {
-                switch (excelDataType) {
+                switch (xlDataType) {
                     case XLDataType.DateTime:
-                        return value is DateTimeOffset
+                        cell.Value = value is DateTimeOffset
                                         ? ((DateTimeOffset)value).DateTime
                                         : Convert.ToDateTime(value);
+                        break;
                     case XLDataType.Text:
                         if (value != null) {
-                            var strValue = settings.PreserveFormatting && !column.Style.AllowAutoFormatting
+                            var strValue = ExportSettings.PreserveFormatting && !column.Style.AllowAutoFormatting
                                 ? "'" + value
                                 : value.ToString();
-                            return strValue;
+                            cell.Value = strValue;
                         }
                         else {
-                            return Blank.Value;
+                            cell.Value = Blank.Value;
                         }
+                        break;
                     case XLDataType.Number:
-                        return Convert.ToDouble(value);
+                        cell.Value = Convert.ToDouble(value);
+                        break;
                     default:
-                        return value.ToString();
+                        cell.Value = value.ToString();
+                        break;
                 }
             }
             else {
-                return Blank.Value;
+                cell.Value = Blank.Value;
             }
         }
 
