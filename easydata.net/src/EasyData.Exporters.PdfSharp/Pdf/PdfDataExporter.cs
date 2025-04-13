@@ -34,6 +34,7 @@ namespace EasyData.Export
         {
             return "pdf";
         }
+
         /// <summary>
         /// Gets default settings
         /// </summary>
@@ -48,6 +49,11 @@ namespace EasyData.Export
         /// The default settings.
         /// </summary>
         public IDataExportSettings DefaultSettings => PdfDataExportSettings.Default;
+
+        /// <summary>
+        /// Gets the current export settings that are passed in the ExportAsync method
+        /// </summary>
+        protected PdfDataExportSettings ExportSettings { get; private set; }
 
         /// <summary>
         /// Exports the specified data to the stream.
@@ -95,39 +101,39 @@ namespace EasyData.Export
         /// <returns>Task.</returns>
         public async Task ExportAsync(IEasyDataResultSet data, Stream stream, IDataExportSettings settings, CancellationToken ct = default)
         {
-            var pdfSettings = MapSettings(settings);
+            ExportSettings = MapSettings(settings);
 
             var document = new Document();
-            document.Info.Title = pdfSettings.Title;
+            document.Info.Title = ExportSettings.Title;
             var pageSetup = document.DefaultPageSetup.Clone();
-            pageSetup.Orientation = pdfSettings.Orientation;
-            pageSetup.PageFormat = pdfSettings.PageFormat;
+            pageSetup.Orientation = ExportSettings.Orientation;
+            pageSetup.PageFormat = ExportSettings.PageFormat;
 
-            ApplyStyles(document, pdfSettings);
+            ApplyStyles(document);
 
             var section = document.AddSection();
-            section.PageSetup.PageFormat = pdfSettings.PageFormat;
-            section.PageSetup.Orientation = pdfSettings.Orientation;
+            section.PageSetup.PageFormat = ExportSettings.PageFormat;
+            section.PageSetup.Orientation = ExportSettings.Orientation;
             section.PageSetup.HorizontalPageBreak = true;
 
             // getting ignored columns
             var ignoredCols = GetIgnoredColumns(data, settings);
 
-            var pageSizes = GetPageSizes(pdfSettings.PageFormat);
-            if (pdfSettings.Orientation == Orientation.Landscape) { 
+            var pageSizes = GetPageSizes(ExportSettings.PageFormat);
+            if (ExportSettings.Orientation == Orientation.Landscape) { 
                 (pageSizes.Width, pageSizes.Height) = (pageSizes.Height, pageSizes.Width);
             }
             var pageWidth = pageSizes.Width;
 
             //calculating the width of one column
             var colCount = data.Cols.Count - ignoredCols.Count;
-            double pageContentWidth = pageWidth - pdfSettings.Margins.Left - pdfSettings.Margins.Right;
+            double pageContentWidth = pageWidth - ExportSettings.Margins.Left - ExportSettings.Margins.Right;
             var colWidth = (int)Math.Ceiling(pageContentWidth / colCount);
 
-            if (pdfSettings.MinColWidth > 0 && colWidth < pdfSettings.MinColWidth) {
-                colWidth = pdfSettings.MinColWidth;
-                if (pdfSettings.FlexiblePageSize) {
-                    pageWidth = colWidth * colCount + pdfSettings.Margins.Left + pdfSettings.Margins.Right;
+            if (ExportSettings.MinColWidth > 0 && colWidth < ExportSettings.MinColWidth) {
+                colWidth = ExportSettings.MinColWidth;
+                if (ExportSettings.FlexiblePageSize) {
+                    pageWidth = colWidth * colCount + ExportSettings.Margins.Left + ExportSettings.Margins.Right;
                     var delta = (double)pageWidth / pageSizes.Width;
                     section.PageSetup.Orientation = Orientation.Portrait;
                     section.PageSetup.PageWidth = Unit.FromMillimeter(pageWidth);
@@ -138,17 +144,17 @@ namespace EasyData.Export
 
             if (settings.ShowDatasetInfo) {
                 // TODO: render paragraph with info here
-                if (!string.IsNullOrWhiteSpace(pdfSettings.Title)) {
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Title)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Center;
                     p.Format.Font.Bold = true;
-                    p.AddText(pdfSettings.Title);
+                    p.AddText(ExportSettings.Title);
                 }
 
-                if (!string.IsNullOrWhiteSpace(pdfSettings.Description)) {
+                if (!string.IsNullOrWhiteSpace(ExportSettings.Description)) {
                     var p = section.AddParagraph();
                     p.Format.Alignment = ParagraphAlignment.Left;
-                    p.AddText(pdfSettings.Description);
+                    p.AddText(ExportSettings.Description);
                 }
             }
 
@@ -228,20 +234,17 @@ namespace EasyData.Export
                         value = string.Format(provider, dfmt, row[i]);
                     }
                     else {
-                        value = Utils.GetFormattedValue(row[i], type, pdfSettings, dfmt);
+                        value = Utils.GetFormattedValue(row[i], type, ExportSettings, dfmt);
                     }
 
                     if (!string.IsNullOrEmpty(value) && isExtra && !string.IsNullOrEmpty(gfct)) {
                         value = ExportHelpers.ApplyGroupFooterColumnTemplate(gfct, value, extraData);
                     }
 
+                    value = MapCellValue(value, col);
+
                     var cell = pdfRow.Cells[i];
-                    cell.Shading.Color = Color.FromRgb(255, 255, 255);
-                    cell.VerticalAlignment = VerticalAlignment.Center;
-                    cell.Format.Alignment = MapAlignment(col.Style.Alignment);
-                    cell.Format.FirstLineIndent = 1;
-                    cell.Format.Font.Bold = isExtra;
-                    cell.AddParagraph(value);
+                    DrawCell(cell, value, col, isExtra);
 
                     table.SetEdge(0, 1, colsCount, 1,
                          Edge.Box, BorderStyle.Single, 0.75);
@@ -255,8 +258,8 @@ namespace EasyData.Export
 
             var currentRowNum = 0;
             foreach (var row in rows) {
-                if (pdfSettings.BeforeRowInsert != null)
-                    await pdfSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
+                if (ExportSettings.BeforeRowInsert != null)
+                    await ExportSettings.BeforeRowInsert(row, WriteExtraRowAsync, ct);
 
                 if (settings.RowLimit > 0 && currentRowNum >= settings.RowLimit)
                     continue;
@@ -266,8 +269,8 @@ namespace EasyData.Export
                 currentRowNum++;
             }
 
-            if (pdfSettings.BeforeRowInsert != null) {
-                await pdfSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
+            if (ExportSettings.BeforeRowInsert != null) {
+                await ExportSettings.BeforeRowInsert(null, WriteExtraRowAsync, ct);
             }
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -283,6 +286,26 @@ namespace EasyData.Export
 
                 await memoryStream.CopyToAsync(stream, 4096, ct).ConfigureAwait(false);
             }
+        }
+
+        protected virtual string MapCellValue(string value, EasyDataCol column)
+        {
+            return value;
+        }
+
+        protected virtual Paragraph DrawCell(Cell cell, string value, EasyDataCol column, bool isExtra)
+        {
+            FormatCell(cell, column, isExtra);
+            return cell.AddParagraph(value);
+        }
+
+        protected virtual void FormatCell(Cell cell, EasyDataCol column, bool isExtra)
+        {
+            cell.Shading.Color = Color.FromRgb(255, 255, 255);
+            cell.VerticalAlignment = VerticalAlignment.Center;
+            cell.Format.Alignment = MapAlignment(column.Style.Alignment);
+            cell.Format.FirstLineIndent = 1;
+            cell.Format.Font.Bold = isExtra;
         }
 
         private (int Width, int Height) GetPageSizes(PageFormat pageFormat)
@@ -333,7 +356,7 @@ namespace EasyData.Export
             return result;
         }
 
-        private static ParagraphAlignment MapAlignment(ColumnAlignment alignment) 
+        protected static ParagraphAlignment MapAlignment(ColumnAlignment alignment) 
         {
             switch (alignment) {
                 case ColumnAlignment.Center:
@@ -351,8 +374,7 @@ namespace EasyData.Export
         /// Apply styles for pdf document
         /// </summary>
         /// <param name="document"></param>
-        /// <param name="settings"></param>
-        protected void ApplyStyles(Document document, PdfDataExportSettings settings)
+        protected virtual void ApplyStyles(Document document)
         {
             // Get the predefined style Normal.
             Style style = document.Styles["Normal"];
