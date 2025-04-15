@@ -105,6 +105,7 @@ jobs:
         password: ${{ secrets.CDN_FTP_PWD }}
         local-dir: './bundles/crud/dist/'
         server-dir: 'ed/${{ env.ed_baseVersion }}/'
+        log-level: 'verbose'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
@@ -161,6 +162,7 @@ jobs:
         password: ${{ secrets.CDN_FTP_PWD }}
         local-dir: './bundles/crud/dist/'
         server-dir: 'ed/${{ env.ed_baseVersion }}/'
+        log-level: 'verbose'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
