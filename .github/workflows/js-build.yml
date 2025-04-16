@@ -98,7 +98,7 @@ jobs:
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
         username: ${{ secrets.CDN_FTP_USER }}
@@ -155,9 +155,10 @@ jobs:
         prefix: ed
 
     - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.CDN_FTP_SERVER }}
+        protocol: 'ftp'
         username: ${{ secrets.CDN_FTP_USER }}
         password: ${{ secrets.CDN_FTP_PWD }}
         local-dir: './bundles/crud/dist/'
