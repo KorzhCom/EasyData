@@ -155,14 +155,13 @@ jobs:
         prefix: ed
         
     - name: Upload to CDN
-      uses: milanmk/actions-file-deployer@master
+      uses: airvzxf/ftp-deployment-action@latest
       with:
-        remote-protocol: "sftp"
-        remote-host: ${{ secrets.CDN_FTP_SERVER }}
-        remote-user:  ${{ secrets.CDN_FTP_USER }}
-        remote-password: ${{ secrets.CDN_FTP_PWD }}
-        local-path: './bundles/crud/dist/'
-        remote-path: 'ed/${{ env.ed_baseVersion }}/'
+        server: ${{ secrets.CDN_FTP_SERVER }}
+        user:  ${{ secrets.CDN_FTP_USER }}
+        password: ${{ secrets.CDN_FTP_PWD }}
+        local_dir: './bundles/crud/dist/'
+        remote_dir: 'ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
