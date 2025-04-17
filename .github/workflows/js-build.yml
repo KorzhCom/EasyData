@@ -153,17 +153,17 @@ jobs:
       with:
         filename: ./easydata.js/version.json
         prefix: ed
-
-    - name: Upload ftp
-      uses: sebastianpopp/ftp-action@releases/v2
-      with:
-        host: ${{ secrets.CDN_FTP_SERVER }}
-        user: ${{ secrets.CDN_FTP_USER }}
-        password: ${{ secrets.CDN_FTP_PWD }}
-        localDir: './bundles/crud/dist/'
-        remoteDir: 'ed/${{ env.ed_baseVersion }}/'
-        options: "--delete --asci"
         
+    - name: Upload to CDN
+      uses: milanmk/actions-file-deployer@master
+      with:
+        remote-protocol: "sftp"
+        remote-host: ${{ secrets.CDN_FTP_SERVER }}
+        remote-user:  ${{ secrets.CDN_FTP_USER }}
+        remote-password: ${{ secrets.CDN_FTP_PWD }}
+        local-path: './bundles/crud/dist/'
+        remote-path: 'ed/${{ env.ed_baseVersion }}/'
+
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
       with:
