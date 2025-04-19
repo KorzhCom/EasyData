@@ -97,15 +97,24 @@ jobs:
         filename: ./easydata.js/version.json
         prefix: ed
 
-    - name: Publish to CDN
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+    - name: Deploy to BunnyCDN
+      uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
       with:
-        server: ${{ secrets.CDN_FTP_SERVER }}
-        username: ${{ secrets.CDN_FTP_USER }}
-        password: ${{ secrets.CDN_FTP_PWD }}
-        local-dir: './bundles/crud/dist/'
-        server-dir: 'ed/${{ env.ed_baseVersion }}/'
-        log-level: 'verbose'
+        source: "./bundles/crud/dist/"
+        destination: "ed/${{ env.ed_baseVersion }}/"
+        storageZoneName: "korzh--cdn"
+        storagePassword: "${{ secrets.CDN_FTP_PWD }}"
+        upload: "true"
+
+#    - name: Publish to CDN
+#      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#      with:
+#        server: ${{ secrets.CDN_FTP_SERVER }}
+#        username: ${{ secrets.CDN_FTP_USER }}
+#        password: ${{ secrets.CDN_FTP_PWD }}
+#        local-dir: './bundles/crud/dist/'
+#        server-dir: 'ed/${{ env.ed_baseVersion }}/'
+#        log-level: 'verbose'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
@@ -154,14 +163,23 @@ jobs:
         filename: ./easydata.js/version.json
         prefix: ed
         
-    - name: Upload to CDN
-      uses: airvzxf/ftp-deployment-action@latest
+    - name: Deploy to BunnyCDN
+      uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
       with:
-        server: ${{ secrets.CDN_FTP_SERVER }}
-        user:  ${{ secrets.CDN_FTP_USER }}
-        password: ${{ secrets.CDN_FTP_PWD }}
-        local_dir: './bundles/crud/dist/'
-        remote_dir: 'ed/${{ env.ed_baseVersion }}/'
+        source: "./bundles/crud/dist/"
+        destination: "ed/${{ env.ed_baseVersion }}/"
+        storageZoneName: "korzh--cdn"
+        storagePassword: "${{ secrets.CDN_FTP_PWD }}"
+        upload: "true"
+    
+#    - name: Upload to CDN
+#      uses: airvzxf/ftp-deployment-action@latest
+#      with:
+#        server: ${{ secrets.CDN_FTP_SERVER }}
+#        user:  ${{ secrets.CDN_FTP_USER }}
+#        password: ${{ secrets.CDN_FTP_PWD }}
+#        local_dir: './bundles/crud/dist/'
+#        remote_dir: 'ed/${{ env.ed_baseVersion }}/'
 
     - name: Download packs artifacts
       uses: actions/download-artifact@v4
