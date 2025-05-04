@@ -10,7 +10,7 @@
     <PackageIcon>easydata-icon02.png</PackageIcon>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\EasyData.snk</AssemblyOriginatorKeyFile>
 
     <NoWarn>CS1591,CS1574</NoWarn>
