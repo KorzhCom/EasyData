@@ -9,9 +9,9 @@
     <PackageTags>database crud filtering</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
+	<!--ItemGroup>
     <InternalsVisibleTo Include="Korzh.EasyQuery" />
-  </ItemGroup>
+  </ItemGroup-->
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
