@@ -1,0 +1,1 @@
+напиши тести використовуючи тестовий фреймворк Latte, describe не може бути вкладеним, внутрі describe використовуй it, файл з тестами поклади в папку /easydata.js/packs/core/tests, use context7
