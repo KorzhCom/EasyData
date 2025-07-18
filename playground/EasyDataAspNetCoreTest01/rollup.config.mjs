@@ -5,7 +5,7 @@ import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
-import typedoc from '@olton/rollup-plugin-typedoc'
+// import typedoc from '@olton/rollup-plugin-typedoc'
 import noEmit from 'rollup-plugin-no-emit'
 import multi from '@rollup/plugin-multi-entry'
 import * as path from "path";

@@ -5,7 +5,7 @@ import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
-import typedoc from '@olton/rollup-plugin-typedoc'
+// import typedoc from '@olton/rollup-plugin-typedoc'
 import noEmit from 'rollup-plugin-no-emit'
 import * as path from "path";
 import { fileURLToPath } from 'url';
@@ -49,12 +49,12 @@ export default [
             typescript({ sourceMap: sourcemap, }),
             nodeResolve({ browser: true, }),
             commonjs(),
-            typedoc({
-                json: '../../docs/easydata-ui.json',
-                out: './docs',
-                entryPoints: ['./src/**/*.ts'],
-                tsconfig: './tsconfig.json'
-            }),
+            // typedoc({
+            //     json: '../../docs/easydata-ui.json',
+            //     out: './docs',
+            //     entryPoints: ['./src/**/*.ts'],
+            //     tsconfig: './tsconfig.json'
+            // }),
         ],
         external: ["@easydata/core"],
         output: [
