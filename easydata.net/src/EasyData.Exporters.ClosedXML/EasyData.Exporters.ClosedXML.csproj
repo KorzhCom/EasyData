@@ -13,7 +13,7 @@
 
   <ItemGroup>
 		<PackageReference Include="System.Memory" Version="4.5.5" />
-		<PackageReference Include="ClosedXML" Version="0.104.2" />
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
   </ItemGroup>
   
   <ItemGroup>
