@@ -9,7 +9,7 @@
     <PackageTags>database crud filtering</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <InternalsVisibleTo Include="Korzh.EasyQuery" />
   </ItemGroup>
 
