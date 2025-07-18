@@ -10,7 +10,7 @@
         "build": "npm run clear && rollup -c",
         "watch": "rollup -c -w",
         "docs": "typedoc src/public_api.ts --out ./docs",
-        "test": "vitest run"
+        "test": "cross-env NODE_OPTIONS=\"--import tsx\" latte -d -v -t --include=./**/*.test.ts"
     },
     "author": "Korzh.com",
     "homepage": "https://github.com/KorzhCom/EasyData",
@@ -29,5 +29,8 @@
     "license": "MIT",
     "files": [
         "dist"
-    ]
+    ],
+    "dependencies": {
+        "tsx": "^4.19.4"
+    }
 }

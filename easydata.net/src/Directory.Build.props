@@ -1,8 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <Version>1.4.12</Version>
-    <AssemblyVersion>1.4.12.1</AssemblyVersion>
     <Configurations>Debug;Release</Configurations>
 
     <Authors>Korzh.com</Authors>
@@ -12,9 +10,10 @@
     <PackageIcon>easydata-icon02.png</PackageIcon>
     <PackageIconUrl>https://cdn.korzh.com/img/easydata-icon02.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\EasyData.snk</AssemblyOriginatorKeyFile>
 
     <NoWarn>CS1591,CS1574</NoWarn>
-
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\images\easydata-icon02.png" Pack="true" Visible="false" PackagePath=""/>
