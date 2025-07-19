@@ -40,7 +40,7 @@ describe('TextDataFilter', () => {
             [5, 'Watermelon', 'Summer favorite', 5.99]
         ];
 
-        // Создаем исходную таблицу данных
+        // Create source data table
         sourceTable = new EasyDataTable({
             columns: columns,
             rows: tableData,
@@ -50,7 +50,7 @@ describe('TextDataFilter', () => {
         // Create mock for DataLoader
         mockLoader = {
             loadChunk: (chunkInfo: ChunkInfo): Promise<{ table: EasyDataTable, total: number }> => {
-                // Emulate фильтрацию на сервере
+                // Emulate server-side filtering
                 const filterValue = chunkInfo['filters']?.[0]?.value?.toLowerCase();
                 const filteredData = filterValue 
                     ? tableData.filter(row => {
@@ -77,17 +77,17 @@ describe('TextDataFilter', () => {
         filter = new TextDataFilter(mockLoader, sourceTable, 'products');
     });
 
-    it('should быть экземпляром класса DataFilter', () => {
+    it('should be an instance of DataFilter class', () => {
         expect(filter).toBeInstanceOf(DataFilter);
         expect(filter).toBeObject();
     });
 
-    it('should return пустую строку для getValue() после создания', () => {
+    it('should return empty string for getValue() after creation', () => {
         const value = filter.getValue();
         expect(value).toBe('');
     });
 
-    it('should correctly устанавливать и возвращать значение фильтра', () => {
+    it('should correctly set and return filter value', () => {
         return filter.apply('apple')
             .then(() => {
                 const value = filter.getValue();
@@ -95,14 +95,14 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should return исходную таблицу при пустом значении фильтра', () => {
+    it('should return original table with empty filter value', () => {
         return filter.apply('')
             .then(result => {
                 expect(result).toBe(sourceTable);
             });
     });
 
-    it('should return исходную таблицу после очистки фильтра', () => {
+    it('should return original table after clearing filter', () => {
         return filter.apply('apple')
             .then(() => filter.clear())
             .then(result => {
@@ -111,7 +111,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should фильтровать данные в памяти при полностью загруженной таблице', () => {
+    it('should filter data in memory when table is fully loaded', () => {
         return filter.apply('apple')
             .then(filteredTable => {
                 expect(filteredTable).not.toBe(sourceTable);
@@ -121,49 +121,49 @@ describe('TextDataFilter', () => {
                 expect(rows).toBeArray();
                 expect(rows.length).toBe(2);
                 
-                // Check первую строку (Apple)
+                // Check first row (Apple)
                 expect(rows[0].getValue('name')).toBe('Apple');
                 
-                // Check вторую строку (Pineapple)
+                // Check second row (Pineapple)
                 expect(rows[1].getValue('name')).toBe('Pineapple');
             });
     });
 
-    it('should использовать серверную фильтрацию когда таблица не полностью загружена', () => {
-        // Создаем частично загруженную таблицу и новый фильтр
+    it('should use server-side filtering when table is not fully loaded', () => {
+        // Create partially loaded table and new filter
         const partialTable = new EasyDataTable({
             columns: columns,
             loader: mockLoader
         });
         
-        // Добавляем только часть данных, имитируя неполную загрузку
+        // Add only part of data, simulating incomplete loading
         partialTable.addRow(tableData[0]);
         partialTable.addRow(tableData[1]);
-        partialTable.setTotal(tableData.length); // Общее количество записей больше, чем закешировано
+        partialTable.setTotal(tableData.length); // Total record count is greater than cached
         
         const serverFilter = new TextDataFilter(mockLoader, partialTable, 'products');
         
-        // Шпионим за методом loadChunk у mockLoader
+        // Spy on loadChunk method of mockLoader
         const loadChunkSpy = jest.spyOn(mockLoader, 'loadChunk');
         
         return serverFilter.apply('orange')
             .then(filteredTable => {
-                // Check, что был вызван метод loadChunk
+                // Check that loadChunk method was called
                 expect(loadChunkSpy).toHaveBeenCalled();
                 
-                // Check, что фильтр был передан в запрос
+                // Check that filter was passed in request
                 const callArgs = loadChunkSpy.mock.calls[0][0];
                 expect(callArgs).toBeObject();
                 expect(callArgs.filters).toBeArray();
                 expect(callArgs.filters[0].value).toBe('orange');
                 
-                // Check результаты фильтрации
+                // Check filtering results
                 expect(filteredTable.getCachedCount()).toBe(1);
                 expect(filteredTable.getCachedRows()[0].getValue('name')).toBe('Orange');
             });
     });
 
-    it('should поддерживать множественные поисковые слова через разделитель ||', () => {
+    it('should support multiple search words through || separator', () => {
         return filter.apply('apple || melon')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -177,7 +177,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should фильтровать по нескольким колонкам', () => {
+    it('should filter by multiple columns', () => {
         return filter.apply('fruit')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -191,7 +191,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should фильтровать без учета регистра', () => {
+    it('should filter case-insensitively', () => {
         return filter.apply('APPLE')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -204,7 +204,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should return пустую таблицу если нет соответствий', () => {
+    it('should return empty table if no matches found', () => {
         return filter.apply('nonexistent')
             .then(filteredTable => {
                 expect(filteredTable.getCachedCount()).toBe(0);

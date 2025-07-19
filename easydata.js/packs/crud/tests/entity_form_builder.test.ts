@@ -41,7 +41,7 @@ describe('EntityEditFormBuilder', () => {
     };
 
     beforeEach(() => {
-        // Create attributes для нашей сущности
+        // Create attributes for our entity
         const attributes = [
             createAttr('Person.id', 'ID', DataType.Int32, { 
                 isPrimaryKey: true,
@@ -93,7 +93,7 @@ describe('EntityEditFormBuilder', () => {
             attributes
         } as MetaEntity;
 
-        // Создаем Department сущность для lookup
+        // Create Department entity for lookup
         const departmentEntity = {
             id: 'Department',
             name: 'Department',
@@ -105,17 +105,17 @@ describe('EntityEditFormBuilder', () => {
             getFirstPrimaryAttr: () => departmentEntity.attributes[0]
         } as MetaEntity;
         
-        // Создаем метаданные с нашими сущностями
+        // Create metadata with our entities
         mockMetaData = {
             getRootEntity: () => ({
                 subEntities: [mockEntity, departmentEntity]
             }),
             getAttributeById: (id: string) => {
-                // Поиск в атрибутах Person
+                // Search in Person attributes
                 const personAttr = mockEntity.attributes.find(attr => attr.id === id);
                 if (personAttr) return personAttr;
                 
-                // Поиск в атрибутах Department
+                // Search in Department attributes
                 const deptAttr = departmentEntity.attributes.find(attr => attr.id === id);
                 if (deptAttr) return deptAttr;
                 
@@ -123,7 +123,7 @@ describe('EntityEditFormBuilder', () => {
             }
         } as MetaData;
 
-        // Создаем объект для представления данных строки
+        // Create object for representing row data
         const rowData = {
             'Person.id': 1,
             'Person.name': 'John Doe',
@@ -135,12 +135,12 @@ describe('EntityEditFormBuilder', () => {
             'Person.departmentId': 2
         };
         
-        // Создаем макет для DataRow
+        // Create mock for DataRow
         dataRow = {
             getValue: (id: string) => rowData[id]
         } as DataRow;
         
-        // Create mock for контекста данных
+        // Create mock for data context
         mockDataContext = {
             getMetaData: () => mockMetaData,
             getActiveEntity: () => mockEntity,
@@ -165,7 +165,7 @@ describe('EntityEditFormBuilder', () => {
     it('should be created with empty parameters and reset to default values', () => {
         expect(builder).toBeDefined();
         
-        // Check, что свойство context установлено
+        // Check that context property is set
         expect((builder as any).context).toBe(mockDataContext);
         
         // Check метод reset
