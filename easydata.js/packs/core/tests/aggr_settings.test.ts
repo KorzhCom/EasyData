@@ -10,7 +10,7 @@ describe('AggregationSettings', () => {
     let settings: AggregationSettings;
 
     beforeEach(() => {
-        // Создаем мок для AggregationColumnStore
+        // Creating a mock for AggregationColumnStore
         columnStore = mock<AggregationColumnStore>({
             getColumnIds: (from, to) => {
                 const result = [];
@@ -20,11 +20,11 @@ describe('AggregationSettings', () => {
                 return result;
             },
             validateColumns: (columns) => {
-                // Простая проверка - все колонки должны начинаться с 'col'
+                // Simple check - all columns must start with 'col'
                 return columns.every(col => typeof col === 'string' && col.startsWith('col'));
             },
             validateAggregate: (colId, funcId) => {
-                // Проверка - валидные функции: 'sum', 'avg', 'min', 'max', 'count'
+                // Check - valid functions: 'sum', 'avg', 'min', 'max', 'count'
                 const validFuncs = ['sum', 'avg', 'min', 'max', 'count'];
                 return typeof colId === 'string' && 
                        colId.startsWith('col') && 
@@ -126,18 +126,18 @@ describe('AggregationSettings', () => {
     });
 
     it('should check if settings are valid', () => {
-        // Несуществующие группы и агрегаты -> невалидно
+        // Non-existent groups and aggregates -> invalid
         expect(settings.isValid()).toBe(false);
 
-        // Только группы -> невалидно
+        // Only groups -> invalid
         settings.addGroup({ columns: ['col1'] });
         expect(settings.isValid()).toBe(false);
 
-        // Группы и агрегаты -> валидно
+        // Groups and aggregates -> valid
         settings.addAggregateColumn('col2', 'sum');
         expect(settings.isValid()).toBe(true);
 
-        // Только агрегаты и тотал -> валидно
+        // Only aggregates and totals -> valid
         settings.clear();
         settings.addAggregateColumn('col1', 'sum');
         settings.addGrandTotals();
