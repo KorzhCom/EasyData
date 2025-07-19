@@ -10,7 +10,7 @@ describe('AggregationSettings', () => {
     let settings: AggregationSettings;
 
     beforeEach(() => {
-        // Create mock for AggregationColumnStore
+        // Creating a mock for AggregationColumnStore
         columnStore = mock<AggregationColumnStore>({
             getColumnIds: (from, to) => {
                 const result = [];
@@ -126,7 +126,7 @@ describe('AggregationSettings', () => {
     });
 
     it('should check if settings are valid', () => {
-        // No groups and aggregates -> invalid
+        // Non-existent groups and aggregates -> invalid
         expect(settings.isValid()).toBe(false);
 
         // Only groups -> invalid
@@ -137,7 +137,7 @@ describe('AggregationSettings', () => {
         settings.addAggregateColumn('col2', 'sum');
         expect(settings.isValid()).toBe(true);
 
-        // Only aggregates and total -> valid
+        // Only aggregates and totals -> valid
         settings.clear();
         settings.addAggregateColumn('col1', 'sum');
         settings.addGrandTotals();
