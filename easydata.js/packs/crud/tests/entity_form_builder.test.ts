@@ -158,7 +158,7 @@ describe('EntityEditFormBuilder', () => {
             })
         } as unknown as DataContext;
         
-        // Create instance builder'а
+        // Create instance of builder
         builder = new EntityEditFormBuilder(mockDataContext);
     });
 
@@ -168,7 +168,7 @@ describe('EntityEditFormBuilder', () => {
         // Check that context property is set
         expect((builder as any).context).toBe(mockDataContext);
         
-        // Check метод reset
+        // Check reset method
         const formBeforeReset = (builder as any).form;
         builder.reset();
         const formAfterReset = (builder as any).form;
@@ -180,7 +180,7 @@ describe('EntityEditFormBuilder', () => {
     it('should create form with correct fields', () => {
         const form = builder.build();
         
-        // Check что форма создана
+        // Check that form is created
         expect(form).toBeInstanceOf(EntityEditForm);
         
         // Get form HTML
@@ -248,7 +248,7 @@ describe('EntityEditFormBuilder', () => {
         expect(idInput).toBeDefined();
         expect(idInput.getAttribute('readonly')).toBeDefined();
         
-        // Check, что неизменяемые атрибуты имеют readonly
+        // Check that non-editable attributes have readonly
         const attrNonEditable = createAttr('Person.createdAt', 'Created At', DataType.DateTime, { 
             isEditable: false,
             showOnEdit: true
@@ -264,11 +264,11 @@ describe('EntityEditFormBuilder', () => {
         expect(createdAtInput.getAttribute('readonly')).toBeDefined();
     });
 
-    it('should создавать текстовые поля правильного типа', () => {
+    it('should create text fields of correct type', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check текстовые поля
+        // Check text fields
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         expect(nameInput.type).toBe('text');
         
@@ -308,19 +308,19 @@ describe('EntityEditFormBuilder', () => {
         expect(options[1].value).toBe('Inactive');
     });
 
-    it('should создавать специальные поля для дат и времени', () => {
+    it('should create special fields for dates and times', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check поля для дат
+        // Check date fields
         const birthDateField = formHtml.querySelector('[name="Person.birthDate"]').closest('.kfrm-fields, .kfrm-fields-ie');
         expect(birthDateField).toBeDefined();
         
-        // Check наличие кнопки с календарем
+        // Check presence of calendar button
         const calendarButton = birthDateField.querySelector('button');
         expect(calendarButton).toBeDefined();
         
-        // Check наличие иконки календаря
+        // Check presence of calendar icon
         const calendarIcon = calendarButton.querySelector('i.ed-calendar-icon');
         expect(calendarIcon).toBeDefined();
     });
@@ -343,7 +343,7 @@ describe('EntityEditFormBuilder', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check наличие подсказки для поля с описанием
+        // Check presence of tooltip for field with description
         const nameLabel = formHtml.querySelector(`label[for="Person.name"]`);
         expect(nameLabel).toBeDefined();
         

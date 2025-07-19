@@ -115,7 +115,7 @@ describe('TextDataFilter', () => {
         return filter.apply('apple')
             .then(filteredTable => {
                 expect(filteredTable).not.toBe(sourceTable);
-                expect(filteredTable.getCachedCount()).toBe(2); // Apple и Pineapple
+                expect(filteredTable.getCachedCount()).toBe(2); // Apple and Pineapple
                 
                 const rows = filteredTable.getCachedRows();
                 expect(rows).toBeArray();
@@ -217,7 +217,7 @@ describe('TextDataFilter', () => {
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
                 expect(rows).toBeArray();
-                expect(rows.length).toBe(1); // Apple с ценой 1.99
+                expect(rows.length).toBe(1); // Apple with price 1.99
                 expect(rows[0].getValue('name')).toBe('Apple');
                 expect(rows[0].getValue('price')).toBe(1.99);
             });
