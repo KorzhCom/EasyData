@@ -168,11 +168,11 @@ describe('MetaEntity', () => {
             }
         );
         
-        // Должен посетить только корневую сущность и первый атрибут
+        // Should visit only the root entity and the first attribute
         expect(entityCount).toBe(1);
         expect(attrCount).toBe(1);
         
-        // Повторное сканирование полностью
+        // Full re-scan
         entityCount = 0;
         attrCount = 0;
         
@@ -185,9 +185,9 @@ describe('MetaEntity', () => {
             }
         );
         
-        // Должен посетить все сущности и атрибуты
-        expect(entityCount).toBe(2); // root и child
-        expect(attrCount).toBe(2); // attr1 и attr2
+        // Should visit all entities and attributes
+        expect(entityCount).toBe(2); // root and child
+        expect(attrCount).toBe(2); // attr1 and attr2
     });
     
     it('should find primary attributes', () => {
