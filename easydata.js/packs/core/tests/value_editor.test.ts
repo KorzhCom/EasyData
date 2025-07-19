@@ -6,7 +6,7 @@ import { EditorTag } from '../src/types/editor_tag';
 import { DataType } from '../src/types/data_type';
 
 describe('ValueEditor', () => {
-    it('должен создаваться с правильными значениями по умолчанию', () => {
+    it('should be created with correct default values', () => {
         const editor = new ValueEditor();
         
         expect(editor.id).toBe('');
@@ -22,7 +22,7 @@ describe('ValueEditor', () => {
         expect(editor.processValues).toBeUndefined();
     });
     
-    it('должен загружать обязательные данные из DTO', () => {
+    it('should load required data from DTO', () => {
         const editor = new ValueEditor();
         const dto: ValueEditorDTO = {
             id: 'test-editor',
@@ -39,7 +39,7 @@ describe('ValueEditor', () => {
         expect(editor.defValue).toBe('default');
     });
     
-    it('должен загружать все данные из DTO', () => {
+    it('should load all data from DTO', () => {
         const editor = new ValueEditor();
         const dto: ValueEditorDTO = {
             id: 'test-editor',
@@ -60,7 +60,7 @@ describe('ValueEditor', () => {
         
         expect(editor.id).toBe('test-editor');
         expect(editor.tag).toBe(EditorTag.MultipleChoice);
-        // subType должен перезаписать rtype
+        // subType should override rtype
         expect(editor.resType).toBe(DataType.Int32);
         expect(editor.defValue).toBe('default');
         expect(editor.name).toBe('Test Editor');
@@ -72,7 +72,7 @@ describe('ValueEditor', () => {
         ]);
     });
     
-    it('должен возвращать пустую строку для getValueText когда нет values', () => {
+    it('should return an empty string for getValueText when there are no values', () => {
         const editor = new ValueEditor();
         editor.id = 'test-editor';
         
@@ -80,7 +80,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('');
     });
     
-    it('должен возвращать текст для строкового значения через getValueText', () => {
+    it('should return text for a string value through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -92,7 +92,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 2');
     });
     
-    it('должен возвращать пустую строку для несуществующего значения через getValueText', () => {
+    it('should return an empty string for a non-existent value through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -103,7 +103,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('');
     });
     
-    it('должен объединять тексты для массива значений через getValueText', () => {
+    it('should concatenate texts for an array of values through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -115,7 +115,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 1,Option 3');
     });
     
-    it('должен возвращать только найденные тексты для массива значений через getValueText', () => {
+    it('should return only found texts for an array of values through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -127,7 +127,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 1,Option 3');
     });
     
-    it('должен обрабатывать случай когда в values пустой массив', () => {
+    it('should handle the case when values is an empty array', () => {
         const editor = new ValueEditor();
         editor.values = [];
         
@@ -138,7 +138,7 @@ describe('ValueEditor', () => {
         expect(result2).toBe('');
     });
     
-    it('должен загружать данные даже если DTO неполное', () => {
+    it('should load data even if DTO is incomplete', () => {
         const editor = new ValueEditor();
         const incompleteDTO = {
             id: 'test-editor'
@@ -147,24 +147,24 @@ describe('ValueEditor', () => {
         editor.loadFromData(incompleteDTO);
         
         expect(editor.id).toBe('test-editor');
-        // Остальные свойства должны остаться со значениями по умолчанию
+        // Other properties should remain with default values
         expect(editor.tag).toBe(EditorTag.Unknown);
         expect(editor.resType).toBe(DataType.Unknown);
         expect(editor.defValue).toBe('');
     });
     
-    it('должен не менять текущие значения если DTO равно null или undefined', () => {
+    it('should not change current values if DTO is null or undefined', () => {
         const editor = new ValueEditor();
         editor.id = 'existing-id';
         editor.tag = EditorTag.Edit;
         
-        // Передаем undefined
+        // Pass undefined
         editor.loadFromData(undefined as any);
         
         expect(editor.id).toBe('existing-id');
         expect(editor.tag).toBe(EditorTag.Edit);
         
-        // Передаем null
+        // Pass null
         editor.loadFromData(null as any);
         
         expect(editor.id).toBe('existing-id');

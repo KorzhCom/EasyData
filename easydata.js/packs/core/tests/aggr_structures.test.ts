@@ -11,7 +11,7 @@ import {
     DataGroup
 } from '../src/data/aggr_structures';
 
-// Тесты для AggregationColumnStore
+// Tests for AggregationColumnStore
 describe('AggregationColumnStore Interface', () => {
     let columnStore: AggregationColumnStore;
 
@@ -35,22 +35,22 @@ describe('AggregationColumnStore Interface', () => {
         };
     });
 
-    it('должен возвращать массив идентификаторов колонок в указанном диапазоне', () => {
+    it('should return an array of column identifiers in specified range', () => {
         const columns = columnStore.getColumnIds(1, 3);
         expect(columns).toBeArrayEqual(['col1', 'col2', 'col3']);
     });
 
-    it('должен возвращать один идентификатор колонки, если указан только начальный индекс', () => {
+    it('should return a single column identifier if only starting index is specified', () => {
         const columns = columnStore.getColumnIds(5);
         expect(columns).toBeArrayEqual(['col5']);
     });
 
-    it('должен проверять валидность колонок', () => {
+    it('should check the column validity', () => {
         expect(columnStore.validateColumns(['col1', 'col2'])).toBe(true);
         expect(columnStore.validateColumns(['col1', 'invalid'])).toBe(false);
     });
 
-    it('должен проверять валидность агрегатной функции для колонки', () => {
+    it('should check the aggregate function validity for column', () => {
         expect(columnStore.validateAggregate('col1', 'sum')).toBe(true);
         expect(columnStore.validateAggregate('col2', 'avg')).toBe(true);
         expect(columnStore.validateAggregate('col3', 'invalid')).toBe(false);
@@ -58,7 +58,7 @@ describe('AggregationColumnStore Interface', () => {
     });
 });
 
-// Тесты для AggregatesContainer
+// Tests for AggregatesContainer
 describe('AggregatesContainer Interface', () => {
     let container: AggregatesContainer;
 
@@ -89,27 +89,27 @@ describe('AggregatesContainer Interface', () => {
         };
     });
 
-    it('должен сохранять данные агрегации для определенного уровня', () => {
+    it('should save aggregate data for a specific level', () => {
         const data = new Map<string, GroupTotals>();
         data.set(JSON.stringify({col1: 'value1'}), {sum: 100, count: 10});
         
         container.setAggregateData(1, data);
-        
-        // Проверим через getAggregateData
+
+        // Check this through getAggregateData
         return container.getAggregateData(1, {col1: 'value1'})
             .then(totals => {
                 expect(totals).toBeObject({sum: 100, count: 10});
             });
     });
 
-    it('должен возвращать пустой объект для несуществующего уровня', () => {
+    it('should return an empty object for a non-existent level', () => {
         return container.getAggregateData(999, {col1: 'value1'})
             .then(totals => {
                 expect(totals).toBeObject({});
             });
     });
 
-    it('должен обновлять данные агрегации', () => {
+    it('should update aggregate data', () => {
         container.updateAggregateData(1, {col1: 'value1'}, {sum: 100});
         container.updateAggregateData(1, {col1: 'value1'}, {sum: 200});
         
@@ -119,7 +119,7 @@ describe('AggregatesContainer Interface', () => {
             });
     });
 
-    it('должен создавать новый уровень при обновлении данных несуществующего уровня', () => {
+    it('should create a new level when updating data for a non-existent level', () => {
         container.updateAggregateData(2, {col2: 'value2'}, {avg: 50});
         
         return container.getAggregateData(2, {col2: 'value2'})
@@ -129,14 +129,14 @@ describe('AggregatesContainer Interface', () => {
     });
 });
 
-// Тесты для AggregatesCalculator
+// Tests for AggregatesCalculator
 describe('AggregatesCalculator Interface', () => {
     let container: AggregatesContainer;
     let calculator: AggregatesCalculator;
     let needRecalculationValue: boolean;
 
     beforeEach(() => {
-        // Создаем мок для AggregatesContainer
+        // Create mock for AggregatesContainer
         container = {
             setAggregateData: mock(),
             getAggregateData: mock().mockImplementation(async () => ({})),
@@ -145,7 +145,7 @@ describe('AggregatesCalculator Interface', () => {
         
         needRecalculationValue = true;
         
-        // Создаем мок для AggregatesCalculator
+        // Create a mock for AggregatesCalculator
         calculator = {
             getAggrContainer: () => container,
             
@@ -160,7 +160,7 @@ describe('AggregatesCalculator Interface', () => {
                     throw error;
                 }
                 
-                // Симулируем вычисление и получение результата
+                // Simulate calculation and obtaining result
                 const result = { sum: 100, count: 10 };
                 if (options?.resultObtained) {
                     options.resultObtained(result, 1);
@@ -177,12 +177,12 @@ describe('AggregatesCalculator Interface', () => {
         };
     });
 
-    it('должен возвращать контейнер агрегатов', () => {
+    it('should return an aggregate container', () => {
         const result = calculator.getAggrContainer();
         expect(result).toBe(container);
     });
 
-    it('должен выполнять вычисление с вызовом callback-функций', async () => {
+    it('should perform a calculation with callback functions', async () => {
         const resultCallback = mock();
         const errorCallback = mock();
         
@@ -196,7 +196,7 @@ describe('AggregatesCalculator Interface', () => {
         expect(calculator.needRecalculation()).toBe(false);
     });
 
-    it('должен вызывать errorOccurred при ошибке вычисления', async () => {
+    it('should call the errorOccurred on calculation error', async () => {
         const resultCallback = mock();
         const errorCallback = mock();
         
@@ -207,7 +207,7 @@ describe('AggregatesCalculator Interface', () => {
                 errorOccurred: errorCallback
             });
         } catch (error) {
-            // Ожидаем, что ошибка будет перехвачена
+            // Expect the error to be caught
         }
         
         expect(resultCallback).not.toHaveBeenCalled();
@@ -217,20 +217,20 @@ describe('AggregatesCalculator Interface', () => {
         expect(error.level).toBe(0);
     });
 
-    it('должен возвращать needRecalculation=true после reset', () => {
+    it('should return needRecalculation=true after reset', () => {
         calculator.reset();
         expect(calculator.needRecalculation()).toBe(true);
     });
 
-    it('должен возвращать needRecalculation=false после успешного вычисления', async () => {
+    it('should return needRecalculation=false after successful calculation', async () => {
         await calculator.calculate();
         expect(calculator.needRecalculation()).toBe(false);
     });
 });
 
-// Тесты для структур данных
+// Tests for data structures
 describe('Data Structures', () => {
-    it('должен правильно определять DataGroup', () => {
+    it('should correctly define a DataGroup', () => {
         const group: DataGroup = {
             name: 'TestGroup',
             columns: ['col1', 'col2']
@@ -240,7 +240,7 @@ describe('Data Structures', () => {
         expect(group.columns).toBeArrayEqual(['col1', 'col2']);
     });
 
-    it('должен работать с GroupKey как с объектом', () => {
+    it('should work with GroupKey as an object', () => {
         const key: GroupKey = {
             col1: 'value1',
             col2: 100
@@ -249,8 +249,8 @@ describe('Data Structures', () => {
         expect(key.col1).toBe('value1');
         expect(key.col2).toBe(100);
     });
-    
-    it('должен работать с GroupTotals как с объектом', () => {
+
+    it('should work with GroupTotals as an object', () => {
         const totals: GroupTotals = {
             sum: 500,
             avg: 100,
@@ -262,7 +262,7 @@ describe('Data Structures', () => {
         expect(totals.count).toBe(5);
     });
 
-    it('должен создавать AggrCalculationError с уровнем', () => {
+    it('should create an AggrCalculationError with a level', () => {
         const error = new Error('Test error') as AggrCalculationError;
         error.level = 2;
         
@@ -270,7 +270,7 @@ describe('Data Structures', () => {
         expect(error.level).toBe(2);
     });
 
-    it('должен создавать AggrCalculationOptions с опциями', () => {
+    it('should create an AggrCalculationOptions with options', () => {
         const options: AggrCalculationOptions = {
             maxLevel: 3,
             resultObtained: mock(),

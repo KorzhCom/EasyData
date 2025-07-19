@@ -17,7 +17,7 @@ describe('MetaEntity', () => {
         } as unknown as MetaData;
     });
     
-    it('должен инициализироваться с правильными значениями по умолчанию', () => {
+    it('should initialize with correct default values', () => {
         const entity = new MetaEntity();
         
         expect(entity.name).toBe('');
@@ -31,14 +31,14 @@ describe('MetaEntity', () => {
         expect(entity.parent).toBeUndefined();
     });
     
-    it('должен принимать родительскую сущность в конструкторе', () => {
+    it('should accept parent entity in constructor', () => {
         const parent = new MetaEntity();
         const child = new MetaEntity(parent);
         
         expect(child.parent).toBe(parent);
     });
     
-    it('должен загружать данные из DTO', () => {
+    it('should load data from DTO', () => {
         const entity = new MetaEntity();
         const dto: MetaEntityDTO = {
             id: 'test-entity',
@@ -60,7 +60,7 @@ describe('MetaEntity', () => {
         expect(entity.isEditable).toBe(false);
     });
     
-    it('должен загружать дочерние сущности из DTO', () => {
+    it('should load child entities from DTO', () => {
         const entity = new MetaEntity();
         const dto: MetaEntityDTO = {
             id: 'parent',
@@ -94,7 +94,7 @@ describe('MetaEntity', () => {
         expect(entity.subEntities[1].parent).toBe(entity);
     });
     
-    it('должен загружать атрибуты из DTO', () => {
+    it('should load attributes from DTO', () => {
         const entity = new MetaEntity();
         const dto: MetaEntityDTO = {
             id: 'test-entity',
@@ -133,8 +133,8 @@ describe('MetaEntity', () => {
         expect(entity.attributes[1].isPrimaryKey).toBe(false);
     });
     
-    it('должен сканировать сущность с атрибутами и подсущностями', () => {
-        // Настройка сложной иерархии сущностей
+    it('should scan entity with attributes and sub-entities', () => {
+        // Setting up complex entity hierarchy
         const rootEntity = new MetaEntity();
         rootEntity.id = 'root';
         
@@ -150,15 +150,15 @@ describe('MetaEntity', () => {
         attr2.id = 'attr2';
         childEntity.attributes.push(attr2);
         
-        // Счетчики для проверки вызовов
+        // Counters for verification of calls
         let entityCount = 0;
         let attrCount = 0;
         
-        // Сканирование
+        // Scanning
         rootEntity.scan(
             (attr) => {
                 attrCount++;
-                // Прерываем сканирование после первого атрибута для теста
+                // Stop scanning after the first attribute for testing
                 if (attr.id === 'attr1') {
                     return;
                 }
@@ -168,11 +168,11 @@ describe('MetaEntity', () => {
             }
         );
         
-        // Должен посетить только корневую сущность и первый атрибут
+        // Should visit only the root entity and the first attribute
         expect(entityCount).toBe(1);
         expect(attrCount).toBe(1);
         
-        // Повторное сканирование полностью
+        // Full re-scan
         entityCount = 0;
         attrCount = 0;
         
@@ -185,15 +185,15 @@ describe('MetaEntity', () => {
             }
         );
         
-        // Должен посетить все сущности и атрибуты
-        expect(entityCount).toBe(2); // root и child
-        expect(attrCount).toBe(2); // attr1 и attr2
+        // Should visit all entities and attributes
+        expect(entityCount).toBe(2); // root and child
+        expect(attrCount).toBe(2); // attr1 and attr2
     });
     
-    it('должен находить первичные атрибуты', () => {
+    it('should find primary attributes', () => {
         const entity = new MetaEntity();
         
-        // Создаем атрибуты
+        // Create attributes
         const attr1 = new MetaEntityAttr(entity);
         attr1.id = 'id';
         attr1.isPrimaryKey = true;
@@ -209,19 +209,19 @@ describe('MetaEntity', () => {
         attr3.isPrimaryKey = true;
         entity.attributes.push(attr3);
         
-        // Проверка getPrimaryAttrs
+        // Check getPrimaryAttrs
         const primaryAttrs = entity.getPrimaryAttrs();
         expect(primaryAttrs.length).toBe(2);
         expect(primaryAttrs[0].id).toBe('id');
         expect(primaryAttrs[1].id).toBe('code');
         
-        // Проверка getFirstPrimaryAttr
+        // Check getFirstPrimaryAttr
         const firstPrimaryAttr = entity.getFirstPrimaryAttr();
         expect(firstPrimaryAttr).not.toBeNull();
         expect(firstPrimaryAttr!.id).toBe('id');
     });
     
-    it('должен возвращать null из getFirstPrimaryAttr если первичных ключей нет', () => {
+    it('should return null from getFirstPrimaryAttr if there are no primary keys', () => {
         const entity = new MetaEntity();
         
         const attr = new MetaEntityAttr(entity);
@@ -250,7 +250,7 @@ describe('MetaEntityAttr', () => {
         } as unknown as MetaData;
     });
     
-    it('должен инициализироваться с правильными значениями по умолчанию', () => {
+    it('should initialize with correct default values', () => {
         const attr = new MetaEntityAttr(mockEntity);
         
         expect(attr.id).toBe('');
@@ -269,7 +269,7 @@ describe('MetaEntityAttr', () => {
         expect(attr.entity).toBe(mockEntity);
     });
     
-    it('должен загружать данные из DTO', () => {
+    it('should load data from DTO', () => {
         const attr = new MetaEntityAttr(mockEntity);
         const dto: MetaEntityAttrDTO = {
             id: 'test-attr',
@@ -309,10 +309,10 @@ describe('MetaEntityAttr', () => {
         expect(attr.userData).toBe('{"custom":"data"}');
     });
     
-    it('должен правильно обрабатывать даты в defaultValue', () => {
+    it('should correctly handle dates in defaultValue', () => {
         const attr = new MetaEntityAttr(mockEntity);
         
-        // Проверяем Date в defaultValue
+        // Check Date in defaultValue
         const dateDto: MetaEntityAttrDTO = {
             id: 'date-attr',
             cptn: 'Date Field',
@@ -326,11 +326,11 @@ describe('MetaEntityAttr', () => {
         
         expect(attr.defaultValue).toBeInstanceOf(Date);
         expect(attr.defaultValue.getFullYear()).toBe(2022);
-        expect(attr.defaultValue.getMonth()).toBe(0); // январь = 0
+        expect(attr.defaultValue.getMonth()).toBe(0); // January = 0
         expect(attr.defaultValue.getDate()).toBe(15);
     });
     
-    it('должен корректно обрабатывать lookup атрибуты', () => {
+    it('should correctly handle lookup attributes', () => {
         const attr = new MetaEntityAttr(mockEntity);
         const dto: MetaEntityAttrDTO = {
             id: 'fk-attr',
@@ -352,7 +352,7 @@ describe('MetaEntityAttr', () => {
         expect(attr.lookupDataAttr).toBe('lookup-data-attr');
     });
     
-    it('должен устанавливать редактор по умолчанию', () => {
+    it('should set default editor', () => {
         const editor = { id: 'test-editor' };
         
         mockMetaData = {
@@ -375,10 +375,10 @@ describe('MetaEntityAttr', () => {
         expect(attr.defaultEditor).toBe(editor);
     });
     
-    it('должен использовать старый формат ivis как синоним для sov', () => {
+    it('should use old ivis format as synonym for sov', () => {
         const attr = new MetaEntityAttr(mockEntity);
         
-        // Используем старый формат ivis
+        // Use old ivis format
         const dtoOld: MetaEntityAttrDTO = {
             id: 'old-attr',
             cptn: 'Old Attr',
@@ -391,7 +391,7 @@ describe('MetaEntityAttr', () => {
         attr.loadFromData(mockMetaData, dtoOld);
         expect(attr.showOnView).toBe(false);
         
-        // Используем новый формат sov
+        // Use new sov format
         const dtoNew: MetaEntityAttrDTO = {
             id: 'new-attr',
             cptn: 'New Attr',

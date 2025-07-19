@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 import progress from 'rollup-plugin-progress'
 import typescript from '@rollup/plugin-typescript'
-import typedoc from '@olton/rollup-plugin-typedoc'
+// import typedoc from '@olton/rollup-plugin-typedoc'
 import multi from '@rollup/plugin-multi-entry'
 import * as path from "path";
 import { fileURLToPath } from 'url';

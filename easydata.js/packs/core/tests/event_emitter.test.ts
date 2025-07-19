@@ -9,10 +9,10 @@ describe('EventEmitter', () => {
         eventEmitter = new EventEmitter(source);
     });
 
-    it('должен создаваться с указанным источником', () => {
+    it('should be created with a specified source', () => {
         expect(eventEmitter).toBeDefined();
-        
-        // Нам нужно вызвать событие, чтобы проверить источник
+
+        // We need to fire an event to check the source
         const testCallback = (event: EqEvent) => {
             expect(event.source).toBe(source);
         };
@@ -21,7 +21,7 @@ describe('EventEmitter', () => {
         eventEmitter.fire('testEvent');
     });
 
-    it('должен возвращать ID подписки при подписке на событие', () => {
+    it('should return ID of subscription when subscribing to an event', () => {
         const callback = (event: EqEvent) => {};
         
         const subscriptionId = eventEmitter.subscribe('testEvent', callback);
@@ -31,7 +31,7 @@ describe('EventEmitter', () => {
         expect(subscriptionId.length).toBeGreaterThan(0);
     });
 
-    it('должен вызывать колбэк при активации события', () => {
+    it('should call a callback when event is fired', () => {
         let callbackCalled = false;
         const testData = { test: 'data' };
         
@@ -48,7 +48,7 @@ describe('EventEmitter', () => {
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен вызывать несколько колбэков для одного события', () => {
+    it('should call multiple callbacks for a single event', () => {
         let callCount = 0;
         
         const callback1 = () => { callCount++; };
@@ -64,7 +64,7 @@ describe('EventEmitter', () => {
         expect(callCount).toBe(3);
     });
 
-    it('должен вызывать только колбэки для указанного типа события', () => {
+    it('should call only callbacks for the specified event type', () => {
         let event1CallCount = 0;
         let event2CallCount = 0;
         
@@ -77,7 +77,7 @@ describe('EventEmitter', () => {
         expect(event2CallCount).toBe(0);
     });
 
-    it('не должен вызывать колбэк после отписки', () => {
+    it('should not call a callback after unsubscribing', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
@@ -89,21 +89,21 @@ describe('EventEmitter', () => {
         expect(callbackCalled).toBe(false);
     });
 
-    it('должен правильно работать при отписке несуществующего ID', () => {
-        // Не должно выбрасывать исключение
+    it('should work correctly when unsubscribing non-existent ID', () => {
+        // Should not throw an exception
         expect(() => {
             eventEmitter.unsubscribe('testEvent', 'non-existent-id');
         }).not.toThrow();
     });
 
-    it('должен правильно работать при попытке активации несуществующего события', () => {
-        // Не должно выбрасывать исключение
+    it('should work correctly when firing non-existent event', () => {
+        // Should not throw an exception
         expect(() => {
             eventEmitter.fire('non-existent-event');
         }).not.toThrow();
     });
 
-    it('должен откладывать выполнение события с параметром postpone', (done) => {
+    it('should postpone event execution with a postpone parameter', (done) => {
         let callbackCalled = false;
         
         const callback = () => {
@@ -113,84 +113,84 @@ describe('EventEmitter', () => {
         
         eventEmitter.subscribe('testEvent', callback);
         
-        eventEmitter.fire('testEvent', null, 50); // отложить на 50 мс
+        eventEmitter.fire('testEvent', null, 50); // delay for 50 ms
         
-        // Сразу после вызова fire колбэк еще не должен быть вызван
+        // Immediately after calling fire, callback should not be called yet
         expect(callbackCalled).toBe(false);
     });
 
-    it('должен входить в тихий режим и выходить из него', () => {
+    it('should enter silent mode and exit from it', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
         
         eventEmitter.subscribe('testEvent', callback);
         
-        // По умолчанию не в тихом режиме
+        // By default, not in silent mode
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // Входим в тихий режим
+        // Entering silent mode
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // В тихом режиме колбэк не должен вызываться
+        // In silent mode, the callback should not be called
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
-        // Выходим из тихого режима
+        // Exiting silent mode
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // После выхода из тихого режима колбэк должен вызываться
+        // After exiting silent mode, callback should be called
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен поддерживать вложенный тихий режим', () => {
+    it('should support nested silent mode', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
         
         eventEmitter.subscribe('testEvent', callback);
         
-        // Входим в тихий режим дважды
+        // Enter silent mode twice
         eventEmitter.enterSilentMode();
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // Выходим из тихого режима один раз - все еще должны быть в тихом режиме
+        // Exit silent mode once - should still be in silent mode
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // В тихом режиме колбэк не должен вызываться
+        // In silent mode, callback should not be called
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
-        // Выходим из тихого режима еще раз
+        // Exit silent mode once more
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // После полного выхода из тихого режима колбэк должен вызываться
+        // After fully exiting silent mode, callback should be called
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен принудительно вызывать события в тихом режиме с параметром force', () => {
+    it('should force trigger events in silent mode with force parameter', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
         
         eventEmitter.subscribe('testEvent', callback);
         
-        // Входим в тихий режим
+        // Enter silent mode
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // Обычный вызов не должен срабатывать
+        // Normal call should not trigger
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
-        // Принудительный вызов должен сработать даже в тихом режиме
+        // Forced call should work even in silent mode
         eventEmitter.fire('testEvent', null, 0, true);
         expect(callbackCalled).toBe(true);
     });

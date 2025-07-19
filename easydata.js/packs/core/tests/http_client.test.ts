@@ -14,7 +14,7 @@ describe('HttpClient', () => {
     beforeEach(() => {
         requests = [];
         
-        // Мок для XMLHttpRequest
+        // Mock for XMLHttpRequest
         xhrMock = {
             open: mock(),
             send: mock(),
@@ -27,7 +27,7 @@ describe('HttpClient', () => {
             onerror: null
         };
         
-        // Сохраняем оригинальный XMLHttpRequest и заменяем его на мок
+        // Save original XMLHttpRequest and replace it with mock
         originalXMLHttpRequest = window.XMLHttpRequest;
         window.XMLHttpRequest = mock().mockImplementation(() => {
             const xhr = xhrMock;
@@ -39,17 +39,17 @@ describe('HttpClient', () => {
     });
     
     afterEach(() => {
-        // Восстанавливаем оригинальный XMLHttpRequest
+        // Restore original XMLHttpRequest
         window.XMLHttpRequest = originalXMLHttpRequest;
     });
     
-    it('должен создаваться с дефолтными настройками', () => {
+    it('should be created with default settings', () => {
         expect(httpClient.defaultHeaders).toBeObject({});
         expect(httpClient.customPayload).toBeUndefined();
         expect(httpClient.responseBody).toBeUndefined();
     });
     
-    it('должен выполнять GET запрос с правильными параметрами', () => {
+    it('should perform GET request with correct parameters', () => {
         const url = 'https://test.com/api/data';
         const options = {
             headers: { 'X-Custom-Header': 'test' },
@@ -65,15 +65,15 @@ describe('HttpClient', () => {
             true
         );
         
-        // Проверяем установку заголовков
+        // Check header setup
         expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('X-Custom-Header', 'test');
         expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         
-        // Проверяем вызов send
+        // Check send call
         expect(xhrMock.send).toHaveBeenCalledWith(null);
     });
     
-    it('должен выполнять POST запрос с данными', () => {
+    it('should perform POST request with data', () => {
         const url = 'https://test.com/api/data';
         const data = { name: 'John', age: 30 };
         
@@ -84,7 +84,7 @@ describe('HttpClient', () => {
         expect(xhrMock.send).toHaveBeenCalledWith(JSON.stringify(data));
     });
     
-    it('должен выполнять PUT запрос с данными', () => {
+    it('should perform PUT request with data', () => {
         const url = 'https://test.com/api/data/1';
         const data = { name: 'Updated Name', age: 31 };
         
@@ -95,7 +95,7 @@ describe('HttpClient', () => {
         expect(xhrMock.send).toHaveBeenCalledWith(JSON.stringify(data));
     });
     
-    it('должен выполнять DELETE запрос', () => {
+    it('should perform DELETE request', () => {
         const url = 'https://test.com/api/data/1';
         
         httpClient.delete(url);
@@ -105,7 +105,7 @@ describe('HttpClient', () => {
         expect(xhrMock.send).toHaveBeenCalledWith(null);
     });
     
-    it('должен добавлять defaultHeaders к запросу', () => {
+    it('should add defaultHeaders to request', () => {
         httpClient.defaultHeaders = {
             'Authorization': 'Bearer test-token',
             'X-Api-Key': 'api-key'
@@ -117,7 +117,7 @@ describe('HttpClient', () => {
         expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('X-Api-Key', 'api-key');
     });
     
-    it('должен добавлять customPayload к данным запроса', () => {
+    it('should add customPayload to request data', () => {
         const data = { name: 'John' };
         httpClient.customPayload = ['custom-payload-value'];
         
@@ -129,9 +129,9 @@ describe('HttpClient', () => {
         }));
     });
     
-    it('должен вызывать onRequest после формирования запроса', () => {
+    it('should call onRequest after forming request', () => {
         const onRequestMock = mock((request: HttpRequest) => {
-            // Изменяем запрос в обработчике
+            // Modify request in handler
             request.url = request.url + '/modified';
         });
         
@@ -142,43 +142,43 @@ describe('HttpClient', () => {
         expect(xhrMock.open).toHaveBeenCalledWith('GET', 'https://test.com/api/data/modified', true);
     });
     
-    it('должен выбрасывать предупреждение при использовании устаревшего beforeEachRequest', () => {
-        expect(1).toBe(1); // Замените на реальный тест, если нужно
+    it('should throw warning when using deprecated beforeEachRequest', () => {
+        expect(1).toBe(1); // Replace with real test if needed
     });
     
-    it('должен обрабатывать успешный ответ с JSON данными', async () => {
+    it('should handle successful response with JSON data', async () => {
         const responsePromise = httpClient.get('https://test.com/api/data');
         
-        // Эмулируем успешный ответ
+        // Emulate a successful response
         xhrMock.onreadystatechange();
         
         const response = await responsePromise;
         expect(response).toBeObject({ success: true, data: 'test' });
         expect(httpClient.responseBody).toBeObject({ success: true, data: 'test' });
     });
-    
-    it('должен вызывать onResponse при успешном ответе', () => {
+
+    it('should call onResponse on successful response', () => {
         const onResponseMock = mock();
         httpClient.onResponse = onResponseMock;
         
         const responsePromise = httpClient.get('https://test.com/api/data');
         
-        // Эмулируем успешный ответ
+        // Emulate a successful response
         xhrMock.onreadystatechange();
         
         expect(onResponseMock).toHaveBeenCalledWith(xhrMock);
     });
     
-    it('должен обрабатывать ошибки сети', async () => {
+    it('should handle network errors', async () => {
         const responsePromise = httpClient.get('https://test.com/api/data');
         
-        // Эмулируем ошибку сети
+        // Emulate a network error
         xhrMock.status = 0;
         xhrMock.onreadystatechange();
         
         try {
             await responsePromise;
-            fail('Должно было выбросить исключение');
+            fail('It should have thrown an exception');
         } 
         catch (error) {
             expect(error).toBeInstanceOf(HttpResponseError);
@@ -187,17 +187,17 @@ describe('HttpClient', () => {
         }
     });
     
-    it('должен обрабатывать HTTP ошибки', async () => {
+    it('should handle HTTP errors', async () => {
         const responsePromise = httpClient.get('https://test.com/api/data');
         
-        // Эмулируем HTTP ошибку
+        // Emulate HTTP error
         xhrMock.status = 404;
         xhrMock.responseText = '{"message":"Resource not found"}';
         xhrMock.onreadystatechange();
         
         try {
             await responsePromise;
-            fail('Должно было выбросить исключение');
+            fail('It should have thrown an exception');
         } 
         catch (error) {
             expect(error).toBeInstanceOf(HttpResponseError);
@@ -205,18 +205,18 @@ describe('HttpClient', () => {
             expect(error.message).toBe('Resource not found');
         }
     });
-    
-    it('должен обрабатывать HTTP ошибку без сообщения', async () => {
+
+    it('should handle HTTP error without message', async () => {
         const responsePromise = httpClient.get('https://test.com/api/data');
-        
-        // Эмулируем HTTP ошибку без поля message в ответе
+
+        // Emulate HTTP error without message field in response
         xhrMock.status = 404;
         xhrMock.responseText = '{}';
         xhrMock.onreadystatechange();
         
         try {
             await responsePromise;
-            fail('Должно было выбросить исключение');
+            fail('It should have thrown an exception');
         } 
         catch (error) {
             expect(error).toBeInstanceOf(HttpResponseError);
@@ -224,9 +224,9 @@ describe('HttpClient', () => {
             expect(error.message).toBe('No such endpoint: https://test.com/api/data');
         }
     });
-    
-    it('должен обрабатывать ответы с разными типами данных', async () => {
-        // Тестируем text ответ
+
+    it('should handle responses with different data types', async () => {
+        // Testing text response
         xhrMock.getResponseHeader.mockReturnValue('text/plain');
         xhrMock.responseText = 'Plain text response';
         
@@ -238,7 +238,7 @@ describe('HttpClient', () => {
         expect(httpClient.responseBody).toBe('Plain text response');
     });
     
-    it('должен поддерживать параметры responseType', () => {
+    it('should support responseType parameters', () => {
         httpClient.get('https://test.com/api/binary', { 
             responseType: 'arraybuffer' 
         });
@@ -246,7 +246,7 @@ describe('HttpClient', () => {
         expect(xhrMock.responseType).toBe('arraybuffer');
     });
     
-    it('должен возвращать экземпляр HttpActionResult', () => {
+    it('should return HttpActionResult instance', () => {
         const result = httpClient.get('https://test.com/api/data');
         
         expect(result).toBeInstanceOf(HttpActionResult);
@@ -254,7 +254,7 @@ describe('HttpClient', () => {
         expect(result.getPromise()).toBeDefined();
     });
     
-    it('должен корректно обрабатывать форм-данные', () => {
+    it('should correctly handle form data', () => {
         const formData = new FormData();
         formData.append('file', new Blob(['test content'], { type: 'text/plain' }));
         
@@ -262,16 +262,16 @@ describe('HttpClient', () => {
             dataType: 'form-data' 
         });
         
-        // Для form-data не устанавливается Content-Type
+        // For form-data, Content-Type is not set
         const contentTypeHeader = Array.from(xhrMock.setRequestHeader.mock.calls)
             .find(call => call[0] === 'Content-Type');
         expect(contentTypeHeader).toBeUndefined();
         
-        // Проверяем что данные отправляются как есть
+        // Check that data is sent as is
         expect(xhrMock.send).toHaveBeenCalledWith(formData);
     });
     
-    it('должен корректно формировать URL с query параметрами', () => {
+    it('should correctly form URL with query parameters', () => {
         httpClient.get('https://test.com/api/data', {
             queryParams: {
                 id: 123,

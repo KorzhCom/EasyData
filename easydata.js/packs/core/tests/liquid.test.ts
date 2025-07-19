@@ -1,7 +1,7 @@
 import { liquid } from '../src/utils/liquid';
 
 describe('liquid', () => {
-    it('должен заменять одну переменную в шаблоне', () => {
+    it('should replace single variable in template', () => {
         const template = 'Hello, {{name}}!';
         const vars = { name: 'World' };
         
@@ -10,7 +10,7 @@ describe('liquid', () => {
         expect(result).toBe('Hello, World!');
     });
     
-    it('должен заменять несколько разных переменных', () => {
+    it('should replace multiple different variables', () => {
         const template = 'Hello, {{name}}! Today is {{day}}.';
         const vars = { name: 'John', day: 'Monday' };
         
@@ -19,7 +19,7 @@ describe('liquid', () => {
         expect(result).toBe('Hello, John! Today is Monday.');
     });
     
-    it('должен заменять повторяющиеся переменные', () => {
+    it('should replace repeating variables', () => {
         const template = '{{name}} wrote: "Hello, {{name}}!"';
         const vars = { name: 'Alice' };
         
@@ -28,7 +28,7 @@ describe('liquid', () => {
         expect(result).toBe('Alice wrote: "Hello, Alice!"');
     });
     
-    it('должен корректно обрабатывать числовые значения', () => {
+    it('should correctly handle numeric values', () => {
         const template = 'The answer is {{answer}}.';
         const vars = { answer: 42 };
         
@@ -37,17 +37,17 @@ describe('liquid', () => {
         expect(result).toBe('The answer is 42.');
     });
     
-    it('должен игнорировать неопределенные переменные', () => {
+    it('should ignore undefined variables', () => {
         const template = 'Hello, {{name}}! Your age is {{age}}.';
         const vars = { name: 'Bob' };
         
         const result = liquid.renderLiquidTemplate(template, vars);
         
-        // Неопределенная переменная остается в виде {{age}}
+        // Undefined variable remains as {{age}}
         expect(result).toBe('Hello, Bob! Your age is {{age}}.');
     });
     
-    it('должен возвращать оригинальный шаблон, если vars равен null', () => {
+    it('should return original template if vars is null', () => {
         const template = 'Hello, {{name}}!';
         
         const result = liquid.renderLiquidTemplate(template, null);
@@ -55,7 +55,7 @@ describe('liquid', () => {
         expect(result).toBe('Hello, {{name}}!');
     });
     
-    it('должен возвращать оригинальный шаблон, если vars равен undefined', () => {
+    it('should return original template if vars is undefined', () => {
         const template = 'Hello, {{name}}!';
         
         const result = liquid.renderLiquidTemplate(template, undefined);
@@ -63,7 +63,7 @@ describe('liquid', () => {
         expect(result).toBe('Hello, {{name}}!');
     });
     
-    it('должен корректно работать с пустым шаблоном', () => {
+    it('should correctly work with empty template', () => {
         const template = '';
         const vars = { name: 'World' };
         
@@ -72,7 +72,7 @@ describe('liquid', () => {
         expect(result).toBe('');
     });
     
-    it('должен корректно работать с пустым объектом vars', () => {
+    it('should correctly work with empty vars object', () => {
         const template = 'Hello, {{name}}!';
         const vars = {};
         
@@ -81,7 +81,7 @@ describe('liquid', () => {
         expect(result).toBe('Hello, {{name}}!');
     });
     
-    it('должен корректно заменять на пустые значения', () => {
+    it('should correctly replace with empty values', () => {
         const template = 'Name: "{{name}}"';
         const vars = { name: '' };
         
@@ -90,7 +90,7 @@ describe('liquid', () => {
         expect(result).toBe('Name: ""');
     });
     
-    it('должен корректно работать с шаблоном без переменных', () => {
+    it('should correctly work with template without variables', () => {
         const template = 'Simple text without variables';
         const vars = { name: 'World' };
         
@@ -99,7 +99,7 @@ describe('liquid', () => {
         expect(result).toBe('Simple text without variables');
     });
     
-    it('должен корректно заменять переменные с истинным логическим значением', () => {
+    it('should correctly replace variables with true boolean value', () => {
         const template = 'Is active: {{isActive}}';
         const vars = { isActive: true };
         
@@ -108,7 +108,7 @@ describe('liquid', () => {
         expect(result).toBe('Is active: true');
     });
     
-    it('должен корректно заменять переменные с ложным логическим значением', () => {
+    it('should correctly replace variables with false boolean value', () => {
         const template = 'Is deleted: {{isDeleted}}';
         const vars = { isDeleted: false };
         

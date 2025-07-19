@@ -4,7 +4,7 @@ import { DataColumn, DataColumnList, DataColumnDescriptor, ColumnAlignment, Data
 import { DataType } from '../src/types/data_type';
 
 describe('ColumnAlignment enum', () => {
-    it('должен содержать правильные значения', () => {
+    it('should contain correct values', () => {
         expect(ColumnAlignment.None).toBe(0);
         expect(ColumnAlignment.Left).toBe(1);
         expect(ColumnAlignment.Center).toBe(2);
@@ -13,7 +13,7 @@ describe('ColumnAlignment enum', () => {
 });
 
 describe('DataColumn', () => {
-    it('должен создаваться с минимальными параметрами', () => {
+    it('should create a DataColumn based on minimal set of parameters', () => {
         const desc: DataColumnDescriptor = {
             id: 'test-id',
             label: 'Test Label'
@@ -30,7 +30,7 @@ describe('DataColumn', () => {
         expect(column.calculatedWidth).toBe(0);
     });
 
-    it('должен создаваться со всеми параметрами', () => {
+    it('should create a DataColumn with all parameters', () => {
         const style: DataColumnStyle = { 
             alignment: ColumnAlignment.Right 
         };
@@ -60,28 +60,28 @@ describe('DataColumn', () => {
         expect(column.description).toBe('Test description');
     });
 
-    it('должен выбрасывать ошибку при создании без опций', () => {
+    it('should throw an error when created without options', () => {
         expect(() => {
-            // @ts-ignore - Намеренно передаем неверные параметры для теста
+            // @ts-ignore - Intentionally passing invalid parameters for testing
             new DataColumn(null);
         }).toThrow("Options are required");
     });
 
-    it('должен выбрасывать ошибку при создании без id', () => {
+    it('should throw an error when created without id', () => {
         expect(() => {
             const desc: DataColumnDescriptor = {
-                // @ts-ignore - Намеренно пропускаем id для теста
+                // @ts-ignore - Intentionally omitting id for testing
                 label: 'Test Label'
             };
             new DataColumn(desc);
         }).toThrow("Field Id is required");
     });
 
-    it('должен выбрасывать ошибку при создании без метки', () => {
+    it('should throw an error when created without label', () => {
         expect(() => {
             const desc: DataColumnDescriptor = {
                 id: 'test-id',
-                // @ts-ignore - Намеренно пропускаем label для теста
+                // @ts-ignore - Intentionally omitting label for testing
             };
             new DataColumn(desc);
         }).toThrow("Label is required");
@@ -95,7 +95,7 @@ describe('DataColumnList', () => {
         columnList = new DataColumnList();
     });
 
-    it('должен быть пустым после создания', () => {
+    it('should be empty after creation', () => {
         expect(columnList.count).toBe(0);
         expect(columnList.getItems()).toBeArray();
         expect(columnList.getItems()).toBeEmpty();
@@ -103,7 +103,7 @@ describe('DataColumnList', () => {
         expect(columnList.getDateColumnIndexes()).toBeEmpty();
     });
 
-    it('должен добавлять столбцы и возвращать индекс', () => {
+    it('should add columns and return the index', () => {
         const desc: DataColumnDescriptor = {
             id: 'column1',
             label: 'Column 1'
@@ -116,7 +116,7 @@ describe('DataColumnList', () => {
         expect(columnList.get(0).id).toBe('column1');
     });
 
-    it('должен добавлять экземпляры DataColumn', () => {
+    it('should add instances of DataColumn', () => {
         const column = new DataColumn({
             id: 'column1',
             label: 'Column 1'
@@ -129,7 +129,7 @@ describe('DataColumnList', () => {
         expect(columnList.get(0)).toBe(column);
     });
 
-    it('должен отслеживать индексы столбцов с датами', () => {
+    it('should track date column indexes', () => {
         columnList.add({
             id: 'string-column',
             label: 'String Column',
@@ -166,7 +166,7 @@ describe('DataColumnList', () => {
         expect(columnList.count).toBe(5);
     });
 
-    it('должен получать столбец по индексу', () => {
+    it('should get a column by index', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'
@@ -183,7 +183,7 @@ describe('DataColumnList', () => {
         expect(column.label).toBe('Column 2');
     });
 
-    it('должен возвращать null при получении несуществующего индекса', () => {
+    it('should return null when getting a non-existent index', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'
@@ -196,7 +196,7 @@ describe('DataColumnList', () => {
         expect(columnOutOfRange).toBeNull();
     });
 
-    it('должен получать индекс столбца по ID', () => {
+    it('should return the index of a column by ID', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'
@@ -212,7 +212,7 @@ describe('DataColumnList', () => {
         expect(columnList.getIndex('non-existent')).toBeUndefined();
     });
 
-    it('должен заменять столбец по индексу', () => {
+    it('should replace a column by index', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'
@@ -229,7 +229,7 @@ describe('DataColumnList', () => {
         expect(columnList.get(0)).toBe(newColumn);
     });
 
-    it('должен перемещать столбец на новую позицию', () => {
+    it('should move a column to a new position', () => {
         const col1 = new DataColumn({
             id: 'column1',
             label: 'Column 1'
@@ -256,7 +256,7 @@ describe('DataColumnList', () => {
         expect(columnList.get(2)).toBe(col1);
     });
 
-    it('должен удалять столбец по индексу', () => {
+    it('should remove a column by index', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'
@@ -279,7 +279,7 @@ describe('DataColumnList', () => {
         expect(columnList.get(1).id).toBe('column3');
     });
 
-    it('должен удалять столбцы с датами из индексов', () => {
+    it('should remove date columns from indexes', () => {
         columnList.add({
             id: 'string-column',
             label: 'String Column',
@@ -305,7 +305,7 @@ describe('DataColumnList', () => {
         expect(columnList.getDateColumnIndexes()).toBeArrayEqual([]);
     });
 
-    it('должен очищать список столбцов', () => {
+    it('should clear the column list', () => {
         columnList.add({
             id: 'column1',
             label: 'Column 1'

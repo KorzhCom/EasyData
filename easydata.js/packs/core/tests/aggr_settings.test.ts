@@ -20,7 +20,7 @@ describe('AggregationSettings', () => {
                 return result;
             },
             validateColumns: (columns) => {
-                // Simple check - all columns must start with 'col'
+                // Simple check - all columns should start with 'col'
                 return columns.every(col => typeof col === 'string' && col.startsWith('col'));
             },
             validateAggregate: (colId, funcId) => {
