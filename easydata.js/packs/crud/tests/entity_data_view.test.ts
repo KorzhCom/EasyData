@@ -186,10 +186,10 @@ describe('EntityDataView', () => {
     it('should render title and back button', () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
         
-        // Check, что заголовок содержит название сущности
+        // Check that title contains entity name
         expect(mockSlot.innerHTML).toContain('<h1>Entities</h1>');
         
-        // Check наличие кнопки возврата
+        // Check presence of back button
         const backLink = mockSlot.querySelector('a');
         expect(backLink).toBeDefined();
         expect(backLink.textContent).toBe('← Back to Entities');

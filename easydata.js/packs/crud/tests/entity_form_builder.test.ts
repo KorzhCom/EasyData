@@ -15,7 +15,7 @@ describe('EntityEditFormBuilder', () => {
     let builder: EntityEditFormBuilder;
     let dataRow: DataRow;
     
-    // Helper function для создания атрибута
+    // Helper function for creating attribute
     const createAttr = (id: string, caption: string, dataType: DataType, options: any = {}): MetaEntityAttr => {
         const attr = {
             id,
@@ -162,7 +162,7 @@ describe('EntityEditFormBuilder', () => {
         builder = new EntityEditFormBuilder(mockDataContext);
     });
 
-    it('should создаваться с пустыми параметрами и сбрасываться на значения по умолчанию', () => {
+    it('should be created with empty parameters and reset to default values', () => {
         expect(builder).toBeDefined();
         
         // Check, что свойство context установлено
@@ -177,7 +177,7 @@ describe('EntityEditFormBuilder', () => {
         expect(formAfterReset).toBeInstanceOf(EntityEditForm);
     });
 
-    it('should создавать форму с правильными полями', () => {
+    it('should create form with correct fields', () => {
         const form = builder.build();
         
         // Check что форма создана
@@ -233,7 +233,7 @@ describe('EntityEditFormBuilder', () => {
         expect(isActiveInput.checked).toBe(true);
     });
 
-    it('should создавать форму редактирования с правильными параметрами', () => {
+    it('should create edit form with correct parameters', () => {
         const params: FormBuildParams = {
             values: dataRow,
             isEditForm: true
@@ -243,7 +243,7 @@ describe('EntityEditFormBuilder', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check, что первичные ключи имеют атрибут readonly
+        // Check that primary keys have readonly attribute
         const idInput = formHtml.querySelector('[name="Person.id"]') as HTMLInputElement;
         expect(idInput).toBeDefined();
         expect(idInput.getAttribute('readonly')).toBeDefined();
@@ -292,16 +292,16 @@ describe('EntityEditFormBuilder', () => {
         expect(notesTextarea.tagName.toLowerCase()).toBe('textarea');
     });
 
-    it('should создавать select для списков', () => {
+    it('should create select for lists', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check select для списков
+        // Check select for lists
         const statusSelect = formHtml.querySelector('[name="Person.status"]') as HTMLSelectElement;
         expect(statusSelect).toBeDefined();
         expect(statusSelect.tagName.toLowerCase()).toBe('select');
         
-        // Check опции
+        // Check options
         const options = statusSelect.querySelectorAll('option');
         expect(options.length).toBe(2);
         expect(options[0].value).toBe('Active');
@@ -325,21 +325,21 @@ describe('EntityEditFormBuilder', () => {
         expect(calendarIcon).toBeDefined();
     });
 
-    it('should создавать поля для lookup атрибутов', () => {
+    it('should create fields for lookup attributes', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check наличие поля для lookup
+        // Check presence of lookup field
         const departmentField = formHtml.querySelector('[name="Person.departmentId"]').closest('.kfrm-fields, .kfrm-fields-ie');
         expect(departmentField).toBeDefined();
         
-        // Check наличие кнопки для открытия lookup диалога
+        // Check presence of button for opening lookup dialog
         const lookupButton = departmentField.querySelector('button');
         expect(lookupButton).toBeDefined();
         expect(lookupButton.textContent).toBe('...');
     });
     
-    it('should добавлять информацию о подсказках для полей с описанием', () => {
+    it('should add tooltip information for fields with description', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
@@ -352,25 +352,25 @@ describe('EntityEditFormBuilder', () => {
         expect(helpIcon.getAttribute('title')).toBe('Person full name');
     });
     
-    it('should устанавливать обработчик submit и вызывать его при нажатии Enter', () => {
-        // Создаем мок-функцию для onSubmit
+    it('should set submit handler and call it when Enter is pressed', () => {
+        // Create mock function for onSubmit
         const submitCallback = mock();
         
-        // Set callback через onSubmit
+        // Set callback via onSubmit
         builder.onSubmit(submitCallback);
         
-        // Строим форму
+        // Build form
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Get поле ввода
+        // Get input field
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         
-        // Emulate нажатие клавиши Enter
+        // Emulate Enter key press
         const enterKeyEvent = new KeyboardEvent('keypress', { keyCode: 13 });
         nameInput.dispatchEvent(enterKeyEvent);
         
-        // Check, что callback был вызван
+        // Check that callback was called
         expect(submitCallback).toHaveBeenCalled();
     });
 });

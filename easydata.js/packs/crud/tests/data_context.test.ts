@@ -102,7 +102,7 @@ describe('DataContext', () => {
             // Set active entity
             dataContext.setActiveSource('entity1');
             
-            // Check, что активная сущность установлена
+            // Check that active entity is set
             const activeEntity = dataContext.getActiveEntity();
             expect(activeEntity).toBeDefined();
             expect(activeEntity.id).toBe('entity1');
@@ -110,42 +110,42 @@ describe('DataContext', () => {
     });
 
     it('should set custom endpoints', () => {
-        // Set кастомный эндпоинт
+        // Set custom endpoint
         dataContext.setEndpoint('GetMetaData', '/custom/api/metadata');
         
-        // Check что эндпоинт установлен
+        // Check that endpoint is set
         const endpoint = dataContext.resolveEndpoint('GetMetaData');
         expect(endpoint).toBe('/custom/api/metadata');
     });
 
     it('should not overwrite existing endpoints when using setEndpointIfNotExist', () => {
-        // Set эндпоинт
+        // Set endpoint
         dataContext.setEndpoint('GetMetaData', '/custom/api/metadata');
         
-        // Пытаемся установить другой эндпоинт через setEnpointIfNotExist
+        // Try to set another endpoint via setEnpointIfNotExist
         dataContext.setEnpointIfNotExist('GetMetaData', '/another/endpoint');
         
-        // Check что эндпоинт не изменился
+        // Check that endpoint hasn't changed
         const endpoint = dataContext.resolveEndpoint('GetMetaData');
         expect(endpoint).toBe('/custom/api/metadata');
     });
 
     it('should resolve endpoints with parameters', () => {
-        // Set эндпоинт с параметрами
+        // Set endpoint with parameters
         dataContext.setEndpoint('CustomEndpoint', '/api/custom/{param1}/{param2}');
         
-        // Разрешаем эндпоинт с параметрами
+        // Resolve endpoint with parameters
         const endpoint = dataContext.resolveEndpoint('CustomEndpoint', { param1: 'value1', param2: 'value2' });
         
-        // Check что параметры подставлены
+        // Check that parameters are substituted
         expect(endpoint).toBe('/api/custom/value1/value2');
     });
 
     it('should throw error when required parameter is missing', () => {
-        // Set эндпоинт с параметрами
+        // Set endpoint with parameters
         dataContext.setEndpoint('CustomEndpoint', '/api/custom/{param1}/{param2}');
         
-        // Пытаемся разрешить эндпоинт с отсутствующим параметром
+        // Try to resolve endpoint with missing parameter
         expect(() => {
             dataContext.resolveEndpoint('CustomEndpoint', { param1: 'value1' });
         }).toThrow('Parameter [param2] is not defined');
@@ -154,16 +154,16 @@ describe('DataContext', () => {
     it('should load metadata', () => {
         const promise = dataContext.loadMetaData();
         
-        // Check что загрузка вызвала правильный метод HTTP клиента
+        // Check that loading called the correct HTTP client method
         expect(mockHttpClient.get).toHaveBeenCalled();
         expect((mockHttpClient.get as jest.Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
         
         return promise.then((model) => {
-            // Check что модель была загружена
+            // Check that model was loaded
             expect(model).toBeDefined();
             expect(model.id).toBe('test-model');
             
-            // Check что были вызваны методы startProcess и endProcess
+            // Check that startProcess and endProcess methods were called
             expect(processStartCount).toBe(1);
             expect(processEndCount).toBe(1);
         });
@@ -175,10 +175,10 @@ describe('DataContext', () => {
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Создаем фильтр
+                // Create filter
                 const filter = dataContext.createFilter();
                 
-                // Check созданный фильтр
+                // Check created filter
                 expect(filter).toBeInstanceOf(TextDataFilter);
             });
     });
@@ -203,16 +203,16 @@ describe('DataContext', () => {
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Загружаем датасет
+                // Load dataset
                 return dataContext.fetchDataset();
             })
             .then((data) => {
-                // Check результат
+                // Check result
                 expect(data).toBeDefined();
                 expect(data.columns.count).toBe(2);
                 expect(data.getCachedCount()).toBe(1);
                 
-                // Check что dataLoader.loadChunk был вызван
+                // Check that dataLoader.loadChunk was called
                 expect(dataLoader.loadChunk).toHaveBeenCalled();
             });
     });
@@ -223,11 +223,11 @@ describe('DataContext', () => {
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Get запись
+                // Get record
                 return dataContext.fetchRecord({ id: 1 });
             })
             .then(() => {
-                // Check что был вызван правильный метод HTTP клиента
+                // Check that correct HTTP client method was called
                 expect(mockHttpClient.get).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.get).mock.calls.pop();
@@ -235,7 +235,7 @@ describe('DataContext', () => {
                 expect(lastCall[1].queryParams).toBeDefined();
                 expect(lastCall[1].queryParams.id).toBe(1);
                 
-                // Check что были вызваны методы startProcess и endProcess
+                // Check that startProcess and endProcess methods were called
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
@@ -250,7 +250,7 @@ describe('DataContext', () => {
                 // Test object for creation
                 const testObj = { name: 'Test Record', value: 123 };
                 
-                // Создаем запись
+                // Create record
                 return dataContext.createRecord(testObj);
             })
             .then(() => {
@@ -278,7 +278,7 @@ describe('DataContext', () => {
                 // Test object for update
                 const testObj = { id: 1, name: 'Updated Record', value: 456 };
                 
-                // Обновляем запись
+                // Update record
                 return dataContext.updateRecord(testObj);
             })
             .then(() => {
@@ -306,7 +306,7 @@ describe('DataContext', () => {
                 // Test object for deletion
                 const testObj = { id: 1 };
                 
-                // Remove запись
+                // Remove record
                 return dataContext.deleteRecord(testObj);
             })
             .then(() => {
