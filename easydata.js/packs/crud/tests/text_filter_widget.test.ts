@@ -178,7 +178,7 @@ describe('TextFilterWidget', () => {
         // Set значение
         input.value = 'test';
         
-        // Emulate клик по кнопке
+        // Emulate button click
         button.click();
         
         // Check apply call with correct value
@@ -186,16 +186,16 @@ describe('TextFilterWidget', () => {
     });
     
     it('should clear input field when clear icon is clicked', () => {
-        // Get поле ввода и иконку очистки
+        // Get input field and clear icon
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         const clearIcon = mockSlot.querySelector('span.icon') as HTMLSpanElement;
         
-        // Set значение и фокус мок
+        // Set value and focus mock
         input.value = 'test';
         const focusMock = mock();
         input.focus = focusMock;
         
-        // Emulate клик по иконке очистки
+        // Emulate clear icon click
         clearIcon.click();
         
         // Check value clearing
@@ -209,13 +209,13 @@ describe('TextFilterWidget', () => {
     });
     
     it('should apply filter with delay in instantMode on input', () => {
-        // Remove предыдущий виджет
+        // Remove previous widget
         mockSlot.innerHTML = '';
         
         // Mock for setTimeout
         jest.useFakeTimers();
         
-        // Создаем новый виджет с instantMode и маленьким таймаутом
+        // Create new widget with instantMode and small timeout
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
             instantMode: true,
             instantTimeout: 500
@@ -280,16 +280,16 @@ describe('TextFilterWidget', () => {
     });
     
     it('applyFilter method should return true if filter value changed', () => {
-        // Get поле ввода
+        // Get input field
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Set значение
+        // Set value
         input.value = 'test';
         
-        // Mock for getValue, возвращающий другое значение
+        // Mock for getValue returning different value
         (mockFilter.getValue as jest.Mock).mockReturnValue('old');
         
-        // Call метод и проверяем результат
+        // Call method and check result
         const result = filterWidget.applyFilter(true);
         expect(result).toBe(true);
         
@@ -304,10 +304,10 @@ describe('TextFilterWidget', () => {
         // Set значение
         input.value = 'test';
         
-        // Mock for getValue, возвращающий то же самое значение
+        // Mock for getValue returning the same value
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Call метод и проверяем результат
+        // Call method and check result
         const result = filterWidget.applyFilter(true);
         expect(result).toBe(false);
         
@@ -319,13 +319,13 @@ describe('TextFilterWidget', () => {
         // Mock for getValue, возвращающий искомое слово
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
         
-        // Check типа результата
+        // Check result type
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Check содержимого
+        // Check content
         const div = result as HTMLElement;
         
         // Should have 3 child elements: text, span with highlight, text
@@ -358,25 +358,25 @@ describe('TextFilterWidget', () => {
         // Should have 5 child elements: span, text, span, text
         expect(div.childNodes.length).toBe(3);
         
-        // Check первого выделения
+        // Check first highlight
         const firstSpan = div.childNodes[0] as HTMLSpanElement;
         expect(firstSpan.tagName).toBe('SPAN');
         expect(firstSpan.textContent).toBe('test');
         
-        // Check текста между выделениями
+        // Check text between highlights
         expect(div.childNodes[1].textContent).toBe(' another ');
         
-        // Check второго выделения
+        // Check second highlight
         const secondSpan = div.childNodes[2] as HTMLSpanElement;
         expect(secondSpan.tagName).toBe('SPAN');
         expect(secondSpan.textContent).toBe('test');
     });
     
     it('should correctly handle multiple search words with || separator', () => {
-        // Mock for getValue, возвращающий несколько слов через разделитель
+        // Mock for getValue returning multiple words with separator
         (mockFilter.getValue as jest.Mock).mockReturnValue('apple || banana');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('I have an apple and a banana');
         
         // Check типа результата
@@ -404,10 +404,10 @@ describe('TextFilterWidget', () => {
     });
     
     it('should highlight entire cell if content fully matches the filter', () => {
-        // Mock for getValue, возвращающий полное значение ячейки
+        // Mock for getValue returning the full cell value
         (mockFilter.getValue as jest.Mock).mockReturnValue('exact match');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('exact match');
         
         // Should return one span highlighting all content
@@ -417,10 +417,10 @@ describe('TextFilterWidget', () => {
     });
     
     it('should return original text if no matches', () => {
-        // Mock for getValue, возвращающий слово, которого нет в тексте
+        // Mock for getValue returning word that is not in text
         (mockFilter.getValue as jest.Mock).mockReturnValue('missing');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
         
         // Should return original string
@@ -457,12 +457,12 @@ describe('TextFilterWidget', () => {
         // Call пользовательский рендерер
         customStringRenderer('This is a test', column, cellElement, rowElement);
         
-        // Check, что ячейка содержит выделенный текст
+        // Check that cell contains highlighted text
         expect(cellElement.innerHTML).not.toBe('');
         expect(cellElement.querySelector('span[style*="yellow"]')).toBeDefined();
     });
     
-    it('should использовать пользовательский рендерер для числовых ячеек', () => {
+    it('should use custom renderer for numeric cells', () => {
         // Create mocks for параметров рендерера
         const column: GridColumn = {
             dataColumn: { id: 'value' },
@@ -481,10 +481,10 @@ describe('TextFilterWidget', () => {
         // Mock for toLocaleString
         Number.prototype.toLocaleString = function() { return this.toString(); };
         
-        // Call пользовательский рендерер
+        // Call custom renderer
         customNumberRenderer(42, column, cellElement, rowElement);
         
-        // Check, что ячейка содержит выделенный текст
+        // Check that cell contains highlighted text
         expect(cellElement.innerHTML).not.toBe('');
         expect(cellElement.querySelector('span[style*="yellow"]')).toBeDefined();
     });
