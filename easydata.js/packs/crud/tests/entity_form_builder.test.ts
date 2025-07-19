@@ -183,40 +183,40 @@ describe('EntityEditFormBuilder', () => {
         // Check что форма создана
         expect(form).toBeInstanceOf(EntityEditForm);
         
-        // Get HTML формы
+        // Get form HTML
         const formHtml = form.getHtml();
         expect(formHtml).toBeDefined();
         
-        // Check наличие блока для ошибок
+        // Check presence of error block
         const errorsBlock = formHtml.querySelector('.errors-block');
         expect(errorsBlock).toBeDefined();
         
-        // Check наличие полей формы
+        // Check presence of form fields
         const inputs = formHtml.querySelectorAll('input');
         expect(inputs.length).toBeGreaterThan(0);
         
-        // Check что каждый атрибут создал соответствующее поле
+        // Check that each attribute created corresponding field
         for (const attr of mockEntity.attributes) {
-            // Пропустить атрибуты, которые не должны отображаться в форме создания
+            // Skip attributes that should not be displayed in create form
             if (!attr.showOnCreate) continue;
             
-            // Найти поле по имени
+            // Find field by name
             const field = formHtml.querySelector(`[name="${attr.id}"]`);
             expect(field).toBeDefined();
             
-            // Проверить label для поля
+            // Check label for field
             const label = formHtml.querySelector(`label[for="${attr.id}"]`);
             expect(label).toBeDefined();
             expect(label.textContent).toContain(attr.caption);
             
-            // Проверить обязательные поля
+            // Check required fields
             if (!attr.isNullable) {
                 expect(label.innerHTML).toContain('<sup style="color: red">*</sup>');
             }
         }
     });
 
-    it('should устанавливать значения из dataRow при создании формы', () => {
+    it('should set values from dataRow when creating form', () => {
         const params: FormBuildParams = {
             values: dataRow
         };
@@ -225,7 +225,7 @@ describe('EntityEditFormBuilder', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check заполнение полей значениями из dataRow
+        // Check field population with values from dataRow
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         expect(nameInput.value).toBe('John Doe');
         
@@ -272,21 +272,21 @@ describe('EntityEditFormBuilder', () => {
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         expect(nameInput.type).toBe('text');
         
-        // Check поля checkbox
+        // Check checkbox field
         const isActiveInput = formHtml.querySelector('[name="Person.isActive"]') as HTMLInputElement;
         expect(isActiveInput.type).toBe('checkbox');
         
-        // Check поля file
+        // Check file field
         const photoInput = formHtml.querySelector('[name="Person.photo"]') as HTMLInputElement;
         expect(photoInput.type).toBe('file');
         expect(photoInput.getAttribute('accept')).toBe('image/*');
     });
 
-    it('should создавать текстовую область для многострочных редакторов', () => {
+    it('should create text area for multiline editors', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Check textarea для многострочных полей
+        // Check textarea for multiline fields
         const notesTextarea = formHtml.querySelector('[name="Person.notes"]') as HTMLTextAreaElement;
         expect(notesTextarea).toBeDefined();
         expect(notesTextarea.tagName.toLowerCase()).toBe('textarea');

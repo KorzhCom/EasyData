@@ -107,10 +107,10 @@ describe('TextFilterWidget', () => {
     });
     
     it('should render HTML without search button in instantMode', () => {
-        // Remove предыдущий виджет
+        // Remove previous widget
         mockSlot.innerHTML = '';
         
-        // Создаем новый виджет с instantMode
+        // Create new widget with instantMode
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
             instantMode: true
         });
@@ -125,13 +125,13 @@ describe('TextFilterWidget', () => {
     });
     
     it('should use different classes for IE', () => {
-        // Remove предыдущий виджет
+        // Remove previous widget
         mockSlot.innerHTML = '';
         
         // Change mock for IE
         (browserUtils.isIE as jest.Mock).mockReturnValue(true);
         
-        // Создаем новый виджет
+        // Create new widget
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter);
         
         // Check IE class presence
@@ -139,14 +139,14 @@ describe('TextFilterWidget', () => {
     });
     
     it('should set focus on input field if focus=true option is set', () => {
-        // Remove предыдущий виджет
+        // Remove previous widget
         mockSlot.innerHTML = '';
         
         // Mock for focus
         const focusMock = mock();
         HTMLInputElement.prototype.focus = focusMock;
         
-        // Создаем новый виджет с опцией focus=true
+        // Create new widget with focus=true option
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
             focus: true
         });
@@ -156,13 +156,13 @@ describe('TextFilterWidget', () => {
     });
     
     it('should apply filter when Enter is pressed', () => {
-        // Get поле ввода
+        // Get input field
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Set значение
+        // Set value
         input.value = 'test';
         
-        // Emulate нажатие Enter
+        // Emulate Enter key press
         const enterEvent = new KeyboardEvent('keydown', { keyCode: 13 });
         input.dispatchEvent(enterEvent);
         
@@ -171,11 +171,11 @@ describe('TextFilterWidget', () => {
     });
     
     it('should apply filter when Search button is pressed', () => {
-        // Get поле ввода и кнопку
+        // Get input field and button
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         const button = mockSlot.querySelector('button') as HTMLButtonElement;
         
-        // Set значение
+        // Set value
         input.value = 'test';
         
         // Emulate button click
@@ -221,17 +221,17 @@ describe('TextFilterWidget', () => {
             instantTimeout: 500
         });
         
-        // Get поле ввода
+        // Get input field
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Set значение и эмулируем keyup
+        // Set value and emulate keyup
         input.value = 'test';
         input.dispatchEvent(new KeyboardEvent('keyup'));
         
         // Check that apply is not called immediately
         expect(mockFilter.apply).not.toHaveBeenCalled();
         
-        // Проматываем таймеры
+        // Advance timers
         jest.advanceTimersByTime(500);
         
         // Check apply call with correct value
@@ -242,23 +242,23 @@ describe('TextFilterWidget', () => {
     });
     
     it('should clear previous timer on new keyup event', () => {
-        // Remove предыдущий виджет
+        // Remove previous widget
         mockSlot.innerHTML = '';
         
-        // Mock for setTimeout и clearTimeout
+        // Mock for setTimeout and clearTimeout
         jest.useFakeTimers();
         const clearTimeoutSpy = jest.spyOn(window, 'clearTimeout');
         
-        // Создаем новый виджет с instantMode
+        // Create new widget with instantMode
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
             instantMode: true,
             instantTimeout: 500
         });
         
-        // Get поле ввода
+        // Get input field
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Первый ввод
+        // First input
         input.value = 'test';
         input.dispatchEvent(new KeyboardEvent('keyup'));
         
@@ -298,10 +298,10 @@ describe('TextFilterWidget', () => {
     });
     
     it('applyFilter method should return false if filter value did not change', () => {
-        // Get поле ввода
+        // Get input field
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Set значение
+        // Set value
         input.value = 'test';
         
         // Mock for getValue returning the same value
@@ -316,7 +316,7 @@ describe('TextFilterWidget', () => {
     });
     
     it('should correctly highlight text matching the filter', () => {
-        // Mock for getValue, возвращающий искомое слово
+        // Mock for getValue returning search word
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
         // Call highlightText directly through private method
@@ -331,7 +331,7 @@ describe('TextFilterWidget', () => {
         // Should have 3 child elements: text, span with highlight, text
         expect(div.childNodes.length).toBe(3);
         
-        // Check правильного выделения
+        // Check correct highlighting
         expect(div.childNodes[0].textContent).toBe('This is a ');
         
         const highlightSpan = div.childNodes[1] as HTMLSpanElement;
@@ -343,16 +343,16 @@ describe('TextFilterWidget', () => {
     });
     
     it('should correctly highlight multiple matches', () => {
-        // Mock for getValue, возвращающий искомое слово
+        // Mock for getValue returning search word
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('test another test');
         
-        // Check типа результата
+        // Check result type
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Check содержимого
+        // Check content
         const div = result as HTMLElement;
         
         // Should have 5 child elements: span, text, span, text
@@ -379,10 +379,10 @@ describe('TextFilterWidget', () => {
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('I have an apple and a banana');
         
-        // Check типа результата
+        // Check result type
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Check содержимого
+        // Check content
         const div = result as HTMLElement;
         
         // Should contain highlights for both words
@@ -428,18 +428,18 @@ describe('TextFilterWidget', () => {
     });
     
     it('should return original text if filter is empty', () => {
-        // Mock for getValue, возвращающий пустую строку
+        // Mock for getValue returning empty string
         (mockFilter.getValue as jest.Mock).mockReturnValue('');
         
-        // Call highlightText напрямую через приватный метод
+        // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
         
         // Should return original string
         expect(result).toBe('This is a test string');
     });
     
-    it('should использовать пользовательский рендерер для строковых ячеек', () => {
-        // Create mocks for параметров рендерера
+    it('should use custom renderer for string cells', () => {
+        // Create mocks for renderer parameters
         const column: GridColumn = {
             dataColumn: { id: 'name' },
             type: 'string'
@@ -447,14 +447,14 @@ describe('TextFilterWidget', () => {
         const cellElement = document.createElement('div');
         const rowElement = document.createElement('tr');
         
-        // Get установленный рендерер для строк
+        // Get custom renderer for strings
         const stringRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[0];
         const customStringRenderer = stringRendererCall[1];
         
-        // Mock for getValue, чтобы строки выделялись
+        // Mock for getValue, so that strings are highlighted
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Call пользовательский рендерер
+        // Call custom renderer
         customStringRenderer('This is a test', column, cellElement, rowElement);
         
         // Check that cell contains highlighted text
@@ -463,7 +463,7 @@ describe('TextFilterWidget', () => {
     });
     
     it('should use custom renderer for numeric cells', () => {
-        // Create mocks for параметров рендерера
+        // Create mocks for renderer parameters
         const column: GridColumn = {
             dataColumn: { id: 'value' },
             type: 'number'
@@ -471,11 +471,11 @@ describe('TextFilterWidget', () => {
         const cellElement = document.createElement('div');
         const rowElement = document.createElement('tr');
         
-        // Get установленный рендерер для чисел
+        // Get custom renderer for numbers
         const numberRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[1];
         const customNumberRenderer = numberRendererCall[1];
         
-        // Mock for getValue, чтобы числа выделялись
+        // Mock for getValue to make numbers highlighted
         (mockFilter.getValue as jest.Mock).mockReturnValue('42');
         
         // Mock for toLocaleString

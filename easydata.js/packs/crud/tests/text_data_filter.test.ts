@@ -212,7 +212,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('should фильтровать по числовым значениям', () => {
+    it('should filter by numeric values', () => {
         return filter.apply('1.99')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
