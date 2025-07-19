@@ -5,7 +5,7 @@ import { DataRow } from '../src/data/data_row';
 import { DataType } from '../src/types/data_type';
 
 describe('EasyDataTable', () => {
-    // Мок для DataLoader
+    // Mock for DataLoader
     class MockDataLoader implements DataLoader {
         private data: any[] = [];
         private totalCount: number;
@@ -33,14 +33,14 @@ describe('EasyDataTable', () => {
         }
     }
 
-    // Базовые настройки колонок для тестов
+    // Basic column settings for tests
     const defaultColumns: DataColumnDescriptor[] = [
         { id: 'id', label: 'ID', type: DataType.Int32 },
         { id: 'name', label: 'Name', type: DataType.String },
         { id: 'birthday', label: 'Birthday', type: DataType.Date }
     ];
 
-    // Тестовые данные для строк
+    // Test data for rows
     const testData = [
         { id: 1, name: 'John', birthday: '2000-01-01' },
         { id: 2, name: 'Jane', birthday: '1995-05-15' },
@@ -48,7 +48,7 @@ describe('EasyDataTable', () => {
         { id: 4, name: 'Alice', birthday: '1990-07-20' }
     ];
 
-    it('должен создаваться с настройками по умолчанию', () => {
+    it('should be created with default settings', () => {
         const table = new EasyDataTable();
         
         expect(table).toBeDefined();
@@ -59,7 +59,7 @@ describe('EasyDataTable', () => {
         expect(table.getTotal()).toBe(0);
     });
 
-    it('должен создаваться с пользовательскими настройками', () => {
+    it('should be created with custom settings', () => {
         const options: EasyDataTableOptions = {
             chunkSize: 500,
             elasticChunks: true,
@@ -74,7 +74,7 @@ describe('EasyDataTable', () => {
         expect(table.columns.count).toBe(3);
     });
 
-    it('должен добавлять колонки при инициализации', () => {
+    it('should add columns during initialization', () => {
         const table = new EasyDataTable({
             columns: defaultColumns
         });
@@ -85,7 +85,7 @@ describe('EasyDataTable', () => {
         expect(table.columns.get(2).id).toBe('birthday');
     });
 
-    it('должен создавать строки данных из массива значений', () => {
+    it('should create data rows from array values', () => {
         const table = new EasyDataTable({
             columns: defaultColumns
         });
@@ -98,7 +98,7 @@ describe('EasyDataTable', () => {
         expect(row.getValue('birthday') instanceof Date).toBe(true);
     });
 
-    it('должен создавать строки из объектов данных', () => {
+    it('should create rows from data objects', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -114,7 +114,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен корректно преобразовывать даты при создании строк', () => {
+    it('should correctly convert dates when creating rows', () => {
         const table = new EasyDataTable({
             columns: [
                 { id: 'date', label: 'Date', type: DataType.Date },
@@ -138,7 +138,7 @@ describe('EasyDataTable', () => {
         expect(row.getValue('date').getDate()).toBe(15);
     });
 
-    it('должен получать строки по смещению и лимиту', () => {
+    it('should get rows by offset and limit', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -151,7 +151,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен получать строки по странице и размеру страницы', () => {
+    it('should get rows by page and page size', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -164,7 +164,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен возвращать пустой массив строк при запросе за пределами данных', () => {
+    it('should return empty array of rows when requesting beyond data', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -176,7 +176,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен получать одиночную строку по индексу', () => {
+    it('should get single row by index', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -189,7 +189,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен возвращать null при запросе несуществующей строки', () => {
+    it('should return null при запросе несуществующей строки', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -200,7 +200,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен загружать данные из DataLoader', () => {
+    it('should load data from DataLoader', () => {
         const loader = new MockDataLoader(testData, 10);
         const table = new EasyDataTable({
             columns: defaultColumns,
@@ -210,9 +210,9 @@ describe('EasyDataTable', () => {
         return table.getRows({ offset: 0, limit: 2 }).then(rows => {
             expect(rows.length).toBe(2);
             expect(table.getTotal()).toBe(10);
-            expect(table.getCachedCount()).toBe(4); // весь тестовый набор в кеше
+            expect(table.getCachedCount()).toBe(4); // entire test dataset is cached
             
-            // Проверка кеширования
+            // Check кеширования
             return table.getRows({ offset: 2, limit: 2 }).then(moreRows => {
                 expect(moreRows.length).toBe(2);
                 expect(table.getCachedCount()).toBe(4);
@@ -220,7 +220,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('должен работать с эластичными чанками', () => {
+    it('should work with elastic chunks', () => {
         const loader = new MockDataLoader(testData);
         const table = new EasyDataTable({
             chunkSize: 10,
@@ -229,12 +229,12 @@ describe('EasyDataTable', () => {
         });
         
         return table.getRows({ offset: 0, limit: 2 }).then(() => {
-            expect(table.getTotal()).toBe(4); // Всего 4 записи из тестовых данных
+            expect(table.getTotal()).toBe(4); // Total 4 records from test data
             expect(table.totalIsKnown()).toBe(true);
         });
     });
 
-    it('должен обновлять chunkSize и очищать кеш', () => {
+    it('should update chunkSize and clear cache', () => {
         const table = new EasyDataTable({
             chunkSize: 100,
             rows: testData
@@ -249,7 +249,7 @@ describe('EasyDataTable', () => {
         expect(table.getCachedCount()).toBe(0); // Кеш очищен
     });
 
-    it('должен выполнять колбэк onUpdate при обновлении данных', () => {
+    it('should execute onUpdate callback on data update', () => {
         let updateCalled = false;
         let lastTable: EasyDataTable | undefined;
         
@@ -269,7 +269,7 @@ describe('EasyDataTable', () => {
         expect(lastTable).toBe(table);
     });
 
-    it('должен очищать все данные при вызове clear', () => {
+    it('should clear all data on clear call', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -285,20 +285,20 @@ describe('EasyDataTable', () => {
         expect(table.getTotal()).toBe(0);
     });
 
-    it('должен выбрасывать ошибку при запросе данных без loader', async () => {
+    it('should throw error при запросе данных без loader', async () => {
         const table = new EasyDataTable();
         
         // Нет данных в кеше и нет loader
         try {
             await table.getRows({ offset: 0, limit: 10 });
-            fail('Должна быть выброшена ошибка');
+            fail('Error should have been thrown');
         } 
         catch (error) {
             expect(error).toContain('Loader is not defined');
         }
     });
     
-    it('должен устанавливать общее количество строк вручную', () => {
+    it('should set total row count manually', () => {
         const table = new EasyDataTable();
         
         table.setTotal(100);

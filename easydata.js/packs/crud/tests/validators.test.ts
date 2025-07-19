@@ -24,12 +24,12 @@ describe('TypeValidator', () => {
         jest.restoreAllMocks();
     });
 
-    it('должен иметь имя "Type"', () => {
+    it('should have name "Type"', () => {
         expect(validator.name).toBe('Type');
         expect(validator).toBeInstanceOf(Validator);
     });
 
-    it('должен успешно проходить валидацию для null или пустой строки', () => {
+    it('should successfully pass validation for null or empty string', () => {
         mockAttr = { dataType: DataType.Int32 } as MetaEntityAttr;
 
         const result1 = validator.validate(mockAttr, null);
@@ -42,59 +42,59 @@ describe('TypeValidator', () => {
         expect(result3.successed).toBe(true);
     });
 
-    it('должен проверять числовые значения для числового типа', () => {
+    it('should validate numeric values for numeric type', () => {
         mockAttr = { dataType: DataType.Int32 } as MetaEntityAttr;
 
-        // Валидные значения
+        // Valid values
         const result1 = validator.validate(mockAttr, '123');
         expect(result1.successed).toBe(true);
         
         const result2 = validator.validate(mockAttr, 123);
         expect(result2.successed).toBe(true);
         
-        // Невалидные значения
+        // Invalid values
         const result3 = validator.validate(mockAttr, 'abc');
         expect(result3.successed).toBe(false);
         expect(result3.messages).toBeArray();
         expect(result3.messages[0]).toBe('Value must be a number');
     });
 
-    it('должен проверять дробные значения для целочисленного типа', () => {
+    it('should validate decimal values for integer type', () => {
         mockAttr = { dataType: DataType.Int32 } as MetaEntityAttr;
 
-        // Целочисленное значение
+        // Integer value
         const result1 = validator.validate(mockAttr, '123');
         expect(result1.successed).toBe(true);
         
-        // Дробное значение не должно быть валидным для Int32
+        // Decimal value не should be валидным для Int32
         const result2 = validator.validate(mockAttr, '123.45');
         expect(result2.successed).toBe(false);
         expect(result2.messages).toBeArray();
         expect(result2.messages[0]).toBe('Value must be an integer number');
     });
 
-    it('должен принимать дробные значения для типа Float', () => {
+    it('should accept decimal values for Float type', () => {
         mockAttr = { dataType: DataType.Float } as MetaEntityAttr;
 
-        // Целочисленное значение
+        // Integer value
         const result1 = validator.validate(mockAttr, '123');
         expect(result1.successed).toBe(true);
         
-        // Дробное значение должно быть валидным для Float
+        // Decimal value should be валидным для Float
         const result2 = validator.validate(mockAttr, '123.45');
         expect(result2.successed).toBe(true);
         
-        // Строка не должна быть валидной
+        // String should not be valid
         const result3 = validator.validate(mockAttr, 'abc');
         expect(result3.successed).toBe(false);
         expect(result3.messages).toBeArray();
         expect(result3.messages[0]).toBe('Value must be a number');
     });
 
-    it('должен успешно проходить валидацию для нечисловых типов', () => {
+    it('should successfully pass validation for non-numeric types', () => {
         mockAttr = { dataType: DataType.String } as MetaEntityAttr;
 
-        // Любое значение должно быть валидным для строки
+        // Any value should be valid for string
         const result1 = validator.validate(mockAttr, '123');
         expect(result1.successed).toBe(true);
         
@@ -121,12 +121,12 @@ describe('RequiredValidator', () => {
         jest.restoreAllMocks();
     });
 
-    it('должен иметь имя "Required"', () => {
+    it('should иметь имя "Required"', () => {
         expect(validator.name).toBe('Required');
         expect(validator).toBeInstanceOf(Validator);
     });
 
-    it('должен проходить валидацию для nullable атрибутов', () => {
+    it('should проходить валидацию для nullable атрибутов', () => {
         mockAttr = { isNullable: true } as MetaEntityAttr;
 
         const result1 = validator.validate(mockAttr, null);
@@ -139,10 +139,10 @@ describe('RequiredValidator', () => {
         expect(result3.successed).toBe(true);
     });
 
-    it('должен проверять обязательные поля', () => {
+    it('should проверять обязательные поля', () => {
         mockAttr = { isNullable: false } as MetaEntityAttr;
 
-        // Не должно быть валидным для null, undefined или пустой строки
+        // Не should be валидным для null, undefined или пустой строки
         const result1 = validator.validate(mockAttr, null);
         expect(result1.successed).toBe(false);
         expect(result1.messages).toBeArray();
@@ -158,7 +158,7 @@ describe('RequiredValidator', () => {
         expect(result3.messages).toBeArray();
         expect(result3.messages[0]).toBe('This field is required');
         
-        // Должно быть валидным для непустых значений
+        // Should be valid for non-empty values
         const result4 = validator.validate(mockAttr, 'some value');
         expect(result4.successed).toBe(true);
         
@@ -183,7 +183,7 @@ describe('DateTimeValidator', () => {
             return key;
         });
         
-        // Мок для getEditDateTimeFormat
+        // Mock for getEditDateTimeFormat
         jest.spyOn(utils, 'getEditDateTimeFormat').mockImplementation((dataType: DataType) => {
             if (dataType === DataType.Date) return 'dd.MM.yyyy';
             if (dataType === DataType.Time) return 'HH:mm';
@@ -196,12 +196,12 @@ describe('DateTimeValidator', () => {
         jest.restoreAllMocks();
     });
 
-    it('должен иметь имя "DateTime"', () => {
+    it('should иметь имя "DateTime"', () => {
         expect(validator.name).toBe('DateTime');
         expect(validator).toBeInstanceOf(Validator);
     });
 
-    it('должен успешно проходить валидацию для null или пустой строки', () => {
+    it('should успешно проходить валидацию для null или пустой строки', () => {
         mockAttr = { dataType: DataType.Date } as MetaEntityAttr;
 
         const result1 = validator.validate(mockAttr, null);
@@ -214,7 +214,7 @@ describe('DateTimeValidator', () => {
         expect(result3.successed).toBe(true);
     });
 
-    it('должен проверять формат даты', () => {
+    it('should проверять формат даты', () => {
         mockAttr = { dataType: DataType.Date } as MetaEntityAttr;
 
         // Корректный формат
@@ -227,14 +227,14 @@ describe('DateTimeValidator', () => {
         expect(result2.messages).toBeArray();
         expect(result2.messages[0]).toBe('Invalid date format');
         
-        // Некорректное значение
+        // Invalid value
         const result3 = validator.validate(mockAttr, '32.13.2023');
         expect(result3.successed).toBe(false);
         expect(result3.messages).toBeArray();
         expect(result3.messages[0]).toBe('Invalid date format');
     });
 
-    it('должен проверять формат времени', () => {
+    it('should проверять формат времени', () => {
         mockAttr = { dataType: DataType.Time } as MetaEntityAttr;
 
         // Корректный формат
@@ -247,14 +247,14 @@ describe('DateTimeValidator', () => {
         expect(result2.messages).toBeArray();
         expect(result2.messages[0]).toBe('Invalid date format');
         
-        // Некорректное значение
+        // Invalid value
         const result3 = validator.validate(mockAttr, '25:70');
         expect(result3.successed).toBe(false);
         expect(result3.messages).toBeArray();
         expect(result3.messages[0]).toBe('Invalid date format');
     });
 
-    it('должен проверять формат даты и времени', () => {
+    it('should проверять формат даты и времени', () => {
         mockAttr = { dataType: DataType.DateTime } as MetaEntityAttr;
 
         // Корректный формат
@@ -268,10 +268,10 @@ describe('DateTimeValidator', () => {
         expect(result2.messages[0]).toBe('Invalid date format');
     });
 
-    it('должен успешно проходить валидацию для нетиповых дат', () => {
+    it('should успешно проходить валидацию для нетиповых дат', () => {
         mockAttr = { dataType: DataType.String } as MetaEntityAttr;
 
-        // Любое значение должно быть валидным для строки
+        // Any value should be valid for string
         const result1 = validator.validate(mockAttr, '15.03.2023');
         expect(result1.successed).toBe(true);
         

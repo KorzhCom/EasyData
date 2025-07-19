@@ -10,20 +10,20 @@ import { TextDataFilter } from '../src/filter/text_data_filter';
 import { DataFilter } from '../src/filter/data_filter';
 
 describe('TextDataFilter', () => {
-    // Мок для DataLoader
+    // Mock for DataLoader
     let mockLoader: DataLoader;
-    // Исходная таблица данных
+    // Source data table
     let sourceTable: EasyDataTable;
-    // Тестируемый фильтр
+    // Filter under test
     let filter: TextDataFilter;
-    // Колонки для тестовой таблицы
+    // Columns for test table
     let columns: DataColumnDescriptor[];
-    // Данные для тестовой таблицы
+    // Data for test table
     let tableData: any[][];
 
-    // Настройка тестового окружения перед каждым тестом
+    // Test environment setup before each test
     beforeEach(() => {
-        // Определяем колонки для тестовой таблицы
+        // Define columns for test table
         columns = [
             { id: 'id', label: 'ID', type: DataType.Int32 },
             { id: 'name', label: 'Name', type: DataType.String },
@@ -31,7 +31,7 @@ describe('TextDataFilter', () => {
             { id: 'price', label: 'Price', type: DataType.Currency }
         ];
 
-        // Определяем данные для тестовой таблицы
+        // Define data for test table
         tableData = [
             [1, 'Apple', 'Fresh red apple', 1.99],
             [2, 'Banana', 'Yellow fruit', 0.99],
@@ -47,10 +47,10 @@ describe('TextDataFilter', () => {
             inMemory: true
         });
 
-        // Создаем мок для DataLoader
+        // Create mock for DataLoader
         mockLoader = {
             loadChunk: (chunkInfo: ChunkInfo): Promise<{ table: EasyDataTable, total: number }> => {
-                // Эмулируем фильтрацию на сервере
+                // Emulate фильтрацию на сервере
                 const filterValue = chunkInfo['filters']?.[0]?.value?.toLowerCase();
                 const filteredData = filterValue 
                     ? tableData.filter(row => {
@@ -73,21 +73,21 @@ describe('TextDataFilter', () => {
             }
         };
 
-        // Создаем тестируемый фильтр
+        // Create filter under test
         filter = new TextDataFilter(mockLoader, sourceTable, 'products');
     });
 
-    it('должен быть экземпляром класса DataFilter', () => {
+    it('should быть экземпляром класса DataFilter', () => {
         expect(filter).toBeInstanceOf(DataFilter);
         expect(filter).toBeObject();
     });
 
-    it('должен возвращать пустую строку для getValue() после создания', () => {
+    it('should return пустую строку для getValue() после создания', () => {
         const value = filter.getValue();
         expect(value).toBe('');
     });
 
-    it('должен корректно устанавливать и возвращать значение фильтра', () => {
+    it('should correctly устанавливать и возвращать значение фильтра', () => {
         return filter.apply('apple')
             .then(() => {
                 const value = filter.getValue();
@@ -95,14 +95,14 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен возвращать исходную таблицу при пустом значении фильтра', () => {
+    it('should return исходную таблицу при пустом значении фильтра', () => {
         return filter.apply('')
             .then(result => {
                 expect(result).toBe(sourceTable);
             });
     });
 
-    it('должен возвращать исходную таблицу после очистки фильтра', () => {
+    it('should return исходную таблицу после очистки фильтра', () => {
         return filter.apply('apple')
             .then(() => filter.clear())
             .then(result => {
@@ -111,7 +111,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен фильтровать данные в памяти при полностью загруженной таблице', () => {
+    it('should фильтровать данные в памяти при полностью загруженной таблице', () => {
         return filter.apply('apple')
             .then(filteredTable => {
                 expect(filteredTable).not.toBe(sourceTable);
@@ -121,15 +121,15 @@ describe('TextDataFilter', () => {
                 expect(rows).toBeArray();
                 expect(rows.length).toBe(2);
                 
-                // Проверяем первую строку (Apple)
+                // Check первую строку (Apple)
                 expect(rows[0].getValue('name')).toBe('Apple');
                 
-                // Проверяем вторую строку (Pineapple)
+                // Check вторую строку (Pineapple)
                 expect(rows[1].getValue('name')).toBe('Pineapple');
             });
     });
 
-    it('должен использовать серверную фильтрацию когда таблица не полностью загружена', () => {
+    it('should использовать серверную фильтрацию когда таблица не полностью загружена', () => {
         // Создаем частично загруженную таблицу и новый фильтр
         const partialTable = new EasyDataTable({
             columns: columns,
@@ -148,22 +148,22 @@ describe('TextDataFilter', () => {
         
         return serverFilter.apply('orange')
             .then(filteredTable => {
-                // Проверяем, что был вызван метод loadChunk
+                // Check, что был вызван метод loadChunk
                 expect(loadChunkSpy).toHaveBeenCalled();
                 
-                // Проверяем, что фильтр был передан в запрос
+                // Check, что фильтр был передан в запрос
                 const callArgs = loadChunkSpy.mock.calls[0][0];
                 expect(callArgs).toBeObject();
                 expect(callArgs.filters).toBeArray();
                 expect(callArgs.filters[0].value).toBe('orange');
                 
-                // Проверяем результаты фильтрации
+                // Check результаты фильтрации
                 expect(filteredTable.getCachedCount()).toBe(1);
                 expect(filteredTable.getCachedRows()[0].getValue('name')).toBe('Orange');
             });
     });
 
-    it('должен поддерживать множественные поисковые слова через разделитель ||', () => {
+    it('should поддерживать множественные поисковые слова через разделитель ||', () => {
         return filter.apply('apple || melon')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -177,7 +177,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен фильтровать по нескольким колонкам', () => {
+    it('should фильтровать по нескольким колонкам', () => {
         return filter.apply('fruit')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -191,7 +191,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен фильтровать без учета регистра', () => {
+    it('should фильтровать без учета регистра', () => {
         return filter.apply('APPLE')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
@@ -204,7 +204,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен возвращать пустую таблицу если нет соответствий', () => {
+    it('should return пустую таблицу если нет соответствий', () => {
         return filter.apply('nonexistent')
             .then(filteredTable => {
                 expect(filteredTable.getCachedCount()).toBe(0);
@@ -212,7 +212,7 @@ describe('TextDataFilter', () => {
             });
     });
 
-    it('должен фильтровать по числовым значениям', () => {
+    it('should фильтровать по числовым значениям', () => {
         return filter.apply('1.99')
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();

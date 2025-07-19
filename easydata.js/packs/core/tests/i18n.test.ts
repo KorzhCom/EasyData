@@ -5,15 +5,15 @@ import { DataType } from '../src/types/data_type';
 
 describe('i18n module', () => {
   beforeEach(() => {
-    // Сбрасываем локали перед каждым тестом
+    // Reset локали перед каждым тестом
     i18n.resetLocales();
   });
 
-  it('должен иметь правильную текущую локаль по умолчанию', () => {
+  it('should иметь правильную текущую локаль по умолчанию', () => {
     expect(i18n.getCurrentLocale()).toBe('en-US');
   });
 
-  it('должен возвращать список доступных локалей', () => {
+  it('should return список доступных локалей', () => {
     // По умолчанию должна быть только одна локаль
     const locales = i18n.getLocales();
     expect(locales.length).toBe(1);
@@ -31,7 +31,7 @@ describe('i18n module', () => {
       }
     });
 
-    // Теперь должно быть две локали, отсортированные по englishName
+    // Теперь should be две локали, отсортированные по englishName
     const updatedLocales = i18n.getLocales();
     expect(updatedLocales.length).toBe(2);
     expect(updatedLocales[0].locale).toBe('en-US');
@@ -40,8 +40,8 @@ describe('i18n module', () => {
     expect(updatedLocales[1].englishName).toBe('Ukrainian');
   });
 
-  it('должен получать тексты из текущей локали', () => {
-    // Проверка стандартных текстов в en-US
+  it('should получать тексты из текущей локали', () => {
+    // Check стандартных текстов в en-US
     expect(i18n.getText('ButtonOK')).toBe('OK');
     expect(i18n.getText('ButtonCancel')).toBe('Cancel');
     expect(i18n.getText('Yes')).toBe('Yes');
@@ -67,7 +67,7 @@ describe('i18n module', () => {
     expect(i18n.getText('No')).toBe('Nein');
   });
 
-  it('должен работать с вложенными текстовыми ресурсами', () => {
+  it('should работать с вложенными текстовыми ресурсами', () => {
     i18n.updateLocaleTexts({
       Menu: {
         File: 'File',
@@ -86,7 +86,7 @@ describe('i18n module', () => {
     expect(i18n.getText('Menu', 'Settings', 'Advanced')).toBe('Advanced');
   });
 
-  it('должен обновлять тексты для текущей локали', () => {
+  it('should обновлять тексты для текущей локали', () => {
     // Обновление текстов текущей локали
     i18n.updateLocaleTexts({
       ButtonOK: 'Okay',
@@ -94,16 +94,16 @@ describe('i18n module', () => {
       NewText: 'Brand new text'
     });
 
-    // Проверка обновленных текстов
+    // Check обновленных текстов
     expect(i18n.getText('ButtonOK')).toBe('Okay');
     expect(i18n.getText('ButtonCancel')).toBe('Dismiss');
     expect(i18n.getText('NewText')).toBe('Brand new text');
 
-    // Проверка что неизменные тексты остались прежними
+    // Check что неизменные тексты остались прежними
     expect(i18n.getText('Yes')).toBe('Yes');
   });
 
-  it('должен обновлять тексты по умолчанию для всех локалей', () => {
+  it('should обновлять тексты по умолчанию для всех локалей', () => {
     // Добавим новую локаль
     i18n.addLocale('fr-FR', {
       englishName: 'French',
@@ -119,64 +119,64 @@ describe('i18n module', () => {
       NewGlobalText: 'New text for all locales'
     });
 
-    // Проверяем английскую локаль
+    // Check английскую локаль
     i18n.setCurrentLocale('en-US');
     expect(i18n.getText('NewGlobalText')).toBe('New text for all locales');
 
-    // Проверяем французскую локаль
+    // Check французскую локаль
     i18n.setCurrentLocale('fr-FR');
     expect(i18n.getText('NewGlobalText')).toBe('New text for all locales');
     // Убеждаемся что специфичные для локали тексты остались
     expect(i18n.getText('ButtonCancel')).toBe('Annuler');
   });
 
-  it('должен работать с настройками локали', () => {
+  it('should работать с настройками локали', () => {
     const settings = i18n.getLocaleSettings();
     
-    // Проверка форматов даты и времени
+    // Check форматов даты и времени
     expect(settings.shortDateFormat).toBe('MM/dd/yyyy');
     expect(settings.longDateFormat).toBe('dd MMM, yyyy');
     expect(settings.shortTimeFormat).toBe('HH:mm');
     expect(settings.longTimeFormat).toBe('HH:mm:ss');
     
-    // Проверка названий месяцев
+    // Check названий месяцев
     expect(settings.shortMonthNames.length).toBe(12);
     expect(settings.shortMonthNames[0]).toBe('Jan');
     expect(settings.longMonthNames[0]).toBe('January');
     
-    // Проверка названий дней недели
+    // Check названий дней недели
     expect(settings.shortWeekDayNames.length).toBe(7);
     expect(settings.shortWeekDayNames[0]).toBe('Sun');
     expect(settings.longWeekDayNames[0]).toBe('Sunday');
     
-    // Проверка разделителя десятичных и валюты
+    // Check разделителя десятичных и валюты
     expect(settings.decimalSeparator).toBe('.');
     expect(settings.currency).toBe('USD');
   });
 
-  it('должен возвращать названия месяцев', () => {
+  it('should return названия месяцев', () => {
     expect(i18n.getShortMonthName(1)).toBe('Jan');
     expect(i18n.getLongMonthName(1)).toBe('January');
     expect(i18n.getShortMonthName(12)).toBe('Dec');
     expect(i18n.getLongMonthName(12)).toBe('December');
     
-    // Проверка исключений при неверном номере месяца
+    // Check исключений при неверном номере месяца
     expect(() => i18n.getShortMonthName(0)).toThrow();
     expect(() => i18n.getLongMonthName(13)).toThrow();
   });
 
-  it('должен возвращать названия дней недели', () => {
+  it('should return названия дней недели', () => {
     expect(i18n.getShortWeekDayName(1)).toBe('Sun');
     expect(i18n.getLongWeekDayName(1)).toBe('Sunday');
     expect(i18n.getShortWeekDayName(7)).toBe('Sat');
     expect(i18n.getLongWeekDayName(7)).toBe('Saturday');
     
-    // Проверка исключений при неверном номере дня
+    // Check исключений при неверном номере дня
     expect(() => i18n.getShortWeekDayName(0)).toThrow();
     expect(() => i18n.getLongWeekDayName(8)).toThrow();
   });
 
-  it('должен обновлять настройки локали', () => {
+  it('should обновлять настройки локали', () => {
     // Обновление настроек локали
     i18n.updateLocaleSettings({
       shortDateFormat: 'dd.MM.yyyy',
@@ -187,17 +187,17 @@ describe('i18n module', () => {
     
     const settings = i18n.getLocaleSettings();
     
-    // Проверка обновленных настроек
+    // Check обновленных настроек
     expect(settings.shortDateFormat).toBe('dd.MM.yyyy');
     expect(settings.longDateFormat).toBe('dd MMMM yyyy');
     expect(settings.decimalSeparator).toBe(',');
     expect(settings.currency).toBe('EUR');
     
-    // Проверка, что неизмененные настройки остались прежними
+    // Check, что неизмененные настройки остались прежними
     expect(settings.shortTimeFormat).toBe('HH:mm');
   });
 
-  it('должен форматировать дату и время по формату', () => {
+  it('should форматировать дату и время по формату', () => {
     const date = new Date(2023, 4, 15, 14, 30, 45); // 15 мая 2023 14:30:45
     
     // Форматирование по шаблону
@@ -208,11 +208,11 @@ describe('i18n module', () => {
     expect(i18n.dateTimeToStr(date, 'HH:mm:ss')).toBe('14:30:45');
     expect(i18n.dateTimeToStr(date, 'hh:mm tt')).toBe('02:30 PM');
     
-    // Проверка форматирования с текстом в скобках
+    // Check форматирования с текстом в скобках
     expect(i18n.dateTimeToStr(date, 'yyyy-MM-dd [at] HH:mm')).toBe('2023-05-15 at 14:30');
   });
 
-  it('должен форматировать дату и время с использованием расширенной функции', () => {
+  it('should форматировать дату и время с использованием расширенной функции', () => {
     const date = new Date(2023, 4, 15, 14, 30, 45); // 15 мая 2023 14:30:45
     
     // Форматирование с использованием настроек текущей локали
@@ -235,7 +235,7 @@ describe('i18n module', () => {
     expect(i18n.dateTimeToStrEx(date, DataType.DateTime, 'u')).toBe('2023-05-15 14:30');
   });
 
-  it('должен форматировать числа', () => {
+  it('should форматировать числа', () => {
     // Форматирование без указания формата
     i18n.updateLocaleSettings({ decimalSeparator: ',' });
     expect(i18n.numberToStr(123.45)).toBe('123,45');
@@ -265,7 +265,7 @@ describe('i18n module', () => {
     expect(i18n.numberToStr(4, 'SOne=1|Two=2|Three=3')).toBe('4');
   });
 
-  it('должен форматировать логические значения', () => {
+  it('should форматировать логические значения', () => {
     // По умолчанию (без формата)
     expect(i18n.booleanToStr(true)).toBe('true');
     expect(i18n.booleanToStr(false)).toBe('false');
@@ -284,7 +284,7 @@ describe('i18n module', () => {
     expect(i18n.booleanToStr(false, 'SNo|Yes')).toBe('No');
   });
 
-  it('должен добавлять и вызывать маппер', () => {
+  it('should добавлять и вызывать маппер', () => {
     let mapperCalled = false;
     let mapperLocaleId: string;
     let mapperTexts: any;
@@ -301,7 +301,7 @@ describe('i18n module', () => {
       NewText: 'Test text'
     });
     
-    // Проверка что маппер был вызван с правильными параметрами
+    // Check что маппер был вызван с правильными параметрами
     expect(mapperCalled).toBe(true);
     expect(mapperLocaleId).toBe('en-US');
     expect(mapperTexts).toBeObject({ NewText: 'Test text' });

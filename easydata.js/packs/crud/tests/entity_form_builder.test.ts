@@ -15,7 +15,7 @@ describe('EntityEditFormBuilder', () => {
     let builder: EntityEditFormBuilder;
     let dataRow: DataRow;
     
-    // Вспомогательная функция для создания атрибута
+    // Helper function для создания атрибута
     const createAttr = (id: string, caption: string, dataType: DataType, options: any = {}): MetaEntityAttr => {
         const attr = {
             id,
@@ -41,7 +41,7 @@ describe('EntityEditFormBuilder', () => {
     };
 
     beforeEach(() => {
-        // Создаем атрибуты для нашей сущности
+        // Create attributes для нашей сущности
         const attributes = [
             createAttr('Person.id', 'ID', DataType.Int32, { 
                 isPrimaryKey: true,
@@ -85,7 +85,7 @@ describe('EntityEditFormBuilder', () => {
             })
         ];
         
-        // Создаем сущность с атрибутами
+        // Create entity with attributes
         mockEntity = {
             id: 'Person',
             name: 'Person',
@@ -140,7 +140,7 @@ describe('EntityEditFormBuilder', () => {
             getValue: (id: string) => rowData[id]
         } as DataRow;
         
-        // Создаем мок для контекста данных
+        // Create mock for контекста данных
         mockDataContext = {
             getMetaData: () => mockMetaData,
             getActiveEntity: () => mockEntity,
@@ -158,17 +158,17 @@ describe('EntityEditFormBuilder', () => {
             })
         } as unknown as DataContext;
         
-        // Создаем экземпляр builder'а
+        // Create instance builder'а
         builder = new EntityEditFormBuilder(mockDataContext);
     });
 
-    it('должен создаваться с пустыми параметрами и сбрасываться на значения по умолчанию', () => {
+    it('should создаваться с пустыми параметрами и сбрасываться на значения по умолчанию', () => {
         expect(builder).toBeDefined();
         
-        // Проверяем, что свойство context установлено
+        // Check, что свойство context установлено
         expect((builder as any).context).toBe(mockDataContext);
         
-        // Проверяем метод reset
+        // Check метод reset
         const formBeforeReset = (builder as any).form;
         builder.reset();
         const formAfterReset = (builder as any).form;
@@ -177,25 +177,25 @@ describe('EntityEditFormBuilder', () => {
         expect(formAfterReset).toBeInstanceOf(EntityEditForm);
     });
 
-    it('должен создавать форму с правильными полями', () => {
+    it('should создавать форму с правильными полями', () => {
         const form = builder.build();
         
-        // Проверяем что форма создана
+        // Check что форма создана
         expect(form).toBeInstanceOf(EntityEditForm);
         
-        // Получаем HTML формы
+        // Get HTML формы
         const formHtml = form.getHtml();
         expect(formHtml).toBeDefined();
         
-        // Проверяем наличие блока для ошибок
+        // Check наличие блока для ошибок
         const errorsBlock = formHtml.querySelector('.errors-block');
         expect(errorsBlock).toBeDefined();
         
-        // Проверяем наличие полей формы
+        // Check наличие полей формы
         const inputs = formHtml.querySelectorAll('input');
         expect(inputs.length).toBeGreaterThan(0);
         
-        // Проверяем что каждый атрибут создал соответствующее поле
+        // Check что каждый атрибут создал соответствующее поле
         for (const attr of mockEntity.attributes) {
             // Пропустить атрибуты, которые не должны отображаться в форме создания
             if (!attr.showOnCreate) continue;
@@ -216,7 +216,7 @@ describe('EntityEditFormBuilder', () => {
         }
     });
 
-    it('должен устанавливать значения из dataRow при создании формы', () => {
+    it('should устанавливать значения из dataRow при создании формы', () => {
         const params: FormBuildParams = {
             values: dataRow
         };
@@ -225,7 +225,7 @@ describe('EntityEditFormBuilder', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем заполнение полей значениями из dataRow
+        // Check заполнение полей значениями из dataRow
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         expect(nameInput.value).toBe('John Doe');
         
@@ -233,7 +233,7 @@ describe('EntityEditFormBuilder', () => {
         expect(isActiveInput.checked).toBe(true);
     });
 
-    it('должен создавать форму редактирования с правильными параметрами', () => {
+    it('should создавать форму редактирования с правильными параметрами', () => {
         const params: FormBuildParams = {
             values: dataRow,
             isEditForm: true
@@ -243,12 +243,12 @@ describe('EntityEditFormBuilder', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем, что первичные ключи имеют атрибут readonly
+        // Check, что первичные ключи имеют атрибут readonly
         const idInput = formHtml.querySelector('[name="Person.id"]') as HTMLInputElement;
         expect(idInput).toBeDefined();
         expect(idInput.getAttribute('readonly')).toBeDefined();
         
-        // Проверяем, что неизменяемые атрибуты имеют readonly
+        // Check, что неизменяемые атрибуты имеют readonly
         const attrNonEditable = createAttr('Person.createdAt', 'Created At', DataType.DateTime, { 
             isEditable: false,
             showOnEdit: true
@@ -264,86 +264,86 @@ describe('EntityEditFormBuilder', () => {
         expect(createdAtInput.getAttribute('readonly')).toBeDefined();
     });
 
-    it('должен создавать текстовые поля правильного типа', () => {
+    it('should создавать текстовые поля правильного типа', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем текстовые поля
+        // Check текстовые поля
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         expect(nameInput.type).toBe('text');
         
-        // Проверяем поля checkbox
+        // Check поля checkbox
         const isActiveInput = formHtml.querySelector('[name="Person.isActive"]') as HTMLInputElement;
         expect(isActiveInput.type).toBe('checkbox');
         
-        // Проверяем поля file
+        // Check поля file
         const photoInput = formHtml.querySelector('[name="Person.photo"]') as HTMLInputElement;
         expect(photoInput.type).toBe('file');
         expect(photoInput.getAttribute('accept')).toBe('image/*');
     });
 
-    it('должен создавать текстовую область для многострочных редакторов', () => {
+    it('should создавать текстовую область для многострочных редакторов', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем textarea для многострочных полей
+        // Check textarea для многострочных полей
         const notesTextarea = formHtml.querySelector('[name="Person.notes"]') as HTMLTextAreaElement;
         expect(notesTextarea).toBeDefined();
         expect(notesTextarea.tagName.toLowerCase()).toBe('textarea');
     });
 
-    it('должен создавать select для списков', () => {
+    it('should создавать select для списков', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем select для списков
+        // Check select для списков
         const statusSelect = formHtml.querySelector('[name="Person.status"]') as HTMLSelectElement;
         expect(statusSelect).toBeDefined();
         expect(statusSelect.tagName.toLowerCase()).toBe('select');
         
-        // Проверяем опции
+        // Check опции
         const options = statusSelect.querySelectorAll('option');
         expect(options.length).toBe(2);
         expect(options[0].value).toBe('Active');
         expect(options[1].value).toBe('Inactive');
     });
 
-    it('должен создавать специальные поля для дат и времени', () => {
+    it('should создавать специальные поля для дат и времени', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем поля для дат
+        // Check поля для дат
         const birthDateField = formHtml.querySelector('[name="Person.birthDate"]').closest('.kfrm-fields, .kfrm-fields-ie');
         expect(birthDateField).toBeDefined();
         
-        // Проверяем наличие кнопки с календарем
+        // Check наличие кнопки с календарем
         const calendarButton = birthDateField.querySelector('button');
         expect(calendarButton).toBeDefined();
         
-        // Проверяем наличие иконки календаря
+        // Check наличие иконки календаря
         const calendarIcon = calendarButton.querySelector('i.ed-calendar-icon');
         expect(calendarIcon).toBeDefined();
     });
 
-    it('должен создавать поля для lookup атрибутов', () => {
+    it('should создавать поля для lookup атрибутов', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем наличие поля для lookup
+        // Check наличие поля для lookup
         const departmentField = formHtml.querySelector('[name="Person.departmentId"]').closest('.kfrm-fields, .kfrm-fields-ie');
         expect(departmentField).toBeDefined();
         
-        // Проверяем наличие кнопки для открытия lookup диалога
+        // Check наличие кнопки для открытия lookup диалога
         const lookupButton = departmentField.querySelector('button');
         expect(lookupButton).toBeDefined();
         expect(lookupButton.textContent).toBe('...');
     });
     
-    it('должен добавлять информацию о подсказках для полей с описанием', () => {
+    it('should добавлять информацию о подсказках для полей с описанием', () => {
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Проверяем наличие подсказки для поля с описанием
+        // Check наличие подсказки для поля с описанием
         const nameLabel = formHtml.querySelector(`label[for="Person.name"]`);
         expect(nameLabel).toBeDefined();
         
@@ -352,25 +352,25 @@ describe('EntityEditFormBuilder', () => {
         expect(helpIcon.getAttribute('title')).toBe('Person full name');
     });
     
-    it('должен устанавливать обработчик submit и вызывать его при нажатии Enter', () => {
+    it('should устанавливать обработчик submit и вызывать его при нажатии Enter', () => {
         // Создаем мок-функцию для onSubmit
         const submitCallback = mock();
         
-        // Устанавливаем callback через onSubmit
+        // Set callback через onSubmit
         builder.onSubmit(submitCallback);
         
         // Строим форму
         const form = builder.build();
         const formHtml = form.getHtml();
         
-        // Получаем поле ввода
+        // Get поле ввода
         const nameInput = formHtml.querySelector('[name="Person.name"]') as HTMLInputElement;
         
-        // Эмулируем нажатие клавиши Enter
+        // Emulate нажатие клавиши Enter
         const enterKeyEvent = new KeyboardEvent('keypress', { keyCode: 13 });
         nameInput.dispatchEvent(enterKeyEvent);
         
-        // Проверяем, что callback был вызван
+        // Check, что callback был вызван
         expect(submitCallback).toHaveBeenCalled();
     });
 });

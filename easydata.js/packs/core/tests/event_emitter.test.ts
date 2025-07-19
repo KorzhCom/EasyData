@@ -9,7 +9,7 @@ describe('EventEmitter', () => {
         eventEmitter = new EventEmitter(source);
     });
 
-    it('должен создаваться с указанным источником', () => {
+    it('should создаваться с указанным источником', () => {
         expect(eventEmitter).toBeDefined();
         
         // Нам нужно вызвать событие, чтобы проверить источник
@@ -21,7 +21,7 @@ describe('EventEmitter', () => {
         eventEmitter.fire('testEvent');
     });
 
-    it('должен возвращать ID подписки при подписке на событие', () => {
+    it('should return ID подписки при подписке на событие', () => {
         const callback = (event: EqEvent) => {};
         
         const subscriptionId = eventEmitter.subscribe('testEvent', callback);
@@ -31,7 +31,7 @@ describe('EventEmitter', () => {
         expect(subscriptionId.length).toBeGreaterThan(0);
     });
 
-    it('должен вызывать колбэк при активации события', () => {
+    it('should вызывать колбэк при активации события', () => {
         let callbackCalled = false;
         const testData = { test: 'data' };
         
@@ -48,7 +48,7 @@ describe('EventEmitter', () => {
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен вызывать несколько колбэков для одного события', () => {
+    it('should вызывать несколько колбэков для одного события', () => {
         let callCount = 0;
         
         const callback1 = () => { callCount++; };
@@ -64,7 +64,7 @@ describe('EventEmitter', () => {
         expect(callCount).toBe(3);
     });
 
-    it('должен вызывать только колбэки для указанного типа события', () => {
+    it('should вызывать только колбэки для указанного типа события', () => {
         let event1CallCount = 0;
         let event2CallCount = 0;
         
@@ -77,7 +77,7 @@ describe('EventEmitter', () => {
         expect(event2CallCount).toBe(0);
     });
 
-    it('не должен вызывать колбэк после отписки', () => {
+    it('не should вызывать колбэк после отписки', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
@@ -89,21 +89,21 @@ describe('EventEmitter', () => {
         expect(callbackCalled).toBe(false);
     });
 
-    it('должен правильно работать при отписке несуществующего ID', () => {
+    it('should правильно работать при отписке несуществующего ID', () => {
         // Не должно выбрасывать исключение
         expect(() => {
             eventEmitter.unsubscribe('testEvent', 'non-existent-id');
         }).not.toThrow();
     });
 
-    it('должен правильно работать при попытке активации несуществующего события', () => {
+    it('should правильно работать при попытке активации несуществующего события', () => {
         // Не должно выбрасывать исключение
         expect(() => {
             eventEmitter.fire('non-existent-event');
         }).not.toThrow();
     });
 
-    it('должен откладывать выполнение события с параметром postpone', (done) => {
+    it('should откладывать выполнение события с параметром postpone', (done) => {
         let callbackCalled = false;
         
         const callback = () => {
@@ -115,11 +115,11 @@ describe('EventEmitter', () => {
         
         eventEmitter.fire('testEvent', null, 50); // отложить на 50 мс
         
-        // Сразу после вызова fire колбэк еще не должен быть вызван
+        // Сразу после вызова fire колбэк еще не should быть вызван
         expect(callbackCalled).toBe(false);
     });
 
-    it('должен входить в тихий режим и выходить из него', () => {
+    it('should входить в тихий режим и выходить из него', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
@@ -133,7 +133,7 @@ describe('EventEmitter', () => {
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // В тихом режиме колбэк не должен вызываться
+        // В тихом режиме колбэк не should вызываться
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
@@ -141,12 +141,12 @@ describe('EventEmitter', () => {
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // После выхода из тихого режима колбэк должен вызываться
+        // После выхода из тихого режима колбэк should вызываться
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен поддерживать вложенный тихий режим', () => {
+    it('should поддерживать вложенный тихий режим', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
@@ -162,7 +162,7 @@ describe('EventEmitter', () => {
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // В тихом режиме колбэк не должен вызываться
+        // В тихом режиме колбэк не should вызываться
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
@@ -170,12 +170,12 @@ describe('EventEmitter', () => {
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // После полного выхода из тихого режима колбэк должен вызываться
+        // После полного выхода из тихого режима колбэк should вызываться
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(true);
     });
 
-    it('должен принудительно вызывать события в тихом режиме с параметром force', () => {
+    it('should принудительно вызывать события в тихом режиме с параметром force', () => {
         let callbackCalled = false;
         
         const callback = () => { callbackCalled = true; };
@@ -186,11 +186,11 @@ describe('EventEmitter', () => {
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // Обычный вызов не должен срабатывать
+        // Обычный вызов не should срабатывать
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
-        // Принудительный вызов должен сработать даже в тихом режиме
+        // Принудительный вызов should сработать даже в тихом режиме
         eventEmitter.fire('testEvent', null, 0, true);
         expect(callbackCalled).toBe(true);
     });

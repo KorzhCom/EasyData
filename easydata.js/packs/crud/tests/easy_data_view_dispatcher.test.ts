@@ -8,17 +8,17 @@ import { RootDataView } from '../src/views/root_data_view';
 import * as utils from '../src/utils/utils';
 
 describe('EasyDataViewDispatcher', () => {
-    // Оригинальные объекты для восстановления после тестов
+    // Original objects for restoration after tests
     const originalLocation = window.location;
     const originalWindowAddEventListener = window.addEventListener;
     const originalWindowRemoveEventListener = window.removeEventListener;
 
-    // Мок элементы для DOM
+    // Mock elements for DOM
     let mockContainer: HTMLElement;
     let mockParent: HTMLElement;
     
     beforeEach(() => {
-        // Создаем моки для DOM элементов
+        // Create mocks for DOM elements
         mockContainer = document.createElement('div');
         mockContainer.id = 'testContainer';
         
@@ -26,7 +26,7 @@ describe('EasyDataViewDispatcher', () => {
         mockParent.appendChild(mockContainer);
         document.body.appendChild(mockParent);
         
-        // Мок для window.location
+        // Mock for window.location
         delete (window as any).location;
         window.location = {
             ...originalLocation,
@@ -34,57 +34,57 @@ describe('EasyDataViewDispatcher', () => {
             href: 'http://example.com/app/easydata/entity1'
         } as Location;
 
-        // Моки для addEventListener и removeEventListener
+        // Mocks for addEventListener and removeEventListener
         window.addEventListener = mock();
         window.removeEventListener = mock();
         
-        // Мок для loadMetaData
+        // Mock for loadMetaData
         // jest.spyOn(DataContext.prototype, 'loadMetaData').mockImplementation(() => {
         //     return Promise.resolve(new MetaData());
         // });
         //
-        // // Мок для setActiveSource
+        // // Mock for setActiveSource
         // jest.spyOn(DataContext.prototype, 'setActiveSource').mockImplementation(() => {});
         //
-        // // Мок для setLocation
+        // // Mock for setLocation
         // jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
         //
-        // // Сохраняем оригинальные конструкторы представлений
+        // // Save original view constructors
         // jest.spyOn(EntityDataView.prototype, 'constructor').mockImplementation(() => {});
         // jest.spyOn(RootDataView.prototype, 'constructor').mockImplementation(() => {});
     });
 
     afterEach(() => {
-        // Восстанавливаем оригинальные объекты и методы
+        // Restore original objects and methods
         window.location = originalLocation;
         window.addEventListener = originalWindowAddEventListener;
         window.removeEventListener = originalWindowRemoveEventListener;
         
-        // Удаляем добавленные элементы
+        // Remove added elements
         if (mockParent.parentNode) {
             mockParent.parentNode.removeChild(mockParent);
         }
         
-        // Сбрасываем все моки
+        // Reset all mocks
         // jest.restoreAllMocks();
         
-        // Удаляем глобальную переменную EDView
+        // Remove global EDView variable
         delete window['EDView'];
     });
 
-    it('должен быть создан с настройками по умолчанию', () => {
+    it('should be created with default settings', () => {
         const dispatcher = new EasyDataViewDispatcher();
         
         expect(dispatcher).toBeDefined();
         
-        // Проверяем private свойства через any
+        // Check private properties through any
         const options = (dispatcher as any).options;
         expect(options).toBeDefined();
         expect(options.container).toBe('#EasyDataContainer');
         expect(options.basePath).toBe('easydata');
     });
 
-    it('должен быть создан с пользовательскими настройками', () => {
+    it('should be created with custom settings', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#customContainer',
             basePath: 'custom-path',
@@ -102,7 +102,7 @@ describe('EasyDataViewDispatcher', () => {
         expect(options.showBackToEntities).toBe(true);
     });
 
-    it('должен корректно обрабатывать настройку rootEntity', () => {
+    it('should correctly handle rootEntity configuration', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer',
             rootEntity: 'entity1'
@@ -113,23 +113,23 @@ describe('EasyDataViewDispatcher', () => {
         expect(options.rootEntity).toBe('entity1');
         expect(options.showBackToEntities).toBe(false);
         
-        // basePath должен быть установлен в "/"
+        // basePath should be set to "/"
         expect((dispatcher as any).basePath).toBe('/');
     });
 
-    it('должен корректно нормализовать базовый путь', () => {
+    it('should correctly normalize base path', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer',
             basePath: 'easydata'
         });
         
-        // Используя приватный метод напрямую через any
+        // Using private method directly through any
         expect((dispatcher as any).normalizeBasePath('easydata')).toBe('/app/easydata');
         expect((dispatcher as any).normalizeBasePath('/easydata/')).toBe('/app/easydata');
         expect((dispatcher as any).normalizeBasePath('nonexistent')).toBe('/');
     });
 
-    it('должен корректно обрезать слеши в пути', () => {
+    it('should correctly trim slashes in path', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
@@ -142,7 +142,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).trimSlashes('')).toBe('');
     });
 
-    it('должен корректно устанавливать контейнер по ID', () => {
+    it('should correctly set container by ID', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
@@ -150,8 +150,8 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).container).toBe(mockContainer);
     });
 
-    it('должен корректно устанавливать контейнер по классу', () => {
-        // Добавляем класс контейнеру
+    it('should correctly set container by class', () => {
+        // Add class to container
         mockContainer.className = 'test-class';
         
         const dispatcher = new EasyDataViewDispatcher({
@@ -161,7 +161,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).container).toBe(mockContainer);
     });
 
-    it('должен корректно устанавливать контейнер как HTML-элемент', () => {
+    it('should correctly set container as HTML element', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: mockContainer
         });
@@ -169,7 +169,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).container).toBe(mockContainer);
     });
 
-    it('должен выбрасывать ошибку при некорректном контейнере', () => {
+    it('should throw error with incorrect container', () => {
         expect(() => {
             new EasyDataViewDispatcher({
                 container: '#nonexistentContainer'
@@ -183,7 +183,7 @@ describe('EasyDataViewDispatcher', () => {
         }).toThrow('Container is undefined');
     });
 
-    it('должен корректно определять ID активного источника', () => {
+    it('should correctly determine active source ID', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer',
             basePath: 'easydata'
@@ -191,7 +191,7 @@ describe('EasyDataViewDispatcher', () => {
         
         expect((dispatcher as any).getActiveSourceId()).toBe('entity1');
         
-        // Меняем путь на корневой
+        // Change path to root
         window.location = {
             ...window.location,
             pathname: '/app/easydata',
@@ -201,7 +201,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).getActiveSourceId()).toBeNull();
     });
 
-    it('должен корректно определять ID активного источника с rootEntity', () => {
+    it('should correctly determine active source ID with rootEntity', () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer',
             rootEntity: 'rootEntity'
@@ -210,7 +210,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).getActiveSourceId()).toBe('rootEntity');
     });
 
-    it('должен запускаться и загружать метаданные', async () => {
+    it('should start and load metadata', async () => {
         // const dispatcher = new EasyDataViewDispatcher({
         //     container: '#testContainer'
         // });
@@ -223,20 +223,20 @@ describe('EasyDataViewDispatcher', () => {
         // expect(setActiveViewSpy).toHaveBeenCalled();
     });
 
-    it('должен устанавливать активное представление Entity', async () => {
+    it('should set active Entity view', async () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
         
         await dispatcher.run();
         
-        // Так как путь включает ID сущности, должен быть создан EntityDataView
+        // Since path includes entity ID, EntityDataView should be created
         expect(DataContext.prototype.setActiveSource).toHaveBeenCalledWith('entity1');
         expect(window['EDView']).toBeDefined();
     });
 
-    it('должен устанавливать активное представление Root', async () => {
-        // Меняем путь на корневой
+    it('should set active Root view', async () => {
+        // Change path to root
         window.location = {
             ...window.location,
             pathname: '/app/easydata',
@@ -249,23 +249,23 @@ describe('EasyDataViewDispatcher', () => {
         
         await dispatcher.run();
         
-        // Так как путь не включает ID сущности, должен быть создан RootDataView
+        // Since path does not include entity ID, RootDataView should be created
         expect(DataContext.prototype.setActiveSource).not.toHaveBeenCalled();
         expect(window['EDView']).toBeDefined();
     });
 
-    it('должен подключать слушатели событий при запуске', async () => {
+    it('should connect event listeners on startup', async () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
         
         await dispatcher.run();
         
-        // Проверяем, что были добавлены слушатели для событий
+        // Check that event listeners were added
         expect(window.addEventListener).toHaveBeenCalledWith(['ed_set_location', 'popstate']);
     });
 
-    it('должен отключать слушатели событий при detach', async () => {
+    it('should remove event listeners on detach', async () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
@@ -274,31 +274,31 @@ describe('EasyDataViewDispatcher', () => {
         
         dispatcher.detach();
         
-        // Проверяем, что были удалены слушатели событий
+        // Check that event listeners were removed
         expect(window.removeEventListener).toHaveBeenCalledWith(['ed_set_location', 'popstate']);
     });
 
-    it('должен очищать контейнер и данные при смене представления', async () => {
+    it('should clear container and data on view change', async () => {
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
         });
         
-        // Добавляем содержимое в контейнер
+        // Add content to container
         mockContainer.innerHTML = '<div>Test content</div>';
         
-        // Мок для метода clear у таблицы данных
+        // Mock for data table clear method
         const clearMock = mock();
         (dispatcher as any).context.getData = mock().mockReturnValue({
             clear: clearMock
         });
         
-        // Вызываем метод setActiveView напрямую
+        // Call setActiveView method directly
         (dispatcher as any).setActiveView();
         
-        // Проверяем, что контейнер был очищен
+        // Check that container was cleared
         expect(mockContainer.innerHTML).toBe('');
         
-        // Проверяем, что данные были очищены
+        // Check that data was cleared
         expect(clearMock).toHaveBeenCalled();
     });
 });

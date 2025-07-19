@@ -17,13 +17,13 @@ describe('DataContext', () => {
     let processEndCount: number;
 
     beforeEach(() => {
-        // Создаем мок для HttpClient
+        // Create mock for HttpClient
         mockHttpClient = {
             get: mock(),
             post: mock(),
         } as unknown as HttpClient;
 
-        // Создаем мок для HttpActionResult
+        // Create mock for HttpActionResult
         mockActionResult = {
             then: mock().mockImplementation((callback) => {
                 callback({ 
@@ -53,11 +53,11 @@ describe('DataContext', () => {
         (mockHttpClient.get as jest.Mock).mockReturnValue(mockActionResult);
         (mockHttpClient.post as jest.Mock).mockReturnValue(mockActionResult);
 
-        // Счетчики для методов onProcessStart и onProcessEnd
+        // Counters for onProcessStart and onProcessEnd methods
         processStartCount = 0;
         processEndCount = 0;
 
-        // Создаем экземпляр DataContext с моками
+        // Create DataContext instance with mocks
         dataContext = new DataContext({
             metaDataId: 'test-model',
             endpoint: '/api/test',
@@ -65,12 +65,12 @@ describe('DataContext', () => {
             onProcessEnd: () => { processEndCount++; }
         });
 
-        // Подменяем HttpClient в DataContext на наш мок
+        // Replace HttpClient in DataContext with our mock
         (dataContext as any).http = mockHttpClient;
     });
 
-    it('должен инициализироваться с правильными значениями', () => {
-        // Проверка базовых свойств
+    it('should initialize with correct values', () => {
+        // Check basic properties
         const metaData = dataContext.getMetaData();
         expect(metaData).toBeInstanceOf(MetaData);
         expect(metaData.id).toBe('test-model');
@@ -82,8 +82,8 @@ describe('DataContext', () => {
         expect(dataLoader).toBeInstanceOf(EasyDataServerLoader);
     });
 
-    it('должен правильно настраивать эндпоинты по умолчанию', () => {
-        // Проверка эндпоинтов по умолчанию
+    it('should correctly set default endpoints', () => {
+        // Check default endpoints
         expect(() => {
             const endpoint = dataContext.resolveEndpoint('GetMetaData');
             expect(endpoint).toBe('/api/test/models/test-model');
@@ -91,58 +91,58 @@ describe('DataContext', () => {
 
         expect(() => {
             const endpoint = dataContext.resolveEndpoint('FetchDataset');
-            // На данном этапе activeEntity не установлен, поэтому должна быть ошибка
-            // Но сам эндпоинт должен существовать
+            // At this stage activeEntity is not set, so there should be an error
+            // But the endpoint itself should exist
         }).toThrow();
     });
 
-    it('должен устанавливать и получать активную сущность', () => {
-        // Загружаем метаданные
+    it('should set and get active entity', () => {
+        // Load metadata
         dataContext.loadMetaData().then(() => {
-            // Устанавливаем активную сущность
+            // Set active entity
             dataContext.setActiveSource('entity1');
             
-            // Проверяем, что активная сущность установлена
+            // Check, что активная сущность установлена
             const activeEntity = dataContext.getActiveEntity();
             expect(activeEntity).toBeDefined();
             expect(activeEntity.id).toBe('entity1');
         });
     });
 
-    it('должен устанавливать кастомные эндпоинты', () => {
-        // Устанавливаем кастомный эндпоинт
+    it('should set custom endpoints', () => {
+        // Set кастомный эндпоинт
         dataContext.setEndpoint('GetMetaData', '/custom/api/metadata');
         
-        // Проверяем что эндпоинт установлен
+        // Check что эндпоинт установлен
         const endpoint = dataContext.resolveEndpoint('GetMetaData');
         expect(endpoint).toBe('/custom/api/metadata');
     });
 
-    it('не должен перезаписывать существующие эндпоинты при использовании setEnpointIfNotExist', () => {
-        // Устанавливаем эндпоинт
+    it('should not overwrite existing endpoints when using setEndpointIfNotExist', () => {
+        // Set эндпоинт
         dataContext.setEndpoint('GetMetaData', '/custom/api/metadata');
         
         // Пытаемся установить другой эндпоинт через setEnpointIfNotExist
         dataContext.setEnpointIfNotExist('GetMetaData', '/another/endpoint');
         
-        // Проверяем что эндпоинт не изменился
+        // Check что эндпоинт не изменился
         const endpoint = dataContext.resolveEndpoint('GetMetaData');
         expect(endpoint).toBe('/custom/api/metadata');
     });
 
-    it('должен разрешать эндпоинты с параметрами', () => {
-        // Устанавливаем эндпоинт с параметрами
+    it('should resolve endpoints with parameters', () => {
+        // Set эндпоинт с параметрами
         dataContext.setEndpoint('CustomEndpoint', '/api/custom/{param1}/{param2}');
         
         // Разрешаем эндпоинт с параметрами
         const endpoint = dataContext.resolveEndpoint('CustomEndpoint', { param1: 'value1', param2: 'value2' });
         
-        // Проверяем что параметры подставлены
+        // Check что параметры подставлены
         expect(endpoint).toBe('/api/custom/value1/value2');
     });
 
-    it('должен выбрасывать ошибку при отсутствии обязательного параметра', () => {
-        // Устанавливаем эндпоинт с параметрами
+    it('should throw error when required parameter is missing', () => {
+        // Set эндпоинт с параметрами
         dataContext.setEndpoint('CustomEndpoint', '/api/custom/{param1}/{param2}');
         
         // Пытаемся разрешить эндпоинт с отсутствующим параметром
@@ -151,26 +151,26 @@ describe('DataContext', () => {
         }).toThrow('Parameter [param2] is not defined');
     });
 
-    it('должен загружать метаданные', () => {
+    it('should load metadata', () => {
         const promise = dataContext.loadMetaData();
         
-        // Проверяем что загрузка вызвала правильный метод HTTP клиента
+        // Check что загрузка вызвала правильный метод HTTP клиента
         expect(mockHttpClient.get).toHaveBeenCalled();
         expect((mockHttpClient.get as jest.Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
         
         return promise.then((model) => {
-            // Проверяем что модель была загружена
+            // Check что модель была загружена
             expect(model).toBeDefined();
             expect(model.id).toBe('test-model');
             
-            // Проверяем что были вызваны методы startProcess и endProcess
+            // Check что были вызваны методы startProcess и endProcess
             expect(processStartCount).toBe(1);
             expect(processEndCount).toBe(1);
         });
     });
 
-    it('должен создавать фильтр данных', () => {
-        // Загружаем метаданные и устанавливаем активную сущность
+    it('should create data filter', () => {
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
@@ -178,13 +178,13 @@ describe('DataContext', () => {
                 // Создаем фильтр
                 const filter = dataContext.createFilter();
                 
-                // Проверяем созданный фильтр
+                // Check созданный фильтр
                 expect(filter).toBeInstanceOf(TextDataFilter);
             });
     });
 
-    it('должен загружать датасет', () => {
-        // Настраиваем мок для loadChunk
+    it('should load dataset', () => {
+        // Configure mock for loadChunk
         const mockData = new EasyDataTable();
         const mockColumns = new DataColumnList();
         mockColumns.add({ id: 'id', label: 'ID', type: DataType.Int32 });
@@ -198,7 +198,7 @@ describe('DataContext', () => {
             total: 1
         });
         
-        // Загружаем метаданные и устанавливаем активную сущность
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
@@ -207,27 +207,27 @@ describe('DataContext', () => {
                 return dataContext.fetchDataset();
             })
             .then((data) => {
-                // Проверяем результат
+                // Check результат
                 expect(data).toBeDefined();
                 expect(data.columns.count).toBe(2);
                 expect(data.getCachedCount()).toBe(1);
                 
-                // Проверяем что dataLoader.loadChunk был вызван
+                // Check что dataLoader.loadChunk был вызван
                 expect(dataLoader.loadChunk).toHaveBeenCalled();
             });
     });
 
-    it('должен получать запись', () => {
-        // Загружаем метаданные и устанавливаем активную сущность
+    it('should get record', () => {
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Получаем запись
+                // Get запись
                 return dataContext.fetchRecord({ id: 1 });
             })
             .then(() => {
-                // Проверяем что был вызван правильный метод HTTP клиента
+                // Check что был вызван правильный метод HTTP клиента
                 expect(mockHttpClient.get).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.get).mock.calls.pop();
@@ -235,26 +235,26 @@ describe('DataContext', () => {
                 expect(lastCall[1].queryParams).toBeDefined();
                 expect(lastCall[1].queryParams.id).toBe(1);
                 
-                // Проверяем что были вызваны методы startProcess и endProcess
+                // Check что были вызваны методы startProcess и endProcess
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
     });
 
-    it('должен создавать запись', () => {
-        // Загружаем метаданные и устанавливаем активную сущность
+    it('should create record', () => {
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Тестовый объект для создания
+                // Test object for creation
                 const testObj = { name: 'Test Record', value: 123 };
                 
                 // Создаем запись
                 return dataContext.createRecord(testObj);
             })
             .then(() => {
-                // Проверяем что был вызван правильный метод HTTP клиента
+                // Check что был вызван правильный метод HTTP клиента
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -263,26 +263,26 @@ describe('DataContext', () => {
                 expect(lastCall[1].name).toBe('Test Record');
                 expect(lastCall[1].value).toBe(123);
                 
-                // Проверяем что были вызваны методы startProcess и endProcess
+                // Check что были вызваны методы startProcess и endProcess
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
     });
 
-    it('должен обновлять запись', () => {
-        // Загружаем метаданные и устанавливаем активную сущность
+    it('should update record', () => {
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Тестовый объект для обновления
+                // Test object for update
                 const testObj = { id: 1, name: 'Updated Record', value: 456 };
                 
                 // Обновляем запись
                 return dataContext.updateRecord(testObj);
             })
             .then(() => {
-                // Проверяем что был вызван правильный метод HTTP клиента
+                // Check что был вызван правильный метод HTTP клиента
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -291,26 +291,26 @@ describe('DataContext', () => {
                 expect(lastCall[1].id).toBe(1);
                 expect(lastCall[1].name).toBe('Updated Record');
                 
-                // Проверяем что были вызваны методы startProcess и endProcess
+                // Check что были вызваны методы startProcess и endProcess
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
     });
 
-    it('должен удалять запись', () => {
-        // Загружаем метаданные и устанавливаем активную сущность
+    it('should delete record', () => {
+        // Load metadata and set active entity
         return dataContext.loadMetaData()
             .then(() => {
                 dataContext.setActiveSource('entity1');
                 
-                // Тестовый объект для удаления
+                // Test object for deletion
                 const testObj = { id: 1 };
                 
-                // Удаляем запись
+                // Remove запись
                 return dataContext.deleteRecord(testObj);
             })
             .then(() => {
-                // Проверяем что был вызван правильный метод HTTP клиента
+                // Check что был вызван правильный метод HTTP клиента
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -318,13 +318,13 @@ describe('DataContext', () => {
                 expect(lastCall[1]).toBeDefined();
                 expect(lastCall[1].id).toBe(1);
                 
-                // Проверяем что были вызваны методы startProcess и endProcess
+                // Check что были вызваны методы startProcess и endProcess
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
     });
 
-    it('должен возвращать HttpClient', () => {
+    it('should return HttpClient', () => {
         const httpClient = dataContext.getHttpClient();
         expect(httpClient).toBe(mockHttpClient);
     });

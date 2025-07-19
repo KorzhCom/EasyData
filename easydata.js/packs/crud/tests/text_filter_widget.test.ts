@@ -9,7 +9,7 @@ import { TextFilterWidget } from '../src/widgets/text_filter_widget';
 import { DataFilter } from '../src/filter/data_filter';
 
 describe('TextFilterWidget', () => {
-    // Переменные для тестов
+    // Variables for tests
     let mockSlot: HTMLElement;
     let mockGrid: EasyGrid;
     let mockFilter: DataFilter;
@@ -18,17 +18,17 @@ describe('TextFilterWidget', () => {
     let defaultStringRenderer: GridCellRenderer;
     let defaultNumberRenderer: GridCellRenderer;
     
-    // Инициализация перед каждым тестом
+    // Initialization before each test
     beforeEach(() => {
-        // Создаем DOM для монтирования виджета
+        // Create DOM для монтирования виджета
         mockSlot = document.createElement('div');
         document.body.appendChild(mockSlot);
         
-        // Создаем моки для рендереров ячеек
+        // Create mocks for рендереров ячеек
         defaultStringRenderer = mock();
         defaultNumberRenderer = mock();
         
-        // Мок для хранилища рендереров
+        // Mock for хранилища рендереров
         mockCellRendererStore = {
             getDefaultRendererByType: mock((type: CellRendererType) => {
                 if (type === CellRendererType.STRING) return defaultStringRenderer;
@@ -38,40 +38,40 @@ describe('TextFilterWidget', () => {
             setDefaultRenderer: mock()
         };
         
-        // Мок для EasyGrid
+        // Mock for EasyGrid
         mockGrid = {
             cellRendererStore: mockCellRendererStore,
             setData: mock(),
         } as unknown as EasyGrid;
         
-        // Мок для DataFilter
+        // Mock for DataFilter
         mockFilter = {
             getValue: mock().mockReturnValue(''),
             apply: mock().mockResolvedValue(new EasyDataTable())
         } as unknown as DataFilter;
         
-        // Мок для i18n.getText
+        // Mock for i18n.getText
         jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'SearchInputPlaceholder') return 'Search...';
             if (key === 'SearchBtn') return 'Search';
             return key;
         });
         
-        // Мок для browserUtils.isIE и isEdge
+        // Mock for browserUtils.isIE и isEdge
         jest.spyOn(browserUtils, 'isIE').mockReturnValue(false);
         jest.spyOn(browserUtils, 'isEdge').mockReturnValue(false);
         
-        // Мок для dataUtils.isNumericType и getStringDataTypes
+        // Mock for dataUtils.isNumericType и getStringDataTypes
         jest.spyOn(dataUtils, 'isNumericType').mockImplementation((type) => {
             return type === 'number';
         });
         jest.spyOn(dataUtils, 'getStringDataTypes').mockReturnValue(['string']);
         
-        // Создание экземпляра виджета для тестов
+        // Create widget instance for testing
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter);
     });
     
-    // Очистка после каждого теста
+    // Cleanup after each test
     afterEach(() => {
         if (mockSlot.parentNode) {
             mockSlot.parentNode.removeChild(mockSlot);
@@ -81,33 +81,33 @@ describe('TextFilterWidget', () => {
         jest.restoreAllMocks();
     });
     
-    it('должен создаваться с настройками по умолчанию', () => {
+    it('should создаваться with default settings', () => {
         expect(filterWidget).toBeDefined();
         
-        // Проверка установки рендереров
+        // Check установки рендереров
         expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith(CellRendererType.STRING);
         expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith(CellRendererType.NUMBER);
         expect(mockCellRendererStore.setDefaultRenderer).toHaveBeenCalledTimes(2);
     });
     
-    it('должен правильно рендерить HTML структуру', () => {
-        // Проверка наличия поля ввода
+    it('should правильно рендерить HTML структуру', () => {
+        // Check наличия поля ввода
         const input = mockSlot.querySelector('input');
         expect(input).toBeDefined();
         expect(input.getAttribute('placeholder')).toBe('Search...');
         
-        // Проверка наличия кнопки поиска (вне режима instantMode)
+        // Check наличия кнопки поиска (вне режима instantMode)
         const button = mockSlot.querySelector('button');
         expect(button).toBeDefined();
         expect(button.textContent).toBe('Search');
         
-        // Проверка наличия иконки очистки
+        // Check наличия иконки очистки
         const clearIcon = mockSlot.querySelector('span.icon');
         expect(clearIcon).toBeDefined();
     });
     
-    it('должен рендерить HTML без кнопки поиска в instantMode', () => {
-        // Удаляем предыдущий виджет
+    it('should рендерить HTML без кнопки поиска в instantMode', () => {
+        // Remove предыдущий виджет
         mockSlot.innerHTML = '';
         
         // Создаем новый виджет с instantMode
@@ -115,34 +115,34 @@ describe('TextFilterWidget', () => {
             instantMode: true
         });
         
-        // Проверка наличия поля ввода
+        // Check наличия поля ввода
         const input = mockSlot.querySelector('input');
         expect(input).toBeDefined();
         
-        // Проверка отсутствия кнопки поиска
+        // Check отсутствия кнопки поиска
         const button = mockSlot.querySelector('button');
         expect(button).toBeNull();
     });
     
-    it('должен использовать другие классы для IE', () => {
-        // Удаляем предыдущий виджет
+    it('should использовать другие классы для IE', () => {
+        // Remove предыдущий виджет
         mockSlot.innerHTML = '';
         
-        // Меняем мок для IE
+        // Change mock for IE
         (browserUtils.isIE as jest.Mock).mockReturnValue(true);
         
         // Создаем новый виджет
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter);
         
-        // Проверка наличия класса для IE
+        // Check наличия класса для IE
         expect(mockSlot.classList.contains('kfrm-fields-ie')).toBe(true);
     });
     
-    it('должен устанавливать фокус на поле ввода, если опция focus=true', () => {
-        // Удаляем предыдущий виджет
+    it('should устанавливать фокус на поле ввода, если опция focus=true', () => {
+        // Remove предыдущий виджет
         mockSlot.innerHTML = '';
         
-        // Мок для focus
+        // Mock for focus
         const focusMock = mock();
         HTMLInputElement.prototype.focus = focusMock;
         
@@ -151,68 +151,68 @@ describe('TextFilterWidget', () => {
             focus: true
         });
         
-        // Проверка вызова focus
+        // Check вызова focus
         expect(focusMock).toHaveBeenCalled();
     });
     
-    it('должен применять фильтр при нажатии Enter', () => {
-        // Получаем поле ввода
+    it('should применять фильтр при нажатии Enter', () => {
+        // Get поле ввода
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Устанавливаем значение
+        // Set значение
         input.value = 'test';
         
-        // Эмулируем нажатие Enter
+        // Emulate нажатие Enter
         const enterEvent = new KeyboardEvent('keydown', { keyCode: 13 });
         input.dispatchEvent(enterEvent);
         
-        // Проверка вызова apply с правильным значением
+        // Check вызова apply с правильным значением
         expect(mockFilter.apply).toHaveBeenCalledWith('test');
     });
     
-    it('должен применять фильтр при нажатии кнопки Search', () => {
-        // Получаем поле ввода и кнопку
+    it('should применять фильтр при нажатии кнопки Search', () => {
+        // Get поле ввода и кнопку
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         const button = mockSlot.querySelector('button') as HTMLButtonElement;
         
-        // Устанавливаем значение
+        // Set значение
         input.value = 'test';
         
-        // Эмулируем клик по кнопке
+        // Emulate клик по кнопке
         button.click();
         
-        // Проверка вызова apply с правильным значением
+        // Check вызова apply с правильным значением
         expect(mockFilter.apply).toHaveBeenCalledWith('test');
     });
     
-    it('должен очищать поле ввода при нажатии на иконку очистки', () => {
-        // Получаем поле ввода и иконку очистки
+    it('should очищать поле ввода при нажатии на иконку очистки', () => {
+        // Get поле ввода и иконку очистки
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         const clearIcon = mockSlot.querySelector('span.icon') as HTMLSpanElement;
         
-        // Устанавливаем значение и фокус мок
+        // Set значение и фокус мок
         input.value = 'test';
         const focusMock = mock();
         input.focus = focusMock;
         
-        // Эмулируем клик по иконке очистки
+        // Emulate клик по иконке очистки
         clearIcon.click();
         
-        // Проверка очистки значения
+        // Check очистки значения
         expect(input.value).toBe('');
         
-        // Проверка установки фокуса
+        // Check установки фокуса
         expect(focusMock).toHaveBeenCalled();
         
-        // Проверка вызова apply с пустым значением
+        // Check вызова apply с пустым значением
         expect(mockFilter.apply).toHaveBeenCalledWith('');
     });
     
-    it('должен применять фильтр с задержкой в instantMode при вводе', () => {
-        // Удаляем предыдущий виджет
+    it('should применять фильтр с задержкой в instantMode при вводе', () => {
+        // Remove предыдущий виджет
         mockSlot.innerHTML = '';
         
-        // Мок для setTimeout
+        // Mock for setTimeout
         jest.useFakeTimers();
         
         // Создаем новый виджет с instantMode и маленьким таймаутом
@@ -221,31 +221,31 @@ describe('TextFilterWidget', () => {
             instantTimeout: 500
         });
         
-        // Получаем поле ввода
+        // Get поле ввода
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Устанавливаем значение и эмулируем keyup
+        // Set значение и эмулируем keyup
         input.value = 'test';
         input.dispatchEvent(new KeyboardEvent('keyup'));
         
-        // Проверка, что apply не вызван сразу
+        // Check, что apply не вызван сразу
         expect(mockFilter.apply).not.toHaveBeenCalled();
         
         // Проматываем таймеры
         jest.advanceTimersByTime(500);
         
-        // Проверка вызова apply с правильным значением
+        // Check вызова apply с правильным значением
         expect(mockFilter.apply).toHaveBeenCalledWith('test');
         
-        // Восстанавливаем таймеры
+        // Restore таймеры
         jest.useRealTimers();
     });
     
-    it('должен очищать предыдущий таймер при новом событии keyup', () => {
-        // Удаляем предыдущий виджет
+    it('should очищать предыдущий таймер при новом событии keyup', () => {
+        // Remove предыдущий виджет
         mockSlot.innerHTML = '';
         
-        // Мок для setTimeout и clearTimeout
+        // Mock for setTimeout и clearTimeout
         jest.useFakeTimers();
         const clearTimeoutSpy = jest.spyOn(window, 'clearTimeout');
         
@@ -255,7 +255,7 @@ describe('TextFilterWidget', () => {
             instantTimeout: 500
         });
         
-        // Получаем поле ввода
+        // Get поле ввода
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
         // Первый ввод
@@ -266,72 +266,72 @@ describe('TextFilterWidget', () => {
         input.value = 'test2';
         input.dispatchEvent(new KeyboardEvent('keyup'));
         
-        // Проверка вызова clearTimeout
+        // Check вызова clearTimeout
         expect(clearTimeoutSpy).toHaveBeenCalled();
         
         // Проматываем таймеры
         jest.advanceTimersByTime(500);
         
-        // Проверка вызова apply с последним значением
+        // Check вызова apply с последним значением
         expect(mockFilter.apply).toHaveBeenCalledWith('test2');
         
-        // Восстанавливаем таймеры
+        // Restore таймеры
         jest.useRealTimers();
     });
     
-    it('метод applyFilter должен вернуть true если значение фильтра изменилось', () => {
-        // Получаем поле ввода
+    it('метод applyFilter should вернуть true если значение фильтра изменилось', () => {
+        // Get поле ввода
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Устанавливаем значение
+        // Set значение
         input.value = 'test';
         
-        // Мок для getValue, возвращающий другое значение
+        // Mock for getValue, возвращающий другое значение
         (mockFilter.getValue as jest.Mock).mockReturnValue('old');
         
-        // Вызываем метод и проверяем результат
+        // Call метод и проверяем результат
         const result = filterWidget.applyFilter(true);
         expect(result).toBe(true);
         
-        // Проверка вызова apply
+        // Check вызова apply
         expect(mockFilter.apply).toHaveBeenCalledWith('test');
     });
     
-    it('метод applyFilter должен вернуть false если значение фильтра не изменилось', () => {
-        // Получаем поле ввода
+    it('метод applyFilter should вернуть false если значение фильтра не изменилось', () => {
+        // Get поле ввода
         const input = mockSlot.querySelector('input') as HTMLInputElement;
         
-        // Устанавливаем значение
+        // Set значение
         input.value = 'test';
         
-        // Мок для getValue, возвращающий то же самое значение
+        // Mock for getValue, возвращающий то же самое значение
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Вызываем метод и проверяем результат
+        // Call метод и проверяем результат
         const result = filterWidget.applyFilter(true);
         expect(result).toBe(false);
         
-        // Проверка, что apply не вызван
+        // Check, что apply не вызван
         expect(mockFilter.apply).not.toHaveBeenCalled();
     });
     
-    it('должен правильно выделять текст, совпадающий с фильтром', () => {
-        // Мок для getValue, возвращающий искомое слово
+    it('should правильно выделять текст, совпадающий с фильтром', () => {
+        // Mock for getValue, возвращающий искомое слово
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('This is a test string');
         
-        // Проверка типа результата
+        // Check типа результата
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Проверка содержимого
+        // Check содержимого
         const div = result as HTMLElement;
         
-        // Должно быть 3 дочерних элемента: текст, span с выделением, текст
+        // Should have 3 child elements: text, span with highlight, text
         expect(div.childNodes.length).toBe(3);
         
-        // Проверка правильного выделения
+        // Check правильного выделения
         expect(div.childNodes[0].textContent).toBe('This is a ');
         
         const highlightSpan = div.childNodes[1] as HTMLSpanElement;
@@ -342,50 +342,50 @@ describe('TextFilterWidget', () => {
         expect(div.childNodes[2].textContent).toBe(' string');
     });
     
-    it('должен правильно выделять несколько совпадений', () => {
-        // Мок для getValue, возвращающий искомое слово
+    it('should правильно выделять несколько совпадений', () => {
+        // Mock for getValue, возвращающий искомое слово
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('test another test');
         
-        // Проверка типа результата
+        // Check типа результата
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Проверка содержимого
+        // Check содержимого
         const div = result as HTMLElement;
         
-        // Должно быть 5 дочерних элементов: span, текст, span, текст
+        // Should have 5 child elements: span, text, span, text
         expect(div.childNodes.length).toBe(3);
         
-        // Проверка первого выделения
+        // Check первого выделения
         const firstSpan = div.childNodes[0] as HTMLSpanElement;
         expect(firstSpan.tagName).toBe('SPAN');
         expect(firstSpan.textContent).toBe('test');
         
-        // Проверка текста между выделениями
+        // Check текста между выделениями
         expect(div.childNodes[1].textContent).toBe(' another ');
         
-        // Проверка второго выделения
+        // Check второго выделения
         const secondSpan = div.childNodes[2] as HTMLSpanElement;
         expect(secondSpan.tagName).toBe('SPAN');
         expect(secondSpan.textContent).toBe('test');
     });
     
-    it('должен правильно обрабатывать несколько искомых слов через разделитель ||', () => {
-        // Мок для getValue, возвращающий несколько слов через разделитель
+    it('should правильно обрабатывать несколько искомых слов через разделитель ||', () => {
+        // Mock for getValue, возвращающий несколько слов через разделитель
         (mockFilter.getValue as jest.Mock).mockReturnValue('apple || banana');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('I have an apple and a banana');
         
-        // Проверка типа результата
+        // Check типа результата
         expect(result instanceof HTMLElement).toBe(true);
         
-        // Проверка содержимого
+        // Check содержимого
         const div = result as HTMLElement;
         
-        // Должен содержать выделения для обоих слов
+        // Should contain highlights for both words
         let appleFound = false;
         let bananaFound = false;
         
@@ -403,43 +403,43 @@ describe('TextFilterWidget', () => {
         expect(bananaFound).toBe(true);
     });
     
-    it('должен выделять всю ячейку, если содержимое полностью совпадает с фильтром', () => {
-        // Мок для getValue, возвращающий полное значение ячейки
+    it('should выделять всю ячейку, если содержимое полностью совпадает с фильтром', () => {
+        // Mock for getValue, возвращающий полное значение ячейки
         (mockFilter.getValue as jest.Mock).mockReturnValue('exact match');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('exact match');
         
-        // Должен вернуть один span, выделяющий всё содержимое
+        // Should return one span highlighting all content
         expect(result instanceof HTMLSpanElement).toBe(true);
         expect((result as HTMLSpanElement).style.backgroundColor).toBe('yellow');
         expect((result as HTMLSpanElement).textContent).toBe('exact match');
     });
     
-    it('должен возвращать исходный текст, если нет совпадений', () => {
-        // Мок для getValue, возвращающий слово, которого нет в тексте
+    it('should return original text if no matches', () => {
+        // Mock for getValue, возвращающий слово, которого нет в тексте
         (mockFilter.getValue as jest.Mock).mockReturnValue('missing');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('This is a test string');
         
-        // Должен вернуть оригинальную строку
+        // Should return original string
         expect(result).toBe('This is a test string');
     });
     
-    it('должен возвращать исходный текст, если фильтр пустой', () => {
-        // Мок для getValue, возвращающий пустую строку
+    it('should return original text if filter is empty', () => {
+        // Mock for getValue, возвращающий пустую строку
         (mockFilter.getValue as jest.Mock).mockReturnValue('');
         
-        // Вызываем highlightText напрямую через приватный метод
+        // Call highlightText напрямую через приватный метод
         const result = (filterWidget as any).highlightText('This is a test string');
         
-        // Должен вернуть оригинальную строку
+        // Should return original string
         expect(result).toBe('This is a test string');
     });
     
-    it('должен использовать пользовательский рендерер для строковых ячеек', () => {
-        // Создаем моки для параметров рендерера
+    it('should использовать пользовательский рендерер для строковых ячеек', () => {
+        // Create mocks for параметров рендерера
         const column: GridColumn = {
             dataColumn: { id: 'name' },
             type: 'string'
@@ -447,23 +447,23 @@ describe('TextFilterWidget', () => {
         const cellElement = document.createElement('div');
         const rowElement = document.createElement('tr');
         
-        // Получаем установленный рендерер для строк
+        // Get установленный рендерер для строк
         const stringRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[0];
         const customStringRenderer = stringRendererCall[1];
         
-        // Мок для getValue, чтобы строки выделялись
+        // Mock for getValue, чтобы строки выделялись
         (mockFilter.getValue as jest.Mock).mockReturnValue('test');
         
-        // Вызываем пользовательский рендерер
+        // Call пользовательский рендерер
         customStringRenderer('This is a test', column, cellElement, rowElement);
         
-        // Проверяем, что ячейка содержит выделенный текст
+        // Check, что ячейка содержит выделенный текст
         expect(cellElement.innerHTML).not.toBe('');
         expect(cellElement.querySelector('span[style*="yellow"]')).toBeDefined();
     });
     
-    it('должен использовать пользовательский рендерер для числовых ячеек', () => {
-        // Создаем моки для параметров рендерера
+    it('should использовать пользовательский рендерер для числовых ячеек', () => {
+        // Create mocks for параметров рендерера
         const column: GridColumn = {
             dataColumn: { id: 'value' },
             type: 'number'
@@ -471,20 +471,20 @@ describe('TextFilterWidget', () => {
         const cellElement = document.createElement('div');
         const rowElement = document.createElement('tr');
         
-        // Получаем установленный рендерер для чисел
+        // Get установленный рендерер для чисел
         const numberRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[1];
         const customNumberRenderer = numberRendererCall[1];
         
-        // Мок для getValue, чтобы числа выделялись
+        // Mock for getValue, чтобы числа выделялись
         (mockFilter.getValue as jest.Mock).mockReturnValue('42');
         
-        // Мок для toLocaleString
+        // Mock for toLocaleString
         Number.prototype.toLocaleString = function() { return this.toString(); };
         
-        // Вызываем пользовательский рендерер
+        // Call пользовательский рендерер
         customNumberRenderer(42, column, cellElement, rowElement);
         
-        // Проверяем, что ячейка содержит выделенный текст
+        // Check, что ячейка содержит выделенный текст
         expect(cellElement.innerHTML).not.toBe('');
         expect(cellElement.querySelector('span[style*="yellow"]')).toBeDefined();
     });

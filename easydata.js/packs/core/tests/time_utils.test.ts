@@ -1,15 +1,15 @@
 import { TimeValue, TimeSettings, SpecialDatesResolver, registerSpecialDatesResolver } from '../src/types/time_utils';
 
 describe('Time Utils', () => {
-    // Мок для даты, чтобы тесты не зависели от текущего времени
+    // Mock for даты, чтобы тесты не зависели от текущего времени
     let originalDate: DateConstructor;
     let fixedDate: Date;
     
     beforeEach(() => {
-        // Сохраняем оригинальный конструктор Date
+        // Save оригинальный конструктор Date
         originalDate = global.Date;
         
-        // Устанавливаем фиксированную дату для тестов: 15 мая 2023, 10:30:00
+        // Set фиксированную дату для тестов: 15 мая 2023, 10:30:00
         fixedDate = new Date(2023, 4, 15, 10, 30, 0);
         
         // Мокаем конструктор Date
@@ -24,11 +24,11 @@ describe('Time Utils', () => {
     });
     
     afterEach(() => {
-        // Восстанавливаем оригинальный Date
+        // Restore оригинальный Date
         global.Date = originalDate;
     });
 
-    it('должен создавать TimeValue с датой', () => {
+    it('should создавать TimeValue с датой', () => {
         const date = new Date(2023, 0, 15);
         const timeValue = new TimeValue(date);
         
@@ -36,14 +36,14 @@ describe('Time Utils', () => {
         expect(timeValue['_name']).toBeUndefined();
     });
     
-    it('должен создавать TimeValue со строковым именем', () => {
+    it('should создавать TimeValue со строковым именем', () => {
         const timeValue = new TimeValue('Today');
         
         expect(timeValue['date']).toBeUndefined();
         expect(timeValue['_name']).toBe('Today');
     });
     
-    it('должен возвращать дату через asTime', () => {
+    it('should return дату через asTime', () => {
         const date = new Date(2023, 0, 15);
         const timeValue = new TimeValue(date);
         
@@ -51,17 +51,17 @@ describe('Time Utils', () => {
         expect(result).toBe(date);
     });
     
-    it('должен возвращать специальную дату через asTime', () => {
+    it('should return специальную дату через asTime', () => {
         const timeValue = new TimeValue('Today');
         expect(timeValue.asTime()).toBeInstanceOf(Date);
     });
     
-    it('должен иметь getter для name', () => {
+    it('should иметь getter для name', () => {
         const timeValue = new TimeValue('Today');        
         expect(timeValue.name).toBe('Today');
     });
     
-    it('должен разрешать специальную дату Today', () => {
+    it('should разрешать специальную дату Today', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.Today();
         
@@ -71,7 +71,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(15);
     });
     
-    it('должен разрешать специальную дату Yesterday', () => {
+    it('should разрешать специальную дату Yesterday', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.Yesterday();
         
@@ -81,7 +81,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(14); // 15 - 1 = 14
     });
     
-    it('должен разрешать специальную дату Tomorrow', () => {
+    it('should разрешать специальную дату Tomorrow', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.Tomorrow();
         
@@ -91,7 +91,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(16); // 15 + 1 = 16
     });
     
-    it('должен разрешать специальную дату FirstDayOfMonth', () => {
+    it('should разрешать специальную дату FirstDayOfMonth', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfMonth();
         
@@ -101,7 +101,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату LastDayOfMonth', () => {
+    it('should разрешать специальную дату LastDayOfMonth', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.LastDayOfMonth();
         
@@ -111,7 +111,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(31); // май имеет 31 день
     });
     
-    it('должен разрешать специальную дату FirstDayOfNextMonth', () => {
+    it('should разрешать специальную дату FirstDayOfNextMonth', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfNextMonth();
         
@@ -121,7 +121,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату FirstDayOfPrevMonth', () => {
+    it('should разрешать специальную дату FirstDayOfPrevMonth', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfPrevMonth();
         
@@ -131,7 +131,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату FirstDayOfYear', () => {
+    it('should разрешать специальную дату FirstDayOfYear', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfYear();
         
@@ -141,7 +141,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату FirstDayOfPrevYear', () => {
+    it('should разрешать специальную дату FirstDayOfPrevYear', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfPrevYear();
         
@@ -151,7 +151,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату FirstDayOfNextYear', () => {
+    it('should разрешать специальную дату FirstDayOfNextYear', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfNextYear();
         
@@ -161,7 +161,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(1);
     });
     
-    it('должен разрешать специальную дату FirstDayOfWeek для середины недели', () => {
+    it('should разрешать специальную дату FirstDayOfWeek для середины недели', () => {
         // 15 мая 2023 - понедельник
         fixedDate = new Date(2023, 4, 15); // 15 мая 2023
         const resolver = new SpecialDatesResolver();
@@ -173,7 +173,7 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(15); // понедельник
     });
     
-    it('должен разрешать специальную дату FirstDayOfPrevWeek', () => {
+    it('should разрешать специальную дату FirstDayOfPrevWeek', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfPrevWeek();
         
@@ -182,7 +182,7 @@ describe('Time Utils', () => {
         expect(result).toBeInstanceOf(Date);
     });
     
-    it('должен разрешать специальную дату FirstDayOfNextWeek', () => {
+    it('should разрешать специальную дату FirstDayOfNextWeek', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfNextWeek();
         
@@ -191,7 +191,7 @@ describe('Time Utils', () => {
         expect(result).toBeInstanceOf(Date);
     });
     
-    it('должен возвращать дату по имени через getDateByName', () => {
+    it('should return дату по имени через getDateByName', () => {
         const resolver = new SpecialDatesResolver();
         
         const result = resolver.getDateByName('Today');
@@ -202,15 +202,15 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(15);
     });
     
-    it('должен возвращать undefined для неизвестного имени даты', () => {
+    it('should return undefined для неизвестного имени даты', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.getDateByName('NonExistentDate');
         
         expect(result).toBeUndefined();
     });
     
-    it('должен регистрировать новый резолвер через registerSpecialDatesResolver', () => {
-        // Создаем кастомный резолвер
+    it('should регистрировать новый резолвер через registerSpecialDatesResolver', () => {
+        // Create custom резолвер
         class CustomResolver extends SpecialDatesResolver {
             public Custom(): Date {
                 return new Date(2000, 0, 1);
@@ -222,7 +222,7 @@ describe('Time Utils', () => {
         // Регистрируем его
         registerSpecialDatesResolver(customResolver);
         
-        // Проверяем, что теперь используется новый резолвер
+        // Check, что теперь используется новый резолвер
         const timeValue = new TimeValue('Custom');
         const result = timeValue.asTime();
         

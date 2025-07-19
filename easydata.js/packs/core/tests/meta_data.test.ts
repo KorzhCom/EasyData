@@ -15,7 +15,7 @@ describe('MetaData', () => {
         metaData = new MetaData();
     });
 
-    it('должен создаваться с правильными значениями по умолчанию', () => {
+    it('should создаваться с правильными значениями по умолчанию', () => {
         expect(metaData.id).toBe('__none');
         expect(metaData.name).toBe('Empty model');
         expect(metaData.isEmpty()).toBe(true);
@@ -23,7 +23,7 @@ describe('MetaData', () => {
         expect(metaData.rootEntity).toBeDefined();
     });
 
-    it('должен создавать и возвращать объекты сущностей и атрибутов', () => {
+    it('should создавать и возвращать объекты сущностей и атрибутов', () => {
         const entity = metaData.createEntity();
         expect(entity).toBeInstanceOf(MetaEntity);
         
@@ -34,7 +34,7 @@ describe('MetaData', () => {
         expect(editor).toBeInstanceOf(ValueEditor);
     });
 
-    it('должен загружать данные из JSON-строки', () => {
+    it('should загружать данные из JSON-строки', () => {
         const jsonData = JSON.stringify({
             id: 'test-model',
             name: 'Test Model',
@@ -53,7 +53,7 @@ describe('MetaData', () => {
         expect(metaData.version).toBe('1.0.0');
     });
 
-    it('должен загружать данные из объекта', () => {
+    it('should загружать данные из объекта', () => {
         const data: MetaDataDTO = {
             id: 'test-model',
             name: 'Test Model',
@@ -72,7 +72,7 @@ describe('MetaData', () => {
         expect(metaData.version).toBe('1.0.0');
     });
 
-    it('должен загружать редакторы из данных', () => {
+    it('should загружать редакторы из данных', () => {
         const data: MetaDataDTO = {
             id: 'test-model',
             name: 'Test Model',
@@ -100,7 +100,7 @@ describe('MetaData', () => {
         expect(metaData.editors[0].resType).toBe(DataType.String);
     });
 
-    it('должен загружать форматы отображения из данных', () => {
+    it('should загружать форматы отображения из данных', () => {
         const data: MetaDataDTO = {
             id: 'test-model',
             name: 'Test Model',
@@ -131,7 +131,7 @@ describe('MetaData', () => {
         expect(dateTimeFormats[0].isdef).toBe(true);
     });
 
-    it('должен возвращать формат отображения по умолчанию для типа', () => {
+    it('should return формат отображения по умолчанию для типа', () => {
         const data: MetaDataDTO = {
             id: 'test-model',
             name: 'Test Model',
@@ -157,18 +157,18 @@ describe('MetaData', () => {
         expect(defaultFormat.format).toBe('dd MMMM yyyy HH:mm');
     });
 
-    it('должен возвращать пустой массив для несуществующего типа формата', () => {
+    it('should return пустой массив для несуществующего типа формата', () => {
         const formats = metaData.getDisplayFormatsForType(DataType.Bool);
         expect(formats).toBeArray();
         expect(formats).toBeEmpty();
     });
 
-    it('должен возвращать null для формата по умолчанию несуществующего типа', () => {
+    it('should return null для формата по умолчанию несуществующего типа', () => {
         const defaultFormat = metaData.getDefaultFormat(DataType.Bool);
         expect(defaultFormat).toBeNull();
     });
 
-    it('должен обнаруживать пустую модель данных', () => {
+    it('should обнаруживать пустую модель данных', () => {
         expect(metaData.isEmpty()).toBe(true);
         
         // Добавляем атрибут к корневой сущности
@@ -179,7 +179,7 @@ describe('MetaData', () => {
         expect(metaData.isEmpty()).toBe(false);
     });
 
-    it('должен находить редактор по его ID', () => {
+    it('should находить редактор по его ID', () => {
         const editor1 = metaData.createValueEditor();
         editor1.id = 'editor1';
         
@@ -195,8 +195,8 @@ describe('MetaData', () => {
         expect(notFoundEditor).toBeNull();
     });
 
-    it('должен находить атрибут по его ID', () => {
-        // Создаем атрибуты
+    it('should находить атрибут по его ID', () => {
+        // Create attributes
         const attr1 = metaData.createEntityAttr(metaData.rootEntity);
         attr1.id = 'attr1';
         metaData.rootEntity.attributes.push(attr1);
@@ -211,7 +211,7 @@ describe('MetaData', () => {
         attr2.id = 'attr2';
         subEntity.attributes.push(attr2);
         
-        // Проверяем поиск по ID
+        // Check поиск по ID
         const foundAttr1 = metaData.getAttributeById('attr1');
         expect(foundAttr1).toBe(attr1);
         
@@ -222,7 +222,7 @@ describe('MetaData', () => {
         expect(notFoundAttr).toBeNull();
     });
 
-    it('должен проверять свойства атрибута', () => {
+    it('should проверять свойства атрибута', () => {
         // Создаем атрибут
         const attr = metaData.createEntityAttr(metaData.rootEntity);
         attr.id = 'attr1';
@@ -230,16 +230,16 @@ describe('MetaData', () => {
         attr.description = 'Test description';
         metaData.rootEntity.attributes.push(attr);
         
-        // Проверяем существующее свойство
+        // Check существующее свойство
         const hasDescription = metaData.checkAttrProperty('attr1', 'description');
         expect(hasDescription).toBe(true);
         
-        // Проверяем несуществующее свойство
+        // Check несуществующее свойство
         expect(() => {
             metaData.checkAttrProperty('attr1', 'nonExistentProperty');
         }).toThrow('No such property: nonExistentProperty');
         
-        // Проверяем атрибут с lookup
+        // Check атрибут с lookup
         const lookupAttr = metaData.createEntityAttr(metaData.rootEntity);
         lookupAttr.id = 'lookupAttr';
         lookupAttr.description = 'Lookup description';
@@ -251,12 +251,12 @@ describe('MetaData', () => {
         attrWithLookup.description = ''; // Пустое описание
         metaData.rootEntity.attributes.push(attrWithLookup);
         
-        // Проверяем свойство через lookup
+        // Check свойство через lookup
         const hasDescriptionViaLookup = metaData.checkAttrProperty('attrWithLookup', 'description');
         expect(hasDescriptionViaLookup).toBe(true);
     });
 
-    it('должен очищать модель данных', () => {
+    it('should очищать модель данных', () => {
         // Заполняем модель
         metaData.id = 'test-model';
         metaData.name = 'Test Model';
@@ -269,31 +269,31 @@ describe('MetaData', () => {
         // Очищаем модель
         metaData.clear();
         
-        // Проверяем результат
+        // Check результат
         expect(metaData.rootEntity).toBeDefined();
         expect(metaData.editors).toBeArray();
         expect(metaData.editors).toBeEmpty();
         expect(metaData.version).toBe('');
     });
 
-    it('должен добавлять редакторы значений по умолчанию', () => {
+    it('should добавлять редакторы значений по умолчанию', () => {
         metaData.addDefaultValueEditors();
         
         expect(metaData.editors.length).toBe(3);
         
-        // Проверяем первый редактор
+        // Check первый редактор
         const stringEditor = metaData.getEditorById('_DTE');
         expect(stringEditor).not.toBeNull();
         expect(stringEditor.tag).toBe(EditorTag.Edit);
         expect(stringEditor.resType).toBe(DataType.String);
         expect(stringEditor.defValue).toBe('');
         
-        // Проверяем остальные редакторы
+        // Check остальные редакторы
         expect(metaData.getEditorById('_DPDE')).not.toBeNull();
         expect(metaData.getEditorById('_DPTE')).not.toBeNull();
     });
 
-    it('должен добавлять или обновлять редактор значений', () => {
+    it('should добавлять или обновлять редактор значений', () => {
         // Добавляем новый редактор
         const newEditor = metaData.addOrUpdateValueEditor('testEditor', EditorTag.Edit, DataType.String);
         
@@ -311,7 +311,7 @@ describe('MetaData', () => {
         expect(updatedEditor.resType).toBe(DataType.DateTime);
     });
 
-    it('должен получать дерево сущностей с фильтрацией', () => {
+    it('should получать дерево сущностей с фильтрацией', () => {
         // Подготовка данных для теста
         // Создаем иерархию сущностей
         const subEntity1 = metaData.createEntity(metaData.rootEntity);
@@ -335,19 +335,19 @@ describe('MetaData', () => {
         attr2.dataType = DataType.Int32;
         subEntity2.attributes.push(attr2);
         
-        // Получаем дерево сущностей с фильтром по типу данных
+        // Get дерево сущностей с фильтром по типу данных
         const filterFunc = (entity: MetaEntity, attr: MetaEntityAttr) => {
             return !attr || attr.dataType === DataType.Int32;
         };
         
         const tree = metaData.getEntitiesTreeWithFilter(filterFunc);
         
-        // Проверяем результат
+        // Check результат
         expect(tree.length).toBe(1); // Должна быть только одна сущность
         expect(tree[0].id).toBe('Entity2');
     });
 
-    it('должен получать дерево сущностей с опциями', () => {
+    it('should получать дерево сущностей с опциями', () => {
         // Подготовка данных для теста
         const subEntity1 = metaData.createEntity(metaData.rootEntity);
         subEntity1.name = 'Entity1';
@@ -359,7 +359,7 @@ describe('MetaData', () => {
         attr1.caption = 'Attribute 1';
         subEntity1.attributes.push(attr1);
         
-        // Получаем дерево сущностей с опциями
+        // Get дерево сущностей с опциями
         const opts = {
             includeRootData: true,
             sortEntities: true,
@@ -368,12 +368,12 @@ describe('MetaData', () => {
         
         const tree = metaData.getEntitiesTree(opts);
         
-        // Проверяем результат
+        // Check результат
         expect(tree.id).toBe('Root');
         expect(tree.items.length).toBe(1); // Одна дочерняя сущность
     });
 
-    it('должен получать путь сущности по атрибуту', () => {
+    it('should получать путь сущности по атрибуту', () => {
         // Подготовка данных для теста
         // Создаем иерархию сущностей и атрибутов
         const subEntity1 = metaData.createEntity(metaData.rootEntity);
@@ -391,14 +391,14 @@ describe('MetaData', () => {
         attr.caption = 'Deep Attribute';
         subEntity2.attributes.push(attr);
         
-        // Получаем путь
+        // Get путь
         const path = metaData.getFullEntityPathByAttr('DeepAttribute', ' > ');
         
-        // Проверяем результат
+        // Check результат
         expect(path).toBe('Entity 1 > Entity 2');
     });
 
-    it('должен получать текст атрибута', () => {
+    it('should получать текст атрибута', () => {
         // Подготовка данных для теста
         const subEntity = metaData.createEntity(metaData.rootEntity);
         subEntity.name = 'TestEntity';
@@ -410,16 +410,16 @@ describe('MetaData', () => {
         attr.caption = 'Original Caption';
         subEntity.attributes.push(attr);
         
-        // Получаем текст атрибута без формата
+        // Get текст атрибута без формата
         const simpleText = metaData.getAttributeText(attr, '');
         expect(simpleText).toBe('Тестовый Атрибут'); // Берем из i18n
         
-        // Получаем текст атрибута с форматом
+        // Get текст атрибута с форматом
         const formattedText = metaData.getAttributeText(attr, '{entity}: {attr}');
         expect(formattedText).toBe('Тестовая Сущность: Тестовый Атрибут');
     });
 
-    it('должен сканировать сущности и их атрибуты', () => {
+    it('should сканировать сущности и их атрибуты', () => {
         // Подготовка данных для теста
         const subEntity1 = metaData.createEntity(metaData.rootEntity);
         subEntity1.name = 'Entity1';
@@ -446,12 +446,12 @@ describe('MetaData', () => {
             () => { entityCount++; }
         );
         
-        // Проверяем результат: 2 атрибута и 3 сущности (корневая + 2 дочерние)
+        // Check результат: 2 атрибута и 3 сущности (корневая + 2 дочерние)
         expect(attrCount).toBe(2);
         expect(entityCount).toBe(3);
     });
 
-    it('должен находить первый атрибут по фильтру', () => {
+    it('should находить первый атрибут по фильтру', () => {
         // Подготовка данных для теста
         const entity1 = metaData.createEntity(metaData.rootEntity);
         entity1.name = 'Entity1';
@@ -472,12 +472,12 @@ describe('MetaData', () => {
             (attr) => attr.dataType === DataType.Int32
         );
         
-        // Проверяем результат
+        // Check результат
         expect(intAttr).not.toBeNull();
         expect(intAttr.id).toBe('Attr2');
     });
 
-    it('должен устанавливать данные используя setData', () => {
+    it('should устанавливать данные используя setData', () => {
         // Через JSON-строку
         const jsonData = JSON.stringify({
             id: 'test-json',

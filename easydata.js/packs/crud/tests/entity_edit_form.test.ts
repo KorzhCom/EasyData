@@ -18,7 +18,7 @@ describe('EntityEditForm', () => {
     let mockErrorsDiv: HTMLElement;
 
     beforeEach(() => {
-        // Создаем мок для метаданных с атрибутами
+        // Create mock for metadata with attributes
         mockMetaData = {
             getAttributeById: (id: string): MetaEntityAttr => {
                 if (id === 'Person.name') {
@@ -67,42 +67,42 @@ describe('EntityEditForm', () => {
             }
         } as MetaData;
 
-        // Создаем мок для контекста данных
+        // Create mock for data context
         context = {
             getMetaData: () => mockMetaData
         } as DataContext;
 
-        // Создаем HTML для формы
+        // Create HTML for form
         mockFormHtml = document.createElement('div');
         mockErrorsDiv = document.createElement('div');
         mockErrorsDiv.className = 'errors-block';
         mockFormHtml.appendChild(mockErrorsDiv);
 
-        // Создаем форму
+        // Create form
         form = new EntityEditForm(context);
         
-        // Устанавливаем HTML через приватное свойство
+        // Set HTML through private property
         (form as any).setHtmlInt(mockFormHtml);
     });
 
-    it('должен создаваться с контекстом данных', () => {
+    it('should be created with data context', () => {
         expect(form).toBeDefined();
         expect((form as any).context).toBe(context);
     });
 
-    it('должен возвращать HTML через getHtml', () => {
+    it('should return HTML through getHtml', () => {
         const html = form.getHtml();
         expect(html).toBe(mockFormHtml);
     });
 
-    it('должен считать форму валидной, если нет полей', () => {
+    it('should consider form valid if no fields', () => {
         const isValid = form.validate();
         expect(isValid).toBe(true);
         expect(mockErrorsDiv.innerHTML).toBe('');
     });
 
-    it('должен валидировать поля формы', () => {
-        // Создаем тестовые поля
+    it('should validate form fields', () => {
+        // Create test fields
         const nameInput = document.createElement('input');
         nameInput.name = 'Person.name';
         nameInput.value = 'John';
@@ -113,16 +113,17 @@ describe('EntityEditForm', () => {
         ageInput.value = '25';
         mockFormHtml.appendChild(ageInput);
 
-        // Проверяем валидацию
+        // Check validation
         const isValid = form.validate();
         expect(isValid).toBe(true);
         expect(nameInput.classList.contains('is-valid')).toBe(true);
         expect(ageInput.classList.contains('is-valid')).toBe(true);
     });
 
-    it('должен отображать ошибки валидации', () => {
-        // Создаем пользовательский валидатор, который считает поле "age" невалидным
+    it('should display validation errors', () => {
+        // Create custom validator that considers "age" field invalid
         const mockValidator: Validator = {
+            name: 'test-validator',
             validate: (attr: MetaEntityAttr, value: any): ValidationResult => {
                 if (attr.id === 'Person.age' && parseInt(value) < 18) {
                     return {
@@ -137,10 +138,10 @@ describe('EntityEditForm', () => {
             }
         };
 
-        // Добавляем валидатор к форме
+        // Add validator to form
         form.useValidator(mockValidator);
 
-        // Создаем тестовые поля
+        // Create test fields
         const nameInput = document.createElement('input');
         nameInput.name = 'Person.name';
         nameInput.value = 'John';
@@ -148,23 +149,23 @@ describe('EntityEditForm', () => {
 
         const ageInput = document.createElement('input');
         ageInput.name = 'Person.age';
-        ageInput.value = '16'; // Невалидное значение
+        ageInput.value = '16'; // Invalid value
         mockFormHtml.appendChild(ageInput);
 
-        // Проверяем валидацию
+        // Check validation
         const isValid = form.validate();
         expect(isValid).toBe(false);
         expect(nameInput.classList.contains('is-valid')).toBe(true);
         expect(ageInput.classList.contains('is-invalid')).toBe(true);
         
-        // Проверяем, что ошибка отображается
+        // Check that error is displayed
         const errorsList = mockErrorsDiv.querySelector('ul');
         expect(errorsList).toBeDefined();
         expect(errorsList.innerHTML).toContain('Age: Age must be at least 18');
     });
 
-    it('должен получать данные из формы через getData', async () => {
-        // Создаем тестовые поля
+    it('should get data from form through getData', async () => {
+        // Create test fields
         const nameInput = document.createElement('input');
         nameInput.name = 'Person.name';
         nameInput.value = 'John';
@@ -181,18 +182,18 @@ describe('EntityEditForm', () => {
         isActiveInput.checked = true;
         mockFormHtml.appendChild(isActiveInput);
 
-        // Получаем данные формы
+        // Get form data
         const data = await form.getData();
         
-        // Проверяем, что получен объект с правильными данными
+        // Check that we got object with correct data
         expect(data).toBeObject();
         expect(data.name).toBe('John');
-        expect(data.age).toBe(25); // Преобразовано в число
+        expect(data.age).toBe(25); // Converted to number
         expect(data.isActive).toBe(true);
     });
 
-    it('должен обрабатывать различные типы данных в getData', async () => {
-        // Создаем поля разных типов
+    it('should handle different data types in getData', async () => {
+        // Create fields of different types
         const nameInput = document.createElement('input');
         nameInput.name = 'Person.name';
         nameInput.value = 'John';
@@ -213,23 +214,24 @@ describe('EntityEditForm', () => {
         descriptionTextarea.value = 'Some description';
         mockFormHtml.appendChild(descriptionTextarea);
 
-        // Получаем данные формы
+        // Get form data
         const data = await form.getData();
         
-        // Проверяем преобразование типов
+        // Check type conversion
         expect(data).toBeObject();
         expect(data.name).toBe('John');
         expect(data.age).toBe(25);
         
-        // Для даты проверяем, что значение не null
+        // For date check that value is not null
         expect(data.birthDate).not.toBeNull();
         
         expect(data.description).toBe('Some description');
     });
 
-    it('должен использовать несколько валидаторов', () => {
-        // Создаем два пользовательских валидатора
+    it('should use multiple validators', () => {
+        // Create two custom validators
         const nameValidator: Validator = {
+            name: 'name-validator',
             validate: (attr: MetaEntityAttr, value: any): ValidationResult => {
                 if (attr.id === 'Person.name' && (!value || value.length < 3)) {
                     return {
@@ -242,6 +244,7 @@ describe('EntityEditForm', () => {
         };
         
         const ageValidator: Validator = {
+            name: 'age-validator',
             validate: (attr: MetaEntityAttr, value: any): ValidationResult => {
                 if (attr.id === 'Person.age' && parseInt(value) < 18) {
                     return {
@@ -253,33 +256,34 @@ describe('EntityEditForm', () => {
             }
         };
 
-        // Добавляем валидаторы к форме
+        // Add validators to form
         form.useValidators([nameValidator, ageValidator]);
 
-        // Создаем тестовые поля с невалидными значениями
+        // Create test fields with invalid values
         const nameInput = document.createElement('input');
         nameInput.name = 'Person.name';
-        nameInput.value = 'Jo'; // Слишком короткое имя
+        nameInput.value = 'Jo'; // Name too short
         mockFormHtml.appendChild(nameInput);
 
         const ageInput = document.createElement('input');
         ageInput.name = 'Person.age';
-        ageInput.value = '16'; // Слишком малый возраст
+        ageInput.value = '16'; // Age too low
         mockFormHtml.appendChild(ageInput);
 
-        // Проверяем валидацию
+        // Check validation
         const isValid = form.validate();
         expect(isValid).toBe(false);
         
-        // Проверяем, что ошибки от обоих валидаторов отображаются
+        // Check that errors from both validators are displayed
         const errorsList = mockErrorsDiv.querySelector('ul');
         expect(errorsList.innerHTML).toContain('Name: Name must be at least 3 characters');
         expect(errorsList.innerHTML).toContain('Age: Age must be at least 18');
     });
 
-    it('должен очищать ошибки при повторной валидации', () => {
-        // Создаем пользовательский валидатор
+    it('should clear errors on re-validation', () => {
+        // Create custom validator
         const mockValidator: Validator = {
+            name: 'age-validator',
             validate: (attr: MetaEntityAttr, value: any): ValidationResult => {
                 if (attr.id === 'Person.age' && parseInt(value) < 18) {
                     return {
@@ -293,32 +297,33 @@ describe('EntityEditForm', () => {
         
         form.useValidator(mockValidator);
 
-        // Создаем поле возраста с невалидным значением
+        // Create age field with invalid value
         const ageInput = document.createElement('input');
         ageInput.name = 'Person.age';
         ageInput.value = '16';
         mockFormHtml.appendChild(ageInput);
 
-        // Проверяем первую валидацию - должны быть ошибки
+        // Check first validation - should have errors
         let isValid = form.validate();
         expect(isValid).toBe(false);
         expect(ageInput.classList.contains('is-invalid')).toBe(true);
         expect(mockErrorsDiv.innerHTML).not.toBe('');
 
-        // Меняем значение и валидируем снова
+        // Change value and validate again
         ageInput.value = '18';
         isValid = form.validate();
         
-        // Теперь должно быть валидно и ошибки должны исчезнуть
+        // Now should be valid and errors should disappear
         expect(isValid).toBe(true);
         expect(ageInput.classList.contains('is-valid')).toBe(true);
         expect(ageInput.classList.contains('is-invalid')).toBe(false);
         expect(mockErrorsDiv.innerHTML).toBe('');
     });
 
-    it('должен игнорировать чекбоксы при проверке на пустое значение', () => {
-        // Создаем валидатор, который проверяет, что все поля заполнены
+    it('should ignore checkboxes when checking for empty values', () => {
+        // Create validator that checks that all fields are filled
         const requiredValidator: Validator = {
+            name: 'required-validator',
             validate: (attr: MetaEntityAttr, value: any): ValidationResult => {
                 if (!value) {
                     return {
@@ -332,11 +337,11 @@ describe('EntityEditForm', () => {
         
         form.useValidator(requiredValidator);
 
-        // Создаем чекбокс и текстовое поле
+        // Create checkbox and text field
         const isActiveInput = document.createElement('input');
         isActiveInput.type = 'checkbox';
         isActiveInput.name = 'Person.isActive';
-        isActiveInput.checked = false; // Не выбран
+        isActiveInput.checked = false; // Not selected
         mockFormHtml.appendChild(isActiveInput);
 
         const nameInput = document.createElement('input');
@@ -344,7 +349,7 @@ describe('EntityEditForm', () => {
         nameInput.value = 'John';
         mockFormHtml.appendChild(nameInput);
 
-        // Валидация должна пройти успешно, т.к. чекбоксы игнорируются
+        // Validation should pass successfully, because checkboxes are ignored
         const isValid = form.validate();
         expect(isValid).toBe(true);
     });

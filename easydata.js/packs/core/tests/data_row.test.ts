@@ -14,7 +14,7 @@ describe('DataRow', () => {
         columnList.add({ id: 'active', label: 'Active' });
     });
     
-    it('должен создаваться с колонками и значениями', () => {
+    it('should be created with columns and values', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -22,24 +22,24 @@ describe('DataRow', () => {
         expect(row.size()).toBe(4);
     });
     
-    it('должен возвращать размер строки', () => {
+    it('should return row size', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
         expect(row.size()).toBe(4);
     });
     
-    it('должен возвращать копию массива значений', () => {
+    it('should return copy of values array', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
         const result = row.toArray();
         
         expect(result).toBeEqual(values);
-        expect(result).not.toBe(values); // Должен быть новый массив, а не ссылка на тот же самый
+        expect(result).not.toBe(values); // Should be new array, not reference to the same one
     });
     
-    it('должен получать значение по индексу', () => {
+    it('should get value by index', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -49,7 +49,7 @@ describe('DataRow', () => {
         expect(row.getValue(3)).toBe(true);
     });
     
-    it('должен получать значение по ID колонки', () => {
+    it('should get value by column ID', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -59,7 +59,7 @@ describe('DataRow', () => {
         expect(row.getValue('active')).toBe(true);
     });
     
-    it('должен устанавливать значение по индексу', () => {
+    it('should set value by index', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -74,7 +74,7 @@ describe('DataRow', () => {
         expect(row.getValue(3)).toBe(false);
     });
     
-    it('должен устанавливать значение по ID колонки', () => {
+    it('should set value by column ID', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -89,7 +89,7 @@ describe('DataRow', () => {
         expect(row.getValue('active')).toBe(false);
     });
     
-    it('должен выбрасывать ошибку при получении значения по несуществующему ID колонки', () => {
+    it('should throw error when getting value by non-existent column ID', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -102,7 +102,7 @@ describe('DataRow', () => {
         }).toThrow("No column with id 'nonExistentId'");
     });
     
-    it('должен выбрасывать ошибку при получении значения по индексу вне диапазона', () => {
+    it('should throw error when getting value by index out of range', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -115,7 +115,7 @@ describe('DataRow', () => {
         }).toThrow("Out of range: 4");
     });
     
-    it('должен выбрасывать ошибку при установке значения по несуществующему ID колонки', () => {
+    it('should throw error when setting value by non-existent column ID', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -128,7 +128,7 @@ describe('DataRow', () => {
         }).toThrow("No column with id 'nonExistentId'");
     });
     
-    it('должен выбрасывать ошибку при установке значения по индексу вне диапазона', () => {
+    it('should throw error when setting value by index out of range', () => {
         const values = [1, 'John', 30, true];
         const row = new DataRow(columnList, values);
         
@@ -141,7 +141,7 @@ describe('DataRow', () => {
         }).toThrow("Out of range: 4");
     });
     
-    it('должен работать с пустым массивом значений', () => {
+    it('should work with empty values array', () => {
         const emptyValues: any[] = [];
         const row = new DataRow(columnList, emptyValues);
         
