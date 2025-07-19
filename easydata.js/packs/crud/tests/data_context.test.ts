@@ -254,7 +254,7 @@ describe('DataContext', () => {
                 return dataContext.createRecord(testObj);
             })
             .then(() => {
-                // Check что был вызван правильный метод HTTP клиента
+                // Check that the correct HTTP client method was called
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -263,7 +263,7 @@ describe('DataContext', () => {
                 expect(lastCall[1].name).toBe('Test Record');
                 expect(lastCall[1].value).toBe(123);
                 
-                // Check что были вызваны методы startProcess и endProcess
+                // Check that startProcess and endProcess methods were called
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
@@ -282,7 +282,7 @@ describe('DataContext', () => {
                 return dataContext.updateRecord(testObj);
             })
             .then(() => {
-                // Check что был вызван правильный метод HTTP клиента
+                // Check that the correct HTTP client method was called
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -291,7 +291,7 @@ describe('DataContext', () => {
                 expect(lastCall[1].id).toBe(1);
                 expect(lastCall[1].name).toBe('Updated Record');
                 
-                // Check что были вызваны методы startProcess и endProcess
+                // Check that startProcess and endProcess methods were called
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
@@ -310,7 +310,7 @@ describe('DataContext', () => {
                 return dataContext.deleteRecord(testObj);
             })
             .then(() => {
-                // Check что был вызван правильный метод HTTP клиента
+                // Check that the correct HTTP client method was called
                 expect(mockHttpClient.post).toHaveBeenCalled();
                 
                 const lastCall = (mockHttpClient.post).mock.calls.pop();
@@ -318,7 +318,7 @@ describe('DataContext', () => {
                 expect(lastCall[1]).toBeDefined();
                 expect(lastCall[1].id).toBe(1);
                 
-                // Check что были вызваны методы startProcess и endProcess
+                // Check that startProcess and endProcess methods were called
                 expect(processStartCount).toBeGreaterThan(0);
                 expect(processEndCount).toBeGreaterThan(0);
             });
