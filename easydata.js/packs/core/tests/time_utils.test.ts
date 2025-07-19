@@ -147,7 +147,7 @@ describe('Time Utils', () => {
         
         expect(result).toBeInstanceOf(Date);
         expect(result.getFullYear()).toBe(2022);
-        expect(result.getMonth()).toBe(0); // январь
+        expect(result.getMonth()).toBe(0); // January
         expect(result.getDate()).toBe(1);
     });
     
@@ -157,41 +157,41 @@ describe('Time Utils', () => {
         
         expect(result).toBeInstanceOf(Date);
         expect(result.getFullYear()).toBe(2024);
-        expect(result.getMonth()).toBe(0); // январь
+        expect(result.getMonth()).toBe(0); // January
         expect(result.getDate()).toBe(1);
     });
     
-    it('should разрешать специальную дату FirstDayOfWeek для середины недели', () => {
-        // 15 мая 2023 - понедельник
-        fixedDate = new Date(2023, 4, 15); // 15 мая 2023
+    it('should resolve special date FirstDayOfWeek for midweek', () => {
+        // 15 May 2023 - Monday
+        fixedDate = new Date(2023, 4, 15); // 15 May 2023
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfWeek();
         
         expect(result).toBeInstanceOf(Date);
         expect(result.getFullYear()).toBe(2023);
         expect(result.getMonth()).toBe(4);
-        expect(result.getDate()).toBe(15); // понедельник
+        expect(result.getDate()).toBe(15); // Monday
     });
     
-    it('should разрешать специальную дату FirstDayOfPrevWeek', () => {
+    it('should resolve special date FirstDayOfPrevWeek', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfPrevWeek();
         
         expect(result).toBeInstanceOf(Date);
-        // Конкретная дата зависит от того, какой день недели у fixedDate
+        // The specific date depends on what day of the week fixedDate is
         expect(result).toBeInstanceOf(Date);
     });
     
-    it('should разрешать специальную дату FirstDayOfNextWeek', () => {
+    it('should resolve special date FirstDayOfNextWeek', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.FirstDayOfNextWeek();
         
         expect(result).toBeInstanceOf(Date);
-        // Конкретная дата зависит от того, какой день недели у fixedDate
+        // The specific date depends on what day of the week fixedDate is
         expect(result).toBeInstanceOf(Date);
     });
     
-    it('should return дату по имени через getDateByName', () => {
+    it('should return date by name via getDateByName', () => {
         const resolver = new SpecialDatesResolver();
         
         const result = resolver.getDateByName('Today');
@@ -202,15 +202,15 @@ describe('Time Utils', () => {
         expect(result.getDate()).toBe(15);
     });
     
-    it('should return undefined для неизвестного имени даты', () => {
+    it('should return undefined for unknown date name', () => {
         const resolver = new SpecialDatesResolver();
         const result = resolver.getDateByName('NonExistentDate');
         
         expect(result).toBeUndefined();
     });
     
-    it('should регистрировать новый резолвер через registerSpecialDatesResolver', () => {
-        // Create custom резолвер
+    it('should register new resolver via registerSpecialDatesResolver', () => {
+        // Create custom resolver
         class CustomResolver extends SpecialDatesResolver {
             public Custom(): Date {
                 return new Date(2000, 0, 1);
@@ -218,11 +218,11 @@ describe('Time Utils', () => {
         }
         
         const customResolver = new CustomResolver();
-        
-        // Регистрируем его
+
+        // Register it
         registerSpecialDatesResolver(customResolver);
-        
-        // Check, что теперь используется новый резолвер
+
+        // Check that the new resolver is now used
         const timeValue = new TimeValue('Custom');
         const result = timeValue.asTime();
         

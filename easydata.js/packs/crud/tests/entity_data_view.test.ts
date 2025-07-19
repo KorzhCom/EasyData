@@ -194,7 +194,7 @@ describe('EntityDataView', () => {
         expect(backLink).toBeDefined();
         expect(backLink.textContent).toBe('← Back to Entities');
         
-        // Check, что обработчик клика установлен
+        // Check that the click handler is set
         const clickEvent = new MouseEvent('click');
         const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
         backLink.dispatchEvent(clickEvent);
@@ -206,7 +206,7 @@ describe('EntityDataView', () => {
     it('should not render back button if showBackToEntities=false', () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showBackToEntities: false });
         
-        // Check отсутствие кнопки возврата
+        // Check absence of the back button
         const backLink = mockSlot.querySelector('a');
         expect(backLink).toBeNull();
     });

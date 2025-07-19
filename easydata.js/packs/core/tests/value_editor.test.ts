@@ -60,7 +60,7 @@ describe('ValueEditor', () => {
         
         expect(editor.id).toBe('test-editor');
         expect(editor.tag).toBe(EditorTag.MultipleChoice);
-        // subType should перезаписать rtype
+        // subType should override rtype
         expect(editor.resType).toBe(DataType.Int32);
         expect(editor.defValue).toBe('default');
         expect(editor.name).toBe('Test Editor');
@@ -72,7 +72,7 @@ describe('ValueEditor', () => {
         ]);
     });
     
-    it('should return пустую строку для getValueText когда нет values', () => {
+    it('should return an empty string for getValueText when there are no values', () => {
         const editor = new ValueEditor();
         editor.id = 'test-editor';
         
@@ -80,7 +80,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('');
     });
     
-    it('should return текст для строкового значения через getValueText', () => {
+    it('should return text for a string value through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -92,7 +92,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 2');
     });
     
-    it('should return пустую строку для несуществующего значения через getValueText', () => {
+    it('should return an empty string for a non-existent value through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -103,7 +103,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('');
     });
     
-    it('should объединять тексты для массива значений через getValueText', () => {
+    it('should concatenate texts for an array of values through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -115,7 +115,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 1,Option 3');
     });
     
-    it('should return только найденные тексты для массива значений через getValueText', () => {
+    it('should return only found texts for an array of values through getValueText', () => {
         const editor = new ValueEditor();
         editor.values = [
             { id: '1', text: 'Option 1' },
@@ -127,7 +127,7 @@ describe('ValueEditor', () => {
         expect(result).toBe('Option 1,Option 3');
     });
     
-    it('should обрабатывать случай когда в values пустой массив', () => {
+    it('should handle the case when values is an empty array', () => {
         const editor = new ValueEditor();
         editor.values = [];
         
