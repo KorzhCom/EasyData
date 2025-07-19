@@ -4,8 +4,8 @@ import { utils } from '../src/utils/utils';
 import { DataType } from '../src/types/data_type';
 
 describe('utils', () => {
-    // Тесты для функций с типами данных
-    it('should вернуть все типы данных через getAllDataTypes', () => {
+    // Tests for functions with data types
+    it('should return all data types through getAllDataTypes', () => {
         const dataTypes = utils.getAllDataTypes();
         expect(dataTypes).toContain(DataType.String);
         expect(dataTypes).toContain(DataType.Int32);
@@ -15,7 +15,7 @@ describe('utils', () => {
         expect(typeof dataTypes[0]).toBe('number');
     });
     
-    it('should вернуть все типы для дат через getDateDataTypes', () => {
+    it('should return all date types through getDateDataTypes', () => {
         const dateTypes = utils.getDateDataTypes();
         expect(dateTypes.length).toBe(3);
         expect(dateTypes).toContain(DataType.Date);
@@ -23,7 +23,7 @@ describe('utils', () => {
         expect(dateTypes).toContain(DataType.Time);
     });
     
-    it('should вернуть все строковые типы через getStringDataTypes', () => {
+    it('should return all string types through getStringDataTypes', () => {
         const stringTypes = utils.getStringDataTypes();
         expect(stringTypes.length).toBe(3);
         expect(stringTypes).toContain(DataType.String);
@@ -31,14 +31,14 @@ describe('utils', () => {
         expect(stringTypes).toContain(DataType.FixedChar);
     });
     
-    it('should вернуть все числовые типы через getNumericDataTypes', () => {
+    it('should return all numeric types through getNumericDataTypes', () => {
         const numericTypes = utils.getNumericDataTypes();
         expect(numericTypes).toContain(DataType.Int32);
         expect(numericTypes).toContain(DataType.Float);
         expect(numericTypes).toContain(DataType.Currency);
     });
     
-    it('should проверять, является ли тип числовым через isNumericType', () => {
+    it('should check if the type is numeric through isNumericType', () => {
         expect(utils.isNumericType(DataType.Int32)).toBe(true);
         expect(utils.isNumericType(DataType.Float)).toBe(true);
         expect(utils.isNumericType(DataType.Currency)).toBe(true);
@@ -46,7 +46,7 @@ describe('utils', () => {
         expect(utils.isNumericType(DataType.Date)).toBe(false);
     });
     
-    it('should проверять, является ли тип целочисленным через isIntType', () => {
+    it('should check if the type is integer through isIntType', () => {
         expect(utils.isIntType(DataType.Int32)).toBe(true);
         expect(utils.isIntType(DataType.Int64)).toBe(true);
         expect(utils.isIntType(DataType.Byte)).toBe(true);
@@ -54,7 +54,7 @@ describe('utils', () => {
         expect(utils.isIntType(DataType.String)).toBe(false);
     });
     
-    it('should проверять, совместимы ли типы данных через areCompatibleDataTypes', () => {
+    it('should check if data types are compatible through areCompatibleDataTypes', () => {
         expect(utils.areCompatibleDataTypes(DataType.Int32, DataType.Int32)).toBe(true);
         expect(utils.areCompatibleDataTypes(DataType.Date, DataType.DateTime)).toBe(true);
         expect(utils.areCompatibleDataTypes(DataType.DateTime, DataType.Date)).toBe(true);
@@ -63,22 +63,22 @@ describe('utils', () => {
         expect(utils.areCompatibleDataTypes(DataType.Int32, DataType.Unknown)).toBe(true);
     });
     
-    // Тесты для объектных функций
-    it('should объединять объекты через assign', () => {
+    // Tests for object functions
+    it('should merge objects through assign', () => {
         const target = { a: 1, b: 2 };
         const source1 = { b: 3, c: 4 };
         const source2 = { d: 5 };
         
         const result = utils.assign(target, source1, source2);
         
-        expect(result).toBe(target); // Check, что assign возвращает target
+        expect(result).toBe(target); // Check that assign returns target
         expect(result.a).toBe(1);
-        expect(result.b).toBe(3); // Значение из source1 перезаписало значение из target
+        expect(result.b).toBe(3); // Value from source1 overwrote value from target
         expect(result.c).toBe(4);
         expect(result.d).toBe(5);
     });
     
-    it('should обрабатывать пустые объекты и null в assign', () => {
+    it('should handle empty objects and null in assign', () => {
         const target = null;
         const source = { a: 1 };
         
@@ -87,7 +87,7 @@ describe('utils', () => {
         expect(result).toBeObject({ a: 1 });
     });
     
-    it('should делать глубокое копирование объектов через assignDeep', () => {
+    it('should perform deep copying of objects through assignDeep', () => {
         const target = { 
             a: 1, 
             nested: { x: 10, y: 20 } 
@@ -103,27 +103,27 @@ describe('utils', () => {
         expect(result.a).toBe(1);
         expect(result.b).toBe(2);
         expect(result.nested.x).toBe(10);
-        expect(result.nested.y).toBe(30); // Значение из source перезаписало значение из target
+        expect(result.nested.y).toBe(30); // Value from source overwrote value from target
         expect(result.nested.z).toBe(40);
         
-        // Check, что объекты действительно скопированы, а не ссылаются на тот же объект
+        // Check that objects are actually copied, not referencing the same object
         source.nested.y = 100;
         expect(result.nested.y).toBe(30);
     });
     
-    it('should обрабатывать циклические ссылки в assignDeep', () => {
+    it('should handle cyclic references in assignDeep', () => {
         const target = {};
         const source = { a: 1 };
-        source.self = source; // Циклическая ссылка
+        source.self = source; // Cyclic reference
         
-        // Не должно вызывать бесконечную рекурсию
+        // Should not cause infinite recursion
         const result = utils.assignDeep(target, source);
         
         expect(result.a).toBe(1);
-        expect(result.self).toBe(result); // Цикл сохранен, но ссылается на новый объект
+        expect(result.self).toBe(result); // Cycle is preserved but refers to the new object
     });
     
-    it('should копировать массивы в assignDeep', () => {
+    it('should copy arrays in assignDeep', () => {
         const target = { arr: [1, 2] };
         const source = { arr: [3, 4, 5] };
         
@@ -131,19 +131,19 @@ describe('utils', () => {
         
         expect(result.arr).toBeArrayEqual([3, 4, 5]);
         
-        // Check, что массивы действительно скопированы
+        // Check that arrays are actually copied
         source.arr.push(6);
-        expect(result.arr).toBeArrayEqual([3, 4, 5]); // Не изменился после изменения source
+        expect(result.arr).toBeArrayEqual([3, 4, 5]); // Did not change after modifying source
     });
     
-    it('should return значение по умолчанию через getIfDefined', () => {
+    it('should return default value through getIfDefined', () => {
         expect(utils.getIfDefined(undefined, 'default')).toBe('default');
         expect(utils.getIfDefined(null, 'default')).toBe(null);
         expect(utils.getIfDefined(0, 'default')).toBe(0);
         expect(utils.getIfDefined('value', 'default')).toBe('value');
     });
     
-    it('should проверять определенность и не-null значения через IsDefinedAndNotNull', () => {
+    it('should check definiteness and non-null value through IsDefinedAndNotNull', () => {
         expect(utils.IsDefinedAndNotNull(undefined)).toBe(false);
         expect(utils.IsDefinedAndNotNull(null)).toBe(false);
         expect(utils.IsDefinedAndNotNull(0)).toBe(true);
@@ -151,7 +151,7 @@ describe('utils', () => {
         expect(utils.IsDefinedAndNotNull(false)).toBe(true);
     });
     
-    it('should проверять, является ли значение объектом через isObject', () => {
+    it('should check if value is an object through isObject', () => {
         expect(utils.isObject({})).toBe(true);
         expect(utils.isObject([])).toBe(true);
         expect(utils.isObject(function() {})).toBe(true);
@@ -161,7 +161,7 @@ describe('utils', () => {
         expect(utils.isObject('string')).toBe(false);
     });
     
-    it('should проверять, установлено ли свойство через isPropSet', () => {
+    it('should check if property is set through isPropSet', () => {
         const obj = { 
             prop1: 'value1',
             PROP2: 'value2',
@@ -170,14 +170,14 @@ describe('utils', () => {
         };
         
         expect(utils.isPropSet(obj, 'prop1')).toBe('value1');
-        expect(utils.isPropSet(obj, 'prop2')).toBe('value2'); // Check регистронезависимости
+        expect(utils.isPropSet(obj, 'prop2')).toBe('value2'); // Check case insensitivity
         expect(utils.isPropSet(obj, 'prop3')).toBe(null);
         expect(utils.isPropSet(obj, 'prop4')).toBe(undefined);
         expect(utils.isPropSet(obj, 'nonExistent')).toBe(undefined);
     });
     
-    // Тесты для функций с массивами
-    it('should копировать элементы одного массива в другой через copyArrayTo', () => {
+    // Tests for functions with arrays
+    it('should copy elements from one array to another through copyArrayTo', () => {
         const source = [1, 2, 3, 4];
         const target = [0, 0, 0, 0, 0];
         
@@ -186,7 +186,7 @@ describe('utils', () => {
         expect(target).toBeArrayEqual([1, 2, 3, 4, 0]);
     });
     
-    it('should создавать новый массив из коллекции через createArrayFrom', () => {
+    it('should create a new array from collection through createArrayFrom', () => {
         const collection = {
             0: 'a',
             1: 'b',
@@ -203,10 +203,10 @@ describe('utils', () => {
         
         expect(Array.isArray(result)).toBe(true);
         expect(result).toBeArrayEqual(['a', 'b', 'c']);
-        expect(result === collection).toBe(false); // Новый массив, не исходная коллекция
+        expect(result === collection).toBe(false); // New array, not the original collection
     });
     
-    it('should находить элемент по id через findItemById', () => {
+    it('should find item by id through findItemById', () => {
         const array = [
             { id: 1, value: 'one' },
             { id: 2, value: 'two' },
@@ -222,7 +222,7 @@ describe('utils', () => {
         expect(notFound).toBeNull();
     });
     
-    it('should находить индекс элемента по id через findItemIndexById', () => {
+    it('should find item index by id through findItemIndexById', () => {
         const array = [
             { id: 1, value: 'one' },
             { id: 2, value: 'two' },
@@ -236,14 +236,14 @@ describe('utils', () => {
         expect(notFoundIndex).toBe(-1);
     });
     
-    it('should находить индекс элемента в массиве через indexOfArrayItem', () => {
+    it('should find index of item in array through indexOfArrayItem', () => {
         const array = ['a', 'b', 'c', 'd'];
         
         expect(utils.indexOfArrayItem(array, 'b')).toBe(1);
         expect(utils.indexOfArrayItem(array, 'e')).toBe(-1);
     });
     
-    it('should перемещать элемент в массиве через moveArrayItem', () => {
+    it('should move item in array through moveArrayItem', () => {
         const array = ['a', 'b', 'c', 'd', 'e'];
         
         utils.moveArrayItem(array, 1, 3);
@@ -251,7 +251,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'c', 'd', 'b', 'e']);
     });
     
-    it('should throw error при перемещении несуществующего элемента', () => {
+    it('should throw error when moving non-existent item', () => {
         const array = ['a', 'b', 'c'];
         
         expect(() => {
@@ -259,10 +259,10 @@ describe('utils', () => {
         }).toThrow('Index out of bounds: 5');
     });
     
-    it('should correctly handle перемещение за пределы массива', () => {
+    it('should correctly handle moving out of array bounds', () => {
         const array = ['a', 'b', 'c', 'd', 'e'];
         
-        utils.moveArrayItem(array, 1, 10); // Индекс 10 вне массива, should быть скорректирован
+        utils.moveArrayItem(array, 1, 10); // Index 10 is out of array, should be adjusted
         
         expect(array).toBeArrayEqual(['a', 'c', 'd', 'e', 'b']);
     });
@@ -280,7 +280,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'c', 'd']);
     });
     
-    it('should вставлять элемент в массив через insertArrayItem', () => {
+    it('should insert element in array through insertArrayItem', () => {
         const array = ['a', 'c', 'd'];
         
         utils.insertArrayItem(array, 1, 'b');
@@ -288,7 +288,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'b', 'c', 'd']);
     });
     
-    it('should заполнять массив значениями через fillArray', () => {
+    it('should fill array with values through fillArray', () => {
         const array = ['a', 'b', 'c', 'd', 'e'];
         
         utils.fillArray(array, 'x', 1, 4);
@@ -296,7 +296,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'x', 'x', 'x', 'e']);
     });
     
-    it('should обрабатывать отрицательные индексы в fillArray', () => {
+    it('should handle negative indices in fillArray', () => {
         const array = ['a', 'b', 'c', 'd', 'e'];
         
         utils.fillArray(array, 'x', -3, -1);
@@ -304,7 +304,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'b', 'x', 'x', 'e']);
     });
     
-    it('should заполнять до конца массива при отсутствии end в fillArray', () => {
+    it('should fill to the end of the array when no end is provided in fillArray', () => {
         const array = ['a', 'b', 'c', 'd', 'e'];
         
         utils.fillArray(array, 'x', 3);
@@ -312,8 +312,8 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'b', 'c', 'x', 'x']);
     });
     
-    // Тесты для функций с проверками
-    it('should проверять, является ли значение числовым через isNumeric', () => {
+    // Tests for functions with checks
+    it('should check if value is numeric through isNumeric', () => {
         expect(utils.isNumeric(42)).toBe(true);
         expect(utils.isNumeric('42')).toBe(true);
         expect(utils.isNumeric(-1.5)).toBe(true);
@@ -326,8 +326,8 @@ describe('utils', () => {
         expect(utils.isNumeric(undefined)).toBe(false);
     });
     
-    // Тесты для функций генерации ID
-    it('should генерировать уникальные ID через generateId', () => {
+    // Tests for ID generation functions
+    it('should generate unique IDs through generateId', () => {
         const id1 = utils.generateId('test');
         const id2 = utils.generateId('test');
         
@@ -336,18 +336,18 @@ describe('utils', () => {
         expect(id2.startsWith('test-')).toBe(true);
     });
     
-    it('should использовать префикс easy при вызове generateId без аргументов', () => {
+    it('should use easy prefix when calling generateId with no arguments', () => {
         const id = utils.generateId(null);
         expect(id.startsWith('easy-')).toBe(true);
     });
     
-    it('should сокращать длинные префиксы в generateId', () => {
+    it('should shorten long prefixes in generateId', () => {
         const id = utils.generateId('veryLongPrefix');
         expect(id.startsWith('vryL-')).toBe(true);
     });
     
-    // Тесты для функций с датами
-    it('should конвертировать строку в дату через strToDateTime', () => {
+    // Tests for date functions
+    it('should convert string to date through strToDateTime', () => {
         const dateStr = '2023-05-15-14-30-45';
         const format = 'yyyy-MM-dd-HH-mm-ss';
         
@@ -362,7 +362,7 @@ describe('utils', () => {
         expect(result.getSeconds()).toBe(45);
     });
     
-    it('should обрабатывать различные форматы разделителей в strToDateTime', () => {
+    it('should handle different delimiter formats in strToDateTime', () => {
         const dateStr = '2023/05/15 14:30:45';
         const format = 'yyyy/MM/dd HH:mm:ss';
         
@@ -377,13 +377,13 @@ describe('utils', () => {
         expect(result.getSeconds()).toBe(45);
     });
     
-    it('should throw error при некорректной дате в strToDateTime', () => {
+    it('should throw error on incorrect date in strToDateTime', () => {
         expect(() => {
             utils.strToDateTime('2023-13-32', 'yyyy-MM-dd');
         }).toThrow();
     });
     
-    it('should конвертировать строку во время через strToTime', () => {
+    it('should convert string to time through strToTime', () => {
         const timeStr = '14:30:45';
         
         const result = utils.strToTime(timeStr);
@@ -394,7 +394,7 @@ describe('utils', () => {
         expect(result.getSeconds()).toBe(0); // Bug in implementation, should be 45
     });
     
-    it('should throw error при некорректном времени в strToTime', () => {
+    it('should throw error on incorrect time in strToTime', () => {
         expect(() => {
             utils.strToTime('25:70');
         }).toThrow();

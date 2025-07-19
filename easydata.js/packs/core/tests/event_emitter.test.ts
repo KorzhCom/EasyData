@@ -126,18 +126,18 @@ describe('EventEmitter', () => {
         
         eventEmitter.subscribe('testEvent', callback);
         
-        // По умолчанию не в тихом режиме
+        // By default, not in silent mode
         expect(eventEmitter.isSilent()).toBe(false);
         
-        // Входим в тихий режим
+        // Entering silent mode
         eventEmitter.enterSilentMode();
         expect(eventEmitter.isSilent()).toBe(true);
         
-        // В тихом режиме колбэк не should вызываться
+        // In silent mode, the callback should not be called
         eventEmitter.fire('testEvent');
         expect(callbackCalled).toBe(false);
         
-        // Выходим из тихого режима
+        // Exiting silent mode
         eventEmitter.exitSilentMode();
         expect(eventEmitter.isSilent()).toBe(false);
         

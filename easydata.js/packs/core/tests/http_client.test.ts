@@ -84,7 +84,7 @@ describe('HttpClient', () => {
         expect(xhrMock.send).toHaveBeenCalledWith(JSON.stringify(data));
     });
     
-    it('should выполнять PUT запрос с данными', () => {
+    it('should perform PUT request with data', () => {
         const url = 'https://test.com/api/data/1';
         const data = { name: 'Updated Name', age: 31 };
         
@@ -190,7 +190,7 @@ describe('HttpClient', () => {
     it('should handle HTTP errors', async () => {
         const responsePromise = httpClient.get('https://test.com/api/data');
         
-        // Emulate HTTP ошибку
+        // Emulate HTTP error
         xhrMock.status = 404;
         xhrMock.responseText = '{"message":"Resource not found"}';
         xhrMock.onreadystatechange();

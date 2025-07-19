@@ -116,7 +116,7 @@ describe('HttpRequest', () => {
         expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
     });
 
-    it('не should открывать запрос повторно если он уже открыт', () => {
+    it('should not open the request again if it is already open', () => {
         xhrMock.readyState = 1; // OPENED
         
         const request = new HttpRequest(xhrMock, requestDescriptor);
@@ -125,7 +125,7 @@ describe('HttpRequest', () => {
         expect(xhrMock.open).not.toHaveBeenCalled();
     });
 
-    it('should вызывать abort у XMLHttpRequest при вызове abort', () => {
+    it('should call abort on XMLHttpRequest when abort is called', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         request.abort();
@@ -133,33 +133,33 @@ describe('HttpRequest', () => {
         expect(xhrMock.abort).toHaveBeenCalled();
     });
 
-    it('should correctly кодировать URL с параметрами запроса', () => {
+    it('should correctly encode URL with query parameters', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         request.setQueryParam('name', 'John Doe');
         request.setQueryParam('tags', 'tag1,tag2');
         request.open();
         
-        // URL should быть закодирован правильно
+        // URL should be encoded correctly
         expect(xhrMock.open).toHaveBeenCalledWith('GET', 
             'https://test.com/api?name=John%20Doe&tags=tag1%2Ctag2', true);
     });
 
-    it('should поддерживать различные HTTP методы', () => {
-        // Тестируем метод POST
+    it('should support various HTTP methods', () => {
+        // Testing POST method
         requestDescriptor.method = HttpMethod.POST;
         let request = new HttpRequest(xhrMock, requestDescriptor);
         request.open();
         expect(xhrMock.open).toHaveBeenCalledWith('POST', 'https://test.com/api', true);
         
-        // Тестируем метод PUT
+        // Testing PUT method
         xhrMock.open.mockClear();
         requestDescriptor.method = HttpMethod.PUT;
         request = new HttpRequest(xhrMock, requestDescriptor);
         request.open();
         expect(xhrMock.open).toHaveBeenCalledWith('PUT', 'https://test.com/api', true);
         
-        // Тестируем метод DELETE
+        // Testing DELETE method
         xhrMock.open.mockClear();
         requestDescriptor.method = HttpMethod.DELETE;
         request = new HttpRequest(xhrMock, requestDescriptor);
