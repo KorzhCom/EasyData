@@ -267,7 +267,7 @@ describe('utils', () => {
         expect(array).toBeArrayEqual(['a', 'c', 'd', 'e', 'b']);
     });
     
-    it('should удалять элемент из массива через removeArrayItem', () => {
+    it('should remove element from array via removeArrayItem', () => {
         const array = ['a', 'b', 'c', 'd'];
         
         const removed = utils.removeArrayItem(array, 'b');

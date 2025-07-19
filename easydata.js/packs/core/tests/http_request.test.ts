@@ -19,7 +19,7 @@ describe('HttpRequest', () => {
             getAllResponseHeaders: mock().mockReturnValue('Content-Type: application/json\nX-Custom-Header: test')
         };
 
-        // Базовый дескриптор запроса для тестов
+        // Basic request descriptor for tests
         requestDescriptor = {
             method: HttpMethod.GET,
             url: 'https://test.com/api',
@@ -30,7 +30,7 @@ describe('HttpRequest', () => {
         };
     });
 
-    it('should инициализировать запрос с переданными параметрами', () => {
+    it('should initialize request with passed parameters', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         expect(request.method).toBe(HttpMethod.GET);
@@ -38,7 +38,7 @@ describe('HttpRequest', () => {
         expect(request.data).toBeUndefined();
     });
 
-    it('should сохранять переданные данные', () => {
+    it('should store passed data', () => {
         const data = { test: 'value' };
         requestDescriptor.data = data;
         
@@ -47,7 +47,7 @@ describe('HttpRequest', () => {
         expect(request.data).toBe(data);
     });
 
-    it('should добавлять заголовок с помощью setHeader', () => {
+    it('should add header using setHeader', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         request.setHeader('Authorization', 'Bearer token123');
@@ -56,7 +56,7 @@ describe('HttpRequest', () => {
         expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Authorization', 'Bearer token123');
     });
 
-    it('should добавлять параметры запроса с помощью setQueryParam', () => {
+    it('should add query parameters using setQueryParam', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         request.setQueryParam('id', '123');
@@ -65,7 +65,7 @@ describe('HttpRequest', () => {
         expect(xhrMock.open).toHaveBeenCalledWith('GET', 'https://test.com/api?id=123', true);
     });
 
-    it('should правильно объединять несколько параметров запроса', () => {
+    it('should correctly combine multiple query parameters', () => {
         requestDescriptor.queryParams = {
             'id': '123',
             'name': 'test'
@@ -77,7 +77,7 @@ describe('HttpRequest', () => {
         expect(xhrMock.open).toHaveBeenCalledWith('GET', 'https://test.com/api?id=123&name=test', true);
     });
 
-    it('should return XMLHttpRequest через getXMLHttpRequest', () => {
+    it('should return XMLHttpRequest via getXMLHttpRequest', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         const xhr = request.getXMLHttpRequest();
@@ -85,7 +85,7 @@ describe('HttpRequest', () => {
         expect(xhr).toBe(xhrMock);
     });
 
-    it('should парсить заголовки ответа через getResponseHeaders', () => {
+    it('should parse response headers via getResponseHeaders', () => {
         xhrMock.readyState = xhrMock.HEADERS_RECEIVED;
         
         const request = new HttpRequest(xhrMock, requestDescriptor);
@@ -97,7 +97,7 @@ describe('HttpRequest', () => {
         });
     });
 
-    it('should return пустой объект заголовков когда readyState не HEADERS_RECEIVED', () => {
+    it('should return empty headers object when readyState is not HEADERS_RECEIVED', () => {
         xhrMock.readyState = xhrMock.UNSENT;
         
         const request = new HttpRequest(xhrMock, requestDescriptor);
@@ -106,7 +106,7 @@ describe('HttpRequest', () => {
         expect(headers).toBeObject({});
     });
 
-    it('should открывать запрос с правильными параметрами', () => {
+    it('should open request with correct parameters', () => {
         const request = new HttpRequest(xhrMock, requestDescriptor);
         
         request.open();

@@ -13,26 +13,26 @@ describe('HttpActionResult', () => {
             method: 'GET'
         } as HttpRequest;
         
-        // Создаем Promise, который успешно завершается со значением 'success'
+        // Create Promise that successfully resolves with value 'success'
         mockPromise = Promise.resolve('success');
         
         // Create instance HttpActionResult
         actionResult = new HttpActionResult<string>(mockRequest, mockPromise);
     });
     
-    it('should сохранять request и promise переданные в конструктор', () => {
+    it('should store request and promise passed to constructor', () => {
         expect(actionResult.getRequest()).toBe(mockRequest);
         expect(actionResult.getPromise()).toBe(mockPromise);
     });
     
-    it('should return исходный request через getRequest', () => {
+    it('should return original request via getRequest', () => {
         const request = actionResult.getRequest();
         expect(request).toBe(mockRequest);
         expect(request.url).toBe('https://test.com/api');
         expect(request.method).toBe('GET');
     });
     
-    it('should return исходный promise через getPromise', () => {
+    it('should return original promise via getPromise', () => {
         const promise = actionResult.getPromise();
         expect(promise).toBe(mockPromise);
         
@@ -41,7 +41,7 @@ describe('HttpActionResult', () => {
         });
     });
     
-    it('should реализовать метод then и получить значение из promise', () => {
+    it('should implement then method and get value from promise', () => {
         let resultValue = '';
         
         return actionResult.then(value => {
@@ -53,8 +53,8 @@ describe('HttpActionResult', () => {
         });
     });
     
-    it('should правильно обрабатывать rejected promise в методе then', () => {
-        // Создаем rejected promise
+    it('should properly handle rejected promise in then method', () => {
+        // Create rejected promise
         const rejectedPromise = Promise.reject(new Error('error message'));
         const rejectedResult = new HttpActionResult<string>(mockRequest, rejectedPromise);
         
@@ -64,11 +64,11 @@ describe('HttpActionResult', () => {
         return rejectedResult
             .then(
                 () => {
-                    // Этот код не should выполниться
+                    // This code should not execute
                     errorInThen = true;
                 },
                 (error) => {
-                    // Должны попасть сюда
+                    // Should end up here
                     errorCaught = true;
                     expect(error.message).toBe('error message');
                     return 'recovered';
@@ -81,8 +81,8 @@ describe('HttpActionResult', () => {
             });
     });
     
-    it('should реализовать метод catch и обрабатывать ошибки', () => {
-        // Создаем rejected promise
+    it('should implement catch method and handle errors', () => {
+        // Create rejected promise
         const rejectedPromise = Promise.reject(new Error('test error'));
         const rejectedResult = new HttpActionResult<string>(mockRequest, rejectedPromise);
         
@@ -100,7 +100,7 @@ describe('HttpActionResult', () => {
             });
     });
     
-    it('should реализовать метод finally и вызвать его независимо от результата', () => {
+    it('should implement "finally" method and call it regardless of result', () => {
         let finallyCalled = false;
         
         return actionResult
@@ -112,8 +112,8 @@ describe('HttpActionResult', () => {
             });
     });
     
-    it('should вызвать finally даже при ошибке', () => {
-        // Создаем rejected promise
+    it('should call finally even on error', () => {
+        // Create rejected promise
         const rejectedPromise = Promise.reject(new Error('test error'));
         const rejectedResult = new HttpActionResult<string>(mockRequest, rejectedPromise);
         
@@ -128,7 +128,7 @@ describe('HttpActionResult', () => {
             });
     });
     
-    it('should поддерживать цепочку методов then, catch и finally', () => {
+    it('should support method chaining of then, catch and finally', () => {
         let thenCalled = false;
         let catchCalled = false;
         let finallyCalled = false;
@@ -140,7 +140,7 @@ describe('HttpActionResult', () => {
                 return value.toUpperCase();
             })
             .catch(() => {
-                // Не should быть вызван
+                // Should not be called
                 catchCalled = true;
                 return 'error';
             })

@@ -170,7 +170,7 @@ describe('EasyDataTable', () => {
             rows: testData
         });
         
-        // Запрос за пределами доступных данных
+        // Request beyond available data
         return table.getRows({ offset: 10, limit: 5 }).then(rows => {
             expect(rows.length).toBe(0);
         });
@@ -189,7 +189,7 @@ describe('EasyDataTable', () => {
         });
     });
 
-    it('should return null при запросе несуществующей строки', () => {
+    it('should return null when requesting non-existent row', () => {
         const table = new EasyDataTable({
             columns: defaultColumns,
             rows: testData
@@ -212,7 +212,7 @@ describe('EasyDataTable', () => {
             expect(table.getTotal()).toBe(10);
             expect(table.getCachedCount()).toBe(4); // entire test dataset is cached
             
-            // Check кеширования
+            // Check caching
             return table.getRows({ offset: 2, limit: 2 }).then(moreRows => {
                 expect(moreRows.length).toBe(2);
                 expect(table.getCachedCount()).toBe(4);
@@ -246,7 +246,7 @@ describe('EasyDataTable', () => {
         table.chunkSize = 50;
         
         expect(table.chunkSize).toBe(50);
-        expect(table.getCachedCount()).toBe(0); // Кеш очищен
+        expect(table.getCachedCount()).toBe(0); // Cache cleared
     });
 
     it('should execute onUpdate callback on data update', () => {
@@ -285,10 +285,10 @@ describe('EasyDataTable', () => {
         expect(table.getTotal()).toBe(0);
     });
 
-    it('should throw error при запросе данных без loader', async () => {
+    it('should throw error when requesting data without loader', async () => {
         const table = new EasyDataTable();
         
-        // Нет данных в кеше и нет loader
+        // No data in cache and no loader
         try {
             await table.getRows({ offset: 0, limit: 10 });
             fail('Error should have been thrown');

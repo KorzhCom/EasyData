@@ -138,7 +138,7 @@ describe('ValueEditor', () => {
         expect(result2).toBe('');
     });
     
-    it('should загружать данные даже если DTO неполное', () => {
+    it('should load data even if DTO is incomplete', () => {
         const editor = new ValueEditor();
         const incompleteDTO = {
             id: 'test-editor'
@@ -147,24 +147,24 @@ describe('ValueEditor', () => {
         editor.loadFromData(incompleteDTO);
         
         expect(editor.id).toBe('test-editor');
-        // Остальные свойства должны остаться со значениями по умолчанию
+        // Other properties should remain with default values
         expect(editor.tag).toBe(EditorTag.Unknown);
         expect(editor.resType).toBe(DataType.Unknown);
         expect(editor.defValue).toBe('');
     });
     
-    it('should не менять текущие значения если DTO равно null или undefined', () => {
+    it('should not change current values if DTO is null or undefined', () => {
         const editor = new ValueEditor();
         editor.id = 'existing-id';
         editor.tag = EditorTag.Edit;
         
-        // Передаем undefined
+        // Pass undefined
         editor.loadFromData(undefined as any);
         
         expect(editor.id).toBe('existing-id');
         expect(editor.tag).toBe(EditorTag.Edit);
         
-        // Передаем null
+        // Pass null
         editor.loadFromData(null as any);
         
         expect(editor.id).toBe('existing-id');
