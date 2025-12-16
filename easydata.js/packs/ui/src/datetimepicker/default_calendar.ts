@@ -232,6 +232,8 @@ export class DefaultCalendar extends Calendar {
     }
 
     protected rerenderMonth() {
+        const {minDate, maxDate} = this.options;
+        
         //header text
         this.updateDisplayedDateValue();
 

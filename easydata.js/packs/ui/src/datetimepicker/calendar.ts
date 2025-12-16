@@ -3,6 +3,8 @@ export interface CalendarOptions {
     showDateTimeInput?: boolean;
     timePickerIsUsed?: boolean;
     oneClickDateSelection?: boolean;
+    minDate?: string | Date; // none, today, [string]date, [Date]date
+    maxDate?: string | Date;
     onDateChanged?: (date: Date, apply?: boolean) => void;
     onDrawDay?: (cell: HTMLElement, date: Date) => void;
 }
@@ -24,6 +26,14 @@ export abstract class Calendar {
 
         if (!this.options.yearRange) {
             this.options.yearRange = 'c-10:c+10';
+        }
+        
+        if (!this.options.minDate) {
+            this.options.minDate = "none";            
+        }
+        
+        if (!this.options.maxDate) {
+            this.options.maxDate = "none";            
         }
     }
 
