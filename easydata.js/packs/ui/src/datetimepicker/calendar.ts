@@ -1,10 +1,12 @@
+export type borderDateType = null | string | Date;
+
 export interface CalendarOptions {
     yearRange?: string;
     showDateTimeInput?: boolean;
     timePickerIsUsed?: boolean;
     oneClickDateSelection?: boolean;
-    minDate?: string | Date; // none, today, [string]date, [Date]date
-    maxDate?: string | Date;
+    minDate?: null | string | Date; // null or none, today, [string]date, [Date]date
+    maxDate?: null | string | Date;
     onDateChanged?: (date: Date, apply?: boolean) => void;
     onDrawDay?: (cell: HTMLElement, date: Date) => void;
 }

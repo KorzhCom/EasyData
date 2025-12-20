@@ -1,7 +1,7 @@
 import { i18n, utils as coreUtils } from '@easydata/core';
 
 import { domel } from '../utils/dom_elem_builder';
-import { Calendar, CalendarOptions } from './calendar';
+import {borderDateType, Calendar, CalendarOptions} from './calendar';
 
 
 export class DefaultCalendar extends Calendar {
@@ -231,8 +231,39 @@ export class DefaultCalendar extends Calendar {
         this.rerenderMonth();
     }
 
+    private creatingBorderDate(
+        input: borderDateType
+    ) {
+        let result;
+        
+        if (input == null || input === 'none') {
+            return null;
+        }
+        if (typeof input === 'string') {
+            if (input === 'today') {
+                result = new Date();
+                result.setHours(0, 0, 0, 0);
+            } else {
+                result = new Date(input);
+                result.setHours(0, 0, 0, 0);
+            }            
+        } else if (Array.isArray(input)) {
+            result = new Date(input[0], input[1] - 1, input[2]);
+            result.setHours(0, 0, 0, 0);            
+        } else {
+            if (input instanceof Date) {
+                result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+                result.setHours(0, 0, 0, 0);                                
+            } else {
+                result = null;
+            }
+        }
+        return result;
+    }
+    
     protected rerenderMonth() {
-        const {minDate, maxDate} = this.options;
+        const minDate = this.creatingBorderDate(this.options.minDate);
+        const maxDate = this.creatingBorderDate(this.options.maxDate);
         
         //header text
         this.updateDisplayedDateValue();
@@ -264,6 +295,9 @@ export class DefaultCalendar extends Calendar {
         // Add all month days
         const today = new Date();
         for (let day = 1; day <= daysInMonth; day++) {
+            let currentDate = new Date(this.selectedYear, this.selectedMonth, day);
+            currentDate.setHours(0, 0, 0, 0); // Align date
+            
             const builder = domel('div', this.calendarBody)
                 .addClass(`${this.cssPrefix}-day`)
                 .attr('data-date', day.toString())
@@ -283,6 +317,18 @@ export class DefaultCalendar extends Calendar {
                 builder.addClass(`${this.cssPrefix}-day-selected`);
             }
 
+            if (minDate) {
+                if (currentDate < minDate) {
+                    builder.addClass(`${this.cssPrefix}-day-disabled`);
+                }
+            }
+            
+            if (maxDate) {
+                if (currentDate > maxDate) {
+                    builder.addClass(`${this.cssPrefix}-day-disabled`);
+                }
+            }
+            
             const dayOfWeek = (firstDay + day - 1) % 7;
             if (dayOfWeek == 0 || dayOfWeek == 6) {
                 builder.addClass(`${this.cssPrefix}-weekend`);
