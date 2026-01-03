@@ -37,8 +37,6 @@ export class DefaultCalendar extends Calendar {
 
         this.selectedMonth = this.selectedDate.getMonth();
         this.selectedYear = this.selectedDate.getFullYear();
-
-        this.rerenderMonth();    
     }
 
     public render() {
@@ -61,6 +59,7 @@ export class DefaultCalendar extends Calendar {
             .addClass(`${this.cssPrefix}-body`)
             .toDOM();
 
+        this.rerenderMonth();
     }
 
     private getInputDateFormat() {
@@ -276,6 +275,7 @@ export class DefaultCalendar extends Calendar {
                     this.selectedDate.setFullYear(this.selectedYear);
                     this.selectedDate.setMonth(this.selectedMonth);
                     this.selectedDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
+                    this.rerenderMonth();
                     this.dateChanged(this.options.oneClickDateSelection);
                 });
     

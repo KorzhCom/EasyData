@@ -47,7 +47,7 @@ export abstract class Calendar {
     }
 
     public getDate(): Date {
-        return new Date(this.selectedDate);
+        return this.selectedDate;
     }
 
     protected dateChanged(apply?: boolean) {
@@ -72,10 +72,12 @@ export function dateLikeToDate(input: DateLike): Date | null {
             result = new Date(input);
             result.setHours(0, 0, 0, 0);
         }
-    } else if (Array.isArray(input)) {
+    } 
+    else if (Array.isArray(input)) {
         result = new Date(input[0], input[1] - 1, input[2]);
         result.setHours(0, 0, 0, 0);
-    } else {
+    } 
+    else {
         if (input instanceof Date) {
             result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
             result.setHours(0, 0, 0, 0);

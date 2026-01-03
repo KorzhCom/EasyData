@@ -21,11 +21,17 @@ export abstract class DateTimePicker {
     constructor(options?: DateTimePickerOptions) {
         this.options = options;
 
+        const defaultDate = this.options.defaultDate 
+            ? dateLikeToDate(this.options.defaultDate) 
+            : new Date();
+
+        this.setDateTime(defaultDate);
+
         this.render();
     }
 
     public setDateTime(dateTime: Date) {
-        this.currentDateTime = new Date(dateTime);
+        this.currentDateTime = dateTime;
 
         if (this.calendar) {
             this.calendar.setDate(this.currentDateTime);
@@ -37,7 +43,7 @@ export abstract class DateTimePicker {
     }
 
     public getDateTime(): Date {
-        return new Date(this.currentDateTime);
+        return this.currentDateTime;
     }
 
     protected render() {
@@ -65,8 +71,10 @@ export abstract class DateTimePicker {
                 }
             });
 
-            if (this.calendar)
+            if (this.calendar) {   
+                this.calendar.setDate(this.currentDateTime);             
                 this.calendar.render();
+            }
         }
 
         if (this.options.showTimePicker) {
@@ -87,12 +95,7 @@ export abstract class DateTimePicker {
                 this.timePicker.render();
         }
 
-        const defaultDate = this.options.defaultDate 
-            ? dateLikeToDate(this.options.defaultDate) 
-            : new Date();
 
-
-        this.setDateTime(defaultDate);
     }
 
     protected createCalendar(options: CalendarOptions): Calendar {
