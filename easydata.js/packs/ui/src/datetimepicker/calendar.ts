@@ -1,18 +1,19 @@
-export type borderDateType = null | string | Date;
+// null or none, today, [string]date, [Date]date
+export type DateLike = null | string | Date;
 
 export interface CalendarOptions {
     yearRange?: string;
     showDateTimeInput?: boolean;
     timePickerIsUsed?: boolean;
     oneClickDateSelection?: boolean;
-    minDate?: null | string | Date; // null or none, today, [string]date, [Date]date
-    maxDate?: null | string | Date;
+    minDate?: DateLike; 
+    maxDate?: DateLike;
     onDateChanged?: (date: Date, apply?: boolean) => void;
     onDrawDay?: (cell: HTMLElement, date: Date) => void;
 }
 
 export abstract class Calendar {
-    protected currentDate: Date;
+    protected selectedDate: Date;
 
     protected slot: HTMLElement;
 
@@ -42,16 +43,49 @@ export abstract class Calendar {
     public abstract render();
 
     public setDate(date: Date) {
-        this.currentDate = new Date(date);
+        this.selectedDate = new Date(date);
     }
 
     public getDate(): Date {
-        return new Date(this.currentDate);
+        return new Date(this.selectedDate);
     }
 
     protected dateChanged(apply?: boolean) {
         if (this.options.onDateChanged) {
-            this.options.onDateChanged(this.currentDate, apply);
+            this.options.onDateChanged(this.selectedDate, apply);
         }
     }
 }
+
+export function dateLikeToDate(input: DateLike): Date | null {
+        let result;
+        
+        if (input == null || input === 'none') {
+            return null;
+        }
+
+        if (typeof input === 'string') {
+            if (input === 'today') {
+                result = new Date();
+                result.setHours(0, 0, 0, 0);
+            } 
+            else {
+                result = new Date(input);
+                result.setHours(0, 0, 0, 0);
+            }            
+        } 
+        else if (Array.isArray(input)) {
+            result = new Date(input[0], input[1] - 1, input[2]);
+            result.setHours(0, 0, 0, 0);            
+        } 
+        else {
+            if (input instanceof Date) {
+                result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+                result.setHours(0, 0, 0, 0);                                
+            } 
+            else {
+                result = null;
+            }
+        }
+        return result;
+    }

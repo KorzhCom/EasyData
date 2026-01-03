@@ -1,7 +1,7 @@
 import { i18n, utils as coreUtils } from '@easydata/core';
 
 import { domel } from '../utils/dom_elem_builder';
-import {borderDateType, Calendar, CalendarOptions} from './calendar';
+import {DateLike, Calendar, CalendarOptions, dateLikeToDate } from './calendar';
 
 
 export class DefaultCalendar extends Calendar {
@@ -35,8 +35,8 @@ export class DefaultCalendar extends Calendar {
     public setDate(date: Date) {
         super.setDate(date);
 
-        this.selectedMonth = this.currentDate.getMonth();
-        this.selectedYear = this.currentDate.getFullYear();
+        this.selectedMonth = this.selectedDate.getMonth();
+        this.selectedYear = this.selectedDate.getFullYear();
 
         this.rerenderMonth();    
     }
@@ -89,8 +89,8 @@ export class DefaultCalendar extends Calendar {
                 try {
                     this.isManualInputChanging = true;
                     const newDate = coreUtils.strToDateTime(this.manualInputElem.value, format);
-                    this.currentDate = newDate;
-                    this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
+                    this.selectedDate = newDate;
+                    this.jump(this.selectedDate.getFullYear(), this.selectedDate.getMonth());
                     this.dateChanged(false);
                 }
                 catch (e) {
@@ -127,13 +127,13 @@ export class DefaultCalendar extends Calendar {
             if (!this.isManualInputChanging) {
                 const format = this.getInputDateFormat();
 
-                this.manualInputElem.value = i18n.dateTimeToStr(this.currentDate, format);
+                this.manualInputElem.value = i18n.dateTimeToStr(this.selectedDate, format);
                 this.manualInputElem.focus();
             }
         }
         else if (this.headerTextElem) {
             const locale = i18n.getCurrentLocale();
-            this.headerTextElem.innerText = this.currentDate.toLocaleString(
+            this.headerTextElem.innerText = this.selectedDate.toLocaleString(
                 locale == 'en' ? undefined : locale,
                 {  
                     year: 'numeric',
@@ -230,40 +230,10 @@ export class DefaultCalendar extends Calendar {
 
         this.rerenderMonth();
     }
-
-    private creatingBorderDate(
-        input: borderDateType
-    ) {
-        let result;
-        
-        if (input == null || input === 'none') {
-            return null;
-        }
-        if (typeof input === 'string') {
-            if (input === 'today') {
-                result = new Date();
-                result.setHours(0, 0, 0, 0);
-            } else {
-                result = new Date(input);
-                result.setHours(0, 0, 0, 0);
-            }            
-        } else if (Array.isArray(input)) {
-            result = new Date(input[0], input[1] - 1, input[2]);
-            result.setHours(0, 0, 0, 0);            
-        } else {
-            if (input instanceof Date) {
-                result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
-                result.setHours(0, 0, 0, 0);                                
-            } else {
-                result = null;
-            }
-        }
-        return result;
-    }
-    
+   
     protected rerenderMonth() {
-        const minDate = this.creatingBorderDate(this.options.minDate);
-        const maxDate = this.creatingBorderDate(this.options.maxDate);
+        const minDate = dateLikeToDate(this.options.minDate);
+        const maxDate = dateLikeToDate(this.options.maxDate);
         
         //header text
         this.updateDisplayedDateValue();
@@ -295,17 +265,17 @@ export class DefaultCalendar extends Calendar {
         // Add all month days
         const today = new Date();
         for (let day = 1; day <= daysInMonth; day++) {
-            let currentDate = new Date(this.selectedYear, this.selectedMonth, day);
-            currentDate.setHours(0, 0, 0, 0); // Align date
+            let date = new Date(this.selectedYear, this.selectedMonth, day);
+            date.setHours(0, 0, 0, 0); // Align date
             
             const builder = domel('div', this.calendarBody)
                 .addClass(`${this.cssPrefix}-day`)
                 .attr('data-date', day.toString())
                 .text(day.toString())
                 .on('click', (e) => {
-                    this.currentDate.setFullYear(this.selectedYear);
-                    this.currentDate.setMonth(this.selectedMonth);
-                    this.currentDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
+                    this.selectedDate.setFullYear(this.selectedYear);
+                    this.selectedDate.setMonth(this.selectedMonth);
+                    this.selectedDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
                     this.dateChanged(this.options.oneClickDateSelection);
                 });
     
@@ -313,18 +283,18 @@ export class DefaultCalendar extends Calendar {
                 builder.addClass(`${this.cssPrefix}-day-current`);
             } 
 
-            if (day === this.currentDate.getDate() && this.selectedYear === this.currentDate.getFullYear() && this.selectedMonth === this.currentDate.getMonth()) {
+            if (day === this.selectedDate.getDate() && this.selectedYear === this.selectedDate.getFullYear() && this.selectedMonth === this.selectedDate.getMonth()) {
                 builder.addClass(`${this.cssPrefix}-day-selected`);
             }
 
             if (minDate) {
-                if (currentDate < minDate) {
+                if (date < minDate) {
                     builder.addClass(`${this.cssPrefix}-day-disabled`);
                 }
             }
             
             if (maxDate) {
-                if (currentDate > maxDate) {
+                if (date > maxDate) {
                     builder.addClass(`${this.cssPrefix}-day-disabled`);
                 }
             }
@@ -345,7 +315,7 @@ export class DefaultCalendar extends Calendar {
             }
         }
 
-        // Add empty cells after last day
+        // Add an empty cells after last day
         const cellsDrawnInLastRow = (firstDay + daysInMonth) % 7;
         const cellsToDraw = cellsDrawnInLastRow == 0 ? 0 : 7 - cellsDrawnInLastRow;
         for (let i = 0; i < cellsToDraw; i++) {

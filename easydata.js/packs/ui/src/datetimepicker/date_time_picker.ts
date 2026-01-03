@@ -1,5 +1,5 @@
 import { DateTimePickerOptions } from './date_time_picker_options'
-import { Calendar, CalendarOptions } from './calendar';
+import { Calendar, CalendarOptions, dateLikeToDate } from './calendar';
 import { TimePicker, TimePickerOptions } from './time_picker';
 
 import { getElementAbsolutePos } from '../utils/ui-utils';
@@ -46,6 +46,8 @@ export abstract class DateTimePicker {
                 yearRange: this.options.yearRange,
                 showDateTimeInput: this.options.showDateTimeInput,
                 timePickerIsUsed: this.options.showTimePicker,
+                minDate: this.options.minDate,
+                maxDate: this.options.maxDate,
                 oneClickDateSelection: this.options.oneClickDateSelection,
                 onDateChanged: (date, apply) => {
                     this.currentDateTime = date;
@@ -85,7 +87,12 @@ export abstract class DateTimePicker {
                 this.timePicker.render();
         }
 
-        this.setDateTime(new Date());
+        const defaultDate = this.options.defaultDate 
+            ? dateLikeToDate(this.options.defaultDate) 
+            : new Date();
+
+
+        this.setDateTime(defaultDate);
     }
 
     protected createCalendar(options: CalendarOptions): Calendar {
