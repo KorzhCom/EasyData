@@ -6,7 +6,7 @@ export interface CalendarOptions {
     showDateTimeInput?: boolean;
     timePickerIsUsed?: boolean;
     oneClickDateSelection?: boolean;
-    minDate?: DateLike; 
+    minDate?: DateLike;
     maxDate?: DateLike;
     onDateChanged?: (date: Date, apply?: boolean) => void;
     onDrawDay?: (cell: HTMLElement, date: Date) => void;
@@ -30,13 +30,13 @@ export abstract class Calendar {
         if (!this.options.yearRange) {
             this.options.yearRange = 'c-10:c+10';
         }
-        
+
         if (!this.options.minDate) {
-            this.options.minDate = "none";            
+            this.options.minDate = "none";
         }
-        
+
         if (!this.options.maxDate) {
-            this.options.maxDate = "none";            
+            this.options.maxDate = "none";
         }
     }
 
@@ -58,34 +58,30 @@ export abstract class Calendar {
 }
 
 export function dateLikeToDate(input: DateLike): Date | null {
-        let result;
-        
-        if (input == null || input === 'none') {
-            return null;
-        }
+    let result: Date | null;
 
-        if (typeof input === 'string') {
-            if (input === 'today') {
-                result = new Date();
-                result.setHours(0, 0, 0, 0);
-            } 
-            else {
-                result = new Date(input);
-                result.setHours(0, 0, 0, 0);
-            }            
-        } 
-        else if (Array.isArray(input)) {
-            result = new Date(input[0], input[1] - 1, input[2]);
-            result.setHours(0, 0, 0, 0);            
-        } 
-        else {
-            if (input instanceof Date) {
-                result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
-                result.setHours(0, 0, 0, 0);                                
-            } 
-            else {
-                result = null;
-            }
-        }
-        return result;
+    if (input == null || input === 'none') {
+        return null;
     }
+
+    if (typeof input === 'string') {
+        if (input === 'today') {
+            result = new Date();
+            result.setHours(0, 0, 0, 0);
+        } else {
+            result = new Date(input);
+            result.setHours(0, 0, 0, 0);
+        }
+    } else if (Array.isArray(input)) {
+        result = new Date(input[0], input[1] - 1, input[2]);
+        result.setHours(0, 0, 0, 0);
+    } else {
+        if (input instanceof Date) {
+            result = new Date(input.getFullYear(), input.getMonth(), input.getDate());
+            result.setHours(0, 0, 0, 0);
+        } else {
+            result = null;
+        }
+    }
+    return result;
+}
