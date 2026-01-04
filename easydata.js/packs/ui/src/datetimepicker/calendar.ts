@@ -13,7 +13,7 @@ export interface CalendarOptions {
 }
 
 export abstract class Calendar {
-    protected selectedDate: Date;
+    private selectedDate: Date;
 
     protected slot: HTMLElement;
 

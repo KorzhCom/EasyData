@@ -35,8 +35,9 @@ export class DefaultCalendar extends Calendar {
     public setDate(date: Date) {
         super.setDate(date);
 
-        this.selectedMonth = this.selectedDate.getMonth();
-        this.selectedYear = this.selectedDate.getFullYear();
+        this.selectedMonth = this.getDate().getMonth();
+        this.selectedYear = this.getDate().getFullYear();
+        this.refresh();
     }
 
     public render() {
@@ -65,7 +66,7 @@ export class DefaultCalendar extends Calendar {
     }
 
     public refresh(): void {
-        this.render();
+        this.rerenderMonth();
     }
 
     private getInputDateFormat() {
@@ -94,8 +95,8 @@ export class DefaultCalendar extends Calendar {
                 try {
                     this.isManualInputChanging = true;
                     const newDate = coreUtils.strToDateTime(this.manualInputElem.value, format);
-                    this.selectedDate = newDate;
-                    this.jump(this.selectedDate.getFullYear(), this.selectedDate.getMonth());
+                    this.setDate(newDate);
+                    this.jump(this.getDate().getFullYear(), this.getDate().getMonth());
                     this.dateChanged(false);
                 }
                 catch (e) {
@@ -132,13 +133,13 @@ export class DefaultCalendar extends Calendar {
             if (!this.isManualInputChanging) {
                 const format = this.getInputDateFormat();
 
-                this.manualInputElem.value = i18n.dateTimeToStr(this.selectedDate, format);
+                this.manualInputElem.value = i18n.dateTimeToStr(this.getDate(), format);
                 this.manualInputElem.focus();
             }
         }
         else if (this.headerTextElem) {
             const locale = i18n.getCurrentLocale();
-            this.headerTextElem.innerText = this.selectedDate.toLocaleString(
+            this.headerTextElem.innerText = this.getDate().toLocaleString(
                 locale == 'en' ? undefined : locale,
                 {  
                     year: 'numeric',
@@ -237,6 +238,7 @@ export class DefaultCalendar extends Calendar {
     }
    
     protected rerenderMonth() {
+        if (this.calendarBody == null) return;
         const minDate = dateLikeToDate(this.options.minDate);
         const maxDate = dateLikeToDate(this.options.maxDate);
         
@@ -248,7 +250,7 @@ export class DefaultCalendar extends Calendar {
         let firstDay = (new Date(this.selectedYear, this.selectedMonth)).getDay();
         let daysInMonth = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
 
-        this.calendarBody.innerHTML = "";
+        this.calendarBody.innerHTML = '';
     
         this.selectYearElem.value = this.selectedYear.toString();
         this.selectMonthElem.value = this.selectedMonth.toString();
@@ -278,10 +280,8 @@ export class DefaultCalendar extends Calendar {
                 .attr('data-date', day.toString())
                 .text(day.toString())
                 .on('click', (e) => {
-                    this.selectedDate.setFullYear(this.selectedYear);
-                    this.selectedDate.setMonth(this.selectedMonth);
-                    this.selectedDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
-                    this.rerenderMonth();
+                    const dateNum = parseInt((e.target as HTMLElement).getAttribute('data-date'));
+                    this.setDate(new Date(this.selectedYear, this.selectedMonth, dateNum));
                     this.dateChanged(this.options.oneClickDateSelection);
                 });
     
@@ -289,7 +289,8 @@ export class DefaultCalendar extends Calendar {
                 builder.addClass(`${this.cssPrefix}-day-current`);
             } 
 
-            if (day === this.selectedDate.getDate() && this.selectedYear === this.selectedDate.getFullYear() && this.selectedMonth === this.selectedDate.getMonth()) {
+            const selectedDate = this.getDate();
+            if (day === selectedDate.getDate() && this.selectedYear === selectedDate.getFullYear() && this.selectedMonth === selectedDate.getMonth()) {
                 builder.addClass(`${this.cssPrefix}-day-selected`);
             }
 
@@ -328,11 +329,5 @@ export class DefaultCalendar extends Calendar {
             domel('div', this.calendarBody)
                 .addClass(`${this.cssPrefix}-day-empty`);
         }
-    }
-
-    protected dateChanged(apply?: boolean) {
-        super.dateChanged(apply);
-        
-        this.rerenderMonth();
     }
 }   
