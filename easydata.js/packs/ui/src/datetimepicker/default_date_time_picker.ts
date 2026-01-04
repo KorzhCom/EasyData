@@ -20,7 +20,6 @@ export class DefaultDateTimePicker extends DateTimePicker {
     private globalMouseDownHandler: (e: MouseEvent) => void;
 
     protected render() {
-
         const sb = domel('div', document.body)
             .addClass(`${this.cssPrefix}`)
             .attr('tabIndex', '0')
@@ -41,11 +40,8 @@ export class DefaultDateTimePicker extends DateTimePicker {
             sb.setStyle('z-index', `${this.options.zIndex}`);
         }
 
-
         this.slot = sb.toDOM();
-
         super.render();
-
         this.renderButtons();
 
         this.globalMouseDownHandler = (e: MouseEvent) => {
@@ -60,7 +56,6 @@ export class DefaultDateTimePicker extends DateTimePicker {
             
             return true;
         };
-    
     }
 
     protected renderButtons() {
@@ -71,6 +66,7 @@ export class DefaultDateTimePicker extends DateTimePicker {
                 .text(i18n.getText('ButtonNow'))
                 .on('click', () => {
                     this.setDateTime(new Date());
+                    this.refresh();
                     this.dateTimeChanged();
                     return false;
                 })
@@ -139,5 +135,4 @@ export class DefaultDateTimePicker extends DateTimePicker {
         }, 1)
        
     }
-
 }

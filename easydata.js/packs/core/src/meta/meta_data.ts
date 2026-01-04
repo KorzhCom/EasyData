@@ -12,7 +12,6 @@ import { ValueEditor } from './value_editor';
  * Represents a data model
  */
 export class MetaData {
-    
     /** The ID of the data mode. */
     public id: string;
 

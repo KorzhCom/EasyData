@@ -1,3 +1,5 @@
+import { DateLike } from "./calendar";
+
 export interface DateTimePickerOptions {
     yearRange?: string;
     showTimePicker?: boolean;
@@ -5,6 +7,9 @@ export interface DateTimePickerOptions {
     oneClickDateSelection?: boolean;
     showDateTimeInput?: boolean;
     zIndex?: number;
+    minDate?: DateLike;
+    maxDate?: DateLike;
+    defaultDate?: DateLike;
     beforeShow?: () => void;
     onApply?: (dateTime: Date) => void;
     onCancel?: () => void;

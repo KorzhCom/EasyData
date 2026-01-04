@@ -1,5 +1,5 @@
 import { DateTimePickerOptions } from './date_time_picker_options'
-import { Calendar, CalendarOptions } from './calendar';
+import { Calendar, CalendarOptions, dateLikeToDate } from './calendar';
 import { TimePicker, TimePickerOptions } from './time_picker';
 
 import { getElementAbsolutePos } from '../utils/ui-utils';
@@ -21,11 +21,17 @@ export abstract class DateTimePicker {
     constructor(options?: DateTimePickerOptions) {
         this.options = options;
 
+        const defaultDate = this.options.defaultDate 
+            ? dateLikeToDate(this.options.defaultDate) 
+            : new Date();
+
+        this.setDateTime(defaultDate);
+
         this.render();
     }
 
     public setDateTime(dateTime: Date) {
-        this.currentDateTime = new Date(dateTime);
+        this.currentDateTime = dateTime;
 
         if (this.calendar) {
             this.calendar.setDate(this.currentDateTime);
@@ -37,7 +43,7 @@ export abstract class DateTimePicker {
     }
 
     public getDateTime(): Date {
-        return new Date(this.currentDateTime);
+        return this.currentDateTime;
     }
 
     protected render() {
@@ -46,6 +52,8 @@ export abstract class DateTimePicker {
                 yearRange: this.options.yearRange,
                 showDateTimeInput: this.options.showDateTimeInput,
                 timePickerIsUsed: this.options.showTimePicker,
+                minDate: this.options.minDate,
+                maxDate: this.options.maxDate,
                 oneClickDateSelection: this.options.oneClickDateSelection,
                 onDateChanged: (date, apply) => {
                     this.currentDateTime = date;
@@ -63,8 +71,10 @@ export abstract class DateTimePicker {
                 }
             });
 
-            if (this.calendar)
+            if (this.calendar) {   
+                this.calendar.setDate(this.currentDateTime);             
                 this.calendar.render();
+            }
         }
 
         if (this.options.showTimePicker) {
@@ -84,8 +94,15 @@ export abstract class DateTimePicker {
             if (this.timePicker)
                 this.timePicker.render();
         }
+    }
 
-        this.setDateTime(new Date());
+    public refresh() {
+        if (this.calendar) {
+            this.calendar.refresh();
+        }
+        if (this.timePicker) {
+            this.timePicker.refresh();
+        }
     }
 
     protected createCalendar(options: CalendarOptions): Calendar {
@@ -123,9 +140,7 @@ export abstract class DateTimePicker {
     }
 
     protected destroy() {
-        if (this.slot && this.slot.parentElement) {
-            this.slot.parentElement.removeChild(this.slot);
-        }
+        this.slot.innerHTML = '';
     }
 
     protected dateTimeChanged() {
