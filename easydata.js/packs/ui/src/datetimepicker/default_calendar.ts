@@ -281,8 +281,13 @@ export class DefaultCalendar extends Calendar {
                 .text(day.toString())
                 .on('click', (e) => {
                     const dateNum = parseInt((e.target as HTMLElement).getAttribute('data-date'));
-                    this.setDate(new Date(this.selectedYear, this.selectedMonth, dateNum));
-                    this.dateChanged(this.options.oneClickDateSelection);
+                    const newDate = new Date(this.selectedYear, this.selectedMonth, dateNum);
+                    if ((minDate == null || newDate >= minDate) 
+                        && (maxDate == null || newDate <= maxDate))
+                    {  
+                        this.setDate(newDate);
+                        this.dateChanged(this.options.oneClickDateSelection);
+                    }
                 });
     
             if (day === today.getDate() && this.selectedYear === today.getFullYear() && this.selectedMonth === today.getMonth()) {
