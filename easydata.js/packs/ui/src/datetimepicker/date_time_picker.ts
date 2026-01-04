@@ -94,8 +94,15 @@ export abstract class DateTimePicker {
             if (this.timePicker)
                 this.timePicker.render();
         }
+    }
 
-
+    public refresh() {
+        if (this.calendar) {
+            this.calendar.refresh();
+        }
+        if (this.timePicker) {
+            this.timePicker.refresh();
+        }
     }
 
     protected createCalendar(options: CalendarOptions): Calendar {
@@ -133,9 +140,7 @@ export abstract class DateTimePicker {
     }
 
     protected destroy() {
-        if (this.slot && this.slot.parentElement) {
-            this.slot.parentElement.removeChild(this.slot);
-        }
+        this.slot.innerHTML = '';
     }
 
     protected dateTimeChanged() {

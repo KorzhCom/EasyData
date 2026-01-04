@@ -42,6 +42,8 @@ export abstract class Calendar {
 
     public abstract render();
 
+    public abstract refresh();
+
     public setDate(date: Date) {
         this.selectedDate = new Date(date);
     }

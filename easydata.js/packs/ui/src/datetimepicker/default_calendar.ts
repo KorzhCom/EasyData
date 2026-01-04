@@ -40,17 +40,19 @@ export class DefaultCalendar extends Calendar {
     }
 
     public render() {
+        this.slot.innerHTML = '';    
+
         const header = domel('div', this.slot)
             .addClass(`${this.cssPrefix}-header`);
 
-            if (this.options.showDateTimeInput) {
-                header
-                    .addChildElement(this.renderManualDateInput());
-            }
-            else {
-                header
-                    .addChild('span', builder => this.headerTextElem = builder.toDOM());
-            }
+        if (this.options.showDateTimeInput) {
+            header
+                .addChildElement(this.renderManualDateInput());
+        }
+        else {
+            header
+                .addChild('span', builder => this.headerTextElem = builder.toDOM());
+        }
 
         domel(this.slot)
             .addChildElement(this.renderCalendarButtons());
@@ -60,6 +62,10 @@ export class DefaultCalendar extends Calendar {
             .toDOM();
 
         this.rerenderMonth();
+    }
+
+    public refresh(): void {
+        this.render();
     }
 
     private getInputDateFormat() {

@@ -21,6 +21,7 @@ export class DefaultTimePicker extends TimePicker {
     }
 
     public render() {
+        this.slot.innerHTML = '';
         domel('div', this.slot)
             .addClass(`${this.cssPrefix}-time`)
             .addChild('span', builder => this.timeText = builder.toDOM())
