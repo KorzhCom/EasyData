@@ -95,6 +95,13 @@ export class DefaultCalendar extends Calendar {
                 try {
                     this.isManualInputChanging = true;
                     const newDate = coreUtils.strToDateTime(this.manualInputElem.value, format);
+    
+                    const minDate = dateLikeToDate(this.options.minDate);
+                    const maxDate = dateLikeToDate(this.options.maxDate);
+                    if (newDate < minDate || newDate > maxDate) { 
+                        throw new Error()
+                    }
+
                     this.setDate(newDate);
                     this.jump(this.getDate().getFullYear(), this.getDate().getMonth());
                     this.dateChanged(false);
