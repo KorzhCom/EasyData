@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 import noEmit from 'rollup-plugin-no-emit'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import buble from '@rollup/plugin-buble'
 import cleanup from 'rollup-plugin-cleanup'
 

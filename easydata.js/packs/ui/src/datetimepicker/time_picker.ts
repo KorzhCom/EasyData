@@ -3,7 +3,6 @@ export interface TimePickerOptions {
 }
 
 export abstract class TimePicker {
-
     protected currentTime: Date;
     protected options: TimePickerOptions;
     protected slot: HTMLElement;
@@ -26,6 +25,10 @@ export abstract class TimePicker {
     }
 
     public abstract render();
+
+    public refresh() {
+        this.render();
+    }
 
     protected timeChanged() {
         if (this.options.onTimeChanged) {

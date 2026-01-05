@@ -1,7 +1,7 @@
 import { i18n, utils as coreUtils } from '@easydata/core';
 
 import { domel } from '../utils/dom_elem_builder';
-import { Calendar, CalendarOptions } from './calendar';
+import {DateLike, Calendar, CalendarOptions, dateLikeToDate } from './calendar';
 
 
 export class DefaultCalendar extends Calendar {
@@ -35,24 +35,25 @@ export class DefaultCalendar extends Calendar {
     public setDate(date: Date) {
         super.setDate(date);
 
-        this.selectedMonth = this.currentDate.getMonth();
-        this.selectedYear = this.currentDate.getFullYear();
-
-        this.rerenderMonth();    
+        this.selectedMonth = this.getDate().getMonth();
+        this.selectedYear = this.getDate().getFullYear();
+        this.refresh();
     }
 
     public render() {
+        this.slot.innerHTML = '';    
+
         const header = domel('div', this.slot)
             .addClass(`${this.cssPrefix}-header`);
 
-            if (this.options.showDateTimeInput) {
-                header
-                    .addChildElement(this.renderManualDateInput());
-            }
-            else {
-                header
-                    .addChild('span', builder => this.headerTextElem = builder.toDOM());
-            }
+        if (this.options.showDateTimeInput) {
+            header
+                .addChildElement(this.renderManualDateInput());
+        }
+        else {
+            header
+                .addChild('span', builder => this.headerTextElem = builder.toDOM());
+        }
 
         domel(this.slot)
             .addChildElement(this.renderCalendarButtons());
@@ -61,6 +62,11 @@ export class DefaultCalendar extends Calendar {
             .addClass(`${this.cssPrefix}-body`)
             .toDOM();
 
+        this.rerenderMonth();
+    }
+
+    public refresh(): void {
+        this.rerenderMonth();
     }
 
     private getInputDateFormat() {
@@ -89,8 +95,15 @@ export class DefaultCalendar extends Calendar {
                 try {
                     this.isManualInputChanging = true;
                     const newDate = coreUtils.strToDateTime(this.manualInputElem.value, format);
-                    this.currentDate = newDate;
-                    this.jump(this.currentDate.getFullYear(), this.currentDate.getMonth());
+    
+                    const minDate = dateLikeToDate(this.options.minDate);
+                    const maxDate = dateLikeToDate(this.options.maxDate);
+                    if (newDate < minDate || newDate > maxDate) { 
+                        throw new Error()
+                    }
+
+                    this.setDate(newDate);
+                    this.jump(this.getDate().getFullYear(), this.getDate().getMonth());
                     this.dateChanged(false);
                 }
                 catch (e) {
@@ -127,13 +140,13 @@ export class DefaultCalendar extends Calendar {
             if (!this.isManualInputChanging) {
                 const format = this.getInputDateFormat();
 
-                this.manualInputElem.value = i18n.dateTimeToStr(this.currentDate, format);
+                this.manualInputElem.value = i18n.dateTimeToStr(this.getDate(), format);
                 this.manualInputElem.focus();
             }
         }
         else if (this.headerTextElem) {
             const locale = i18n.getCurrentLocale();
-            this.headerTextElem.innerText = this.currentDate.toLocaleString(
+            this.headerTextElem.innerText = this.getDate().toLocaleString(
                 locale == 'en' ? undefined : locale,
                 {  
                     year: 'numeric',
@@ -230,8 +243,12 @@ export class DefaultCalendar extends Calendar {
 
         this.rerenderMonth();
     }
-
+   
     protected rerenderMonth() {
+        if (this.calendarBody == null) return;
+        const minDate = dateLikeToDate(this.options.minDate);
+        const maxDate = dateLikeToDate(this.options.maxDate);
+        
         //header text
         this.updateDisplayedDateValue();
 
@@ -240,7 +257,7 @@ export class DefaultCalendar extends Calendar {
         let firstDay = (new Date(this.selectedYear, this.selectedMonth)).getDay();
         let daysInMonth = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
 
-        this.calendarBody.innerHTML = "";
+        this.calendarBody.innerHTML = '';
     
         this.selectYearElem.value = this.selectedYear.toString();
         this.selectMonthElem.value = this.selectedMonth.toString();
@@ -262,25 +279,45 @@ export class DefaultCalendar extends Calendar {
         // Add all month days
         const today = new Date();
         for (let day = 1; day <= daysInMonth; day++) {
+            let date = new Date(this.selectedYear, this.selectedMonth, day);
+            date.setHours(0, 0, 0, 0); // Align date
+            
             const builder = domel('div', this.calendarBody)
                 .addClass(`${this.cssPrefix}-day`)
                 .attr('data-date', day.toString())
                 .text(day.toString())
                 .on('click', (e) => {
-                    this.currentDate.setFullYear(this.selectedYear);
-                    this.currentDate.setMonth(this.selectedMonth);
-                    this.currentDate.setDate(parseInt((e.target as HTMLElement).getAttribute('data-date')));
-                    this.dateChanged(this.options.oneClickDateSelection);
+                    const dateNum = parseInt((e.target as HTMLElement).getAttribute('data-date'));
+                    const newDate = new Date(this.selectedYear, this.selectedMonth, dateNum);
+                    if ((minDate == null || newDate >= minDate) 
+                        && (maxDate == null || newDate <= maxDate))
+                    {  
+                        this.setDate(newDate);
+                        this.dateChanged(this.options.oneClickDateSelection);
+                    }
                 });
     
             if (day === today.getDate() && this.selectedYear === today.getFullYear() && this.selectedMonth === today.getMonth()) {
                 builder.addClass(`${this.cssPrefix}-day-current`);
             } 
 
-            if (day === this.currentDate.getDate() && this.selectedYear === this.currentDate.getFullYear() && this.selectedMonth === this.currentDate.getMonth()) {
+            const selectedDate = this.getDate();
+            if (day === selectedDate.getDate() && this.selectedYear === selectedDate.getFullYear() && this.selectedMonth === selectedDate.getMonth()) {
                 builder.addClass(`${this.cssPrefix}-day-selected`);
             }
 
+            if (minDate) {
+                if (date < minDate) {
+                    builder.addClass(`${this.cssPrefix}-day-disabled`);
+                }
+            }
+            
+            if (maxDate) {
+                if (date > maxDate) {
+                    builder.addClass(`${this.cssPrefix}-day-disabled`);
+                }
+            }
+            
             const dayOfWeek = (firstDay + day - 1) % 7;
             if (dayOfWeek == 0 || dayOfWeek == 6) {
                 builder.addClass(`${this.cssPrefix}-weekend`);
@@ -297,18 +334,12 @@ export class DefaultCalendar extends Calendar {
             }
         }
 
-        // Add empty cells after last day
+        // Add an empty cells after last day
         const cellsDrawnInLastRow = (firstDay + daysInMonth) % 7;
         const cellsToDraw = cellsDrawnInLastRow == 0 ? 0 : 7 - cellsDrawnInLastRow;
         for (let i = 0; i < cellsToDraw; i++) {
             domel('div', this.calendarBody)
                 .addClass(`${this.cssPrefix}-day-empty`);
         }
-    }
-
-    protected dateChanged(apply?: boolean) {
-        super.dateChanged(apply);
-        
-        this.rerenderMonth();
     }
 }   

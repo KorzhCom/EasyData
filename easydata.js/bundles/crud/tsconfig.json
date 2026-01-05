@@ -15,7 +15,7 @@
 		"typeRoots": ["node_modules/@types"],
 		"lib": ["es5", "dom"],
 		"baseUrl": ".",
-		"outDir": "./dist/types",
+		"outDir": "./dist",
 		"noEmitOnError": true
 	  },
 	"include": [

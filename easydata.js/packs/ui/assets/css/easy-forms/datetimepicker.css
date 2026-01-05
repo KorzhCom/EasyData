@@ -527,3 +527,8 @@
 .kdtp-tp-time-row input[type=range]::-ms-fill-upper {
     background:0 0
 }
+
+.kdtp-cal-day-disabled {
+    opacity: 0.5!important;
+    pointer-events: none!important;
+}
