@@ -1,6 +1,6 @@
 {
     "name": "@easydata/crud",
-    "version": "1.5.9-rc01",
+    "version": "1.5.10",
     "description": "EasyData.JS UI widgets and views for CRUD manipulations",
     "types": "./dist/types/public_api.d.ts",
     "main": "./dist/easydata.crud.cjs.js",
