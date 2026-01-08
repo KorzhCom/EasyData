@@ -66,7 +66,6 @@ export class DefaultDateTimePicker extends DateTimePicker {
                 .text(i18n.getText('ButtonNow'))
                 .on('click', () => {
                     this.setDateTime(new Date());
-                    this.refresh();
                     this.dateTimeChanged();
                     return false;
                 })
