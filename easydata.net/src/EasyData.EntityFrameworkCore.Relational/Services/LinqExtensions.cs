@@ -95,7 +95,8 @@ namespace EasyData.Services
                 if (options == null || options.Filter == null || options.Filter.Invoke(prop)) {
                     var paramExp = Exp.Property(expr, prop);
 
-                    if (prop.PropertyType.IsNumeric() || prop.PropertyType == typeof(string)) {
+                    if ((prop.PropertyType.IsNumeric() && texts.Any(t => decimal.TryParse(t, out _)))
+                        || prop.PropertyType == typeof(string)) {
                         Exp notNullExp = null;
                         Exp toStringExp = paramExp;
 
