@@ -345,7 +345,8 @@
     margin-left: 5px;
 }
 
-.keg-header-cell-sortable .keg-header-cell-label {
+.keg-header-cell-sortable .keg-header-cell-label,
+.keg-header-cell-sortable .keg-sort-indicator {
     cursor: pointer;
 }
 

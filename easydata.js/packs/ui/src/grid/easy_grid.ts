@@ -522,9 +522,11 @@ export class EasyGrid implements EasyGridBase {
         }
 
         if (this.options.sortable && !column.isRowNum) {
+            // The grid only reflects and announces sort state; the consumer owns it
+            // (e.g. sets column.sortDirection via the onSyncGridColumn option each render).
             domel(colDiv).addClass(`${this.cssPrefix}-header-cell-sortable`);
 
-            if (column.sortDirection && column.sortDirection !== 'none') {
+            if (column.sortDirection !== 'none') {
                 domel('div', colDiv)
                     .addClass(`${this.cssPrefix}-sort-indicator`)
                     .addClass(`${this.cssPrefix}-sort-${column.sortDirection}`);
@@ -538,7 +540,6 @@ export class EasyGrid implements EasyGridBase {
                 this.fireEvent({
                     type: 'columnSort',
                     columnId: column.dataColumn ? column.dataColumn.id : '',
-                    dataColumn: column.dataColumn,
                     direction: nextSortDirection(column.sortDirection || 'none'),
                     sourceEvent: ev
                 } as ColumnSortEvent);
