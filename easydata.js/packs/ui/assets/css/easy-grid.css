@@ -344,3 +344,21 @@
     height: 20px;
     margin-left: 5px;
 }
+
+.keg-header-cell-sortable .keg-header-cell-label {
+    cursor: pointer;
+}
+
+.keg-sort-indicator {
+    margin-left: 4px;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.keg-sort-indicator.keg-sort-asc::after {
+    content: "\25B2";
+}
+
+.keg-sort-indicator.keg-sort-desc::after {
+    content: "\25BC";
+}

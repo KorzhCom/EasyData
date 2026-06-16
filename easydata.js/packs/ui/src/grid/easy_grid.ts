@@ -18,10 +18,11 @@ import {
     ColumnChangedEvent,
     ColumnDeletedEvent,
     ActiveRowChangedEvent,
-    ColumnResizedEvent
+    ColumnResizedEvent,
+    ColumnSortEvent
 } from './easy_grid_events';
 
-import { computeColumnWidth } from './easy_grid_column_utils';
+import { computeColumnWidth, nextSortDirection } from './easy_grid_column_utils';
 
 import { EasyGridBase } from './easy_grid_types';
 import { GridColumnList, GridColumn, GridColumnAlign } from './easy_grid_columns';
@@ -255,6 +256,9 @@ export class EasyGrid implements EasyGridBase {
         }
         if (options.onColumnResize) {
             this.addEventListener('columnResized', options.onColumnResize);
+        }
+        if (options.onColumnSort) {
+            this.addEventListener('columnSort', options.onColumnSort);
         }
 
         this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
@@ -515,6 +519,30 @@ export class EasyGrid implements EasyGridBase {
             domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
+        }
+
+        if (this.options.sortable && !column.isRowNum) {
+            domel(colDiv).addClass(`${this.cssPrefix}-header-cell-sortable`);
+
+            if (column.sortDirection && column.sortDirection !== 'none') {
+                domel('div', colDiv)
+                    .addClass(`${this.cssPrefix}-sort-indicator`)
+                    .addClass(`${this.cssPrefix}-sort-${column.sortDirection}`);
+            }
+
+            colDiv.addEventListener('click', (ev: MouseEvent) => {
+                // ignore clicks that land on the resize handle
+                if ((ev.target as HTMLElement).closest(`.${this.cssPrefix}-header-cell-resize`)) {
+                    return;
+                }
+                this.fireEvent({
+                    type: 'columnSort',
+                    columnId: column.dataColumn ? column.dataColumn.id : '',
+                    dataColumn: column.dataColumn,
+                    direction: nextSortDirection(column.sortDirection || 'none'),
+                    sourceEvent: ev
+                } as ColumnSortEvent);
+            });
         }
 
         if (column.description) {
@@ -1274,6 +1302,7 @@ export class EasyGrid implements EasyGridBase {
     public addEventListener(eventType: 'columnDeleted', handler: (ev: ColumnDeletedEvent) => void): string;
     public addEventListener(eventType: 'activeRowChanged', handler: (ev: ActiveRowChangedEvent) => void): string;
     public addEventListener(eventType: 'columnResized', handler: (ev: ColumnResizedEvent) => void): string;
+    public addEventListener(eventType: 'columnSort', handler: (ev: ColumnSortEvent) => void): string;
     public addEventListener(eventType: GridEventType | string, handler: (data: any) => void): string {
         return this.eventEmitter.subscribe(eventType, event => handler(event.data));
     }
