@@ -90,6 +90,7 @@
     width: 8px;
     top: 0;
     right: -4px;
+    cursor: col-resize;
 }
 
 .keg-header-cell-resize:after {
