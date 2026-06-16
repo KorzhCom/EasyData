@@ -8,6 +8,8 @@ import { EasyGridBase } from './easy_grid_types';
 //import { CellRendererType } from "./easy_grid_cell_renderer";
 //import { GridCellRenderer } from './easy_grid_cell_renderer';
 
+import { GridColumnSortDirection } from './easy_grid_column_utils';
+
 const DEFAULT_WIDTH_STRING = 250;
 const ROW_NUM_WIDTH = 60;
 
@@ -47,6 +49,12 @@ export class GridColumn {
 
 
     public calculatedWidth: number;
+
+    /** Current sort state shown in the header (set by the consumer). */
+    public sortDirection: GridColumnSortDirection = 'none';
+
+    /** True when the user manually resized this column (excluded from auto-fit). */
+    public manualWidth: boolean = false;
 
     constructor(column: DataColumn, grid: EasyGridBase, isRowNum: boolean = false) {
         this.dataColumn = column;
