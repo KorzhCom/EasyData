@@ -366,6 +366,8 @@ export class EasyGrid implements EasyGridBase {
 
         this.columns.sync(this.dataTable.columns, this.options.useRowNumeration);
 
+        this.restoreManualColumnWidths();
+
         this.renderHeader();
         this.rootDiv.appendChild(this.headerDiv);
 
@@ -501,12 +503,12 @@ export class EasyGrid implements EasyGridBase {
 
         let colDiv = colBuilder.toDOM(); 
 
-        const resizeHandle = domel('div', colDiv)
-            .addClass(`${this.cssPrefix}-header-cell-resize`)
-            .toDOM();
+        const resizeBuilder = domel('div', colDiv)
+            .addClass(`${this.cssPrefix}-header-cell-resize`);
 
-        if (this.options.allowColumnResize) {
-            this.attachColumnResize(resizeHandle, column, index);
+        if (this.options.allowColumnResize && !column.isRowNum) {
+            resizeBuilder.addClass(`${this.cssPrefix}-header-cell-resize-active`);
+            this.attachColumnResize(resizeBuilder.toDOM(), column, index);
         }
 
         if (!column.isRowNum) {
@@ -1416,6 +1418,20 @@ export class EasyGrid implements EasyGridBase {
         this.bodyViewportDiv.focus();
     }
 
+    private manualColumnWidths = new Map<string, number>();
+    private activeResizeCleanup: (() => void) | null = null;
+
+    /** Re-applies user-set column widths after the grid re-renders (paging, re-sort). */
+    private restoreManualColumnWidths() {
+        if (this.manualColumnWidths.size === 0) return;
+        this.columns.getItems().forEach(col => {
+            if (col.dataColumn && this.manualColumnWidths.has(col.dataColumn.id)) {
+                col.width = this.manualColumnWidths.get(col.dataColumn.id);
+                col.manualWidth = true;
+            }
+        });
+    }
+
     private getColumnMinWidth(column: GridColumn): number {
         const widths = this.options.columnWidths || {};
         if (column.isRowNum) {
@@ -1434,7 +1450,7 @@ export class EasyGrid implements EasyGridBase {
         return widths[type] && widths[type].max;
     }
 
-    private applyColumnWidth(column: GridColumn, colIndex: number, newWidth: number) {
+    private applyColumnWidth(column: GridColumn, colIndex: number, newWidth: number, containerWidth?: number) {
         column.width = newWidth;
 
         const headerCell = this.headerCellContainerDiv
@@ -1445,9 +1461,9 @@ export class EasyGrid implements EasyGridBase {
             .querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${colIndex}"]`);
         cells.forEach(cell => { (cell as HTMLElement).style.width = `${newWidth}px`; });
 
-        const containerWidth = this.getContainerWidth();
-        this.headerCellContainerDiv.style.width = `${containerWidth}px`;
-        this.bodyCellContainerDiv.style.width = `${containerWidth}px`;
+        const totalWidth = typeof containerWidth === 'number' ? containerWidth : this.getContainerWidth();
+        this.headerCellContainerDiv.style.width = `${totalWidth}px`;
+        this.bodyCellContainerDiv.style.width = `${totalWidth}px`;
     }
 
     private attachColumnResize(handle: HTMLElement, column: GridColumn, colIndex: number) {
@@ -1455,25 +1471,47 @@ export class EasyGrid implements EasyGridBase {
             ev.preventDefault();
             ev.stopPropagation();
 
+            // Clean up any drag that never received its mouseup (e.g. released outside the window).
+            if (this.activeResizeCleanup) {
+                this.activeResizeCleanup();
+            }
+
             const startX = ev.clientX;
             const startWidth = column.width;
             const minWidth = this.getColumnMinWidth(column);
             const maxWidth = this.getColumnMaxWidth(column);
+            const otherColumnsWidth = this.getContainerWidth() - startWidth;
+            let moved = false;
 
             const onMove = (me: MouseEvent) => {
+                moved = true;
                 const newWidth = computeColumnWidth(startWidth, me.clientX - startX, minWidth, maxWidth);
-                this.applyColumnWidth(column, colIndex, newWidth);
+                this.applyColumnWidth(column, colIndex, newWidth, otherColumnsWidth + newWidth);
             };
 
             const onUp = () => {
                 document.removeEventListener('mousemove', onMove);
                 document.removeEventListener('mouseup', onUp);
+                this.activeResizeCleanup = null;
+
+                // A bare click (no drag) must not pin the column or emit an event.
+                if (!moved) return;
+
                 column.manualWidth = true;
+                if (column.dataColumn) {
+                    this.manualColumnWidths.set(column.dataColumn.id, column.width);
+                }
                 this.fireEvent({
                     type: 'columnResized',
                     columnId: column.dataColumn ? column.dataColumn.id : '',
                     width: column.width
                 } as ColumnResizedEvent);
+            };
+
+            this.activeResizeCleanup = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                this.activeResizeCleanup = null;
             };
 
             document.addEventListener('mousemove', onMove);
