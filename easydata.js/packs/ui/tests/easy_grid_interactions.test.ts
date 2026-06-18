@@ -126,4 +126,31 @@ describe("EasyGrid resize interactions", () => {
         expect(resized).toBe(null);
         expect(column.manualWidth).toBe(false);
     });
+
+    it("does not trigger a sort from the click synthesized after a resize drag", () => {
+        let sorted: any = null, resized: any = null;
+        const slot = makeSlot();
+        const grid = new EasyGrid({
+            slot,
+            dataTable: createTable(),
+            sortable: true,
+            allowColumnResize: true,
+            useRowNumeration: false,
+            paging: { enabled: false },
+            onColumnSort: (ev) => { sorted = ev; },
+            onColumnResize: (ev) => { resized = ev; }
+        });
+
+        const header = slot.querySelector(".keg-header-cell-sortable") as HTMLElement;
+        const handle = header.querySelector(".keg-header-cell-resize-active") as HTMLElement;
+
+        handle.dispatchEvent(new MouseEvent("mousedown", { clientX: 100, bubbles: true }));
+        document.dispatchEvent(new MouseEvent("mousemove", { clientX: 140 }));
+        document.dispatchEvent(new MouseEvent("mouseup", {}));
+        // the browser synthesizes a click on the header right after the drag
+        header.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(resized !== null).toBe(true);
+        expect(sorted).toBe(null);
+    });
 });

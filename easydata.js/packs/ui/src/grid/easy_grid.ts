@@ -533,6 +533,11 @@ export class EasyGrid implements EasyGridBase {
             }
 
             colDiv.addEventListener('click', (ev: MouseEvent) => {
+                // ignore the click synthesized right after a resize drag
+                if (this.suppressHeaderClick) {
+                    this.suppressHeaderClick = false;
+                    return;
+                }
                 // ignore clicks that land on the resize handle
                 if ((ev.target as HTMLElement).closest(`.${this.cssPrefix}-header-cell-resize`)) {
                     return;
@@ -1450,6 +1455,7 @@ export class EasyGrid implements EasyGridBase {
 
     private manualColumnWidths = new Map<string, number>();
     private activeResizeCleanup: (() => void) | null = null;
+    private suppressHeaderClick = false;
 
     /** Re-applies user-set column widths after the grid re-renders (paging, re-sort). */
     private restoreManualColumnWidths() {
@@ -1526,6 +1532,11 @@ export class EasyGrid implements EasyGridBase {
 
                 // A bare click (no drag) must not pin the column or emit an event.
                 if (!moved) return;
+
+                // Suppress the click the browser synthesizes right after a drag, so that
+                // finishing a resize (even past the min-width point) never triggers a sort.
+                this.suppressHeaderClick = true;
+                setTimeout(() => { this.suppressHeaderClick = false; }, 0);
 
                 column.manualWidth = true;
                 if (column.dataColumn) {
@@ -1650,6 +1661,11 @@ export class EasyGrid implements EasyGridBase {
                     }
                 }
                 else {
+                    // No data cells (e.g. an empty result set): keep column.width in sync
+                    // with the natural header width, so a later manual resize starts from
+                    // the actually-rendered size instead of snapping to the default width.
+                    column.width = maxWidth;
+                    (headerCells[headerIdx] as HTMLDivElement).style.width = `${maxWidth}px`;
                     sumWidth += maxWidth;
                 }
             }
