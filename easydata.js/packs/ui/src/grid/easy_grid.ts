@@ -344,7 +344,21 @@ export class EasyGrid implements EasyGridBase {
     }
 
     protected clearDOM() {
+        // Preserve the horizontal scroll position across re-renders (sort, paging, etc.).
+        if (this.bodyViewportDiv && this.bodyViewportDiv.isConnected) {
+            this.savedScrollLeft = this.bodyViewportDiv.scrollLeft;
+        }
         this.slot.innerHTML = '';
+    }
+
+    /** Restores the horizontal scroll kept across a re-render so the grid doesn't jump. */
+    private restoreScroll() {
+        if (this.savedScrollLeft && this.bodyViewportDiv) {
+            this.bodyViewportDiv.scrollLeft = this.savedScrollLeft;
+            if (this.headerViewportDiv) {
+                this.headerViewportDiv.style.marginLeft = `-${this.bodyViewportDiv.scrollLeft}px`;
+            }
+        }
     }
 
     /** Clears all DOM object in the grid and return it to its initial state */
@@ -356,6 +370,8 @@ export class EasyGrid implements EasyGridBase {
     private containerInitialHeight: number = 0;
 
     private firstRender = true;
+
+    private savedScrollLeft = 0;
 
     /** Renders the grid */
     protected render() {
@@ -395,6 +411,7 @@ export class EasyGrid implements EasyGridBase {
                 .then(() =>  {
                     this.firstRender = false;
                     this.rowsOnPagePromise = null
+                    this.restoreScroll();
                 });
         }
         else {
@@ -405,8 +422,9 @@ export class EasyGrid implements EasyGridBase {
                     if (needAutoResize) {
                         this.resizeColumns();
                     }
+                    this.restoreScroll();
                 });
-            }, 100);    
+            }, 100);
         }
     }
 
