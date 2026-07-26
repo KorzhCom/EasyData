@@ -1,5 +1,7 @@
 import { DataRow } from "@easydata/core";
 
+import { GridColumnSortDirection } from './easy_grid_column_utils';
+
 export type GridEventType = 
     'init'              |
     'rowClick'          |
@@ -8,7 +10,9 @@ export type GridEventType =
     'addColumnClick'    |
     'columnChanged'     |
     'columnDeleted'     |
-    'columnMoved';
+    'columnMoved'   |
+    'columnSort'    |
+    'columnResized';
 
 export interface GridEvent {
     type: GridEventType | string; 
@@ -52,4 +56,17 @@ export interface ActiveRowChangedEvent extends GridEvent {
     oldValue: number;
     newValue: number;
     rowIndex: number;
+}
+
+export interface ColumnSortEvent extends GridEvent {
+    type: 'columnSort';
+    columnId: string;
+    direction: GridColumnSortDirection;   // the requested new direction
+    sourceEvent: MouseEvent;
+}
+
+export interface ColumnResizedEvent extends GridEvent {
+    type: 'columnResized';
+    columnId: string;
+    width: number;
 }
