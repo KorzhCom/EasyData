@@ -351,9 +351,15 @@
 }
 
 .keg-sort-indicator {
+    /* a fixed-size box that is always present on sortable headers: the arrow
+       appearing/disappearing must not change the header's natural width,
+       which the column auto-fit uses as its lower bound */
+    flex: 0 0 12px;
+    width: 12px;
     margin-left: 4px;
     font-size: 10px;
     line-height: 1;
+    text-align: center;
 }
 
 .keg-sort-indicator.keg-sort-asc::after {

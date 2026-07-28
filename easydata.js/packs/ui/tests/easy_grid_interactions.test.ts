@@ -5,6 +5,7 @@ import { EasyDataTable, DataType } from "@easydata/core";
 
 import { EasyGrid } from "../src/grid/easy_grid";
 import { GridColumn } from "../src/grid/easy_grid_columns";
+import { AutoResizeColumns } from "../src/grid/easy_grid_options";
 
 function createTable(): EasyDataTable {
     const table = new EasyDataTable({ inMemory: true });
@@ -72,6 +73,75 @@ describe("EasyGrid sort interactions", () => {
         });
 
         expect(grid['slot'].querySelector(".keg-header-cell-sortable")).toBe(null);
+    });
+});
+
+describe("EasyGrid column width stability", () => {
+    it("always renders the sort indicator box on sortable headers (even when unsorted)", () => {
+        const grid = new EasyGrid({
+            slot: makeSlot(),
+            dataTable: createTable(),
+            sortable: true,
+            useRowNumeration: false,
+            paging: { enabled: false }
+        });
+
+        const headers = grid['slot'].querySelectorAll(".keg-header-cell-sortable");
+        expect(headers.length > 0).toBe(true);
+        headers.forEach(header => {
+            const indicator = header.querySelector(".keg-sort-indicator");
+            expect(indicator !== null).toBe(true);
+            // no direction class while the column is unsorted
+            expect(indicator.classList.contains("keg-sort-asc")).toBe(false);
+            expect(indicator.classList.contains("keg-sort-desc")).toBe(false);
+        });
+    });
+
+    it("does not render indicator boxes when the grid is not sortable", () => {
+        const grid = new EasyGrid({
+            slot: makeSlot(),
+            dataTable: createTable(),
+            sortable: false,
+            useRowNumeration: false,
+            paging: { enabled: false }
+        });
+
+        expect(grid['slot'].querySelector(".keg-sort-indicator")).toBe(null);
+    });
+
+    it("carries auto-computed widths over a data refetch in autoResize Once mode", () => {
+        const grid = new EasyGrid({
+            slot: makeSlot(),
+            dataTable: createTable(),
+            useRowNumeration: false,
+            paging: { enabled: false },
+            columnWidths: { autoResize: AutoResizeColumns.Once }
+        });
+
+        // as if the first render had measured the column
+        grid['calculatedColumnWidths'].set("name", 123);
+
+        // a refetch brings a fresh table with fresh DataColumn instances
+        const newTable = createTable();
+        grid.setData(newTable);
+
+        expect(newTable.columns.get(0).calculatedWidth).toBe(123);
+    });
+
+    it("does not restore calculated widths in autoResize Always mode", () => {
+        const grid = new EasyGrid({
+            slot: makeSlot(),
+            dataTable: createTable(),
+            useRowNumeration: false,
+            paging: { enabled: false }
+        });
+
+        grid['calculatedColumnWidths'].set("name", 123);
+
+        const newTable = createTable();
+        grid.setData(newTable);
+
+        expect(newTable.columns.get(0).calculatedWidth).toBe(0);
     });
 });
 
