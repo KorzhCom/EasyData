@@ -110,6 +110,12 @@
 
 .keg-header-cell-label {
     width: 100%;
+    /* the label is a flex item: without min-width it refuses to shrink below
+       its longest word and bleeds into the neighboring header cell when the
+       column is resized down to its minimum */
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-align: center;
     word-break: keep-all;
     -ms-word-wrap: keep-all;
