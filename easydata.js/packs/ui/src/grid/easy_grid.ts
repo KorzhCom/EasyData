@@ -387,6 +387,7 @@ export class EasyGrid implements EasyGridBase {
         this.columns.sync(this.dataTable.columns, this.options.useRowNumeration);
 
         this.restoreManualColumnWidths();
+        this.restoreCalculatedColumnWidths();
 
         this.renderHeader();
         this.rootDiv.appendChild(this.headerDiv);
@@ -544,10 +545,13 @@ export class EasyGrid implements EasyGridBase {
             // (e.g. sets column.sortDirection via the onSyncGridColumn option each render).
             domel(colDiv).addClass(`${this.cssPrefix}-header-cell-sortable`);
 
-            if (column.sortDirection !== 'none') {
-                domel('div', colDiv)
-                    .addClass(`${this.cssPrefix}-sort-indicator`)
-                    .addClass(`${this.cssPrefix}-sort-${column.sortDirection}`);
+            // The indicator box is always rendered (empty when unsorted) so that
+            // toggling the sort direction doesn't change the header's natural
+            // width, which resizeColumns() uses as the auto-fit lower bound.
+            const indicator = domel('div', colDiv)
+                .addClass(`${this.cssPrefix}-sort-indicator`);
+            if (column.sortDirection && column.sortDirection !== 'none') {
+                indicator.addClass(`${this.cssPrefix}-sort-${column.sortDirection}`);
             }
 
             colDiv.addEventListener('click', (ev: MouseEvent) => {
@@ -1472,6 +1476,7 @@ export class EasyGrid implements EasyGridBase {
     }
 
     private manualColumnWidths = new Map<string, number>();
+    private calculatedColumnWidths = new Map<string, number>();
     private activeResizeCleanup: (() => void) | null = null;
     private suppressHeaderClick = false;
 
@@ -1482,6 +1487,20 @@ export class EasyGrid implements EasyGridBase {
             if (col.dataColumn && this.manualColumnWidths.has(col.dataColumn.id)) {
                 col.width = this.manualColumnWidths.get(col.dataColumn.id);
                 col.manualWidth = true;
+            }
+        });
+    }
+
+    /** In autoResize Once mode, carries the auto-computed widths over to the fresh
+     * DataColumn instances a refetch brings in, so columns keep the widths measured
+     * on the first render instead of being re-fit to every new page of data. */
+    private restoreCalculatedColumnWidths() {
+        if (this.options.columnWidths.autoResize !== AutoResizeColumns.Once
+            || this.calculatedColumnWidths.size === 0) return;
+        this.columns.getItems().forEach(col => {
+            if (col.dataColumn && !col.dataColumn.calculatedWidth
+                && this.calculatedColumnWidths.has(col.dataColumn.id)) {
+                col.dataColumn.calculatedWidth = this.calculatedColumnWidths.get(col.dataColumn.id);
             }
         });
     }
@@ -1620,6 +1639,10 @@ export class EasyGrid implements EasyGridBase {
                 sumWidth += calculatedWidth
                 column.width = calculatedWidth;
 
+                if (column.dataColumn) {
+                    this.calculatedColumnWidths.set(column.dataColumn.id, calculatedWidth);
+                }
+
                 cellValues.forEach(value => {
                     (value as HTMLDivElement).parentElement.style.width = `${calculatedWidth}px`;
                 });
@@ -1676,6 +1699,7 @@ export class EasyGrid implements EasyGridBase {
 
                     if (column.dataColumn) {
                         column.dataColumn.calculatedWidth = maxWidth;
+                        this.calculatedColumnWidths.set(column.dataColumn.id, maxWidth);
                     }
                 }
                 else {
