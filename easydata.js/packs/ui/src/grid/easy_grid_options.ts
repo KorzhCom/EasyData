@@ -1,12 +1,14 @@
 import { EasyDataTable, AggregatesCalculator, AggregationSettings, DataType } from '@easydata/core';
 
-import { 
-    ColumnMovedEvent, ColumnDeletedEvent, 
-    ColumnChangedEvent, 
+import {
+    ColumnMovedEvent, ColumnDeletedEvent,
+    ColumnChangedEvent,
     AddColumnClickEvent,
     PageChangedEvent,
     RowClickEvent,
-    ActiveRowChangedEvent
+    ActiveRowChangedEvent,
+    ColumnSortEvent,
+    ColumnResizedEvent
 } from './easy_grid_events';
 
 import { GridColumn } from './easy_grid_columns';
@@ -88,4 +90,9 @@ export interface EasyGridOptions {
 
     onSyncGridColumn?: (column: GridColumn) => void;
     onGetCellRenderer?: (column: GridColumn, defaultRenderer: GridCellRenderer) => GridCellRenderer;
+
+    allowColumnResize?: boolean;
+    sortable?: boolean;
+    onColumnSort?: (ev: ColumnSortEvent) => void;
+    onColumnResize?: (ev: ColumnResizedEvent) => void;
 }

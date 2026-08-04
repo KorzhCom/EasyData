@@ -4,6 +4,7 @@ export * from './grid/easy_grid_events'
 export * from './grid/easy_grid_options'
 export * from './grid/easy_grid_columns'
 export * from './grid/easy_grid_cell_renderer'
+export * from './grid/easy_grid_column_utils'
 
 //datetimepicker
 export * from './datetimepicker/calendar'

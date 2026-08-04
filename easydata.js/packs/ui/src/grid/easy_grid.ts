@@ -10,15 +10,19 @@ import { getElementAbsolutePos, eqCssPrefix } from '../utils/ui-utils';
 
 import { EasyGridOptions, AutoResizeColumns } from './easy_grid_options';
 import { 
-    GridEventType, GridEvent, 
-    ColumnMovedEvent, 
+    GridEventType, GridEvent,
+    ColumnMovedEvent,
     RowClickEvent,
     AddColumnClickEvent as PlusButtonClickEvent,
     PageChangedEvent,
     ColumnChangedEvent,
     ColumnDeletedEvent,
-    ActiveRowChangedEvent
+    ActiveRowChangedEvent,
+    ColumnResizedEvent,
+    ColumnSortEvent
 } from './easy_grid_events';
+
+import { computeColumnWidth, nextSortDirection } from './easy_grid_column_utils';
 
 import { EasyGridBase } from './easy_grid_types';
 import { GridColumnList, GridColumn, GridColumnAlign } from './easy_grid_columns';
@@ -112,7 +116,9 @@ export class EasyGrid implements EasyGridBase {
         },
         showPlusButton: false,
         viewportRowsCount: null,
-        showActiveRow: true
+        showActiveRow: true,
+        allowColumnResize: true,
+        sortable: false,
     }
 
     public readonly options: EasyGridOptions;
@@ -248,6 +254,12 @@ export class EasyGrid implements EasyGridBase {
         if (options.onActiveRowChanged) {
             this.addEventListener('activeRowChanged', options.onActiveRowChanged);
         }
+        if (options.onColumnResize) {
+            this.addEventListener('columnResized', options.onColumnResize);
+        }
+        if (options.onColumnSort) {
+            this.addEventListener('columnSort', options.onColumnSort);
+        }
 
         this.addEventListener('pageChanged', ev => this.activeRowIndex = -1);
 
@@ -332,7 +344,21 @@ export class EasyGrid implements EasyGridBase {
     }
 
     protected clearDOM() {
+        // Preserve the horizontal scroll position across re-renders (sort, paging, etc.).
+        if (this.bodyViewportDiv && this.bodyViewportDiv.isConnected) {
+            this.savedScrollLeft = this.bodyViewportDiv.scrollLeft;
+        }
         this.slot.innerHTML = '';
+    }
+
+    /** Restores the horizontal scroll kept across a re-render so the grid doesn't jump. */
+    private restoreScroll() {
+        if (this.savedScrollLeft && this.bodyViewportDiv) {
+            this.bodyViewportDiv.scrollLeft = this.savedScrollLeft;
+            if (this.headerViewportDiv) {
+                this.headerViewportDiv.style.marginLeft = `-${this.bodyViewportDiv.scrollLeft}px`;
+            }
+        }
     }
 
     /** Clears all DOM object in the grid and return it to its initial state */
@@ -344,6 +370,8 @@ export class EasyGrid implements EasyGridBase {
     private containerInitialHeight: number = 0;
 
     private firstRender = true;
+
+    private savedScrollLeft = 0;
 
     /** Renders the grid */
     protected render() {
@@ -357,6 +385,9 @@ export class EasyGrid implements EasyGridBase {
         this.rootDiv.classList.add(`${this.cssPrefix}-root`);
 
         this.columns.sync(this.dataTable.columns, this.options.useRowNumeration);
+
+        this.restoreManualColumnWidths();
+        this.restoreCalculatedColumnWidths();
 
         this.renderHeader();
         this.rootDiv.appendChild(this.headerDiv);
@@ -381,6 +412,7 @@ export class EasyGrid implements EasyGridBase {
                 .then(() =>  {
                     this.firstRender = false;
                     this.rowsOnPagePromise = null
+                    this.restoreScroll();
                 });
         }
         else {
@@ -391,8 +423,9 @@ export class EasyGrid implements EasyGridBase {
                     if (needAutoResize) {
                         this.resizeColumns();
                     }
+                    this.restoreScroll();
                 });
-            }, 100);    
+            }, 100);
         }
     }
 
@@ -493,13 +526,51 @@ export class EasyGrid implements EasyGridBase {
 
         let colDiv = colBuilder.toDOM(); 
 
-        domel('div', colDiv)
-            .addClass(`${this.cssPrefix}-header-cell-resize`)
+        const resizeBuilder = domel('div', colDiv)
+            .addClass(`${this.cssPrefix}-header-cell-resize`);
+
+        if (this.options.allowColumnResize && !column.isRowNum) {
+            resizeBuilder.addClass(`${this.cssPrefix}-header-cell-resize-active`);
+            this.attachColumnResize(resizeBuilder.toDOM(), column, index);
+        }
 
         if (!column.isRowNum) {
             domel('div', colDiv)
                 .addClass(`${this.cssPrefix}-header-cell-label`)
                 .text(column.label);
+        }
+
+        if (this.options.sortable && !column.isRowNum) {
+            // The grid only reflects and announces sort state; the consumer owns it
+            // (e.g. sets column.sortDirection via the onSyncGridColumn option each render).
+            domel(colDiv).addClass(`${this.cssPrefix}-header-cell-sortable`);
+
+            // The indicator box is always rendered (empty when unsorted) so that
+            // toggling the sort direction doesn't change the header's natural
+            // width, which resizeColumns() uses as the auto-fit lower bound.
+            const indicator = domel('div', colDiv)
+                .addClass(`${this.cssPrefix}-sort-indicator`);
+            if (column.sortDirection && column.sortDirection !== 'none') {
+                indicator.addClass(`${this.cssPrefix}-sort-${column.sortDirection}`);
+            }
+
+            colDiv.addEventListener('click', (ev: MouseEvent) => {
+                // ignore the click synthesized right after a resize drag
+                if (this.suppressHeaderClick) {
+                    this.suppressHeaderClick = false;
+                    return;
+                }
+                // ignore clicks that land on the resize handle
+                if ((ev.target as HTMLElement).closest(`.${this.cssPrefix}-header-cell-resize`)) {
+                    return;
+                }
+                this.fireEvent({
+                    type: 'columnSort',
+                    columnId: column.dataColumn ? column.dataColumn.id : '',
+                    direction: nextSortDirection(column.sortDirection || 'none'),
+                    sourceEvent: ev
+                } as ColumnSortEvent);
+            });
         }
 
         if (column.description) {
@@ -1258,6 +1329,8 @@ export class EasyGrid implements EasyGridBase {
     public addEventListener(eventType: 'columnMoved', handler: (ev: ColumnMovedEvent) => void): string;
     public addEventListener(eventType: 'columnDeleted', handler: (ev: ColumnDeletedEvent) => void): string;
     public addEventListener(eventType: 'activeRowChanged', handler: (ev: ActiveRowChangedEvent) => void): string;
+    public addEventListener(eventType: 'columnResized', handler: (ev: ColumnResizedEvent) => void): string;
+    public addEventListener(eventType: 'columnSort', handler: (ev: ColumnSortEvent) => void): string;
     public addEventListener(eventType: GridEventType | string, handler: (data: any) => void): string {
         return this.eventEmitter.subscribe(eventType, event => handler(event.data));
     }
@@ -1402,6 +1475,128 @@ export class EasyGrid implements EasyGridBase {
         this.bodyViewportDiv.focus();
     }
 
+    private manualColumnWidths = new Map<string, number>();
+    private calculatedColumnWidths = new Map<string, number>();
+    private activeResizeCleanup: (() => void) | null = null;
+    private suppressHeaderClick = false;
+
+    /** Re-applies user-set column widths after the grid re-renders (paging, re-sort). */
+    private restoreManualColumnWidths() {
+        if (this.manualColumnWidths.size === 0) return;
+        this.columns.getItems().forEach(col => {
+            if (col.dataColumn && this.manualColumnWidths.has(col.dataColumn.id)) {
+                col.width = this.manualColumnWidths.get(col.dataColumn.id);
+                col.manualWidth = true;
+            }
+        });
+    }
+
+    /** In autoResize Once mode, carries the auto-computed widths over to the fresh
+     * DataColumn instances a refetch brings in, so columns keep the widths measured
+     * on the first render instead of being re-fit to every new page of data. */
+    private restoreCalculatedColumnWidths() {
+        if (this.options.columnWidths.autoResize !== AutoResizeColumns.Once
+            || this.calculatedColumnWidths.size === 0) return;
+        this.columns.getItems().forEach(col => {
+            if (col.dataColumn && !col.dataColumn.calculatedWidth
+                && this.calculatedColumnWidths.has(col.dataColumn.id)) {
+                col.dataColumn.calculatedWidth = this.calculatedColumnWidths.get(col.dataColumn.id);
+            }
+        });
+    }
+
+    private getColumnMinWidth(column: GridColumn): number {
+        const widths = this.options.columnWidths || {};
+        if (column.isRowNum) {
+            return (widths.rowNumColumn && widths.rowNumColumn.min) || 20;
+        }
+        const type = column.dataColumn ? column.dataColumn.type : DataType.Unknown;
+        return (widths[type] && widths[type].min) || 20;
+    }
+
+    private getColumnMaxWidth(column: GridColumn): number | undefined {
+        const widths = this.options.columnWidths || {};
+        if (column.isRowNum) {
+            return widths.rowNumColumn && widths.rowNumColumn.max;
+        }
+        const type = column.dataColumn ? column.dataColumn.type : DataType.Unknown;
+        return widths[type] && widths[type].max;
+    }
+
+    private applyColumnWidth(column: GridColumn, colIndex: number, newWidth: number, containerWidth?: number) {
+        column.width = newWidth;
+
+        const headerCell = this.headerCellContainerDiv
+            .querySelector(`.${this.cssPrefix}-header-cell[data-col-idx="${colIndex}"]`) as HTMLElement;
+        if (headerCell) headerCell.style.width = `${newWidth}px`;
+
+        const cells = this.bodyCellContainerDiv
+            .querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${colIndex}"]`);
+        cells.forEach(cell => { (cell as HTMLElement).style.width = `${newWidth}px`; });
+
+        const totalWidth = typeof containerWidth === 'number' ? containerWidth : this.getContainerWidth();
+        this.headerCellContainerDiv.style.width = `${totalWidth}px`;
+        this.bodyCellContainerDiv.style.width = `${totalWidth}px`;
+    }
+
+    private attachColumnResize(handle: HTMLElement, column: GridColumn, colIndex: number) {
+        handle.addEventListener('mousedown', (ev: MouseEvent) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            // Clean up any drag that never received its mouseup (e.g. released outside the window).
+            if (this.activeResizeCleanup) {
+                this.activeResizeCleanup();
+            }
+
+            const startX = ev.clientX;
+            const startWidth = column.width;
+            const minWidth = this.getColumnMinWidth(column);
+            const maxWidth = this.getColumnMaxWidth(column);
+            const otherColumnsWidth = this.getContainerWidth() - startWidth;
+            let moved = false;
+
+            const onMove = (me: MouseEvent) => {
+                moved = true;
+                const newWidth = computeColumnWidth(startWidth, me.clientX - startX, minWidth, maxWidth);
+                this.applyColumnWidth(column, colIndex, newWidth, otherColumnsWidth + newWidth);
+            };
+
+            const onUp = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                this.activeResizeCleanup = null;
+
+                // A bare click (no drag) must not pin the column or emit an event.
+                if (!moved) return;
+
+                // Suppress the click the browser synthesizes right after a drag, so that
+                // finishing a resize (even past the min-width point) never triggers a sort.
+                this.suppressHeaderClick = true;
+                setTimeout(() => { this.suppressHeaderClick = false; }, 0);
+
+                column.manualWidth = true;
+                if (column.dataColumn) {
+                    this.manualColumnWidths.set(column.dataColumn.id, column.width);
+                }
+                this.fireEvent({
+                    type: 'columnResized',
+                    columnId: column.dataColumn ? column.dataColumn.id : '',
+                    width: column.width
+                } as ColumnResizedEvent);
+            };
+
+            this.activeResizeCleanup = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                this.activeResizeCleanup = null;
+            };
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    }
+
     /** Resizes columns according to the data they represent */
     public resizeColumns() {
         if (this.options.columnWidths.autoResize === AutoResizeColumns.Never) return;
@@ -1422,6 +1617,16 @@ export class EasyGrid implements EasyGridBase {
             const column = columns[idx];
             if (!column.isVisible) continue;
 
+            if (column.manualWidth) {
+                sumWidth += column.width;
+                (headerCells[headerIdx] as HTMLDivElement).style.width = `${column.width}px`;
+                this.bodyCellContainerDiv
+                    .querySelectorAll(`.${this.cssPrefix}-cell[data-col-idx="${idx}"]`)
+                    .forEach(cell => { (cell as HTMLElement).style.width = `${column.width}px`; });
+                headerIdx++;
+                continue;
+            }
+
             const calculatedWidth = this.options.columnWidths.autoResize !== AutoResizeColumns.Always && column.dataColumn 
                         ? column.dataColumn.calculatedWidth 
                         : 0;
@@ -1433,6 +1638,10 @@ export class EasyGrid implements EasyGridBase {
             if (calculatedWidth > 0) {
                 sumWidth += calculatedWidth
                 column.width = calculatedWidth;
+
+                if (column.dataColumn) {
+                    this.calculatedColumnWidths.set(column.dataColumn.id, calculatedWidth);
+                }
 
                 cellValues.forEach(value => {
                     (value as HTMLDivElement).parentElement.style.width = `${calculatedWidth}px`;
@@ -1490,9 +1699,15 @@ export class EasyGrid implements EasyGridBase {
 
                     if (column.dataColumn) {
                         column.dataColumn.calculatedWidth = maxWidth;
+                        this.calculatedColumnWidths.set(column.dataColumn.id, maxWidth);
                     }
                 }
                 else {
+                    // No data cells (e.g. an empty result set): keep column.width in sync
+                    // with the natural header width, so a later manual resize starts from
+                    // the actually-rendered size instead of snapping to the default width.
+                    column.width = maxWidth;
+                    (headerCells[headerIdx] as HTMLDivElement).style.width = `${maxWidth}px`;
                     sumWidth += maxWidth;
                 }
             }
