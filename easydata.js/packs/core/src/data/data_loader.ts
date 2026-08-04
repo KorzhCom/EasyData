@@ -10,6 +10,9 @@ export interface DataChunkDescriptor {
     needTotal: boolean;
 }
 
+/** An alias kept for the code that refers to the chunk parameters under this name. */
+export type ChunkInfo = DataChunkDescriptor;
+
 export interface DataChunk {
     table: EasyDataTable;
     total?: number;

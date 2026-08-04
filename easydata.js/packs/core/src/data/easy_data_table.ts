@@ -3,6 +3,7 @@ import { DataRow } from './data_row';
 import { DataLoader } from './data_loader';
 import { DataType } from '../types/data_type';
 import { utils } from '../utils/utils';
+import { SparseRowCache } from './sparse_row_cache';
 
 export interface EasyDataTableOptions {
     chunkSize?: number;
@@ -11,12 +12,28 @@ export interface EasyDataTableOptions {
     loader?: DataLoader;
     columns?: DataColumnDescriptor[];
     rows?: any[];
+
+    /**
+     * The maximum number of detached row windows to keep in memory.
+     * The rows loaded from the very beginning are never dropped.
+     * Zero or less turns the limit off.
+     */
+    maxCachedWindows?: number;
+
     onUpdate?: (table?: EasyDataTable) => void;
 }
 
 type GetRowsPageParams = { page: number, pageSize: number };
 type GetRowsOffsetParams = { offset: number, limit?: number };
 export type GetRowsParams = GetRowsPageParams | GetRowsOffsetParams;
+
+/** One request to the loader: a window of rows to bring in. */
+interface LoadWindow {
+    offset: number;
+    limit: number;
+}
+
+const DEFAULT_MAX_CACHED_WINDOWS = 8;
 
 export class EasyDataTable {
     /** The unique ID of the data table */
@@ -26,13 +43,34 @@ export class EasyDataTable {
     private _elasticChunks = false;
     private _columns: DataColumnList;
 
-    private cachedRows: DataRow[] = [];
+    private cache = new SparseRowCache();
+
+    private maxCachedWindows = DEFAULT_MAX_CACHED_WINDOWS;
+
+    /** The chunk requests that are in flight, keyed by the window they load. */
+    private pendingLoads = new Map<string, Promise<void>>();
+
+    /**
+     * Bumped whenever the cached rows are dropped. A chunk that was requested
+     * before the bump must not be merged into the table it no longer belongs to.
+     */
+    private generation = 0;
 
     private total: number = 0;
 
     private loader?: DataLoader | null = null;
 
     private needTotal = true;
+
+    /**
+     * Whether `total` holds a real value.
+     *
+     * This is not the same as `!needTotal`: the latter is turned off as soon as
+     * a request that asks for the total is sent, while the total itself is only
+     * there once that request comes back. Reading the two apart keeps a second
+     * request made in between from treating `total` as if it were 0.
+     */
+    private totalKnown = false;
 
     private isInMemory = false;
 
@@ -43,11 +81,15 @@ export class EasyDataTable {
         this._chunkSize = options.chunkSize || this._chunkSize;
         this._elasticChunks = options.elasticChunks || this._elasticChunks;
         this.loader = options.loader;
+        if (typeof options.maxCachedWindows !== 'undefined') {
+            this.maxCachedWindows = options.maxCachedWindows;
+        }
         if (typeof options.inMemory !== 'undefined') {
             this.isInMemory = options.inMemory
         }
         if (this.isInMemory) {
             this.needTotal = false;
+            this.totalKnown = true;
         }
         this._columns = new DataColumnList();
         this.onUpdate = options.onUpdate;
@@ -80,7 +122,7 @@ export class EasyDataTable {
         this._chunkSize = value;
         this.total = 0;
         this.needTotal = !this.elasticChunks;
-        this.cachedRows = [];
+        this.dropCachedRows();
     }
 
     public get elasticChunks(): boolean {
@@ -91,7 +133,7 @@ export class EasyDataTable {
         this._elasticChunks = value;
         this.total = 0;
         this.needTotal = !this.elasticChunks;
-        this.cachedRows = [];
+        this.dropCachedRows();
     }
 
     public getRows(params?: GetRowsParams): Promise<Array<DataRow>> {
@@ -109,29 +151,30 @@ export class EasyDataTable {
 
         let endIndex = fromIndex + count; //the first index of the next page
 
-        //if we don't calculate total on this request
-        if (!this.needTotal && !this.elasticChunks) {
+        //if we already know how many rows there are
+        if (this.totalKnown && !this.elasticChunks) {
             if (fromIndex >= this.total) {
                 return Promise.resolve([]);
             }
-    
+
             if (endIndex > this.total) {
                 endIndex = this.total;
             }
         }
 
-        if (this.isInMemory && endIndex > this.cachedRows.length) {
-            endIndex = this.cachedRows.length;
+        if (this.isInMemory && endIndex > this.cache.prefixLength()) {
+            endIndex = this.cache.prefixLength();
         }
 
-        let allChunksCached = endIndex <= this.cachedRows.length;
-
-        if (allChunksCached) {
-            return Promise.resolve(
-                this.cachedRows.slice(fromIndex,  endIndex)
-            );
+        if (!(endIndex > fromIndex)) {
+            return Promise.resolve([]);
         }
-        
+
+        const rows = this.cache.slice(fromIndex, endIndex);
+        if (rows !== null) {
+            return Promise.resolve(rows);
+        }
+
         //if loader is not defined
         if (!this.loader) {
             throw `Loader is not defined. Can't get the rows from ${fromIndex} to ${endIndex}`;
@@ -143,40 +186,108 @@ export class EasyDataTable {
             this.needTotal = false;
         }
 
-        let offset = this.cachedRows.length;
-        let limit = endIndex - offset;
+        const windows = this.planLoadWindows(fromIndex, endIndex);
+        const generation = this.generation;
 
-        if (limit < this._chunkSize) {
-            limit = this._chunkSize;
+        let chain: Promise<void> = Promise.resolve();
+        windows.forEach((window, index) => {
+            const withTotal = needTotal && index === 0;
+            chain = chain.then(() => this.loadWindow(window, withTotal, generation));
+        });
+
+        return chain.then(() => {
+            if (generation !== this.generation) {
+                return [];
+            }
+
+            this.cache.evict(this.maxCachedWindows);
+            this.fireUpdated();
+
+            // the loader may have returned fewer rows than asked for,
+            // so we hand out everything that is actually there
+            return this.cache.sliceAvailable(fromIndex, endIndex);
+        });
+    }
+
+    /**
+     * Splits the missing parts of [from, to) into the windows to request.
+     *
+     * A window is aligned to `chunkSize` and is never smaller than it, which
+     * keeps the requests reproducible: reading any row of the same chunk asks
+     * for the very same window, so it is loaded once and reused afterwards.
+     */
+    private planLoadWindows(from: number, to: number): LoadWindow[] {
+        const windows: LoadWindow[] = [];
+        const chunk = this._chunkSize > 0 ? this._chunkSize : 1;
+
+        let cursor = from;
+        while (cursor < to) {
+            const gaps = this.cache.findGaps(cursor, to);
+            if (gaps.length === 0) {
+                break;
+            }
+
+            const gap = gaps[0];
+            const alignedStart = Math.floor(gap.start / chunk) * chunk;
+            const windowEnd = Math.max(
+                alignedStart + chunk,
+                Math.ceil(gap.end / chunk) * chunk
+            );
+
+            // Do not ask again for the rows we already have at the head of the
+            // window - start from the first one that is really missing.
+            const inner = this.cache.findGaps(alignedStart, windowEnd);
+            const windowStart = inner.length > 0 ? inner[0].start : gap.start;
+
+            windows.push({ offset: windowStart, limit: windowEnd - windowStart });
+            cursor = windowEnd;
         }
 
-        const resultPromise = this.loader.loadChunk({
-            offset: offset, 
-            limit: limit,
+        return windows;
+    }
+
+    /** Loads one window, reusing the request when the same one is already in flight. */
+    private loadWindow(window: LoadWindow, needTotal: boolean, generation: number): Promise<void> {
+        const key = `${window.offset}:${window.limit}:${generation}`;
+
+        const pending = this.pendingLoads.get(key);
+        if (pending) {
+            return pending;
+        }
+
+        const promise = this.loader.loadChunk({
+            offset: window.offset,
+            limit: window.limit,
             needTotal: needTotal
         })
         .then(result => {
+            this.pendingLoads.delete(key);
+
+            // the rows were dropped while this chunk was on its way
+            if (generation !== this.generation) {
+                return;
+            }
+
             if (needTotal) {
                 this.total = result.total;
+                this.totalKnown = true;
             }
 
-            Array.prototype.push.apply(this.cachedRows, result.table.getCachedRows());
-            if (endIndex > this.cachedRows.length) {
-                endIndex = this.cachedRows.length;
-            }
+            const rows = result.table.getCachedRows();
+            this.cache.addRange(window.offset, rows);
 
-            if (this.elasticChunks) {
-                const count = result.table.getCachedCount();
-                if (count < limit) {
-                    this.total = this.cachedRows.length;
-                }
+            if (this.elasticChunks && rows.length < window.limit) {
+                // a short chunk means the end of the data has been reached
+                this.total = this.cache.prefixLength();
             }
-
-            this.fireUpdated();
-            return this.cachedRows.slice(fromIndex,  endIndex);
+        },
+        error => {
+            this.pendingLoads.delete(key);
+            throw error;
         });
 
-        return resultPromise;
+        this.pendingLoads.set(key, promise);
+        return promise;
     }
 
     public getRow(index: number): Promise<DataRow | null> {
@@ -191,18 +302,32 @@ export class EasyDataTable {
     public setTotal(total : number) : void {
         this.total = total;
         this.needTotal = false;
+        this.totalKnown = true;
     }
 
+    /**
+     * The number of rows loaded in one uninterrupted run from the very first one.
+     * Rows of a detached window (loaded after a jump over not yet loaded ones)
+     * are not counted here - see {@link getCachedRows}.
+     */
     public getCachedCount(): number {
-        return this.cachedRows.length;
+        return this.cache.prefixLength();
     }
 
     public clear() {
         this.columns.clear();
-        this.cachedRows = [];
         this.total = 0;
         this.needTotal = !this._elasticChunks;
+        this.dropCachedRows();
         this.fireUpdated();
+    }
+
+    /** Forgets all the cached rows and the chunk requests that are on their way. */
+    private dropCachedRows() {
+        this.cache.clear();
+        this.pendingLoads.clear();
+        this.totalKnown = false;
+        this.generation++;
     }
 
     protected createRow(dataOrRow?: DataRow | any): DataRow {
@@ -220,9 +345,9 @@ export class EasyDataTable {
                 values[index] = (dateIdx.indexOf(index) >= 0)
                     ? this.mapDate(value, column.type)
                     : value;
-            });    
+            });
         }
-       
+
         return new DataRow(this._columns, values);
     }
 
@@ -253,22 +378,29 @@ export class EasyDataTable {
             }
 
             newRow = new DataRow(this._columns, values);
-        } 
+        }
         else {
             newRow = this.createRow(rowOrValues);
-        }  
-    
-        this.cachedRows.push(newRow);
+        }
+
+        this.cache.append(newRow);
         const cachedTotal = this.getCachedCount();
         if (cachedTotal > this.total) {
             this.total = cachedTotal;
         }
-        
+
         return newRow;
     }
 
+    /**
+     * The rows loaded in one uninterrupted run from the very first one.
+     *
+     * Only that run is exposed: the array must stay gap-free and in order,
+     * as it is walked from the beginning by the code that groups rows and
+     * calculates the totals over them.
+     */
     public getCachedRows(): DataRow[] {
-        return this.cachedRows;
+        return this.cache.prefixRows();
     }
 
     public totalIsKnown() : boolean {

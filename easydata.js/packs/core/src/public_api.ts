@@ -26,6 +26,7 @@ export * from './data/data_column'
 export * from './data/data_loader'
 export * from './data/data_row'
 export * from './data/easy_data_table'
+export * from './data/sparse_row_cache'
 
 //event
 export * from './event/event_emitter'
