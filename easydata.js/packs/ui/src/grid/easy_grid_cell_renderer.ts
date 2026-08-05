@@ -18,10 +18,16 @@ export type GridCellRenderer = (value: any, column: GridColumn,
 
 
 const StringCellRendererDefault: GridCellRenderer = (value: any, column: GridColumn, cellValueElement: HTMLElement, rowElement: HTMLElement) => {
-    const text = value ? value.toString().replace(/\n/g, '\u21B5 ') : '';
+    const rawText = value ? value.toString() : '';
+
+    // The cell is one `white-space: nowrap` line, so every flavour of line break turns
+    // into a visible glyph. Matching only \n used to leave the \r of a CRLF behind, and
+    // the innerText setter then rendered it as a <br> - splitting the cell into two lines
+    // that the fixed row height clips.
+    const text = rawText.replace(/\r\n|[\r\n]/g, '\u21B5 ');
 
     cellValueElement.innerText = text;
-    cellValueElement.title = text;
+    cellValueElement.title = rawText;
     if (column.align == GridColumnAlign.NONE) {
         cellValueElement.classList.add(`${cssPrefix}-cell-value-align-left`);
     }
