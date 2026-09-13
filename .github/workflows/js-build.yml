@@ -42,7 +42,7 @@ jobs:
       with:
         node-version: 20.x
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Set version
       run: npm run setver
