@@ -3,9 +3,7 @@ import { expect } from "@olton/latte"
 import { MetaData } from '@easydata/core';
 import { DataContext } from '../src/main/data_context';
 import { EasyDataViewDispatcher } from '../src/views/easy_data_view_dispatcher';
-import { EntityDataView } from '../src/views/entity_data_view';
-import { RootDataView } from '../src/views/root_data_view';
-import * as utils from '../src/utils/utils';
+import { restoreAllMocks, spyOn, stubSetLocation } from './helpers/mocks';
 
 describe('EasyDataViewDispatcher', () => {
     // Original objects for restoration after tests
@@ -39,19 +37,15 @@ describe('EasyDataViewDispatcher', () => {
         window.removeEventListener = mock();
         
         // Mock for loadMetaData
-        // jest.spyOn(DataContext.prototype, 'loadMetaData').mockImplementation(() => {
-        //     return Promise.resolve(new MetaData());
-        // });
-        //
-        // // Mock for setActiveSource
-        // jest.spyOn(DataContext.prototype, 'setActiveSource').mockImplementation(() => {});
-        //
-        // // Mock for setLocation
-        // jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
-        //
-        // // Save original view constructors
-        // jest.spyOn(EntityDataView.prototype, 'constructor').mockImplementation(() => {});
-        // jest.spyOn(RootDataView.prototype, 'constructor').mockImplementation(() => {});
+        spyOn(DataContext.prototype, 'loadMetaData').mockImplementation(() => {
+            return Promise.resolve(new MetaData());
+        });
+
+        // Mock for setActiveSource
+        spyOn(DataContext.prototype, 'setActiveSource').mockImplementation(() => {});
+
+        // Mock for setLocation
+        stubSetLocation();
     });
 
     afterEach(() => {
@@ -66,7 +60,7 @@ describe('EasyDataViewDispatcher', () => {
         }
         
         // Reset all mocks
-        // jest.restoreAllMocks();
+        restoreAllMocks();
         
         // Remove global EDView variable
         delete window['EDView'];
@@ -211,16 +205,16 @@ describe('EasyDataViewDispatcher', () => {
     });
 
     it('should start and load metadata', async () => {
-        // const dispatcher = new EasyDataViewDispatcher({
-        //     container: '#testContainer'
-        // });
-        //
-        // const setActiveViewSpy = jest.spyOn(dispatcher as any, 'setActiveView');
-        //
-        // await dispatcher.run();
-        //
-        // expect(DataContext.prototype.loadMetaData).toHaveBeenCalled();
-        // expect(setActiveViewSpy).toHaveBeenCalled();
+        const dispatcher = new EasyDataViewDispatcher({
+            container: '#testContainer'
+        });
+
+        const setActiveViewSpy = spyOn(dispatcher as any, 'setActiveView');
+
+        await dispatcher.run();
+
+        expect(DataContext.prototype.loadMetaData).toHaveBeenCalled();
+        expect(setActiveViewSpy).toHaveBeenCalled();
     });
 
     it('should set active Entity view', async () => {
@@ -231,7 +225,7 @@ describe('EasyDataViewDispatcher', () => {
         await dispatcher.run();
         
         // Since path includes entity ID, EntityDataView should be created
-        expect(DataContext.prototype.setActiveSource).toHaveBeenCalledWith('entity1');
+        expect(DataContext.prototype.setActiveSource).toHaveBeenCalledWith(['entity1']);
         expect(window['EDView']).toBeDefined();
     });
 

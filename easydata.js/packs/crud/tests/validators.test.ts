@@ -3,7 +3,7 @@ import { Validator, ValidationResult } from '../src/validators/validator';
 import { TypeValidator } from '../src/validators/type_validator';
 import { RequiredValidator } from '../src/validators/required_validator';
 import { DateTimeValidator } from '../src/validators/datetime_validator';
-import * as utils from '../src/utils/utils';
+import { restoreAllMocks, spyOn } from './helpers/mocks';
 
 describe('TypeValidator', () => {
     let validator: TypeValidator;
@@ -13,7 +13,7 @@ describe('TypeValidator', () => {
         validator = new TypeValidator();
 
         // Mock texts for i18n
-        jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'NumberError') return 'Value must be a number';
             if (key === 'IntNumberError') return 'Value must be an integer number';
             return key;
@@ -21,7 +21,7 @@ describe('TypeValidator', () => {
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        restoreAllMocks();
     });
 
     it('should have name "Type"', () => {
@@ -111,14 +111,14 @@ describe('RequiredValidator', () => {
         validator = new RequiredValidator();
 
         // Mock texts for i18n
-        jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'RequiredError') return 'This field is required';
             return key;
         });
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        restoreAllMocks();
     });
 
     it('should have name "Required"', () => {
@@ -178,22 +178,23 @@ describe('DateTimeValidator', () => {
         validator = new DateTimeValidator();
 
         // Mock texts for i18n
-        jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'DateTimeError') return 'Invalid date format';
             return key;
         });
         
-        // Mock for getEditDateTimeFormat
-        jest.spyOn(utils, 'getEditDateTimeFormat').mockImplementation((dataType: DataType) => {
-            if (dataType === DataType.Date) return 'dd.MM.yyyy';
-            if (dataType === DataType.Time) return 'HH:mm';
-            if (dataType === DataType.DateTime) return 'dd.MM.yyyy HH:mm';
-            return '';
+        // Mock the edit formats. getEditDateTimeFormat() can't be spied on (it is
+        // a module export), so mock the locale settings it builds them from
+        const settings = i18n.getLocaleSettings();
+        spyOn(i18n, 'getLocaleSettings').mockReturnValue({
+            ...settings,
+            editDateFormat: 'dd.MM.yyyy',
+            editTimeFormat: 'HH:mm'
         });
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        restoreAllMocks();
     });
 
     it('should have name "DateTime"', () => {

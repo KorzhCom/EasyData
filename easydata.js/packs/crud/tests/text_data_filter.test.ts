@@ -8,6 +8,7 @@ import {
 
 import { TextDataFilter } from '../src/filter/text_data_filter';
 import { DataFilter } from '../src/filter/data_filter';
+import { spyOn } from './helpers/mocks';
 
 describe('TextDataFilter', () => {
     // Mock for DataLoader
@@ -144,7 +145,7 @@ describe('TextDataFilter', () => {
         const serverFilter = new TextDataFilter(mockLoader, partialTable, 'products');
         
         // Spy on loadChunk method of mockLoader
-        const loadChunkSpy = jest.spyOn(mockLoader, 'loadChunk');
+        const loadChunkSpy = spyOn(mockLoader, 'loadChunk');
         
         return serverFilter.apply('orange')
             .then(filteredTable => {

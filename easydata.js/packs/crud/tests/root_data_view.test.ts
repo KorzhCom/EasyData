@@ -1,7 +1,7 @@
 import { MetaData, MetaEntity, i18n } from '@easydata/core';
 import { DataContext } from '../src/main/data_context';
 import { RootDataView } from '../src/views/root_data_view';
-import * as utils from '../src/utils/utils';
+import { Mock, restoreAllMocks, setReturnValue, spyOn, stubSetLocation } from './helpers/mocks';
 
 describe('RootDataView', () => {
     // Mocks for DOM and objects
@@ -10,6 +10,7 @@ describe('RootDataView', () => {
     let mockMetaData: MetaData;
     let mockRootEntity: MetaEntity;
     let view: RootDataView;
+    let setLocation: Mock;
 
     // Test entities
     const mockEntities = [
@@ -58,7 +59,7 @@ describe('RootDataView', () => {
         } as unknown as DataContext;
 
         // Mock for i18n
-        jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'RootViewTitle') return 'Entities';
             if (key === 'EntityMenuDesc') return 'Select an entity from the list below';
             if (key === 'ModelIsEmpty') return 'The model is empty';
@@ -66,7 +67,7 @@ describe('RootDataView', () => {
         });
 
         // Mock for setLocation function
-        jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
+        setLocation = stubSetLocation();
     });
 
     afterEach(() => {
@@ -76,7 +77,7 @@ describe('RootDataView', () => {
         }
 
         // Reset mocks
-        jest.restoreAllMocks();
+        restoreAllMocks();
     });
 
     it('should be created with correct default settings', () => {
@@ -175,12 +176,12 @@ describe('RootDataView', () => {
         firstEntityItem.click();
         
         // Check that setLocation was called with correct parameters
-        expect(utils.setLocation).toHaveBeenCalledWith('/basePath/entity1');
+        expect(setLocation).toHaveBeenCalledWith(['/basePath/entity1']);
     });
 
     it('should display message if model is empty', () => {
         // Change mock so metadata is empty
-        (mockMetaData.isEmpty as jest.Mock).mockReturnValue(true);
+        setReturnValue(mockMetaData.isEmpty as Mock, true);
         (mockRootEntity.subEntities as any) = [];
         
         view = new RootDataView(mockSlot, mockContext, '/basePath');
@@ -217,6 +218,6 @@ describe('RootDataView', () => {
         entityItem.click();
         
         // Check that setLocation was called with decoded ID
-        expect(utils.setLocation).toHaveBeenCalledWith('/basePath/entity with space');
+        expect(setLocation).toHaveBeenCalledWith(['/basePath/entity with space']);
     });
 });

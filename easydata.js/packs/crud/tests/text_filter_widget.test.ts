@@ -7,6 +7,10 @@ import {
 
 import { TextFilterWidget } from '../src/widgets/text_filter_widget';
 import { DataFilter } from '../src/filter/data_filter';
+import {
+    Mock, advanceTimersByTime, restoreAllMocks, setReturnValue,
+    spyOn, useFakeTimers, useRealTimers
+} from './helpers/mocks';
 
 describe('TextFilterWidget', () => {
     // Variables for tests
@@ -51,21 +55,21 @@ describe('TextFilterWidget', () => {
         } as unknown as DataFilter;
         
         // Mock for i18n.getText
-        jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
             if (key === 'SearchInputPlaceholder') return 'Search...';
             if (key === 'SearchBtn') return 'Search';
             return key;
         });
         
         // Mock for browserUtils.isIE and isEdge
-        jest.spyOn(browserUtils, 'isIE').mockReturnValue(false);
-        jest.spyOn(browserUtils, 'isEdge').mockReturnValue(false);
+        spyOn(browserUtils, 'isIE').mockReturnValue(false);
+        spyOn(browserUtils, 'isEdge').mockReturnValue(false);
         
         // Mock for dataUtils.isNumericType and getStringDataTypes
-        jest.spyOn(dataUtils, 'isNumericType').mockImplementation((type) => {
+        spyOn(dataUtils, 'isNumericType').mockImplementation((type) => {
             return type === 'number';
         });
-        jest.spyOn(dataUtils, 'getStringDataTypes').mockReturnValue(['string']);
+        spyOn(dataUtils, 'getStringDataTypes').mockReturnValue(['string']);
         
         // Create widget instance for testing
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter);
@@ -78,15 +82,15 @@ describe('TextFilterWidget', () => {
         }
         
         // Reset all mocks
-        jest.restoreAllMocks();
+        restoreAllMocks();
     });
     
     it('should be created with default settings', () => {
         expect(filterWidget).toBeDefined();
         
         // Check renderer setup
-        expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith(CellRendererType.STRING);
-        expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith(CellRendererType.NUMBER);
+        expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith([CellRendererType.STRING]);
+        expect(mockCellRendererStore.getDefaultRendererByType).toHaveBeenCalledWith([CellRendererType.NUMBER]);
         expect(mockCellRendererStore.setDefaultRenderer).toHaveBeenCalledTimes(2);
     });
     
@@ -129,7 +133,7 @@ describe('TextFilterWidget', () => {
         mockSlot.innerHTML = '';
         
         // Change mock for IE
-        (browserUtils.isIE as jest.Mock).mockReturnValue(true);
+        setReturnValue(browserUtils.isIE as Mock, true);
         
         // Create new widget
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter);
@@ -167,7 +171,7 @@ describe('TextFilterWidget', () => {
         input.dispatchEvent(enterEvent);
         
         // Check apply call with correct value
-        expect(mockFilter.apply).toHaveBeenCalledWith('test');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['test']);
     });
     
     it('should apply filter when Search button is pressed', () => {
@@ -182,7 +186,7 @@ describe('TextFilterWidget', () => {
         button.click();
         
         // Check apply call with correct value
-        expect(mockFilter.apply).toHaveBeenCalledWith('test');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['test']);
     });
     
     it('should clear input field when clear icon is clicked', () => {
@@ -205,7 +209,7 @@ describe('TextFilterWidget', () => {
         expect(focusMock).toHaveBeenCalled();
         
         // Check apply call with empty value
-        expect(mockFilter.apply).toHaveBeenCalledWith('');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['']);
     });
     
     it('should apply filter with delay in instantMode on input', () => {
@@ -213,7 +217,7 @@ describe('TextFilterWidget', () => {
         mockSlot.innerHTML = '';
         
         // Mock for setTimeout
-        jest.useFakeTimers();
+        useFakeTimers();
         
         // Create new widget with instantMode and small timeout
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
@@ -232,13 +236,13 @@ describe('TextFilterWidget', () => {
         expect(mockFilter.apply).not.toHaveBeenCalled();
         
         // Advance timers
-        jest.advanceTimersByTime(500);
+        advanceTimersByTime(500);
         
         // Check apply call with correct value
-        expect(mockFilter.apply).toHaveBeenCalledWith('test');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['test']);
         
         // Restore timers
-        jest.useRealTimers();
+        useRealTimers();
     });
     
     it('should clear previous timer on new keyup event', () => {
@@ -246,8 +250,9 @@ describe('TextFilterWidget', () => {
         mockSlot.innerHTML = '';
         
         // Mock for setTimeout and clearTimeout
-        jest.useFakeTimers();
-        const clearTimeoutSpy = jest.spyOn(window, 'clearTimeout');
+        useFakeTimers();
+        // The widget calls the global clearTimeout, which under latte is not window.clearTimeout
+        const clearTimeoutSpy = spyOn(globalThis, 'clearTimeout');
         
         // Create new widget with instantMode
         filterWidget = new TextFilterWidget(mockSlot, mockGrid, mockFilter, {
@@ -270,13 +275,13 @@ describe('TextFilterWidget', () => {
         expect(clearTimeoutSpy).toHaveBeenCalled();
         
         // Advance timers
-        jest.advanceTimersByTime(500);
+        advanceTimersByTime(500);
         
         // Check apply call with last value
-        expect(mockFilter.apply).toHaveBeenCalledWith('test2');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['test2']);
         
         // Restore timers
-        jest.useRealTimers();
+        useRealTimers();
     });
     
     it('applyFilter method should return true if filter value changed', () => {
@@ -287,14 +292,14 @@ describe('TextFilterWidget', () => {
         input.value = 'test';
         
         // Mock for getValue returning different value
-        (mockFilter.getValue as jest.Mock).mockReturnValue('old');
+        setReturnValue(mockFilter.getValue as Mock, 'old');
         
         // Call method and check result
         const result = filterWidget.applyFilter(true);
         expect(result).toBe(true);
         
         // Check apply call
-        expect(mockFilter.apply).toHaveBeenCalledWith('test');
+        expect(mockFilter.apply).toHaveBeenCalledWith(['test']);
     });
     
     it('applyFilter method should return false if filter value did not change', () => {
@@ -305,7 +310,7 @@ describe('TextFilterWidget', () => {
         input.value = 'test';
         
         // Mock for getValue returning the same value
-        (mockFilter.getValue as jest.Mock).mockReturnValue('test');
+        setReturnValue(mockFilter.getValue as Mock, 'test');
         
         // Call method and check result
         const result = filterWidget.applyFilter(true);
@@ -317,7 +322,7 @@ describe('TextFilterWidget', () => {
     
     it('should correctly highlight text matching the filter', () => {
         // Mock for getValue returning search word
-        (mockFilter.getValue as jest.Mock).mockReturnValue('test');
+        setReturnValue(mockFilter.getValue as Mock, 'test');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
@@ -344,7 +349,7 @@ describe('TextFilterWidget', () => {
     
     it('should correctly highlight multiple matches', () => {
         // Mock for getValue returning search word
-        (mockFilter.getValue as jest.Mock).mockReturnValue('test');
+        setReturnValue(mockFilter.getValue as Mock, 'test');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('test another test');
@@ -374,7 +379,7 @@ describe('TextFilterWidget', () => {
     
     it('should correctly handle multiple search words with || separator', () => {
         // Mock for getValue returning multiple words with separator
-        (mockFilter.getValue as jest.Mock).mockReturnValue('apple || banana');
+        setReturnValue(mockFilter.getValue as Mock, 'apple || banana');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('I have an apple and a banana');
@@ -405,7 +410,7 @@ describe('TextFilterWidget', () => {
     
     it('should highlight entire cell if content fully matches the filter', () => {
         // Mock for getValue returning the full cell value
-        (mockFilter.getValue as jest.Mock).mockReturnValue('exact match');
+        setReturnValue(mockFilter.getValue as Mock, 'exact match');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('exact match');
@@ -418,7 +423,7 @@ describe('TextFilterWidget', () => {
     
     it('should return original text if no matches', () => {
         // Mock for getValue returning word that is not in text
-        (mockFilter.getValue as jest.Mock).mockReturnValue('missing');
+        setReturnValue(mockFilter.getValue as Mock, 'missing');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
@@ -429,7 +434,7 @@ describe('TextFilterWidget', () => {
     
     it('should return original text if filter is empty', () => {
         // Mock for getValue returning empty string
-        (mockFilter.getValue as jest.Mock).mockReturnValue('');
+        setReturnValue(mockFilter.getValue as Mock, '');
         
         // Call highlightText directly through private method
         const result = (filterWidget as any).highlightText('This is a test string');
@@ -448,11 +453,11 @@ describe('TextFilterWidget', () => {
         const rowElement = document.createElement('tr');
         
         // Get custom renderer for strings
-        const stringRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[0];
+        const stringRendererCall = (mockCellRendererStore.setDefaultRenderer as Mock).mock.calls[0];
         const customStringRenderer = stringRendererCall[1];
         
         // Mock for getValue, so that strings are highlighted
-        (mockFilter.getValue as jest.Mock).mockReturnValue('test');
+        setReturnValue(mockFilter.getValue as Mock, 'test');
         
         // Call custom renderer
         customStringRenderer('This is a test', column, cellElement, rowElement);
@@ -472,11 +477,11 @@ describe('TextFilterWidget', () => {
         const rowElement = document.createElement('tr');
         
         // Get custom renderer for numbers
-        const numberRendererCall = (mockCellRendererStore.setDefaultRenderer as jest.Mock).mock.calls[1];
+        const numberRendererCall = (mockCellRendererStore.setDefaultRenderer as Mock).mock.calls[1];
         const customNumberRenderer = numberRendererCall[1];
         
         // Mock for getValue to make numbers highlighted
-        (mockFilter.getValue as jest.Mock).mockReturnValue('42');
+        setReturnValue(mockFilter.getValue as Mock, '42');
         
         // Mock for toLocaleString
         Number.prototype.toLocaleString = function() { return this.toString(); };

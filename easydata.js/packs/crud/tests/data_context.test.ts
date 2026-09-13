@@ -8,6 +8,7 @@ import {
 import { DataContext } from '../src/main/data_context';
 import { TextDataFilter } from '../src/filter/text_data_filter';
 import { EasyDataServerLoader } from '../src/main/easy_data_server_loader';
+import { Mock, setReturnValue } from './helpers/mocks';
 
 describe('DataContext', () => {
     let dataContext: DataContext;
@@ -50,8 +51,8 @@ describe('DataContext', () => {
             })
         } as unknown as HttpActionResult<any>;
 
-        (mockHttpClient.get as jest.Mock).mockReturnValue(mockActionResult);
-        (mockHttpClient.post as jest.Mock).mockReturnValue(mockActionResult);
+        setReturnValue(mockHttpClient.get as Mock, mockActionResult);
+        setReturnValue(mockHttpClient.post as Mock, mockActionResult);
 
         // Counters for onProcessStart and onProcessEnd methods
         processStartCount = 0;
@@ -156,7 +157,7 @@ describe('DataContext', () => {
         
         // Check that loading called the correct HTTP client method
         expect(mockHttpClient.get).toHaveBeenCalled();
-        expect((mockHttpClient.get as jest.Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
+        expect((mockHttpClient.get as Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
         
         return promise.then((model) => {
             // Check that model was loaded
