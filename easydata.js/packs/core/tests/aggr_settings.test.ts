@@ -4,14 +4,16 @@ import {
 } from '../src/data/aggr_settings';
 import { AggregationColumnStore, DataGroup, GroupDescriptor } from '../src/data/aggr_structures';
 import { DataRow } from '../src/data/data_row';
+import { thrownMessage } from './helpers/errors';
 
 describe('AggregationSettings', () => {
     let columnStore: AggregationColumnStore;
     let settings: AggregationSettings;
 
     beforeEach(() => {
-        // Creating a mock for AggregationColumnStore
-        columnStore = mock<AggregationColumnStore>({
+        // Creating a mock for AggregationColumnStore (a plain object:
+        // latte's mock() turns an object into a function returning it)
+        columnStore = <AggregationColumnStore>({
             getColumnIds: (from, to) => {
                 const result = [];
                 for (let i = from; i <= to; i++) {
@@ -77,9 +79,9 @@ describe('AggregationSettings', () => {
             title: 'Invalid Group'
         };
 
-        expect(() => {
+        expect(thrownMessage(() => {
             settings.addGroup(groupDescriptor);
-        }).toThrow("Invalid columns");
+        })).toMatch(/^Invalid columns/);
     });
 
     it('should add aggregate column correctly', () => {
@@ -92,25 +94,25 @@ describe('AggregationSettings', () => {
     });
 
     it('should throw error when adding invalid aggregate function', () => {
-        expect(() => {
+        expect(thrownMessage(() => {
             settings.addAggregateColumn('col5', 'invalid_func');
-        }).toThrow('Invalid aggregation function');
+        })).toMatch(/^Invalid aggregation function/);
     });
 
     it('should throw error when adding same column to different groups', () => {
         settings.addGroup({ columns: ['col1', 'col2'] });
 
-        expect(() => {
+        expect(thrownMessage(() => {
             settings.addGroup({ columns: ['col2', 'col3'] });
-        }).toThrow("Can't add same columns to different groups/aggregates");
+        })).toBe("Can't add same columns to different groups/aggregates");
     });
 
     it('should throw error when adding column to both group and aggregate', () => {
         settings.addGroup({ columns: ['col1', 'col2'] });
 
-        expect(() => {
+        expect(thrownMessage(() => {
             settings.addAggregateColumn('col1', 'sum');
-        }).toThrow("Can't add same columns to different groups/aggregates");
+        })).toBe("Can't add same columns to different groups/aggregates");
     });
 
     it('should add grand totals correctly', () => {
@@ -181,7 +183,7 @@ describe('AggregationSettings', () => {
 
     it('should build group key correctly', () => {
         const group: DataGroup = { columns: ['col1', 'col2'] };
-        const row = mock<DataRow>({
+        const row = <DataRow><any>({
             getValue: (colId) => {
                 if (colId === 'col1') return 'Value1';
                 if (colId === 'col2') return 'Value2';
@@ -196,7 +198,7 @@ describe('AggregationSettings', () => {
 
     it('should build group key with case sensitivity', () => {
         const group: DataGroup = { columns: ['col1', 'col2'] };
-        const row = mock<DataRow>({
+        const row = <DataRow><any>({
             getValue: (colId) => {
                 if (colId === 'col1') return 'Value1';
                 if (colId === 'col2') return 'Value2';

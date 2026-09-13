@@ -87,6 +87,10 @@ export class EasyDataTable {
         if (typeof options.inMemory !== 'undefined') {
             this.isInMemory = options.inMemory
         }
+        else if (options.rows && !options.loader) {
+            // built from rows with nothing to load more from: it holds all its data
+            this.isInMemory = true;
+        }
         if (this.isInMemory) {
             this.needTotal = false;
             this.totalKnown = true;

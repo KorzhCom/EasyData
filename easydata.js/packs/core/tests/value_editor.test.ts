@@ -43,7 +43,7 @@ describe('ValueEditor', () => {
         const editor = new ValueEditor();
         const dto: ValueEditorDTO = {
             id: 'test-editor',
-            tag: EditorTag.MultipleChoice,
+            tag: EditorTag.List,
             rtype: DataType.String,
             subType: DataType.Int32,
             defval: 'default',
@@ -59,14 +59,14 @@ describe('ValueEditor', () => {
         editor.loadFromData(dto);
         
         expect(editor.id).toBe('test-editor');
-        expect(editor.tag).toBe(EditorTag.MultipleChoice);
+        expect(editor.tag).toBe(EditorTag.List);
         // subType should override rtype
         expect(editor.resType).toBe(DataType.Int32);
         expect(editor.defValue).toBe('default');
         expect(editor.name).toBe('Test Editor');
         expect(editor.accept).toBe('.txt,.pdf');
         expect(editor.multiline).toBe(true);
-        expect(editor.values).toBeArrayEqual([
+        expect(editor.values).toBeDeepEqual([
             { id: '1', text: 'Option 1' },
             { id: '2', text: 'Option 2' }
         ]);

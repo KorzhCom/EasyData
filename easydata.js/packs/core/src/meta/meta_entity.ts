@@ -120,7 +120,7 @@ export class MetaEntity {
     }
 
     public getFirstPrimaryAttr(): MetaEntityAttr | null {
-        return this.getPrimaryAttrs()[0];
+        return this.getPrimaryAttrs()[0] || null;
     }
 
     public getPrimaryAttrs(): MetaEntityAttr[] {
@@ -275,7 +275,8 @@ export class MetaEntityAttr {
 
             this.isNullable = utils.getIfDefined(dto.nul, this.isNullable);
             this.isEditable = utils.getIfDefined(dto.ied, this.isEditable);
-            this.showOnView = utils.getIfDefined(dto.ivis || dto.sov, this.showOnView);
+            // 'ivis' is the old name of 'sov'; `||` would lose an explicit false
+            this.showOnView = utils.getIfDefined(utils.getIfDefined(dto.sov, dto.ivis), this.showOnView);
             this.showOnCreate = utils.getIfDefined(dto.soc, this.showOnCreate);
             this.showOnEdit = utils.getIfDefined(dto.soe, this.showOnEdit);
             this.showInLookup = utils.getIfDefined(dto.sil, this.showInLookup);

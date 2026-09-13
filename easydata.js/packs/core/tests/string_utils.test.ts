@@ -43,6 +43,6 @@ describe('String Utils', () => {
         expect(combinePath('/api', '/data')).toBe('/api/data');
         expect(combinePath('http://example.com', 'api')).toBe('http://example.com/api');
         expect(combinePath('/', 'index.html')).toBe('/index.html');
-        expect(combinePath('/root/', '/path/')).toBe('/root//path/');
+        expect(combinePath('/root/', '/path/')).toBe('/root/path/');
     });
 });

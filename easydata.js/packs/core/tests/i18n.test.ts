@@ -133,10 +133,10 @@ describe('i18n module', () => {
   it('should work with locale settings', () => {
     const settings = i18n.getLocaleSettings();
     
-    // Check date and time formats
-    expect(settings.shortDateFormat).toBe('MM/dd/yyyy');
+    // Check date and time formats. The short ones come from the browser's language
+    expect(settings.shortDateFormat).toMatch(/yyyy/);
     expect(settings.longDateFormat).toBe('dd MMM, yyyy');
-    expect(settings.shortTimeFormat).toBe('HH:mm');
+    expect(settings.shortTimeFormat).toMatch(/mm/);
     expect(settings.longTimeFormat).toBe('HH:mm:ss');
     
     // Check month names
@@ -177,6 +177,8 @@ describe('i18n module', () => {
   });
 
   it('should update locale settings', () => {
+    const shortTimeFormat = i18n.getLocaleSettings().shortTimeFormat;
+
     // Update locale settings
     i18n.updateLocaleSettings({
       shortDateFormat: 'dd.MM.yyyy',
@@ -194,7 +196,7 @@ describe('i18n module', () => {
     expect(settings.currency).toBe('EUR');
     
     // Check that unchanged settings remained the same
-    expect(settings.shortTimeFormat).toBe('HH:mm');
+    expect(settings.shortTimeFormat).toBe(shortTimeFormat);
   });
 
   it('should format date and time by format', () => {
@@ -257,7 +259,9 @@ describe('i18n module', () => {
     
     // Formatting with mask
     expect(i18n.numberToStr(123456, '### ###')).toBe('123 456');
-    expect(i18n.numberToStr(123, '#####')).toBe('00123');
+    // '#' is an optional digit and '0' a padded one, as in .NET
+    expect(i18n.numberToStr(123, '#####')).toBe('123');
+    expect(i18n.numberToStr(123, '00000')).toBe('00123');
     
     // Formatting with sequence
     expect(i18n.numberToStr(1, 'SOne=1|Two=2|Three=3')).toBe('One');

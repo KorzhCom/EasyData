@@ -12,13 +12,18 @@ describe('Time Utils', () => {
         // Set fixed date for tests: May 15, 2023, 10:30:00
         fixedDate = new Date(2023, 4, 15, 10, 30, 0);
         
-        // Mock Date constructor
+        // Mock Date constructor: `new Date()` returns (a copy of) the fixed date
         global.Date = class extends Date {
             constructor(...args: any[]) {
                 if (args.length === 0) {
-                    return fixedDate;
+                    return new originalDate(fixedDate.getTime());
                 }
                 return new originalDate(...args);
+            }
+
+            // The constructor returns real Dates, which must still pass `instanceof Date`
+            static [Symbol.hasInstance](value: any) {
+                return value instanceof originalDate;
             }
         } as any;
     });

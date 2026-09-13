@@ -362,11 +362,15 @@ export namespace i18n {
         determineSettingsByLocale(lang);
     }
 
+    /**
+     * Resets the locales to the initial state: the default (en-US) locale only, as the current one.
+     */
     export function resetLocales() {
-        if (!currentLocale) {
-            currentLocale = utils.assignDeep({}, defaultLocale);
-            loadBrowserLocaleSettings();
-        }
+        allLocales = {
+            'en-US': defaultLocale
+        };
+        currentLocale = utils.assignDeep({}, defaultLocale);
+        loadBrowserLocaleSettings();
     }
     const DT_FORMAT_RGEX = /\[([^\]]+)]|y{2,4}|M{1,4}|d{1,2}|H{1,2}|h{1,2}|m{2}|s{2}|t{2}/g;
 
