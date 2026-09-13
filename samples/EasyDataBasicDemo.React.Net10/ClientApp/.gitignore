@@ -1,0 +1,12 @@
+# dependencies
+/node_modules
+
+# production build (copied to wwwroot on `dotnet publish`)
+/dist
+
+# misc
+.DS_Store
+.env.local
+.env.*.local
+
+npm-debug.log*

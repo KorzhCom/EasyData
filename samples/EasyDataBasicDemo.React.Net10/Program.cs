@@ -5,7 +5,7 @@ using EasyData.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseSqlite(builder.Configuration.GetConnectionString("EasyDataDBSQLite"));
 
@@ -24,16 +24,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 
 app.MapEasyData(options => {
     options.UseDbContext<AppDbContext>();
 });
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
+app.MapControllers();
 
+// The React app handles every other route (in production it is served from wwwroot)
 app.MapFallbackToFile("index.html");
 
 app.EnsureDbInitialized(builder.Configuration, app.Environment);
