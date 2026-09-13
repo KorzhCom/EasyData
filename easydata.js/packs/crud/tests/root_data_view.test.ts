@@ -42,19 +42,16 @@ describe('RootDataView', () => {
         document.body.appendChild(mockSlot);
 
         // Mock for root entity
-        // Mock for root entity
         mockRootEntity = {
             subEntities: mockEntities
         } as unknown as MetaEntity;
 
-        // Mock for metadata
         // Mock for metadata
         mockMetaData = {
             getRootEntity: mock().mockReturnValue(mockRootEntity),
             isEmpty: mock().mockReturnValue(false)
         } as unknown as MetaData;
 
-        // Mock for data context
         // Mock for data context
         mockContext = {
             getMetaData: mock().mockReturnValue(mockMetaData)
@@ -69,7 +66,6 @@ describe('RootDataView', () => {
         });
 
         // Mock for setLocation function
-        // Mock for setLocation function
         jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
     });
 
@@ -80,11 +76,9 @@ describe('RootDataView', () => {
         }
 
         // Reset mocks
-        // Reset mocks
         jest.restoreAllMocks();
     });
 
-    it('should be created with correct default settings', () => {
     it('should be created with correct default settings', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath');
         
@@ -93,26 +87,22 @@ describe('RootDataView', () => {
         expect((view as any).metaData).toBe(mockMetaData);
         
         // Check default options
-        // Check default options
         const options = (view as any).options;
         expect(options).toBeObject();
         expect(options.usePluralNames).toBe(true);
     });
 
     it('should apply custom settings', () => {
-    it('should apply custom settings', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath', {
             usePluralNames: false
         });
         
-        // Check custom options
         // Check custom options
         const options = (view as any).options;
         expect(options).toBeObject();
         expect(options.usePluralNames).toBe(false);
     });
 
-    it('should render title', () => {
     it('should render title', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath');
         
@@ -126,12 +116,10 @@ describe('RootDataView', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath');
         
         // Check that menu description exists
-        // Check that menu description exists
         const menuDescription = mockSlot.querySelector('.ed-menu-description');
         expect(menuDescription).toBeDefined();
         expect(menuDescription.textContent).toBe('Select an entity from the list below');
         
-        // Check that entity list exists
         // Check that entity list exists
         const entityMenu = mockSlot.querySelector('.ed-entity-menu');
         expect(entityMenu).toBeDefined();
@@ -142,12 +130,10 @@ describe('RootDataView', () => {
     });
 
     it('should use plural entity names when usePluralNames=true', () => {
-    it('should use plural entity names when usePluralNames=true', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath', {
             usePluralNames: true
         });
         
-        // Check that plural names are used
         // Check that plural names are used
         const entityItems = mockSlot.querySelectorAll('.ed-entity-item-caption');
         expect(entityItems[0].textContent).toBe('Customers');
@@ -156,12 +142,10 @@ describe('RootDataView', () => {
     });
 
     it('should use regular entity names when usePluralNames=false', () => {
-    it('should use regular entity names when usePluralNames=false', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath', {
             usePluralNames: false
         });
         
-        // Check that regular names are used
         // Check that regular names are used
         const entityItems = mockSlot.querySelectorAll('.ed-entity-item-caption');
         expect(entityItems[0].textContent).toBe('Customer');
@@ -170,14 +154,11 @@ describe('RootDataView', () => {
     });
 
     it('should display entity descriptions', () => {
-    it('should display entity descriptions', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath');
         
         // Check that descriptions are displayed
-        // Check that descriptions are displayed
         const descriptionItems = mockSlot.querySelectorAll('.ed-entity-item-descr');
         
-        // Should be 2 descriptions (entity2 has no description)
         // Should be 2 descriptions (entity2 has no description)
         expect(descriptionItems.length).toBe(2);
         expect(descriptionItems[0].textContent).toBe('Customer entity description');
@@ -185,22 +166,18 @@ describe('RootDataView', () => {
     });
 
     it('should handle entity click', () => {
-    it('should handle entity click', () => {
         view = new RootDataView(mockSlot, mockContext, '/basePath');
         
         // Get first list element
         const firstEntityItem = mockSlot.querySelector('.ed-entity-item');
         
         // Emulate click
-        // Emulate click
         firstEntityItem.click();
         
-        // Check that setLocation was called with correct parameters
         // Check that setLocation was called with correct parameters
         expect(utils.setLocation).toHaveBeenCalledWith('/basePath/entity1');
     });
 
-    it('should display message if model is empty', () => {
     it('should display message if model is empty', () => {
         // Change mock so metadata is empty
         (mockMetaData.isEmpty as jest.Mock).mockReturnValue(true);
