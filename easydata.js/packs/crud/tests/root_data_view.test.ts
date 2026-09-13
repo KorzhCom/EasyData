@@ -49,13 +49,13 @@ describe('RootDataView', () => {
 
         // Mock for metadata
         mockMetaData = {
-            getRootEntity: mock().mockReturnValue(mockRootEntity),
-            isEmpty: mock().mockReturnValue(false)
+            getRootEntity: mock(() => mockRootEntity),
+            isEmpty: mock(() => false)
         } as unknown as MetaData;
 
         // Mock for data context
         mockContext = {
-            getMetaData: mock().mockReturnValue(mockMetaData)
+            getMetaData: mock(() => mockMetaData)
         } as unknown as DataContext;
 
         // Mock for i18n
@@ -89,7 +89,7 @@ describe('RootDataView', () => {
         
         // Check default options
         const options = (view as any).options;
-        expect(options).toBeObject();
+        expect(options).toBeType('object');
         expect(options.usePluralNames).toBe(true);
     });
 
@@ -100,7 +100,7 @@ describe('RootDataView', () => {
         
         // Check custom options
         const options = (view as any).options;
-        expect(options).toBeObject();
+        expect(options).toBeType('object');
         expect(options.usePluralNames).toBe(false);
     });
 

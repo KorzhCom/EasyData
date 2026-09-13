@@ -3,11 +3,6 @@ import { getInternalDateTimeFormat, getEditDateTimeFormat, setLocation } from '.
 import { Mock, restoreAllMocks, setReturnValue, spyOn } from './helpers/mocks';
 
 describe('Utils', () => {
-    // Save original objects before tests
-    const originalWindow = { ...window };
-    const originalHistory = { ...window.history };
-    const originalDispatchEvent = window.dispatchEvent;
-    
     // Original i18n settings
     let originalSettings: any;
 
@@ -26,15 +21,13 @@ describe('Utils', () => {
         });
         
         // Create mocks for window.history
-        window.history.pushState = mock();
-        window.dispatchEvent = mock();
+        spyOn(window.history, 'pushState').mockImplementation(() => {});
+        spyOn(window, 'dispatchEvent').mockImplementation(() => true);
     });
     
     afterEach(() => {
         // Restore original objects and functions
         restoreAllMocks();
-        window.history = originalHistory;
-        window.dispatchEvent = originalDispatchEvent;
     });
     
     it('should return correct internal format for Date', () => {
@@ -70,7 +63,7 @@ describe('Utils', () => {
     it('should change location via pushState and generate event', () => {
         // Set initial state value
         const mockState = { test: 'state' };
-        window.history.state = mockState;
+        window.history.replaceState(mockState, ''); // history.state is read-only
         document.title = 'Test Title';
         
         // Call function

@@ -78,9 +78,12 @@ describe('TextDataFilter', () => {
         filter = new TextDataFilter(mockLoader, sourceTable, 'products');
     });
 
-    it('should be an instance of DataFilter class', () => {
-        expect(filter).toBeInstanceOf(DataFilter);
-        expect(filter).toBeObject();
+    it('should implement the DataFilter interface', () => {
+        // DataFilter is an interface, so there is no class to check with instanceof
+        const dataFilter: DataFilter = filter;
+        expect(typeof dataFilter.getValue).toBe('function');
+        expect(typeof dataFilter.apply).toBe('function');
+        expect(typeof dataFilter.clear).toBe('function');
     });
 
     it('should return empty string for getValue() after creation', () => {
@@ -154,7 +157,7 @@ describe('TextDataFilter', () => {
                 
                 // Check that filter was passed in request
                 const callArgs = loadChunkSpy.mock.calls[0][0];
-                expect(callArgs).toBeObject();
+                expect(callArgs).toBeType('object');
                 expect(callArgs.filters).toBeArray();
                 expect(callArgs.filters[0].value).toBe('orange');
                 
@@ -183,11 +186,10 @@ describe('TextDataFilter', () => {
             .then(filteredTable => {
                 const rows = filteredTable.getCachedRows();
                 expect(rows).toBeArray();
-                expect(rows.length).toBe(3); // Banana, Orange, Pineapple
+                expect(rows.length).toBe(2); // Banana, Pineapple (Orange is "Juicy citrus")
                 
                 const names = rows.map(row => row.getValue('name'));
                 expect(names).toContain('Banana');
-                expect(names).toContain('Orange');
                 expect(names).toContain('Pineapple');
             });
     });

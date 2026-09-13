@@ -1,5 +1,6 @@
 import { 
     DataType,
+    i18n,
     MetaData,
     MetaEntity,
     MetaEntityAttr
@@ -8,6 +9,7 @@ import {
 import { EntityEditForm } from '../src/form/entity_edit_form';
 import { DataContext } from '../src/main/data_context';
 import { ValidationResult, Validator } from '../src/validators/validator';
+import { getEditDateTimeFormat } from '../src/utils/utils';
 
 describe('EntityEditForm', () => {
     let form: EntityEditForm;
@@ -186,7 +188,7 @@ describe('EntityEditForm', () => {
         const data = await form.getData();
         
         // Check that we got object with correct data
-        expect(data).toBeObject();
+        expect(data).toBeType('object');
         expect(data.name).toBe('John');
         expect(data.age).toBe(25); // Converted to number
         expect(data.isActive).toBe(true);
@@ -206,7 +208,8 @@ describe('EntityEditForm', () => {
         
         const birthDateInput = document.createElement('input');
         birthDateInput.name = 'Person.birthDate';
-        birthDateInput.value = '1995-05-15';
+        // Enter the date in the locale's edit format, as the form expects it
+        birthDateInput.value = i18n.dateTimeToStr(new Date(1995, 4, 15), getEditDateTimeFormat(DataType.Date));
         mockFormHtml.appendChild(birthDateInput);
         
         const descriptionTextarea = document.createElement('textarea');
@@ -218,7 +221,7 @@ describe('EntityEditForm', () => {
         const data = await form.getData();
         
         // Check type conversion
-        expect(data).toBeObject();
+        expect(data).toBeType('object');
         expect(data.name).toBe('John');
         expect(data.age).toBe(25);
         

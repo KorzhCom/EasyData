@@ -14,9 +14,15 @@ import { DataContext } from '../src/main/data_context';
 import { EntityDataView } from '../src/views/entity_data_view';
 import { TextFilterWidget } from '../src/widgets/text_filter_widget';
 import {
-    Mock, restoreAllMocks, runAllTimers, setReturnValue,
+    Mock, flushPromises, restoreAllMocks, runAllTimers, setReturnValue,
     spyOn, stubSetLocation, useFakeTimers
 } from './helpers/mocks';
+import { thrownMessage } from './helpers/errors';
+import { polyfillInnerText } from './helpers/dom';
+
+// The CommonJS exports of @easydata/ui. Unlike the ES import above they can be
+// replaced, which lets a test intercept `new EasyGrid()` inside the view
+const uiExports = require('@easydata/ui');
 
 describe('EntityDataView', () => {
     // Mocks for DOM and objects
@@ -43,6 +49,8 @@ describe('EntityDataView', () => {
     }
 
     beforeEach(() => {
+        polyfillInnerText();
+
         // Mock for HTMLElement
         mockSlot = document.createElement('div');
         document.body.appendChild(mockSlot);
@@ -63,7 +71,7 @@ describe('EntityDataView', () => {
             captionPlural: 'Entities',
             attributes: mockAttrs,
             isEditable: true,
-            getPrimaryAttrs: mock().mockReturnValue([mockAttrs[0]])
+            getPrimaryAttrs: mock(() => [mockAttrs[0]])
         } as unknown as MetaEntity;
 
         // Mock for metadata
@@ -95,15 +103,19 @@ describe('EntityDataView', () => {
                 }
                 return Promise.resolve(null);
             }),
-            getCachedRows: mock().mockReturnValue([])
+            getCachedRows: mock(() => [])
         } as unknown as EasyDataTable;
 
         // Mock for data context
         mockContext = {
-            getMetaData: mock().mockReturnValue(mockMetaData),
-            getActiveEntity: mock().mockReturnValue(mockEntity),
+            getMetaData: mock(() => mockMetaData),
+            getActiveEntity: mock(() => mockEntity),
             fetchDataset: mock().mockResolvedValue(mockDataTable),
-            createFilter: mock(),
+            createFilter: mock(() => ({
+                getValue: mock(() => ''),
+                apply: mock().mockResolvedValue(mockDataTable),
+                clear: mock().mockResolvedValue(mockDataTable)
+            })),
             createRecord: mock().mockResolvedValue({}),
             updateRecord: mock().mockResolvedValue({}),
             deleteRecord: mock().mockResolvedValue({})
@@ -111,9 +123,9 @@ describe('EntityDataView', () => {
 
         // Mock for dialog service
         mockDialogService = {
-            open: mock().mockReturnValue({
+            open: mock(() => ({
                 submit: mock()
-            }),
+            })),
             openConfirm: mock().mockResolvedValue(true)
         } as unknown as DialogService;
         spyOn(DefaultDialogService.prototype, 'open').mockImplementation(
@@ -126,16 +138,19 @@ describe('EntityDataView', () => {
         // Mock for EasyGrid
         mockGrid = {
             refresh: mock(),
-            getData: mock().mockReturnValue(mockDataTable)
+            getData: mock(() => mockDataTable),
+            setData: mock(),
+            cellRendererStore: {
+                getDefaultRendererByType: mock(),
+                setDefaultRenderer: mock()
+            }
         } as unknown as EasyGrid;
-        Object.defineProperty(EasyGrid, 'prototype', {
-            value: mockGrid,
-            writable: true
-        });
+        // Make `new EasyGrid()` in the view return this mock
+        spyOn(uiExports, 'EasyGrid').mockImplementation(() => mockGrid);
 
         // Mock for TextFilterWidget
         mockFilterWidget = {
-            applyFilter: mock().mockReturnValue(true)
+            applyFilter: mock(() => true)
         } as unknown as TextFilterWidget;
         spyOn(TextFilterWidget.prototype, 'applyFilter').mockImplementation(
             (refresh) => mockFilterWidget.applyFilter(refresh)
@@ -168,8 +183,9 @@ describe('EntityDataView', () => {
         restoreAllMocks();
     });
 
-    it('should be created with correct default settings', () => {
+    it('should be created with correct default settings', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that context is set
         expect((view as any).context).toBe(mockContext);
@@ -184,8 +200,9 @@ describe('EntityDataView', () => {
         expect(options.showBackToEntities).toBe(true);
     });
 
-    it('should render title and back button', () => {
+    it('should render title and back button', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that title contains entity name
         expect(mockSlot.innerHTML).toContain('<h1>Entities</h1>');
@@ -204,26 +221,29 @@ describe('EntityDataView', () => {
         expect(setLocation).toHaveBeenCalledWith(['/basePath']);
     });
 
-    it('should not render back button if showBackToEntities=false', () => {
+    it('should not render back button if showBackToEntities=false', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showBackToEntities: false });
+        await flushPromises();
         
         // Check absence of the back button
         const backLink = mockSlot.querySelector('a');
         expect(backLink).toBeNull();
     });
 
-    it('should call fetchDataset and create grid', () => {
+    it('should call fetchDataset and create grid', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that fetchDataset was called
         expect(mockContext.fetchDataset).toHaveBeenCalled();
     });
 
-    it('should create filter if showFilterBox=true', () => {
+    it('should create filter if showFilterBox=true', async () => {
         // Replace setTimeout to wait for async operations
         useFakeTimers();
         
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showFilterBox: true });
+        await flushPromises();
         
         runAllTimers();
         
@@ -231,10 +251,11 @@ describe('EntityDataView', () => {
         expect(mockContext.createFilter).toHaveBeenCalled();
     });
 
-    it('should not create filter if showFilterBox=false', () => {
+    it('should not create filter if showFilterBox=false', async () => {
         useFakeTimers();
         
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showFilterBox: false });
+        await flushPromises();
         
         runAllTimers();
         
@@ -242,8 +263,9 @@ describe('EntityDataView', () => {
         expect(mockContext.createFilter).not.toHaveBeenCalled();
     });
 
-    it('should correctly handle add button click', () => {
+    it('should correctly handle add button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the add button click handler
         (view as any).addClickHandler();
@@ -251,12 +273,13 @@ describe('EntityDataView', () => {
         // Check dialog invocation
         expect(mockDialogService.open).toHaveBeenCalled();
         const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
-        expect(openArgs).toBeObject();
+        expect(openArgs).toBeType('object');
         expect(openArgs.title).toBe('Add Entity');
     });
 
-    it('should correctly handle edit button click', () => {
+    it('should correctly handle edit button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the edit button click handler
         (view as any).editClickHandler(new MouseEvent('click'), 0);
@@ -268,13 +291,14 @@ describe('EntityDataView', () => {
         return mockDataTable.getRow(0).then(() => {
             expect(mockDialogService.open).toHaveBeenCalled();
             const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
-            expect(openArgs).toBeObject();
+            expect(openArgs).toBeType('object');
             expect(openArgs.title).toBe('Edit Entity');
         });
     });
 
-    it('should correctly handle delete button click', () => {
+    it('should correctly handle delete button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the delete button click handler
         (view as any).deleteClickHandler(new MouseEvent('click'), 0);
@@ -293,8 +317,9 @@ describe('EntityDataView', () => {
         });
     });
 
-    it('should update data after CRUD operations', () => {
+    it('should update data after CRUD operations', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Replace filterWidget
         (view as any).filterWidget = mockFilterWidget;
@@ -309,12 +334,13 @@ describe('EntityDataView', () => {
         });
     });
 
-    it('should update grid if filter is not applied', () => {
+    it('should update grid if filter is not applied', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Replace filterWidget with flag that filter was not applied
         (view as any).filterWidget = {
-            applyFilter: mock().mockReturnValue(false)
+            applyFilter: mock(() => false)
         };
         
         // Directly call refreshData
@@ -324,8 +350,9 @@ describe('EntityDataView', () => {
         });
     });
 
-    it('should correctly handle errors', () => {
+    it('should correctly handle errors', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create an error
         const error = new Error('Test error');
@@ -336,13 +363,14 @@ describe('EntityDataView', () => {
         // Check error dialog opening
         expect(mockDialogService.open).toHaveBeenCalled();
         const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
-        expect(openArgs).toBeObject();
+        expect(openArgs).toBeType('object');
         expect(openArgs.title).toBe('Ooops, something went wrong');
         expect(openArgs.body).toBe('Test error');
     });
 
-    it('should correctly manage cell renderer', () => {
+    it('should correctly manage cell renderer', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create column with row number
         const column: GridColumn = {
@@ -374,8 +402,9 @@ describe('EntityDataView', () => {
         expect(cell.innerHTML).toContain('Delete');
     });
 
-    it('should synchronize grid column visibility with metadata', () => {
+    it('should synchronize grid column visibility with metadata', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create column with dataColumn
         const column: GridColumn = {
@@ -400,8 +429,8 @@ describe('EntityDataView', () => {
         setReturnValue(mockContext.getActiveEntity as Mock, null);
         
         // Check that the constructor throws an error
-        expect(() => {
+        expect(thrownMessage(() => {
             new EntityDataView(mockSlot, mockContext, '/basePath', {});
-        }).toThrow("Can't find active entity for " + window.location.pathname);
+        })).toBe("Can't find active entity for " + window.location.pathname);
     });
 });

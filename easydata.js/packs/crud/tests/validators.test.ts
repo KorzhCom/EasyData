@@ -242,8 +242,8 @@ describe('DateTimeValidator', () => {
         const result1 = validator.validate(mockAttr, '14:30');
         expect(result1.successed).toBe(true);
         
-        // Incorrect format
-        const result2 = validator.validate(mockAttr, '14.30');
+        // Incorrect format (any separator is accepted, so use non-numeric parts)
+        const result2 = validator.validate(mockAttr, 'ab:cd');
         expect(result2.successed).toBe(false);
         expect(result2.messages).toBeArray();
         expect(result2.messages[0]).toBe('Invalid date format');

@@ -11,6 +11,7 @@ import {
     Mock, advanceTimersByTime, restoreAllMocks, setReturnValue,
     spyOn, useFakeTimers, useRealTimers
 } from './helpers/mocks';
+import { polyfillInnerText } from './helpers/dom';
 
 describe('TextFilterWidget', () => {
     // Variables for tests
@@ -24,6 +25,8 @@ describe('TextFilterWidget', () => {
     
     // Initialization before each test
     beforeEach(() => {
+        polyfillInnerText();
+
         // Create DOM for mounting the widget
         mockSlot = document.createElement('div');
         document.body.appendChild(mockSlot);
@@ -50,7 +53,7 @@ describe('TextFilterWidget', () => {
         
         // Mock for DataFilter
         mockFilter = {
-            getValue: mock().mockReturnValue(''),
+            getValue: mock(() => ''),
             apply: mock().mockResolvedValue(new EasyDataTable())
         } as unknown as DataFilter;
         
@@ -198,6 +201,9 @@ describe('TextFilterWidget', () => {
         input.value = 'test';
         const focusMock = mock();
         input.focus = focusMock;
+
+        // The filter currently holds a value, so clearing the input changes it
+        setReturnValue(mockFilter.getValue as Mock, 'test');
         
         // Emulate clear icon click
         clearIcon.click();
@@ -360,19 +366,21 @@ describe('TextFilterWidget', () => {
         // Check content
         const div = result as HTMLElement;
         
-        // Should have 5 child elements: span, text, span, text
-        expect(div.childNodes.length).toBe(3);
+        // Should have 3 non-empty nodes: span, text, span (the text nodes
+        // before the first and after the last highlight are empty)
+        const nodes = Array.from(div.childNodes).filter(node => node.textContent !== '');
+        expect(nodes.length).toBe(3);
         
         // Check first highlight
-        const firstSpan = div.childNodes[0] as HTMLSpanElement;
+        const firstSpan = nodes[0] as HTMLSpanElement;
         expect(firstSpan.tagName).toBe('SPAN');
         expect(firstSpan.textContent).toBe('test');
         
         // Check text between highlights
-        expect(div.childNodes[1].textContent).toBe(' another ');
+        expect(nodes[1].textContent).toBe(' another ');
         
         // Check second highlight
-        const secondSpan = div.childNodes[2] as HTMLSpanElement;
+        const secondSpan = nodes[2] as HTMLSpanElement;
         expect(secondSpan.tagName).toBe('SPAN');
         expect(secondSpan.textContent).toBe('test');
     });

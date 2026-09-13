@@ -102,8 +102,7 @@ export class EasyDataTable {
 
         if (options.rows) {
             for (const rowData of options.rows) {
-                const row = this.createRow(rowData);
-                this.addRow(row);
+                this.addRow(rowData);
             }
         }
 

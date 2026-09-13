@@ -67,6 +67,11 @@ export function stubSetLocation(): Mock {
     return setLocation;
 }
 
+/** Lets pending promise callbacks run. Uses setImmediate, which the fake timers leave alone. */
+export function flushPromises(): Promise<void> {
+    return new Promise(resolve => setImmediate(resolve));
+}
+
 /** Undoes every `spyOn` (latest first) and switches back to real timers. */
 export function restoreAllMocks(): void {
     while (restorers.length) {
