@@ -7,12 +7,19 @@ import { ValueEditor } from '../src/meta/value_editor';
 import { DataType } from '../src/types/data_type';
 import { EditorTag } from '../src/types/editor_tag';
 import { i18n } from '../src/i18n/i18n';
+// Initializes i18n, as the package entry point does
+import '../src/i18n/load_default_locale_settings';
 
 describe('MetaData', () => {
     let metaData: MetaData;
     
     beforeEach(() => {
         metaData = new MetaData();
+    });
+
+    afterEach(() => {
+        // Drop the texts a test may have added
+        i18n.resetLocales();
     });
 
     it('should be created with correct default values', () => {
@@ -348,7 +355,8 @@ describe('MetaData', () => {
     });
 
     it('should get entities tree with options', () => {
-        // Prepare test data
+        // Prepare test data (a loaded model gets the root name from 'entroot')
+        metaData.rootEntity.name = 'Root';
         const subEntity1 = metaData.createEntity(metaData.rootEntity);
         subEntity1.name = 'Entity1';
         subEntity1.caption = 'Entity 1';
@@ -409,6 +417,9 @@ describe('MetaData', () => {
         attr.id = 'TestAttribute';
         attr.caption = 'Original Caption';
         subEntity.attributes.push(attr);
+
+        // Attribute texts come from i18n
+        i18n.updateLocaleTexts({ Attributes: { TestAttribute: 'Test Attribute' } });
 
         // Get attribute text without format
         const simpleText = metaData.getAttributeText(attr, '');

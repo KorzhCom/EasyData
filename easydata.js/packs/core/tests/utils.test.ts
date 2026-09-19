@@ -171,7 +171,7 @@ describe('utils', () => {
         
         expect(utils.isPropSet(obj, 'prop1')).toBe('value1');
         expect(utils.isPropSet(obj, 'prop2')).toBe('value2'); // Check case insensitivity
-        expect(utils.isPropSet(obj, 'prop3')).toBe(null);
+        expect(utils.isPropSet(obj, 'prop3')).toBeUndefined(); // a null value counts as not set
         expect(utils.isPropSet(obj, 'prop4')).toBe(undefined);
         expect(utils.isPropSet(obj, 'nonExistent')).toBe(undefined);
     });
@@ -342,8 +342,9 @@ describe('utils', () => {
     });
     
     it('should shorten long prefixes in generateId', () => {
+        // The prefix is squeezed to 4 characters spread over it: v(er)y(Lo)g(Pr)e(fix)
         const id = utils.generateId('veryLongPrefix');
-        expect(id.startsWith('vryL-')).toBe(true);
+        expect(id.startsWith('vyge-')).toBe(true);
     });
     
     // Tests for date functions
@@ -391,7 +392,7 @@ describe('utils', () => {
         expect(result instanceof Date).toBe(true);
         expect(result.getHours()).toBe(14);
         expect(result.getMinutes()).toBe(30);
-        expect(result.getSeconds()).toBe(0); // Bug in implementation, should be 45
+        expect(result.getSeconds()).toBe(45);
     });
     
     it('should throw error on incorrect time in strToTime', () => {

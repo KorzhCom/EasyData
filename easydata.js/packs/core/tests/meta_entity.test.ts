@@ -156,11 +156,11 @@ describe('MetaEntity', () => {
         
         // Scanning
         rootEntity.scan(
-            (attr) => {
+            (attr, opts) => {
                 attrCount++;
                 // Stop scanning after the first attribute for testing
                 if (attr.id === 'attr1') {
-                    return;
+                    opts.stop = true;
                 }
             },
             (entity) => {

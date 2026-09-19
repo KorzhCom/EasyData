@@ -68,7 +68,10 @@ export class AggregationSettings {
             ? colIndexOrId
             : this.colStore.getColumnIds(colIndexOrId, colIndexOrId)[0];
 
-        if (this.hasColumnsInUse([colId]) || !this.colStore.validateAggregate(colId, funcId))
+        if (this.hasColumnsInUse([colId]))
+            throw "Can't add same columns to different groups/aggregates";
+
+        if (!this.colStore.validateAggregate(colId, funcId))
             throw 'Invalid aggregation function for the column: ' + colId;
 
         this.aggregates.push({ colId, funcId });

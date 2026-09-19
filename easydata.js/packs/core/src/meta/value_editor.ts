@@ -72,9 +72,13 @@ export class ValueEditor {
     public loadFromData(data: ValueEditorDTO) {
         if (data) {
             this.id = data.id;
-            this.tag = data.tag;
-            this.defValue = data.defval;
-            this.resType = data.rtype;
+            // keep the defaults for whatever the DTO leaves out
+            if (typeof data.tag !== 'undefined')
+                this.tag = data.tag;
+            if (typeof data.defval !== 'undefined')
+                this.defValue = data.defval;
+            if (typeof data.rtype !== 'undefined')
+                this.resType = data.rtype;
             this.accept = data.accept;
             this.multiline = data.multiline;
             if (data.subType) {

@@ -13,7 +13,16 @@ import {
 import { DataContext } from '../src/main/data_context';
 import { EntityDataView } from '../src/views/entity_data_view';
 import { TextFilterWidget } from '../src/widgets/text_filter_widget';
-import * as utils from '../src/utils/utils';
+import {
+    Mock, flushPromises, restoreAllMocks, runAllTimers, setReturnValue,
+    spyOn, stubSetLocation, useFakeTimers
+} from './helpers/mocks';
+import { thrownMessage } from './helpers/errors';
+import { polyfillInnerText } from './helpers/dom';
+
+// The CommonJS exports of @easydata/ui. Unlike the ES import above they can be
+// replaced, which lets a test intercept `new EasyGrid()` inside the view
+const uiExports = require('@easydata/ui');
 
 describe('EntityDataView', () => {
     // Mocks for DOM and objects
@@ -26,6 +35,7 @@ describe('EntityDataView', () => {
     let mockDataTable: EasyDataTable;
     let mockFilterWidget: TextFilterWidget;
     let view: EntityDataView;
+    let setLocation: Mock;
 
     // Helper function to create mock attribute
     function createMockAttr(id: string, options: any = {}): MetaEntityAttr {
@@ -39,6 +49,8 @@ describe('EntityDataView', () => {
     }
 
     beforeEach(() => {
+        polyfillInnerText();
+
         // Mock for HTMLElement
         mockSlot = document.createElement('div');
         document.body.appendChild(mockSlot);
@@ -59,7 +71,7 @@ describe('EntityDataView', () => {
             captionPlural: 'Entities',
             attributes: mockAttrs,
             isEditable: true,
-            getPrimaryAttrs: mock().mockReturnValue([mockAttrs[0]])
+            getPrimaryAttrs: mock(() => [mockAttrs[0]])
         } as unknown as MetaEntity;
 
         // Mock for metadata
@@ -91,15 +103,19 @@ describe('EntityDataView', () => {
                 }
                 return Promise.resolve(null);
             }),
-            getCachedRows: mock().mockReturnValue([])
+            getCachedRows: mock(() => [])
         } as unknown as EasyDataTable;
 
         // Mock for data context
         mockContext = {
-            getMetaData: mock().mockReturnValue(mockMetaData),
-            getActiveEntity: mock().mockReturnValue(mockEntity),
+            getMetaData: mock(() => mockMetaData),
+            getActiveEntity: mock(() => mockEntity),
             fetchDataset: mock().mockResolvedValue(mockDataTable),
-            createFilter: mock(),
+            createFilter: mock(() => ({
+                getValue: mock(() => ''),
+                apply: mock().mockResolvedValue(mockDataTable),
+                clear: mock().mockResolvedValue(mockDataTable)
+            })),
             createRecord: mock().mockResolvedValue({}),
             updateRecord: mock().mockResolvedValue({}),
             deleteRecord: mock().mockResolvedValue({})
@@ -107,54 +123,54 @@ describe('EntityDataView', () => {
 
         // Mock for dialog service
         mockDialogService = {
-            open: mock().mockReturnValue({
+            open: mock(() => ({
                 submit: mock()
-            }),
+            })),
             openConfirm: mock().mockResolvedValue(true)
         } as unknown as DialogService;
-        // jest.spyOn(DefaultDialogService.prototype, 'constructor').mockImplementation(() => {});
-        // jest.spyOn(DefaultDialogService.prototype, 'open').mockImplementation(
-        //     (options) => mockDialogService.open(options)
-        // );
-        // jest.spyOn(DefaultDialogService.prototype, 'openConfirm').mockImplementation(
-        //     (title, message) => mockDialogService.openConfirm(title, message)
-        // );
+        spyOn(DefaultDialogService.prototype, 'open').mockImplementation(
+            (options) => mockDialogService.open(options)
+        );
+        spyOn(DefaultDialogService.prototype, 'openConfirm').mockImplementation(
+            (title, message) => mockDialogService.openConfirm(title, message)
+        );
 
         // Mock for EasyGrid
         mockGrid = {
             refresh: mock(),
-            getData: mock().mockReturnValue(mockDataTable)
+            getData: mock(() => mockDataTable),
+            setData: mock(),
+            cellRendererStore: {
+                getDefaultRendererByType: mock(),
+                setDefaultRenderer: mock()
+            }
         } as unknown as EasyGrid;
-        // jest.spyOn(EasyGrid.prototype, 'constructor').mockImplementation(() => {});
-        Object.defineProperty(EasyGrid, 'prototype', {
-            value: mockGrid,
-            writable: true
-        });
+        // Make `new EasyGrid()` in the view return this mock
+        spyOn(uiExports, 'EasyGrid').mockImplementation(() => mockGrid);
 
         // Mock for TextFilterWidget
         mockFilterWidget = {
-            applyFilter: mock().mockReturnValue(true)
+            applyFilter: mock(() => true)
         } as unknown as TextFilterWidget;
-        // jest.spyOn(TextFilterWidget.prototype, 'constructor').mockImplementation(() => {});
-        // jest.spyOn(TextFilterWidget.prototype, 'applyFilter').mockImplementation(
-        //     (refresh) => mockFilterWidget.applyFilter(refresh)
-        // );
+        spyOn(TextFilterWidget.prototype, 'applyFilter').mockImplementation(
+            (refresh) => mockFilterWidget.applyFilter(refresh)
+        );
 
         // Mock for i18n
-        // jest.spyOn(i18n, 'getText').mockImplementation((key: string) => {
-        //     if (key === 'BackToEntities') return 'Back to Entities';
-        //     if (key === 'AddRecordBtnTitle') return 'Add Record';
-        //     if (key === 'EditBtn') return 'Edit';
-        //     if (key === 'DeleteBtn') return 'Delete';
-        //     if (key === 'AddDlgCaption') return 'Add {entity}';
-        //     if (key === 'EditDlgCaption') return 'Edit {entity}';
-        //     if (key === 'DeleteDlgCaption') return 'Delete {entity}';
-        //     if (key === 'DeleteDlgMessage') return 'Delete record with ID: {recordId}';
-        //     return key;
-        // });
-        //
-        // // Mock for utils.setLocation
-        // jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
+        spyOn(i18n, 'getText').mockImplementation((key: string) => {
+            if (key === 'BackToEntities') return 'Back to Entities';
+            if (key === 'AddRecordBtnTitle') return 'Add Record';
+            if (key === 'EditBtn') return 'Edit';
+            if (key === 'DeleteBtn') return 'Delete';
+            if (key === 'AddDlgCaption') return 'Add {entity}';
+            if (key === 'EditDlgCaption') return 'Edit {entity}';
+            if (key === 'DeleteDlgCaption') return 'Delete {entity}';
+            if (key === 'DeleteDlgMessage') return 'Delete record with ID: {recordId}';
+            return key;
+        });
+
+        // Mock for utils.setLocation
+        setLocation = stubSetLocation();
     });
 
     afterEach(() => {
@@ -164,11 +180,12 @@ describe('EntityDataView', () => {
         }
 
         // Reset mocks
-        // jest.restoreAllMocks();
+        restoreAllMocks();
     });
 
-    it('should be created with correct default settings', () => {
+    it('should be created with correct default settings', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that context is set
         expect((view as any).context).toBe(mockContext);
@@ -183,8 +200,9 @@ describe('EntityDataView', () => {
         expect(options.showBackToEntities).toBe(true);
     });
 
-    it('should render title and back button', () => {
+    it('should render title and back button', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that title contains entity name
         expect(mockSlot.innerHTML).toContain('<h1>Entities</h1>');
@@ -196,90 +214,97 @@ describe('EntityDataView', () => {
         
         // Check that the click handler is set
         const clickEvent = new MouseEvent('click');
-        const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
+        const preventDefaultSpy = spyOn(clickEvent, 'preventDefault');
         backLink.dispatchEvent(clickEvent);
         
         expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(utils.setLocation).toHaveBeenCalledWith('/basePath');
+        expect(setLocation).toHaveBeenCalledWith(['/basePath']);
     });
 
-    it('should not render back button if showBackToEntities=false', () => {
+    it('should not render back button if showBackToEntities=false', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showBackToEntities: false });
+        await flushPromises();
         
         // Check absence of the back button
         const backLink = mockSlot.querySelector('a');
         expect(backLink).toBeNull();
     });
 
-    it('should call fetchDataset and create grid', () => {
+    it('should call fetchDataset and create grid', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Check that fetchDataset was called
         expect(mockContext.fetchDataset).toHaveBeenCalled();
     });
 
-    it('should create filter if showFilterBox=true', () => {
+    it('should create filter if showFilterBox=true', async () => {
         // Replace setTimeout to wait for async operations
-        jest.useFakeTimers();
+        useFakeTimers();
         
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showFilterBox: true });
+        await flushPromises();
         
-        jest.runAllTimers();
+        runAllTimers();
         
         // Check filter creation
         expect(mockContext.createFilter).toHaveBeenCalled();
     });
 
-    it('should not create filter if showFilterBox=false', () => {
-        jest.useFakeTimers();
+    it('should not create filter if showFilterBox=false', async () => {
+        useFakeTimers();
         
         view = new EntityDataView(mockSlot, mockContext, '/basePath', { showFilterBox: false });
+        await flushPromises();
         
-        jest.runAllTimers();
+        runAllTimers();
         
         // Check that filter is not created
         expect(mockContext.createFilter).not.toHaveBeenCalled();
     });
 
-    it('should correctly handle add button click', () => {
+    it('should correctly handle add button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the add button click handler
         (view as any).addClickHandler();
         
         // Check dialog invocation
         expect(mockDialogService.open).toHaveBeenCalled();
-        const openArgs = (mockDialogService.open as jest.Mock).mock.calls[0][0];
-        expect(openArgs).toBeObject();
+        const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
+        expect(openArgs).toBeType('object');
         expect(openArgs.title).toBe('Add Entity');
     });
 
-    it('should correctly handle edit button click', () => {
+    it('should correctly handle edit button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the edit button click handler
         (view as any).editClickHandler(new MouseEvent('click'), 0);
         
         // Check getRow invocation
-        expect(mockDataTable.getRow).toHaveBeenCalledWith(0);
+        expect(mockDataTable.getRow).toHaveBeenCalledWith([0]);
         
         // Check that the edit dialog opens
         return mockDataTable.getRow(0).then(() => {
             expect(mockDialogService.open).toHaveBeenCalled();
-            const openArgs = (mockDialogService.open as jest.Mock).mock.calls[0][0];
-            expect(openArgs).toBeObject();
+            const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
+            expect(openArgs).toBeType('object');
             expect(openArgs.title).toBe('Edit Entity');
         });
     });
 
-    it('should correctly handle delete button click', () => {
+    it('should correctly handle delete button click', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Directly call the delete button click handler
         (view as any).deleteClickHandler(new MouseEvent('click'), 0);
         
         // Check getRow invocation
-        expect(mockDataTable.getRow).toHaveBeenCalledWith(0);
+        expect(mockDataTable.getRow).toHaveBeenCalledWith([0]);
         
         // Check confirmation dialog opening
         return mockDataTable.getRow(0).then(() => {
@@ -287,13 +312,14 @@ describe('EntityDataView', () => {
             
             // Check deleteRecord call after confirmation
             return mockDialogService.openConfirm("", "").then(() => {
-                expect(mockContext.deleteRecord).toHaveBeenCalledWith({ id: 1 });
+                expect(mockContext.deleteRecord).toHaveBeenCalledWith([{ id: 1 }]);
             });
         });
     });
 
-    it('should update data after CRUD operations', () => {
+    it('should update data after CRUD operations', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Replace filterWidget
         (view as any).filterWidget = mockFilterWidget;
@@ -304,16 +330,17 @@ describe('EntityDataView', () => {
             expect(mockContext.fetchDataset).toHaveBeenCalled();
             
             // Check filter application
-            expect(mockFilterWidget.applyFilter).toHaveBeenCalledWith(false);
+            expect(mockFilterWidget.applyFilter).toHaveBeenCalledWith([false]);
         });
     });
 
-    it('should update grid if filter is not applied', () => {
+    it('should update grid if filter is not applied', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Replace filterWidget with flag that filter was not applied
         (view as any).filterWidget = {
-            applyFilter: mock().mockReturnValue(false)
+            applyFilter: mock(() => false)
         };
         
         // Directly call refreshData
@@ -323,8 +350,9 @@ describe('EntityDataView', () => {
         });
     });
 
-    it('should correctly handle errors', () => {
+    it('should correctly handle errors', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create an error
         const error = new Error('Test error');
@@ -334,14 +362,15 @@ describe('EntityDataView', () => {
         
         // Check error dialog opening
         expect(mockDialogService.open).toHaveBeenCalled();
-        const openArgs = (mockDialogService.open as jest.Mock).mock.calls[0][0];
-        expect(openArgs).toBeObject();
+        const openArgs = (mockDialogService.open as Mock).mock.calls[0][0];
+        expect(openArgs).toBeType('object');
         expect(openArgs.title).toBe('Ooops, something went wrong');
         expect(openArgs.body).toBe('Test error');
     });
 
-    it('should correctly manage cell renderer', () => {
+    it('should correctly manage cell renderer', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create column with row number
         const column: GridColumn = {
@@ -373,8 +402,9 @@ describe('EntityDataView', () => {
         expect(cell.innerHTML).toContain('Delete');
     });
 
-    it('should synchronize grid column visibility with metadata', () => {
+    it('should synchronize grid column visibility with metadata', async () => {
         view = new EntityDataView(mockSlot, mockContext, '/basePath', {});
+        await flushPromises();
         
         // Create column with dataColumn
         const column: GridColumn = {
@@ -396,11 +426,11 @@ describe('EntityDataView', () => {
 
     it('should throw error if active entity is not found', () => {
         // Replace getActiveEntity to return null
-        (mockContext.getActiveEntity as jest.Mock).mockReturnValue(null);
+        setReturnValue(mockContext.getActiveEntity as Mock, null);
         
         // Check that the constructor throws an error
-        expect(() => {
+        expect(thrownMessage(() => {
             new EntityDataView(mockSlot, mockContext, '/basePath', {});
-        }).toThrow("Can't find active entity for " + window.location.pathname);
+        })).toBe("Can't find active entity for " + window.location.pathname);
     });
 });

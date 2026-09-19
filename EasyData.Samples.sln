@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.MVC.Net6"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.Angular.Net6", "samples\EasyDataBasicDemo.Angular.Net6\EasyDataBasicDemo.Angular.Net6.csproj", "{4BBC1DDE-416B-4370-9345-0A0FAA53ED63}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.React.Net6", "samples\EasyDataBasicDemo.React.Net6\EasyDataBasicDemo.React.Net6.csproj", "{A1FFADD3-A719-4989-AF96-76CF057595F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.React.Net10", "samples\EasyDataBasicDemo.React.Net10\EasyDataBasicDemo.React.Net10.csproj", "{A1FFADD3-A719-4989-AF96-76CF057595F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDataBasicDemo.BlazorAppServer.Net6", "samples\EasyDataBasicDemo.BlazorAppServer.Net6\EasyDataBasicDemo.BlazorAppServer.Net6.csproj", "{7D40E51C-607D-4017-A11B-901D3AA62DC1}"
 EndProject

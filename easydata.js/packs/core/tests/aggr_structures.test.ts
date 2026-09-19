@@ -191,7 +191,7 @@ describe('AggregatesCalculator Interface', () => {
             errorOccurred: errorCallback
         });
         
-        expect(resultCallback).toHaveBeenCalledWith({ sum: 100, count: 10 }, 1);
+        expect(resultCallback).toHaveBeenCalledWith([{ sum: 100, count: 10 }, 1]);
         expect(errorCallback).not.toHaveBeenCalled();
         expect(calculator.needRecalculation()).toBe(false);
     });

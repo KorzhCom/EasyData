@@ -2,12 +2,14 @@ import { expect } from "@olton/latte"
 
 import { 
     HttpClient, MetaData, HttpActionResult,
-    EasyDataTable, DataType, DataColumnList, DataRow
+    EasyDataTable, DataType, DataRow
 } from '@easydata/core';
 
 import { DataContext } from '../src/main/data_context';
 import { TextDataFilter } from '../src/filter/text_data_filter';
 import { EasyDataServerLoader } from '../src/main/easy_data_server_loader';
+import { Mock, setReturnValue } from './helpers/mocks';
+import { thrownMessage } from './helpers/errors';
 
 describe('DataContext', () => {
     let dataContext: DataContext;
@@ -23,35 +25,23 @@ describe('DataContext', () => {
             post: mock(),
         } as unknown as HttpClient;
 
-        // Create mock for HttpActionResult
-        mockActionResult = {
-            then: mock().mockImplementation((callback) => {
-                callback({ 
-                    model: { 
-                        id: 'test-model', 
-                        name: 'Test Model',
-                        entroot: { 
-                            name: 'Root',
-                            attrs: [],
-                            ents: [
-                                { id: 'entity1', name: 'Entity1', attrs: [], ents: [] }
-                            ]
-                        }
-                    }
-                });
-                return mockActionResult;
-            }),
-            catch: mock().mockImplementation((callback) => {
-                return mockActionResult; 
-            }),
-            finally: mock().mockImplementation((callback) => {
-                callback();
-                return mockActionResult;
-            })
-        } as unknown as HttpActionResult<any>;
+        // Create mock for HttpActionResult: a promise resolved with the server response
+        mockActionResult = Promise.resolve({
+            model: {
+                id: 'test-model',
+                name: 'Test Model',
+                entroot: {
+                    name: 'Root',
+                    attrs: [],
+                    ents: [
+                        { id: 'entity1', name: 'Entity1', attrs: [], ents: [] }
+                    ]
+                }
+            }
+        }) as unknown as HttpActionResult<any>;
 
-        (mockHttpClient.get as jest.Mock).mockReturnValue(mockActionResult);
-        (mockHttpClient.post as jest.Mock).mockReturnValue(mockActionResult);
+        setReturnValue(mockHttpClient.get as Mock, mockActionResult);
+        setReturnValue(mockHttpClient.post as Mock, mockActionResult);
 
         // Counters for onProcessStart and onProcessEnd methods
         processStartCount = 0;
@@ -98,7 +88,7 @@ describe('DataContext', () => {
 
     it('should set and get active entity', () => {
         // Load metadata
-        dataContext.loadMetaData().then(() => {
+        return dataContext.loadMetaData().then(() => {
             // Set active entity
             dataContext.setActiveSource('entity1');
             
@@ -146,9 +136,9 @@ describe('DataContext', () => {
         dataContext.setEndpoint('CustomEndpoint', '/api/custom/{param1}/{param2}');
         
         // Try to resolve endpoint with missing parameter
-        expect(() => {
+        expect(thrownMessage(() => {
             dataContext.resolveEndpoint('CustomEndpoint', { param1: 'value1' });
-        }).toThrow('Parameter [param2] is not defined');
+        })).toBe('Parameter [param2] is not defined');
     });
 
     it('should load metadata', () => {
@@ -156,7 +146,7 @@ describe('DataContext', () => {
         
         // Check that loading called the correct HTTP client method
         expect(mockHttpClient.get).toHaveBeenCalled();
-        expect((mockHttpClient.get as jest.Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
+        expect((mockHttpClient.get as Mock).mock.calls[0][0]).toContain('/api/test/models/test-model');
         
         return promise.then((model) => {
             // Check that model was loaded
@@ -186,10 +176,9 @@ describe('DataContext', () => {
     it('should load dataset', () => {
         // Configure mock for loadChunk
         const mockData = new EasyDataTable();
-        const mockColumns = new DataColumnList();
-        mockColumns.add({ id: 'id', label: 'ID', type: DataType.Int32 });
-        mockColumns.add({ id: 'name', label: 'Name', type: DataType.String });
-        mockData.columns = mockColumns;
+        // `columns` has no setter, so add to the table's own column list
+        mockData.columns.add({ id: 'id', label: 'ID', type: DataType.Int32 });
+        mockData.columns.add({ id: 'name', label: 'Name', type: DataType.String });
         mockData.addRow([1, 'Test']);
         
         const dataLoader = dataContext.getDataLoader() as EasyDataServerLoader;

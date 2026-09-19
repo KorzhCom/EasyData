@@ -36,6 +36,7 @@ export class MetaData {
         this.id = '__none';
         this.name = 'Empty model';
         this.rootEntity = this.createEntity();
+        this.editors = [];
 
         this.displayFormats = new Map<DataType, DisplayFormatDescriptor[]>();
     }
@@ -232,7 +233,7 @@ export class MetaData {
             else if (attribute.lookupAttr) {
                 attrId = attribute.lookupAttr;
                 attribute = this.getAttributeById(attrId);
-                return attribute && attribute[propName];
+                return !!(attribute && attribute[propName]);
             }
             else {
                 return false;

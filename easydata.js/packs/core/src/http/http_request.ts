@@ -81,9 +81,9 @@ export class HttpRequest {
 
         let url = this.url;
         if (this.queryParams && Object.keys(this.queryParams).length > 0) {
-            url += encodeURI('?' + Object.keys(this.queryParams)
-                .map(param => param + '=' + this.queryParams[param])
-                .join('&'));
+            url += '?' + Object.keys(this.queryParams)
+                .map(param => encodeURIComponent(param) + '=' + encodeURIComponent(this.queryParams[param]))
+                .join('&');
         }
 
         this.xhr.open(this.method, url, true);

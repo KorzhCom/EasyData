@@ -60,16 +60,15 @@ export class HttpClient {
         options = options || {};
 
         const dataType = options.dataType || 'json';
-        const contentType = options.contentType || (dataType !== 'form-data') 
-            ? 'application/json' 
-            : null;
+        const contentType = options.contentType
+            || (dataType !== 'form-data' ? 'application/json' : null);
 
         if (data && dataType != 'form-data' && this.customPayload) {
             data.data = utils.assignDeep(data.data || {}, this.customPayload);
         }
 
-        const XHR = ('onload' in new XMLHttpRequest()) 
-            ? XMLHttpRequest 
+        const XHR = (typeof XMLHttpRequest !== 'undefined')
+            ? XMLHttpRequest
             : window["XDomainRequest"]; //IE support
 
         const xhr: XMLHttpRequest = new XHR();

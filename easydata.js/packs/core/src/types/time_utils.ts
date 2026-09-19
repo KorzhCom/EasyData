@@ -20,12 +20,12 @@ export class TimeValue {
             return this.date;
         }
         else {
-            specialDatesResolver.getDateByName(this._name);
+            return specialDatesResolver.getDateByName(this._name, settings);
         }
     }
 
     get name() : string {
-        return this.name;
+        return this._name;
     }
 }
 

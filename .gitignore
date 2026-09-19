@@ -353,6 +353,7 @@ MigrationBackup/
 easydata.js/**/docs
 
 package-lock.json
+!/package-lock.json
 dist/
 
 /samples/**/wwwroot/js/easydata.js

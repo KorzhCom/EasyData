@@ -3,15 +3,15 @@ import { expect } from "@olton/latte"
 import { MetaData } from '@easydata/core';
 import { DataContext } from '../src/main/data_context';
 import { EasyDataViewDispatcher } from '../src/views/easy_data_view_dispatcher';
-import { EntityDataView } from '../src/views/entity_data_view';
-import { RootDataView } from '../src/views/root_data_view';
-import * as utils from '../src/utils/utils';
+import { restoreAllMocks, spyOn, stubSetLocation } from './helpers/mocks';
+import { thrownMessage } from './helpers/errors';
 
 describe('EasyDataViewDispatcher', () => {
-    // Original objects for restoration after tests
-    const originalLocation = window.location;
-    const originalWindowAddEventListener = window.addEventListener;
-    const originalWindowRemoveEventListener = window.removeEventListener;
+    // Original URL for restoration after tests
+    const originalUrl = window.location.href;
+
+    // The test DOM doesn't allow replacing window.location, so change the path in place
+    const setPath = (path: string) => window.history.replaceState(null, '', path);
 
     // Mock elements for DOM
     let mockContainer: HTMLElement;
@@ -27,38 +27,37 @@ describe('EasyDataViewDispatcher', () => {
         document.body.appendChild(mockParent);
         
         // Mock for window.location
-        delete (window as any).location;
-        window.location = {
-            ...originalLocation,
-            pathname: '/app/easydata/entity1',
-            href: 'http://example.com/app/easydata/entity1'
-        } as Location;
+        setPath('/app/easydata/entity1');
 
         // Mocks for addEventListener and removeEventListener
-        window.addEventListener = mock();
-        window.removeEventListener = mock();
+        spyOn(window, 'addEventListener').mockImplementation(() => {});
+        spyOn(window, 'removeEventListener').mockImplementation(() => {});
         
         // Mock for loadMetaData
-        // jest.spyOn(DataContext.prototype, 'loadMetaData').mockImplementation(() => {
-        //     return Promise.resolve(new MetaData());
-        // });
-        //
-        // // Mock for setActiveSource
-        // jest.spyOn(DataContext.prototype, 'setActiveSource').mockImplementation(() => {});
-        //
-        // // Mock for setLocation
-        // jest.spyOn(utils, 'setLocation').mockImplementation(() => {});
-        //
-        // // Save original view constructors
-        // jest.spyOn(EntityDataView.prototype, 'constructor').mockImplementation(() => {});
-        // jest.spyOn(RootDataView.prototype, 'constructor').mockImplementation(() => {});
+        spyOn(DataContext.prototype, 'loadMetaData').mockImplementation(() => {
+            return Promise.resolve(new MetaData());
+        });
+
+        // Mock for setActiveSource
+        spyOn(DataContext.prototype, 'setActiveSource').mockImplementation(() => {});
+
+        // Mocks for the active entity and its data, used by the EntityDataView the dispatcher creates
+        spyOn(DataContext.prototype, 'getActiveEntity').mockReturnValue({
+            id: 'entity1',
+            caption: 'Entity 1',
+            captionPlural: 'Entities 1',
+            attributes: [],
+            isEditable: false
+        });
+        spyOn(DataContext.prototype, 'fetchDataset').mockImplementation(() => new Promise(() => {}));
+
+        // Mock for setLocation
+        stubSetLocation();
     });
 
     afterEach(() => {
-        // Restore original objects and methods
-        window.location = originalLocation;
-        window.addEventListener = originalWindowAddEventListener;
-        window.removeEventListener = originalWindowRemoveEventListener;
+        // Restore original location
+        setPath(originalUrl);
         
         // Remove added elements
         if (mockParent.parentNode) {
@@ -66,13 +65,16 @@ describe('EasyDataViewDispatcher', () => {
         }
         
         // Reset all mocks
-        // jest.restoreAllMocks();
+        restoreAllMocks();
         
         // Remove global EDView variable
         delete window['EDView'];
     });
 
     it('should be created with default settings', () => {
+        // The default container
+        mockContainer.id = 'EasyDataContainer';
+
         const dispatcher = new EasyDataViewDispatcher();
         
         expect(dispatcher).toBeDefined();
@@ -85,6 +87,8 @@ describe('EasyDataViewDispatcher', () => {
     });
 
     it('should be created with custom settings', () => {
+        mockContainer.id = 'customContainer';
+
         const dispatcher = new EasyDataViewDispatcher({
             container: '#customContainer',
             basePath: 'custom-path',
@@ -170,17 +174,17 @@ describe('EasyDataViewDispatcher', () => {
     });
 
     it('should throw error with incorrect container', () => {
-        expect(() => {
+        expect(thrownMessage(() => {
             new EasyDataViewDispatcher({
                 container: '#nonexistentContainer'
             });
-        }).toThrow(/Unrecognized `container` parameter/);
+        })).toMatch(/Unrecognized `container` parameter/);
         
-        expect(() => {
+        expect(thrownMessage(() => {
             new EasyDataViewDispatcher({
                 container: null
             });
-        }).toThrow('Container is undefined');
+        })).toBe('Container is undefined');
     });
 
     it('should correctly determine active source ID', () => {
@@ -192,11 +196,7 @@ describe('EasyDataViewDispatcher', () => {
         expect((dispatcher as any).getActiveSourceId()).toBe('entity1');
         
         // Change path to root
-        window.location = {
-            ...window.location,
-            pathname: '/app/easydata',
-            href: 'http://example.com/app/easydata'
-        } as Location;
+        setPath('/app/easydata');
         
         expect((dispatcher as any).getActiveSourceId()).toBeNull();
     });
@@ -211,16 +211,16 @@ describe('EasyDataViewDispatcher', () => {
     });
 
     it('should start and load metadata', async () => {
-        // const dispatcher = new EasyDataViewDispatcher({
-        //     container: '#testContainer'
-        // });
-        //
-        // const setActiveViewSpy = jest.spyOn(dispatcher as any, 'setActiveView');
-        //
-        // await dispatcher.run();
-        //
-        // expect(DataContext.prototype.loadMetaData).toHaveBeenCalled();
-        // expect(setActiveViewSpy).toHaveBeenCalled();
+        const dispatcher = new EasyDataViewDispatcher({
+            container: '#testContainer'
+        });
+
+        const setActiveViewSpy = spyOn(dispatcher as any, 'setActiveView');
+
+        await dispatcher.run();
+
+        expect(DataContext.prototype.loadMetaData).toHaveBeenCalled();
+        expect(setActiveViewSpy).toHaveBeenCalled();
     });
 
     it('should set active Entity view', async () => {
@@ -231,17 +231,13 @@ describe('EasyDataViewDispatcher', () => {
         await dispatcher.run();
         
         // Since path includes entity ID, EntityDataView should be created
-        expect(DataContext.prototype.setActiveSource).toHaveBeenCalledWith('entity1');
+        expect(DataContext.prototype.setActiveSource).toHaveBeenCalledWith(['entity1']);
         expect(window['EDView']).toBeDefined();
     });
 
     it('should set active Root view', async () => {
         // Change path to root
-        window.location = {
-            ...window.location,
-            pathname: '/app/easydata',
-            href: 'http://example.com/app/easydata'
-        } as Location;
+        setPath('/app/easydata');
         
         const dispatcher = new EasyDataViewDispatcher({
             container: '#testContainer'
@@ -262,7 +258,9 @@ describe('EasyDataViewDispatcher', () => {
         await dispatcher.run();
         
         // Check that event listeners were added
-        expect(window.addEventListener).toHaveBeenCalledWith(['ed_set_location', 'popstate']);
+        const onSetLocation = (dispatcher as any).onSetLocation;
+        expect(window.addEventListener).toHaveBeenCalledWith(['ed_set_location', onSetLocation]);
+        expect(window.addEventListener).toHaveBeenCalledWith(['popstate', onSetLocation]);
     });
 
     it('should remove event listeners on detach', async () => {
@@ -275,7 +273,9 @@ describe('EasyDataViewDispatcher', () => {
         dispatcher.detach();
         
         // Check that event listeners were removed
-        expect(window.removeEventListener).toHaveBeenCalledWith(['ed_set_location', 'popstate']);
+        const onSetLocation = (dispatcher as any).onSetLocation;
+        expect(window.removeEventListener).toHaveBeenCalledWith(['ed_set_location', onSetLocation]);
+        expect(window.removeEventListener).toHaveBeenCalledWith(['popstate', onSetLocation]);
     });
 
     it('should clear container and data on view change', async () => {
@@ -288,15 +288,15 @@ describe('EasyDataViewDispatcher', () => {
         
         // Mock for data table clear method
         const clearMock = mock();
-        (dispatcher as any).context.getData = mock().mockReturnValue({
+        (dispatcher as any).context.getData = mock(() => ({
             clear: clearMock
-        });
+        }));
         
         // Call setActiveView method directly
         (dispatcher as any).setActiveView();
         
-        // Check that container was cleared
-        expect(mockContainer.innerHTML).toBe('');
+        // Check that the old content is gone (the new view renders into the container)
+        expect(mockContainer.innerHTML).not.toContain('Test content');
         
         // Check that data was cleared
         expect(clearMock).toHaveBeenCalled();

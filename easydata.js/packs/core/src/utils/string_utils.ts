@@ -8,7 +8,7 @@ export function reverseString(str: string): string{
 
 
 export function strEndsWith(str : string, symbol: string): boolean {
-	return str && str.lastIndexOf(symbol) == (str.length - symbol.length);
+	return typeof str === 'string' && str.endsWith(symbol);
 }
 
 /**
@@ -23,7 +23,7 @@ export function combinePath (path1: string, path2: string): string {
 
 		if (result.charAt(result.length - 1) != '/')
 			result += "/";
-		result += path2;
+		result += (path2 && path2.charAt(0) == '/') ? path2.substring(1) : path2;
 	}
 	else {
 		result = path2;

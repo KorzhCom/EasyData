@@ -72,6 +72,11 @@ export namespace utils {
 
         for (let source of sources) {
             if (source && source.hasOwnProperty) {
+                // a reference back to the source itself must point to the target
+                if (typeof source === 'object' && !hashSet.has(source)) {
+                    hashSet.set(source, target);
+                }
+
                 for (let key in source) {
                     if (source.hasOwnProperty(key)) {
                         let sourceVal = source[key];
@@ -520,7 +525,7 @@ export namespace utils {
             if (minute > 59)
                 throw '';
 
-            const second = timeItems.length > 1 ? safeParseInt(timeItems[1]) : 0
+            const second = timeItems.length > 2 ? safeParseInt(timeItems[2]) : 0;
             if (second > 59)
                 throw '';
 
