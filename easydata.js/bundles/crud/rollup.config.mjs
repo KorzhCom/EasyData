@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 import noEmit from 'rollup-plugin-no-emit'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from "autoprefixer"
-import pkg from './package.json' with { type: 'json' };
+import versionJson from '../../version.json' with { type: 'json' };
 import buble from '@rollup/plugin-buble'
 import cleanup from 'rollup-plugin-cleanup'
 
@@ -23,7 +23,7 @@ const production = !(process.env.ROLLUP_WATCH),
 
 const banner = `
 /*!
- * EasyData.JS CRUD Bundle v${pkg.version}
+ * EasyData.JS CRUD Bundle v${versionJson.version}
  * Copyright 2020-${new Date().getFullYear()} Korzh.com
  * Licensed under MIT
  */

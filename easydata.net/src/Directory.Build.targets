@@ -8,5 +8,15 @@
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
-  
+
+  <!-- Every package's NuGet description ends with the same pitch and the EasyQuery demo and docs links.
+       Set on PackageDescription right before the .nuspec is written (whitespace of multi-line
+       descriptions collapsed), so the assembly's own Description attribute stays as it is. -->
+  <Target Name="AddLinksToPackageDescription" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <_EdShortDescription>$([System.Text.RegularExpressions.Regex]::Replace('$(PackageDescription)', '\s+', ' ').Trim().TrimEnd('.'))</_EdShortDescription>
+      <PackageDescription>$(_EdShortDescription). EasyData is the open-source foundation of EasyQuery, which lets your users build their own queries and reports inside your .NET app. EasyQuery live demo: https://demo.korzh.com | Docs: https://korzh.com/easyquery/docs</PackageDescription>
+    </PropertyGroup>
+  </Target>
+
 </Project>
