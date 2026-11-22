@@ -22,6 +22,12 @@ So, as you can see, EasyData can be very useful for quick prototyping of any dat
 
 ![EasyData quick demo](https://cdn.korzh.com/img/easydata-demo01.gif "EasyData quick demo")
 
+## EasyData powers EasyQuery
+
+EasyData is the open-source foundation of [EasyQuery](https://korzh.com/easyquery), our library that lets your users build their own queries and reports inside your .NET app — a visual query builder on your own schema, with your own permissions. EasyQuery is built on EasyData's metadata model and UI, for ad-hoc reporting, advanced search and data filtering in ASP.NET Core, Blazor, React, Angular, Vue, WinForms and WPF.
+
+[See it live](https://demo.korzh.com) · [EasyQuery docs](https://korzh.com/easyquery/docs) · [Sample projects](https://github.com/easyquery)
+
 
 ## Getting started
 
